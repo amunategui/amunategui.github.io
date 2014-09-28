@@ -1,4 +1,4 @@
 auto: true
 markdown: rdiscount
 pygments: true
-permalink: /ExploringDataAndMachineLearning/:title
+permalink: /:title
