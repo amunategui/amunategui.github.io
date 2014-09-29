@@ -5,7 +5,7 @@ category: Exploring Data
 tags: exploring
 year: 2014
 month: 9
-day: 10
+day: 27
 published: true
 summary: A great way to explore a new data set is to run a pairwise correlation matrix against it. This will pair every combination of your variables and measure the correlations between them.
 image: correlations/unnamed-chunk-9.png
@@ -85,7 +85,7 @@ Finally we plot the highly correlated pairs using the **psych** packages **pair.
 pairs.panels(adults[c(bestSub, 'income')])
 ```
 
-![plot of chunk unnamed-chunk-9](correlations/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-9](correlations/figure/unnamed-chunk-9.png) 
 <BR>
 Full Source:
 
