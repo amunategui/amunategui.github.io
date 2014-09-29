@@ -159,7 +159,7 @@ pairs.panels(adults[c(bestSub, 'income')])
         <div id="disqus_thread"></div>
         <script type="text/javascript">
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-            var disqus_shortname = 'ericjones'; // required: replace example with your forum shortname
+            var disqus_shortname = 'amunategui'; // required: replace example with your forum shortname
             var disqus_identifier = '{{ page.url }}';
             var disqus_url = 'http://erjjones.github.com{{ page.url }}';
             
@@ -174,15 +174,3 @@ pairs.panels(adults[c(bestSub, 'income')])
         <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
     </div>
 </div>
-
-<!-- Twitter -->
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-
-<!-- Google + -->
-<script type="text/javascript">
-  (function() {
-    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-    po.src = 'https://apis.google.com/js/plusone.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-  })();
-</script>
