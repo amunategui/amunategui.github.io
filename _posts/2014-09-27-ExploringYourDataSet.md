@@ -8,7 +8,7 @@ month: 9
 day: 10
 published: true
 summary: Using Correlations To Understand Your Data
-image: figure/unnamed-chunk-9.png
+image: correlations/unnamed-chunk-9.png
 ---
 
 A great way to explore a new data set is to run a pairwise correlation matrix against it. This will pair every combination of your variables and measure the ensuing correlation between them.
