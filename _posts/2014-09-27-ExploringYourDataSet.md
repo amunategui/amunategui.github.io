@@ -1,8 +1,8 @@
 ---
 layout: post
 title: Using Correlations To Understand Your Data
-category: Data
-tags: exploring data
+category: Exploring Data
+tags: exploring
 year: 2014
 month: 9
 day: 10
