@@ -4,6 +4,7 @@ title: "Manuel Amunategui"
 ---
 <BR><BR><BR><BR>
 {% for post in site.posts offset: 0 limit: 50 %}
+{% if tag == "exploring" %}
 <div class="row">
   <div class="span7">    
     <div class="row">
@@ -28,5 +29,6 @@ title: "Manuel Amunategui"
 	<hr>
   </div>
 </div>
+{% endfor %}	
 {% endfor %}	
 			
