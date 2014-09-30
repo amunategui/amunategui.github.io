@@ -7,15 +7,15 @@ year: 2014
 month: 9
 day: 29
 published: true
-summary: ggmap enables you to easily map data at any corner of our glob as long as you give it geographical coordinates.
+summary: ggmap enables you to easily map data anywhere around the world as long as you give it geographical coordinates.
 image: MappingTheUSWithGGMAP/unnamed-chunk-10.png
 ---
 
-If you haven't played with the [ggmap](http://cran.r-project.org/web/packages/ggmap/index.html) package then you're in for a treat! It will plot data data on any map from around the world as long as you give it the geographical coordinates.
+If you haven't played with the [ggmap](http://cran.r-project.org/web/packages/ggmap/index.html) package then you're in for a treat! It will plot data data on maps from anywhere around the world as long as you give it the geographical coordinates.
 
-Even though **ggmap** supports different map providers, I have only used it with Google Maps and that is what I'll walk you through in this article. We're going to download the median household income for the United States from the 2006 to 2010 census. Normally you would need to download a shape file from the [Census.gov](https://www.census.gov/geo/maps-data/data/tiger-line.html) site but the **University of Michigan's Institute for Social Research** graciously provides an Excel file for the national numbers. 
+Even though **ggmap** supports different map providers, I have only used it with Google Maps and that is what I'll walk you through in this article. We're going to download the median household income for the United States from the 2006 to 2010 census. Normally you would need to download a shape file from the [Census.gov](https://www.census.gov/geo/maps-data/data/tiger-line.html) site but the **University of Michigan's Institute for Social Research** graciously provides an Excel file for the national numbers.
 
-The file is limited to the mean and median household numbers by zip codes (but its more than enough for what we need to do here).
+The file is limited to the mean and median household numbers for every zip code in the United States (but its more than enough for our needs here).
  
 We're going to load two packages in order to download the data: [RCurl](http://cran.r-project.org/web/packages/RCurl/index.html) which will deal with HTTP protocols to download the file directly from the Internet and [xlsx](http://cran.r-project.org/web/packages/xlsx/index.html) to read the Excel file and load the sheet named 'Median' into our data.frame:
 
@@ -28,7 +28,7 @@ download.file(urlfile, destfile, mode="wb")
 census <- read.xlsx2(destfile, sheetName = "Median")
 ```
 
-We clean the file up by keeping only the zip codes and median household incomes and casting the dollar figures to numerals:
+We clean the file by keeping only the zip codes and median household incomes and casting the dollar figures to numerics:
 
 ```r
 census <- census[c('Zip','Median..')]
@@ -47,20 +47,20 @@ print(head(census,5))
 ## 5 1007  79076
 ```
 
-We leverage another package [zipcode](http://cran.r-project.org/web/packages/zipcode/index.html) to not only clean our zip codes by removing any '+4' data and padding with zeros when needed, but more importantly, give us the central latitude and longitude coordinate for our zip codes (this requires downloading the zipcode data file):
+We leverage another package called [zipcode](http://cran.r-project.org/web/packages/zipcode/index.html) to not only clean our zip codes by removing any '+4' data and padding with zeros where needed, but more importantly, to give us the central latitude and longitude coordinate for our zip codes (this requires downloading the zipcode data file):
 
 ```r
 data(zipcode)
 census$Zip <- clean.zipcodes(census$Zip)
 ```
 
-We merge our census data with the zipcode data on zip codes:
+We merge our census data with the zipcode data frame on zip codes:
 
 ```r
 census <- merge(census, zipcode, by.x='Zip', by.y='zip')
 ```
 
-Finally, we get to heart of our mapping goal. We retrieve a map of the United States using **ggmap**. We opt for zoom level 4 (which works well to cover the US), and request a colored, terrain-type map (versus a black and white one):
+Finally, we reach the heart of our mapping goal, we download a map of the United States using **ggmap**. We opt for zoom level 4 (which works well to cover the US), and request a colored, terrain-type map (versus satellite or black and white, etc.):
 
 
 ```r

@@ -7,11 +7,11 @@ year: 2014
 month: 9
 day: 27
 published: true
-summary: A great way to explore a new data set is to run a pairwise correlation matrix against it. This will pair every combination of your variables and measure the correlations between them.
+summary: A great way to explore new data is to run a pairwise correlation matrix against it. This will pair every combination of your variables and measure the correlations between them.
 image: correlations/unnamed-chunk-9.png
 ---
 
-A great way to explore a new data set is to run a pairwise correlation matrix against it. This will pair every combination of your variables and measure the correlations between them.
+A great way to explore new data is to run a pairwise correlation matrix against it. This will pair every combination of your variables and measure the correlations between them.
 
 To help us understand this process, let's download the [adult.data set](https://archive.ics.uci.edu/ml/datasets/Adult) from the UCI Machine Learning Repository. This data is based on the 1994 Census and attempts to predict those with income exceeding $50K/year:
 
