@@ -87,7 +87,7 @@ pairs.panels(adults[c(bestSub, 'income')])
 
 ![plot of chunk unnamed-chunk-9](../img/posts/correlations/unnamed-chunk-9.png) 
 <BR>
-Full Source:
+[Full Source](https://github.com/amunategui/Exploring-Data-With-Correlations/blob/master/Correlations.R):
 
 ```r
 library(RCurl) # download https data
