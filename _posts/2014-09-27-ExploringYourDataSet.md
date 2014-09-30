@@ -66,8 +66,10 @@ print(head(corMasterList,10))
 ```
 <BR>
 This final format allows you to easily order the pairs however you want - for example, by those with the highest absolute correlation value:
+
 ```r
 corList <- corMasterList[order(-abs(corMasterList$cor)),]
+
 print(head(corList,10))
 ```
 
