@@ -1,14 +1,14 @@
 ---
 layout: post
-title: Mapping The US with { ggmap }
+title: Mapping The US with {ggmap}
 category: Visualization
 tags: visualizing
 year: 2014
 month: 9
 day: 29
 published: true
-summary: GGMAP will enable you to easily plot data onto maps from around the world as long as you give it geographical coordinates.
-image: MappingTheUSWithGGMAP/figure/unnamed-chunk-10.png
+summary: ggmap will enable you to easily plot data onto maps from around the world as long as you give it geographical coordinates.
+image: MappingTheUSWithGGMAP/unnamed-chunk-10.png
 ---
 
 If you haven't played with the [ggmap](http://cran.r-project.org/web/packages/ggmap/index.html) package then you are in for a treat!
@@ -92,7 +92,7 @@ ggmap(map) + geom_point(
         scale_color_gradient(low="beige", high="blue")
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+![plot of chunk unnamed-chunk-10](../img/posts/MappingTheUSWithGGMAP/unnamed-chunk-10.png) 
 <BR>
 And there you have it, the median household income from 2006 to 2010 mapped on Google Maps in just a few lines of code! You can play around with the alpha setting to increase or decrease the transparency of the census data on the map.        
         
