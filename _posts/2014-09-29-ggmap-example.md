@@ -75,7 +75,7 @@ map<-get_map(location='united states', zoom=4, maptype = "terrain",
 ## Google Maps API Terms of Service : http://developers.google.com/maps/terms
 ```
 <BR>
-And [ggplot2](http://cran.r-project.org/web/packages/ggplot2/index.html) that will handle the graphics where we pass our census data with the geographical coordinates:
+And [ggplot2](http://cran.r-project.org/web/packages/ggplot2/index.html) that will handle the graphics (based on the grammar of graphics) where we pass our census data with the geographical coordinates:
 
 
 ```r
