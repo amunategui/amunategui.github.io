@@ -69,8 +69,8 @@ This final format allows you to easily order the pairs however you want - for ex
 ```r
 corList <- corMasterList[order(-abs(corMasterList$cor)),]
 print(head(corList,10))
-
 ```
+
 ```
 ##                                      i                            j        cor p
 ## 1953                       sex..Female                    sex..Male -1.0000000 0
