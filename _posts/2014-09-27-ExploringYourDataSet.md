@@ -97,7 +97,7 @@ Finally we plot the highly correlated pairs using the **psych** packages **pair.
 ```r
 pairs.panels(adults[c(bestSub, 'income')])
 ```
-
+<BR>
 ![plot of chunk unnamed-chunk-9](../img/posts/correlations/unnamed-chunk-9.png) 
 <BR>
 [Full Source](https://github.com/amunategui/Exploring-Data-With-Correlations/blob/master/Correlations.R):
