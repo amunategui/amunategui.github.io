@@ -11,21 +11,16 @@ summary: ggmap enables you to easily plot data data on maps around the world as 
 image: MappingTheUSWithGGMAP/unnamed-chunk-10.png
 ---
 
-If you haven't played with the [ggmap](http://cran.r-project.org/web/packages/ggmap/index.html) package then you are in for a treat!
-
-This will enable you to easily plot your data onto maps from around the world as long as it contains geographical coordinates.
+If you haven't played with the [ggmap](http://cran.r-project.org/web/packages/ggmap/index.html) package then you're in for a treat! It will plot data data on any map from around the world as long as you give it the geographical coordinates.
 
 Even though **ggmap** supports different map providers, I have only used it with Google Maps and that is what I'll walk you through in this article. We're going to download the median household income for the United States from the 2006 to 2010 census. Normally you would need to download a shape file from the [Census.gov](https://www.census.gov/geo/maps-data/data/tiger-line.html) site but the **University of Michigan's Institute for Social Research** graciously provides an Excel file for the national numbers. 
 
-The file is limited to the mean and median household numbers by zip codes (but this is still a lot simpler than dealing with shape files).
+The file is limited to the mean and median household numbers by zip codes (but its more than enough for what we need to do here).
  
-We're going to load two packages in order to download the data: [RCurl](http://cran.r-project.org/web/packages/RCurl/index.html) which allows us to download files directly from the Internet and [xlsx](http://cran.r-project.org/web/packages/xlsx/index.html) to read the Excel file and load the sheet named 'Median' into a data.frame:
-
-
-
+We're going to load two packages in order to download the data: [RCurl](http://cran.r-project.org/web/packages/RCurl/index.html) which will deal with HTTP protocols to download the file directly from the Internet and [xlsx](http://cran.r-project.org/web/packages/xlsx/index.html) to read the Excel file and load the sheet named 'Median' into our data.frame:
 
 ```r
-# NOTE if you can't download the file automatically, download it manually at:
+# NOTE: if you can't download the file automatically, download it manually at:
 # 'http://www.psc.isr.umich.edu/dis/census/Features/tract2zip/'
 urlfile <-'http://www.psc.isr.umich.edu/dis/census/Features/tract2zip/MedianZIP-3.xlsx'
 destfile <- "census20062010.xlsx"
@@ -33,7 +28,7 @@ download.file(urlfile, destfile, mode="wb")
 census <- read.xlsx2(destfile, sheetName = "Median")
 ```
 
-We clean the file up by keeping only the zip codes and median household incomes and removing the decorative commas in the dollar figures:
+We clean the file up by keeping only the zip codes and median household incomes and casting the dollar figures to numerals:
 
 ```r
 census <- census[c('Zip','Median..')]
@@ -52,9 +47,7 @@ print(head(census,5))
 ## 5 1007  79076
 ```
 
-We leverage another package [zipcode](http://cran.r-project.org/web/packages/zipcode/index.html) that will not only clean our zip codes by removing any '+4' data and padding with zeros when needed, it will also give us the centroid latitude and longitude coordinate for that zip code (this requires downloading the zipcode data file):
-
-
+We leverage another package [zipcode](http://cran.r-project.org/web/packages/zipcode/index.html) to not only clean our zip codes by removing any '+4' data and padding with zeros when needed, but more importantly, give us the central latitude and longitude coordinate for our zip codes (this requires downloading the zipcode data file):
 
 ```r
 data(zipcode)
@@ -67,7 +60,7 @@ We merge our census data with the zipcode data on zip codes:
 census <- merge(census, zipcode, by.x='Zip', by.y='zip')
 ```
 
-Finally we get to heart of our mapping goals. We retrieve a map of the United States using **ggmap**. We opt for the zoom level 4 which works well to cover the US, terrain type and request a colored map (versus a black and white one):
+Finally, we get to heart of our mapping goal. We retrieve a map of the United States using **ggmap**. We opt for zoom level 4 (which works well to cover the US), and request a colored, terrain-type map (versus a black and white one):
 
 
 ```r
@@ -94,7 +87,7 @@ ggmap(map) + geom_point(
 
 ![plot of chunk unnamed-chunk-10](../img/posts/MappingTheUSWithGGMAP/unnamed-chunk-10.png) 
 <BR>
-And there you have it, the median household income from 2006 to 2010 mapped on Google Maps in just a few lines of code! You can play around with the alpha setting to increase or decrease the transparency of the census data on the map.        
+And there you have it, the median household income from 2006 to 2010 mapped onto a Google Map representation of the US in just a few lines of code! You can play around with the alpha setting to increase or decrease the transparency of the census data on the map.        
         
 [Full source](https://github.com/amunategui/Mapping-The-US-With-GGMAP/blob/master/ggmap-example.R):
 
