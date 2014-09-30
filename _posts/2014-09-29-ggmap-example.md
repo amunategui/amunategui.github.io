@@ -15,11 +15,11 @@ If you haven't played with the [ggmap](http://cran.r-project.org/web/packages/gg
 
 This will enable you to easily plot your data onto maps from around the world as long as it contains geographical coordinates.
 
-Eventhough **ggmap** supports different map providers, I have only used it with Google Maps and that is what I'll walk you through in this article. We're going to download the median household income for the United States from the 2006 to 2010 census. Normally you would need to download a shape file from the [Census.gov](https://www.census.gov/geo/maps-data/data/tiger-line.html) site but the **University of Michigan's Institute for Social Research** graciously provides an Excel file for the national numbers. 
+Even though **ggmap** supports different map providers, I have only used it with Google Maps and that is what I'll walk you through in this article. We're going to download the median household income for the United States from the 2006 to 2010 census. Normally you would need to download a shape file from the [Census.gov](https://www.census.gov/geo/maps-data/data/tiger-line.html) site but the **University of Michigan's Institute for Social Research** graciously provides an Excel file for the national numbers. 
 
 The file is limited to the mean and median household numbers by zip codes (but this is still a lot simpler than dealing with shape files).
  
-We're going to load two packages in order to downlaod the data: [RCurl](http://cran.r-project.org/web/packages/RCurl/index.html) which allows us to download files directly from the Internet and [xlsx](http://cran.r-project.org/web/packages/xlsx/index.html) to read the Excel file and load the sheet named 'Median' into a data.frame:
+We're going to load two packages in order to download the data: [RCurl](http://cran.r-project.org/web/packages/RCurl/index.html) which allows us to download files directly from the Internet and [xlsx](http://cran.r-project.org/web/packages/xlsx/index.html) to read the Excel file and load the sheet named 'Median' into a data.frame:
 
 
 
@@ -67,7 +67,7 @@ We merge our census data with the zipcode data on zip codes:
 census <- merge(census, zipcode, by.x='Zip', by.y='zip')
 ```
 
-Finally we get to heart of our mapping goals. We retrieve a map of the United States using **ggmap**. We opt for the zoom level 4 which works well to cover the US, terrain type and request a colored map (verus a black and white one):
+Finally we get to heart of our mapping goals. We retrieve a map of the United States using **ggmap**. We opt for the zoom level 4 which works well to cover the US, terrain type and request a colored map (versus a black and white one):
 
 
 ```r
@@ -82,7 +82,7 @@ map<-get_map(location='united states', zoom=4, maptype = "terrain",
 ## Google Maps API Terms of Service : http://developers.google.com/maps/terms
 ```
 
-And [ggplot2](http://cran.r-project.org/web/packages/ggplot2/index.html) that will handle the graphics where we pass our census data with the geograpical coordinates:
+And [ggplot2](http://cran.r-project.org/web/packages/ggplot2/index.html) that will handle the graphics where we pass our census data with the geographical coordinates:
 
 
 ```r
@@ -135,3 +135,36 @@ ggmap(map) + geom_point(
         data=census, alpha=.8, na.rm = T)  + 
         scale_color_gradient(low="beige", high="blue")
 ```
+
+
+<script src="https://github.com/amunategui/SMOTE-Oversample-Rare-Events/blob/master/SMOTE_sample.R"></script>
+
+<div class="row">   
+    <div class="span9 column">
+            <p class="pull-right">{% if page.previous.url %} <a href="{{page.previous.url}}" title="Previous Post: {{page.previous.title}}"><i class="icon-chevron-left"></i></a>   {% endif %}   {% if page.next.url %}    <a href="{{page.next.url}}" title="Next Post: {{page.next.title}}"><i class="icon-chevron-right"></i></a>   {% endif %} </p>  
+    </div>
+</div>
+
+<div class="row">   
+    <div class="span9 columns">    
+        <h2>Comments Section</h2>
+        <p>Feel free to comment on the post but keep it clean and on topic.</p> 
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'amunategui'; // required: replace example with your forum shortname
+            var disqus_identifier = '{{ page.url }}';
+            var disqus_url = 'http://erjjones.github.com{{ page.url }}';
+            
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+</div>
+
