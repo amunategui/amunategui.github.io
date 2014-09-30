@@ -27,7 +27,7 @@ destfile <- "census20062010.xlsx"
 download.file(urlfile, destfile, mode="wb")
 census <- read.xlsx2(destfile, sheetName = "Median")
 ```
-
+<BR>
 We clean the file by keeping only the zip codes and median household incomes and casting the dollar figures to numerics:
 
 ```r
@@ -46,20 +46,20 @@ print(head(census,5))
 ## 4 1005  75423
 ## 5 1007  79076
 ```
-
+<BR>
 We leverage another package called [zipcode](http://cran.r-project.org/web/packages/zipcode/index.html) to not only clean our zip codes by removing any '+4' data and padding with zeros where needed, but more importantly, to give us the central latitude and longitude coordinate for our zip codes (this requires downloading the zipcode data file):
 
 ```r
 data(zipcode)
 census$Zip <- clean.zipcodes(census$Zip)
 ```
-
+<BR>
 We merge our census data with the zipcode data frame on zip codes:
 
 ```r
 census <- merge(census, zipcode, by.x='Zip', by.y='zip')
 ```
-
+<BR>
 Finally, we reach the heart of our mapping goal, we download a map of the United States using **ggmap**. For a more detailed introduction to ggmap, check out this [article](http://stat405.had.co.nz/ggmap.pdf) written by the authors of the package. The **get_map** function downloads the map as an image. Amongst the available parameters, we opt for zoom level 4 (which works well to cover the US), and request a colored, terrain-type map (versus satellite or black and white, etc.):
 
 
@@ -74,7 +74,7 @@ map<-get_map(location='united states', zoom=4, maptype = "terrain",
 ## Information from URL : http://maps.googleapis.com/maps/api/geocode/json?address=united+states&sensor=false
 ## Google Maps API Terms of Service : http://developers.google.com/maps/terms
 ```
-
+<BR>
 And [ggplot2](http://cran.r-project.org/web/packages/ggplot2/index.html) that will handle the graphics where we pass our census data with the geographical coordinates:
 
 
@@ -88,7 +88,7 @@ ggmap(map) + geom_point(
 ![plot of chunk unnamed-chunk-10](../img/posts/MappingTheUSWithGGMAP/unnamed-chunk-10.png) 
 <BR>
 And there you have it, the median household income from 2006 to 2010 mapped onto a Google Map of the US in just a few lines of code! You can play around with the alpha setting to increase or decrease the transparency of the census data on the map.        
-        
+<BR><BR>        
 [Full source](https://github.com/amunategui/Mapping-The-US-With-GGMAP/blob/master/ggmap-example.R):
 
 ```r
