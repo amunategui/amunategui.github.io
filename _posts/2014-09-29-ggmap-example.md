@@ -60,7 +60,7 @@ We merge our census data with the zipcode data frame on zip codes:
 census <- merge(census, zipcode, by.x='Zip', by.y='zip')
 ```
 
-Finally, we reach the heart of our mapping goal, we download a map of the United States using **ggmap**. We opt for zoom level 4 (which works well to cover the US), and request a colored, terrain-type map (versus satellite or black and white, etc.):
+Finally, we reach the heart of our mapping goal, we download a map of the United States using **ggmap**. For a more detailed introduction to ggmap, check out this [article](http://stat405.had.co.nz/ggmap.pdf) from one of its creators. The **get_map** function downloads the map as an image. We opt for zoom level 4 (which works well to cover the US), and request a colored, terrain-type map (versus satellite or black and white, etc.):
 
 
 ```r
