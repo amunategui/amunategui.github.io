@@ -44,7 +44,7 @@ dmy <- dummyVars(" ~ .", data = adults)
 adultsTrsf <- data.frame(predict(dmy, newdata = adults))
 ```
 <BR>
-We borrow two very useful functions from [Stephen Turner](https://gist.github.com/stephenturner/3492773): **cor.prob** and **flattenSquareMatrix**. **cor.prob** will create a correlation matrix along with <i>p</i>-values and **flattenSquareMatrix** will flatten all the combinations from the matrix into 4 columns of row names, column names, the correlation value and the i>p</i>-value. This final format allows you to easily order you pairs however you want - for example, those with the highest absolute correlation value:
+We borrow two very useful functions from [Stephen Turner](https://gist.github.com/stephenturner/3492773): **cor.prob** and **flattenSquareMatrix**. **cor.prob** will create a correlation matrix along with <i>p</i>-values and **flattenSquareMatrix** will flatten all the combinations from the square matrix into a data frame of 4 columns made up of row names, column names, the correlation value and the <i>p</i>-value:
 
 ```r
 corMasterList <- flattenSquareMatrix (cor.prob(adultsTrsf))
@@ -65,6 +65,21 @@ print(head(corMasterList,10))
 ## 10   workclass..Local.gov workclass..Never.worked -0.003843 4.880e-01
 ```
 <BR>
+This final format allows you to easily order the pairs however you want - for example, by those with the highest absolute correlation value:
+```
+##                         i                       j       cor         p
+## 1                     age            workclass...  0.042627 1.421e-14
+## 2                     age  workclass..Federal.gov  0.051227 0.000e+00
+## 3            workclass...  workclass..Federal.gov -0.042606 1.454e-14
+## 4                     age    workclass..Local.gov  0.060901 0.000e+00
+## 5            workclass...    workclass..Local.gov -0.064070 0.000e+00
+## 6  workclass..Federal.gov    workclass..Local.gov -0.045682 2.220e-16
+## 7                     age workclass..Never.worked -0.019362 4.759e-04
+## 8            workclass... workclass..Never.worked -0.003585 5.178e-01
+## 9  workclass..Federal.gov workclass..Never.worked -0.002556 6.447e-01
+## 10   workclass..Local.gov workclass..Never.worked -0.003843 4.880e-01
+```
+
 We create a single vector of variable names (using the original names, not the dummified ones) by filtering those with an absolute correlation of 0.2 against or higher against our outcome variable of 'income':
 
 ```r
