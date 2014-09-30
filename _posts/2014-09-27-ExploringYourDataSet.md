@@ -38,7 +38,6 @@ adults$income <- ifelse(adults$income==' <=50K',1,0)
 <BR>
 We load the **caret** package to dummify (binarize) all factor variables as the correlation function only accepts numerical values:
 
-
 ```r
 dmy <- dummyVars(" ~ .", data = adults)
 adultsTrsf <- data.frame(predict(dmy, newdata = adults))
@@ -69,7 +68,6 @@ This final format allows you to easily order the pairs however you want - for ex
 
 ```r
 corList <- corMasterList[order(-abs(corMasterList$cor)),]
-
 print(head(corList,10))
 ```
 
@@ -87,7 +85,7 @@ print(head(corList,10))
 ## 497                                age maritalStatus..Never.married -0.5343590 0
 ```
 
-The top correlated pairs as seen above won't be of much use when they're from the same factor. We need to process this a little further to be of practical use. We create a single vector of variable names (using the original names, not the dummified ones) by filtering those with an absolute correlation of 0.2 against or higher against our outcome variable of 'income':
+The top correlated pairs, as seen above, won't be of much use when they're from the same factor. We need to process this a little further to be of practical use. We create a single vector of variable names (using the original names, not the dummified ones) by filtering those with an absolute correlation of 0.2 against or higher against our outcome variable of 'income':
 
 ```r
 selectedSub <- subset(corList, (abs(cor) > 0.2 & j == 'income'))
