@@ -87,7 +87,7 @@ ggmap(map) + geom_point(
 
 ![plot of chunk unnamed-chunk-10](../img/posts/MappingTheUSWithGGMAP/unnamed-chunk-10.png) 
 <BR>
-And there you have it, the median household income from 2006 to 2010 mapped onto a Google Map representation of the US in just a few lines of code! You can play around with the alpha setting to increase or decrease the transparency of the census data on the map.        
+And there you have it, the median household income from 2006 to 2010 mapped onto a Google Map of the US in just a few lines of code! You can play around with the alpha setting to increase or decrease the transparency of the census data on the map.        
         
 [Full source](https://github.com/amunategui/Mapping-The-US-With-GGMAP/blob/master/ggmap-example.R):
 
