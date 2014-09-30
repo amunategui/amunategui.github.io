@@ -7,7 +7,7 @@ year: 2014
 month: 9
 day: 29
 published: true
-summary: ggmap will enable you to easily plot data onto maps from around the world as long as you give it geographical coordinates.
+summary: ggmap enables you to easily plot data data on maps around the world as long as you give it geographical coordinates.
 image: MappingTheUSWithGGMAP/unnamed-chunk-10.png
 ---
 
