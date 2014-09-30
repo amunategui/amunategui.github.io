@@ -44,10 +44,7 @@ dmy <- dummyVars(" ~ .", data = adults)
 adultsTrsf <- data.frame(predict(dmy, newdata = adults))
 ```
 <BR>
-We borrow two very useful functions from [Stephen Turner](https://gist.github.com/stephenturner/3492773): **cor.prob** and **flattenSquareMatrix**
-
-<BR>
-We submit the transformed data set to the **cor.prob** function in order to create a pairwise correlation matrix with P-values and to flatten the result set:
+We borrow two very useful functions from [Stephen Turner](https://gist.github.com/stephenturner/3492773): **cor.prob** and **flattenSquareMatrix**. **cor.prob** will create a correlation matrix along with <i>p</i>-values and **flattenSquareMatrix** will flatten all the combinations from the matrix into 4 columns of row names, column names, the correlation value and the i>p</i>-value. This final format allows you to easily order you pairs however you want - for example, those with the highest absolute correlation value:
 
 ```r
 corMasterList <- flattenSquareMatrix (cor.prob(adultsTrsf))
