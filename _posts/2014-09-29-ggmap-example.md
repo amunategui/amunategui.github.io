@@ -26,7 +26,7 @@ download.file(urlfile, destfile, mode="wb")
 census <- read.xlsx2(destfile, sheetName = "Median")
 ```
 <BR>
-We clean the file by keeping only the zip codes and median household incomes and casting the dollar figures from factors to numbers:
+We clean the file by keeping only the zip code and median household income variables and casting the median figures from factor to numbers:
 
 ```r
 census <- census[c('Zip','Median..')]
