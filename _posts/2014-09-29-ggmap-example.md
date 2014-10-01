@@ -26,7 +26,7 @@ download.file(urlfile, destfile, mode="wb")
 census <- read.xlsx2(destfile, sheetName = "Median")
 ```
 <BR>
-We clean the file by keeping only the zip codes and median household incomes and casting the dollar figures to numerics:
+We clean the file by keeping only the zip codes and median household incomes and casting the dollar figures from factors to numbers:
 
 ```r
 census <- census[c('Zip','Median..')]
@@ -45,20 +45,20 @@ print(head(census,5))
 ## 5 1007  79076
 ```
 <BR>
-We leverage another package called [zipcode](http://cran.r-project.org/web/packages/zipcode/index.html) to not only clean our zip codes by removing any '+4' data and padding with zeros where needed, but more importantly, to give us the central latitude and longitude coordinate for our zip codes (this requires downloading the zipcode data file):
+You will notice that the zip codes above only have 4 digits. We leverage another package called [zipcode](http://cran.r-project.org/web/packages/zipcode/index.html) to not only clean our zip codes by removing any '+4' data and padding with zeros where needed, but more importantly, to give us the central latitude and longitude coordinate for our zip codes (this requires downloading the zipcode data file):
 
 ```r
 data(zipcode)
 census$Zip <- clean.zipcodes(census$Zip)
 ```
 <BR>
-We merge our census data with the zipcode data frame on zip codes:
+We merge our census data with the zipcode data on zip codes:
 
 ```r
 census <- merge(census, zipcode, by.x='Zip', by.y='zip')
 ```
 <BR>
-Finally, we reach the heart of our mapping goal, we download a map of the United States using **ggmap**. For a more detailed introduction to ggmap, check out this [article](http://stat405.had.co.nz/ggmap.pdf) written by the authors of the package. The **get_map** function downloads the map as an image. Amongst the available parameters, we opt for zoom level 4 (which works well to cover the US), and request a colored, terrain-type map (versus satellite or black and white, etc.):
+Finally, we reach the heart of our mapping goal, we download a map of the United States using **ggmap**. For a more detailed introduction to ggmap, check out this [article](http://stat405.had.co.nz/ggmap.pdf) written by the authors of the package. The **get_map** function downloads the map as an image. Amongst the available parameters, we opt for zoom level 4 (which works well to cover the US), and request a colored, terrain-type map (versus satellite or black and white, amongst many otherr options):
 
 
 ```r
