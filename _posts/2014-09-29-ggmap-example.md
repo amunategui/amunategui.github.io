@@ -13,11 +13,9 @@ image: MappingTheUSWithGGMAP/unnamed-chunk-10.png
 
 If you haven't played with the [ggmap](http://cran.r-project.org/web/packages/ggmap/index.html) package then you're in for a treat! It will map your data on any location around the world as long as you give it proper geographical coordinates.
 
-Even though **ggmap** supports different map providers, I have only used it with Google Maps and that is what I'll walk you through in this article. We're going to download the median household income for the United States from the 2006 to 2010 census. Normally you would need to download a shape file from the [Census.gov](https://www.census.gov/geo/maps-data/data/tiger-line.html) site but the **University of Michigan's Institute for Social Research** graciously provides an Excel file for the national numbers.
-
-The file is limited to the mean and median household numbers for every zip code in the United States (but its more than enough for our needs here).
+Even though **ggmap** supports different map providers, I have only used it with Google Maps and that is what I will demonstrate in this article. We're going to download the median household income for the United States from the 2006 to 2010 census. Normally you would need to download a shape file from the [Census.gov](https://www.census.gov/geo/maps-data/data/tiger-line.html) site but the **University of Michigan's Institute for Social Research** graciously provides an Excel file for the national numbers. The file is limited to the mean and median household numbers for every zip code in the United States.
  
-We're going to load two packages in order to download the data: [RCurl](http://cran.r-project.org/web/packages/RCurl/index.html) which will deal with HTTP protocols to download the file directly from the Internet and [xlsx](http://cran.r-project.org/web/packages/xlsx/index.html) to read the Excel file and load the sheet named 'Median' into our data.frame:
+We're going to load two packages in order to download the data: [RCurl](http://cran.r-project.org/web/packages/RCurl/index.html) to handle HTTP protocols to download the file directly from the Internet and [xlsx](http://cran.r-project.org/web/packages/xlsx/index.html) to read the Excel file and load the sheet named 'Median' into our data.frame:
 
 ```r
 # NOTE: if you can't download the file automatically, download it manually at:
