@@ -7,7 +7,7 @@ year: 2014
 month: 9
 day: 29
 published: true
-summary: ggmap enables you to easily map data anywhere around the world as long as you give it geographical coordinates.
+summary: <B>ggmap</B> enables you to easily map data anywhere around the world as long as you give it geographical coordinates.
 image: MappingTheUSWithGGMAP/unnamed-chunk-10.png
 ---
 
