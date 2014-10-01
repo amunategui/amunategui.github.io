@@ -7,7 +7,7 @@ year: 2014
 month: 10
 day: 1
 published: true
-summary: Give it data set and a list of models and it will scale and return the importance of each variable for each model and for the ensemble of models.
+summary: Give it an ensemble of models, some data, and it will return the importance of each feature voted on by all models. In this walkthrough, we will use the classic Titanic data set and find the strongest variables for predicting survivorship.
 image: FSCARET_Walkthrough/titanic.png
 ---
 
@@ -15,7 +15,7 @@ The [fscaret](http://cran.r-project.org/web/packages/fscaret/index.html) package
 <BR><BR>
 **So what does this package do?**
 <BR>
-Well, you give it a data set and a list of models and, in return, **fscaret** will scale and return the importance of each variable for each model and for the ensemble of models. The tool extracts the importance of each variable by using the selected models' VarImp or similar measuring function. For example, linear models use the absolute value of the t-statistic for each parameter and decision-tree models, total the importance of the individual trees, etc.  It returns indiviudal and combined MSEs and RMSEs:
+Well, you give it a data set and a list of models and, in return, **fscaret** will scale and return the importance of each variable for each model and for the ensemble of models. The tool extracts the importance of each variable by using the selected models' VarImp or similar measuring function. For example, linear models use the absolute value of the t-statistic for each parameter and decision-tree models, total the importance of the individual trees, etc.  It returns individual and combined MSEs and RMSEs:
 <BR><BR>
 <LI>**MSE (Mean Squared Error)**: the variance of the estimator</LI>
 <LI>**RMSE (Root Mean Squared Error)**: the standard deviation of the sample</LI>
@@ -243,3 +243,34 @@ myFS<-fscaret(trainDF, testDF, myTimeLimit = 40, preprocessData=TRUE,
 print(myFS$VarImp)
 print(myFS$PPlabels)
 ```
+<script src="https://github.com/amunategui/SMOTE-Oversample-Rare-Events/blob/master/SMOTE_sample.R"></script>
+
+<div class="row">   
+    <div class="span9 column">
+            <p class="pull-right">{% if page.previous.url %} <a href="{{page.previous.url}}" title="Previous Post: {{page.previous.title}}"><i class="icon-chevron-left"></i></a>   {% endif %}   {% if page.next.url %}    <a href="{{page.next.url}}" title="Next Post: {{page.next.title}}"><i class="icon-chevron-right"></i></a>   {% endif %} </p>  
+    </div>
+</div>
+
+<div class="row">   
+    <div class="span9 columns">    
+        <h2>Comments Section</h2>
+        <p>Feel free to comment on the post but keep it clean and on topic.</p> 
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'amunategui'; // required: replace example with your forum shortname
+            var disqus_identifier = '{{ page.url }}';
+            var disqus_url = 'http://erjjones.github.com{{ page.url }}';
+            
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+</div>
+
