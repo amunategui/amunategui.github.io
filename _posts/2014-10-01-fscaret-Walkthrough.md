@@ -7,7 +7,7 @@ year: 2014
 month: 10
 day: 1
 published: true
-summary: Give it an ensemble of models, some data, and it will return the importance of each feature voted on by all models. In this walkthrough, we will use the classic Titanic data set and find the strongest variables for predicting survivorship.
+summary: Give it an ensemble of models and some data, it will have the ensemble vote on the importance of each feature. In this walkthrough, we will use the classic Titanic data set to find the strongest variables for predicting survivorship.
 image: FSCARET_Walkthrough/titanic.png
 ---
 
