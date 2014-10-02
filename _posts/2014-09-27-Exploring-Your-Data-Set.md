@@ -162,7 +162,6 @@ bestSub <- unique(bestSub)
 library(psych)
 pairs.panels(adults[c(bestSub, 'income')])
 ```
-<script src="https://github.com/amunategui/SMOTE-Oversample-Rare-Events/blob/master/SMOTE_sample.R"></script>
 
 <div class="row">   
     <div class="span9 column">

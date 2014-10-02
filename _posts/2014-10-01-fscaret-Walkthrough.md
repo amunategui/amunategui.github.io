@@ -243,7 +243,6 @@ myFS<-fscaret(trainDF, testDF, myTimeLimit = 40, preprocessData=TRUE,
 print(myFS$VarImp)
 print(myFS$PPlabels)
 ```
-<script src="https://github.com/amunategui/SMOTE-Oversample-Rare-Events/blob/master/SMOTE_sample.R"></script>
 
 <div class="row">   
     <div class="span9 column">
