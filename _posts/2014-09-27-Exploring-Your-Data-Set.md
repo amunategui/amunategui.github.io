@@ -179,7 +179,7 @@ pairs.panels(adults[c(bestSub, 'income')])
             /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
             var disqus_shortname = 'amunategui'; // required: replace example with your forum shortname
             var disqus_identifier = '{{ page.url }}';
-            var disqus_url = 'http://erjjones.github.com{{ page.url }}';
+            var disqus_url = 'http://amunategui.github.com{{ page.url }}';
             
             /* * * DON'T EDIT BELOW THIS LINE * * */
             (function() {
