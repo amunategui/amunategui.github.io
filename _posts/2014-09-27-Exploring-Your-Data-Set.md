@@ -13,7 +13,7 @@ image: correlations/unnamed-chunk-9.png
 
 A great way to explore new data is to run a pairwise correlation matrix against it. This will pair every combination of your variables and measure the correlation between them. It doesn't really matter if you have an outcome (or response) variable at this point, it will compare everything versus everything else.
 
-For those not familiar with the correlation coefficient, it is simply a measure of similarity between two vecters of numbers. The measure value can range between -1 and 1, where 1 is perfectly correlated, -1 is perfectly inversly correlated, and 0 is not correlated at all.  
+For those not familiar with the correlation coefficient, it is simply a measure of similarity between two vecters of numbers. The measure value can range between **-1** and **1**, where **1** is perfectly correlated, -**1** is perfectly inversly correlated, and **0** is not correlated at all.  
 
 To help us understand this process, let's download the [adult.data set](https://archive.ics.uci.edu/ml/datasets/Adult) from the UCI Machine Learning Repository. The data is based on the 1994 Census and attempts to predict those with income exceeding $50,000 a year:
 
