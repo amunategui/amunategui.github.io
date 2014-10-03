@@ -5,9 +5,9 @@ category: Machine Learning
 tags: exploring
 year: 2014
 month: 10
-day: 1
+day: 2
 published: true
-summary: The <B>dummyVars</B> function streamlines the creation of dummy variables by quickly transforming character and factor variables into numbers, with or without full rank.
+summary: The <B>dummyVars</B> function streamlines the creation of dummy variables by quickly hunting down any character and factor variables and transforming them into binary variables, with or without full rank.
 
 image: dummyVarWalkthrough/factor3.png
 ---
