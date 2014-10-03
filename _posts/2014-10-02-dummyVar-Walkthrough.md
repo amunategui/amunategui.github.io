@@ -9,7 +9,7 @@ day: 2
 published: true
 summary: The <B>dummyVars</B> function streamlines the creation of dummy variables by quickly hunting down any character and factor variables and transforming them into binaries, with or without full rank.
 
-image: dummyVarWalkthrough/factor3.png
+image: dummyVarWalkthrough/factor4.png
 ---
 
 As the name implies, the ``dummyVars`` function allows you to create dummy variables - in other words it translates text data into numerical data for modeling purposes.
