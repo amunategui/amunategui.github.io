@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Ensemble Feature Selection On Steroids: {fscaret} Package"
+title: "Ensemble Feature Selection On Steroids: <B>{fscaret}</B> Package"
 category: Machine Learning
 tags: modeling
 year: 2014
