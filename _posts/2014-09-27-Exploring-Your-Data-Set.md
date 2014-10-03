@@ -95,12 +95,16 @@ bestSub <-  sapply(strsplit(as.character(selectedSub$i),'[.]'), "[", 1)
 bestSub <- unique(bestSub)
 ```
 <BR>
-Finally we plot the highly correlated pairs using the **psych** packages **pair.panels** plot (this can be done on the original data as **pair.panels** can handle factor and character variables):
+Finally we plot the highly correlated pairs using the **{psych}** package's ``pair.panels`` plot (this can be done on the original data as ``pair.panels`` can handle factor and character variables):
 ```r
 pairs.panels(adults[c(bestSub, 'income')])
 ```
 <BR>
 ![plot of chunk unnamed-chunk-9](../img/posts/correlations/unnamed-chunk-9.png) 
+<BR><BR>
+**Things to keep in mind**<BR>
+<li>If you have a huge number of features in your data set, then be ready for extra computing time</li>
+<li>And don't bother plotting it via ``pair.panels``, it will end up crashing your system.</li>
 <BR><BR>
 [Full Source](https://github.com/amunategui/Exploring-Data-With-Correlations/blob/master/Correlations.R):
 
