@@ -7,7 +7,8 @@ year: 2014
 month: 10
 day: 1
 published: true
-summary: Give <B>fscaret</B> an ensemble of models and some data, and it will have the ensemble vote on the importance of each feature to find the strongest ones. In this walkthrough, we use the classic Titanic data set to predict survivorship.
+summary: The <B>dummyVars</B> function streamlines the creation of dummy variables by quickly transforming character and factor variables into numbers, with or without full rank.
+
 image: dummyVarWalkthrough/factor3.png
 ---
 
