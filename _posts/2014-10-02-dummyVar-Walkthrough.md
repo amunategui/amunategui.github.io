@@ -141,5 +141,70 @@ As you can see, it picked male and sad, if you are **0** in both columns, then y
 **Things to keep in mind**<BR>
 <li>Don't dummy a large data set full of zip codes; you more than likely don't have the computing muscle to add an extra 43,000 columns to your data set.</li>
 <li>You can dummify large, free-text columns. Before running the function, look for reapeated words or sentences, only take the top 50 of them and replace the rest with 'others'. This will allow you to use that field without delving deeply into NLP.</li>
+<BR><BR>        
+[Full source](https://github.com/amunategui/Walkthrough-of-the-dummyVars-Function):
 
+```r
+survey <- data.frame(service=c('very unhappy','unhappy','neutral','happy','very happy'))
+print(survey)
+
+survey <- data.frame(service=c('very unhappy','unhappy','neutral','happy','very happy'), rank=c(1,2,3,4,5))
+print(survey)
+
+library(caret) 
+
+?dummyVars # many options
+
+customers <- data.frame(
+        id=c(10,20,30,40,50), 
+        gender=c('male','female','female','male','female'), 
+        mood=c('happy','sad','happy','sad','happy'), 
+        outcome=c(1,1,0,0,0))
+
+dmy <- dummyVars(" ~ .", data = customers)
+trsf <- data.frame(predict(dmy, newdata = customers))
+print(trsf)
+print(str(trsf))
+
+# works only on factors
+customers$outcome <- as.factor(customers$outcome)
+
+# tranform just gender
+dmy <- dummyVars(" ~ gender", data = customers)
+trsf <- data.frame(predict(dmy, newdata = customers))
+print(trsf)
+
+# use fullRank to avoid the 'dummy trap'
+dmy <- dummyVars(" ~ .", data = customers, fullRank=T)
+trsf <- data.frame(predict(dmy, newdata = customers))
+print(trsf)
+```
+<div class="row">   
+    <div class="span9 column">
+            <p class="pull-right">{% if page.previous.url %} <a href="{{page.previous.url}}" title="Previous Post: {{page.previous.title}}"><i class="icon-chevron-left"></i></a>   {% endif %}   {% if page.next.url %}    <a href="{{page.next.url}}" title="Next Post: {{page.next.title}}"><i class="icon-chevron-right"></i></a>   {% endif %} </p>  
+    </div>
+</div>
+
+<div class="row">   
+    <div class="span9 columns">    
+        <h2>Comments Section</h2>
+        <p>Feel free to comment on the post but keep it clean and on topic.</p> 
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'amunategui'; // required: replace example with your forum shortname
+            var disqus_identifier = '{{ page.url }}';
+            var disqus_url = 'http://amunategui.github.com{{ page.url }}';
+            
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+</div>
  
