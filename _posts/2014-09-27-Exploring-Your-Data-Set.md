@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Using Correlations To Understand Your Data
-category: Exploring Data
+category: Machine Learning
 tags: exploring
 year: 2014
 month: 9
