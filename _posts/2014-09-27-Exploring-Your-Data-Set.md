@@ -45,7 +45,7 @@ dmy <- dummyVars(" ~ .", data = adults)
 adultsTrsf <- data.frame(predict(dmy, newdata = adults))
 ```
 <BR>
-We borrow two very useful functions from [Stephen Turner](https://gist.github.com/stephenturner/3492773): **cor.prob** and **flattenSquareMatrix**. **cor.prob** will create a correlation matrix along with <i>p</i>-values and **flattenSquareMatrix** will flatten all the combinations from the square matrix into a data frame of 4 columns made up of row names, column names, the correlation value and the <i>p</i>-value:
+We borrow two very useful functions from [Stephen Turner](https://gist.github.com/stephenturner/3492773): ``cor.prob`` and ``flattenSquareMatrix``. ``cor.prob`` will create a correlation matrix along with <i>p</i>-values and ``flattenSquareMatrix`` will flatten all the combinations from the square matrix into a data frame of 4 columns made up of row names, column names, the correlation value and the <i>p</i>-value:
 
 ```r
 corMasterList <- flattenSquareMatrix (cor.prob(adultsTrsf))
