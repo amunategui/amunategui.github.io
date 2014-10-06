@@ -28,7 +28,7 @@ These are pre-configured images that will install RStudio and common R packages 
 Louis also has a video, albeit short, on how to setup RStudio and lots of resources. So explore them if you have additional questions. 
 We're interested in the upper, right-hand box where you need to select the AMI for your location and click on it. This will take you to the Amazon Web Services page. If you do not have an AWS account, it will prompt you to set one up:
 
-<p align="center"><img src='../img/po![plot of chunk unnamed-chunk-10](sts/rstudioserver/amzlogin.png'/></p> 
+<p align="center"><img src='../img/posts/rstudioserver/amzlogin.png'/></p> 
 
 Otherwise it will take you to  Step 2. This is the fun part, its like going to the store and picking up a brand new computer. Here you get to choose how much computing muscle you want. The AMI image you selected earlier will get applied to whatever setup you choose. You can go for more GPU, memory, storage, etc. Throwing more memory at a problem is unfortunately not a guarantee to make it go away - and I'm talking from personal experience here.
 
