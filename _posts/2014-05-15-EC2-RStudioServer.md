@@ -20,7 +20,7 @@ There are a lot of great resources on the web, but I didn't find one that covere
 If you like Kaggle competitions, like I do, this is a great way to quickly add all sorts of computing configurations at your disposal
 Our first stop will be at <a href="http://www.louisaslett.com/RStudio_AMI/" target="_blank">Louis Aslet's web page</a>. Louis curates a series of Amazon Machine Images (referred as AMIs):
 
-<p align="center"><img border="2" src='../img/posts/rstudioserver/amilist.png'></p>
+<p align="center"><img src='../img/posts/rstudioserver/amilist.png' border='2' ></p>
 <BR><BR>
 These are pre-configured images that will install RStudio and common R packages onto a computing instance. This is a huge time and money saver as it automatically installs a whole slew of software under two minutes - and when you're charged by the minute, it all counts big time.    
 
