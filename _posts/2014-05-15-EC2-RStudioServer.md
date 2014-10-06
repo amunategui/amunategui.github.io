@@ -100,10 +100,9 @@ This is my first YouTube video so please leave me feedback if you find anything 
 
 **Additional Resources (PDFs)**
 
-[RStudio Server Administrator's Guide](
-https://s3.amazonaws.com/rstudio-server/rstudio-server-pro-0.98.501-admin-guide.pdf)
+<a href="https://s3.amazonaws.com/rstudio-server/rstudio-server-pro-0.98.501-admin-guide.pdf" target="_blank">RStudio Server Administrator's Guide</a>
 
-[Using RStudio on Amazon EC2 under the Free Usage Tier](http://www-personal.umich.edu/~agong/docs/Using%20RStudio%20on%20Amazon%20EC2%20under%20the%20Free%20Usage%20Tier.pdf)
+<a href="http://www-personal.umich.edu/~agong/docs/Using%20RStudio%20on%20Amazon%20EC2%20under%20the%20Free%20Usage%20Tier.pdf" target="_blank">Using RStudio on Amazon EC2 under the Free Usage Tier</a>
 
 
 <div class="row">   
