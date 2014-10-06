@@ -28,11 +28,11 @@ Louis also has a video, albeit short, on how to setup RStudio and lots of resour
 We're interested in the upper, right-hand box where you need to select the AMI for your location and click on it. This will take you to the Amazon Web Services page. If you do not have an AWS account, it will prompt you to set one up:
 
 <p align="center"><img src='../img/posts/rstudioserver/amzlogin.png' border='2'></p> 
-
+<BR><BR>
 Otherwise it will take you to  Step 2. This is the fun part, its like going to the store and picking up a brand new computer. Here you get to choose how much computing muscle you want. The AMI image you selected earlier will get applied to whatever setup you choose. You can go for more GPU, memory, storage, etc. Throwing more memory at a problem is unfortunately not a guarantee to make it go away - and I'm talking from personal experience here.
 
 <p align="center"><img src='../img/posts/rstudioserver/instance.png' border='5'></p> 
-
+<BR><BR>
 I recommend starting small as it is easy to upgrade an existing instance to something bigger.
 
 **Security**
@@ -43,11 +43,11 @@ Port 22 should be opened by default and we need to add port 80.
 `Port 22 is used to connect a command line terminal tool using SSH. I will not be showing that today. Instead, we'll be using port 80 which gives us access to the web interface of RStudio. So add another rule, sleet HTTP and enter 80, leave the rest as it is:
 
 <p align="center"><img src='../img/posts/rstudioserver/security.png'/></p> 
-
+<BR><BR>
 After you it 'Launch', the key-pair authenticates client computer's identity to allow it to communicate securely to the AWS instance. If this is your first time using EC2 you'll want to create and download a new key pair:
 
 <p align="center"><img src='../img/posts/rstudioserver/key.png'/></p> 
-
+<BR><BR>
 **View Instance**
 
 After launching your instance, once the 'instance state' goes from 'initializing' to 'running', you can copy the public DNS string and paste it in your browser. This is now the official link to your web interface for your instance. While waiting (hit refresh a few times):
@@ -60,17 +60,17 @@ After launching your instance, once the 'instance state' goes from 'initializing
 Once your instance is running, click on it, copy the Public DNS URL and paste it in your browser:
 
 <p align="center"><img src='../img/posts/rstudioserver/url.png'/></p>
-
+<BR><BR>
 **Using RStudio Server**
 
 You will be prompted for your credentials. By default, the initial account and password for these AMIs is rstudio, rstudio, all lower case:
 
 <p align="center"><img src='../img/posts/rstudioserver/rstudiologin.png'/></p>
-
+<BR><BR>
 First thing you should do is run the default script to change the password (minimum length required is 8 characters).  Replace the "mypassword" with your new password and hit the run script button. Then log out and back in with the new password:
 
 <p align="center"><img src='../img/posts/rstudioserver/changepassword.png'/></p>
-
+<BR><BR>
 **Uploading and Downloading Files**
 
 Now this is the last part I want to cover and is how to upload and download files to your server instance.
@@ -84,7 +84,7 @@ Choose the file you wish to upload and press OK
 Note that if you wish to upload several files or even an entire folder, you should first compress your files or folder into a zip file and then upload the zip file (when RStudio receives an uploaded zip file it automatically uncompresses it).
 
 <p align="center"><img src='../img/posts/rstudioserver/upload.png'/></p>
-
+<BR><BR>
 Downloading Files (i.e. exporting files from EC2 to your local server):
 
 Switch to directory you want to download files from within the Files pane
@@ -93,7 +93,7 @@ Click More -> Export on the toolbar
 You'll then be prompted with a default file name for the download. Either accept the default or specify a custom name then press OK:
 
 <p align="center"><img src='../img/posts/rstudioserver/download.png'/></p>
-
+<BR><BR>
 **Important**
 Don't forget to shut down the server or terminate it to remove it completely - otherwise the meter will keep running and you will keep being charged!
 This is my first YouTube video so please leave me feedback if you find anything wrong, annoying, or have tips to improve things. I plan on doing a few more videos on similar advanced advance subjects in the near future.
