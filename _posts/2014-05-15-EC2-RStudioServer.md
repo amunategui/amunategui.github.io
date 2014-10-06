@@ -31,7 +31,7 @@ We're interested in the upper, right-hand box where you need to select the AMI f
 
 Otherwise it will take you to  Step 2. This is the fun part, its like going to the store and picking up a brand new computer. Here you get to choose how much computing muscle you want. The AMI image you selected earlier will get applied to whatever setup you choose. You can go for more GPU, memory, storage, etc. Throwing more memory at a problem is unfortunately not a guarantee to make it go away - and I'm talking from personal experience here.
 
-<p align="center"><img src='../img/posts/rstudioserver/instance.png'/></p> 
+<p align="center"><img src='../img/posts/rstudioserver/instance.png' border='5'></p> 
 
 I recommend starting small as it is easy to upgrade an existing instance to something bigger.
 
