@@ -22,7 +22,7 @@ Our first stop will be at [Louis Aslet's web page]( http://www.louisaslett.com/R
 ). Louis curates a series of Amazon Machine Images (referred as AMIs):
 
 <p align="center">
-![plot of chunk unnamed-chunk-10](../img/posts/rstudioserver/amilist.png) 
+<img src='../img/posts/rstudioserver/amilist.png'/>
 </p>
 
 These are pre-configured images that will install RStudio and common R packages onto a computing instance. This is a huge time and money saver as it automatically installs a whole slew of software under two minutes - and when you're charged by the minute, it all counts big time.    
