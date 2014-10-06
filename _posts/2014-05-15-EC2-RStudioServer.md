@@ -13,13 +13,12 @@ image: rstudioserver/runninginstance.png
 
 **Getting There**
 
-[Transcription of YouTube walkthrough: 'Brief guide on running RStudio Server's web interface on Amazon Web Services'](https://www.youtube.com/watch?v=NQu3ugUkYTk&list=UUq4pm1i_VZqxKVVOz5qRBIA){:target="_blank"}
+<a href="https://www.youtube.com/watch?v=NQu3ugUkYTk&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Transcription of YouTube walkthrough: 'Brief guide on running RStudio Server's web interface on Amazon Web Services'</a>
 
 There are a lot of great resources on the web, but I didn't find one that covered my needs from end to end, and figured others could benefit from a walk-through.  Here, I'll show how to select, install and run RStudio Server, customize security settings to use the RStudio's web interface, and upload and download data between your local machine and the server.
 
 If you like Kaggle competitions, like I do, this is a great way to quickly add all sorts of computing configurations at your disposal
-Our first stop will be at [Louis Aslet's web page]( http://www.louisaslett.com/RStudio_AMI/
-){:target="_blank"}. Louis curates a series of Amazon Machine Images (referred as AMIs):
+Our first stop will be at <a href="http://www.louisaslett.com/RStudio_AMI/" target="_blank">Louis Aslet's web page</a>. Louis curates a series of Amazon Machine Images (referred as AMIs):
 
 <p align="center"><img src='../img/posts/rstudioserver/amilist.png'/></p>
 
