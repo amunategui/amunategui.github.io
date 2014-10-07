@@ -8,10 +8,10 @@ month: 10
 day: 2
 published: true
 summary: The <B>dummyVars</B> function streamlines the creation of dummy variables by quickly hunting down character and factor variables and transforming them into binaries, with or without full rank.
-
 image: dummyVarWalkthrough/factor4.png
 ---
-
+<i><B>Companion YouTube Walkthrough:</B> <a href="https://www.youtube.com/watch?v=7rgzCjrIA-o&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Walkthrough of the dummyVars function from the {caret} package: Machine Learning with R</a></i>
+<BR><BR>
 As the name implies, the ``dummyVars`` function allows you to create dummy variables - in other words it translates text data into numerical data for modeling purposes.
 
 If you are planning on doing predictive analytics or machine learning and want to use regression or any other modeling technique that requires numerical data, you will need to transform your text data into numbers otherwise you run the risk of leaving a lot of information on the table...
