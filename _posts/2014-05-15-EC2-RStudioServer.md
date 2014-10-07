@@ -12,7 +12,7 @@ image: rstudioserver/runninginstance.png
 ---
 
 <i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=NQu3ugUkYTk&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Brief guide on running RStudio Server's web interface on Amazon Web Services</a></i>
-<BR><BR>
+<BR><BR><BR>
 **Getting There**
 
 There are a lot of great resources on the web, but I didn't find one that covered my needs from end to end, and figured others could benefit from a walk-through.  Here, I'll show how to select, install and run RStudio Server, customize security settings to use the RStudio's web interface, and upload and download data between your local machine and the server.

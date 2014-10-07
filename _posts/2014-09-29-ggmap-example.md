@@ -11,7 +11,7 @@ summary: <B>ggmap</B> enables you to easily map data anywhere around the world a
 image: MappingTheUSWithGGMAP/unnamed-chunk-10.png
 ---
 <i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=EtJ-iTZeqTg&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Mapping The United States Census With { ggmap }: Machine Learning with R</a></i>
-<BR><BR>
+<BR><BR><BR>
 
 If you haven't played with the [ggmap](http://cran.r-project.org/web/packages/ggmap/index.html) package then you're in for a treat! It will map your data on any location around the world as long as you give it proper geographical coordinates.
 

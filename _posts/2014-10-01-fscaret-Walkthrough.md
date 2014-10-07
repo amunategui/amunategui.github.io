@@ -11,7 +11,7 @@ summary: Give <B>fscaret</B> an ensemble of models and some data, and it will ha
 image: FSCARET_Walkthrough/titanic.png
 ---
 <i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=dTRDZBltCTg&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">FSCARET - Ensemble Feature Selection on Steroids: Machine Learning with R</a></i>
-<BR><BR>
+<BR><BR><BR>
 
 The [fscaret](http://cran.r-project.org/web/packages/fscaret/index.html) package, as its name implies, is closely related to the [caret](http://cran.r-project.org/web/packages/caret/index.html) package. It relies on **caret**, and its numerous functions, to get its job done.
 <BR><BR>
