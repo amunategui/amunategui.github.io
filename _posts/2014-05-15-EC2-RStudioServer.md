@@ -77,10 +77,10 @@ The last part I want to cover is how to upload and download files to your server
 
 Uploading Files (i.e. bringing file from your local machine to EC2 Instance):
 
-<ul>Switch to the Files pane</ul>
-Navigate to the directory you wish to upload files into
-Click the Upload toolbar button. A menu box will open and select the file you want to upload.
-Choose the file you wish to upload and press ``OK``
+<ul><li>Switch to the Files pane</li>
+<li>Navigate to the directory you wish to upload files into</li>
+<li>Click the Upload toolbar button. A menu box will open and select the file you want to upload</li>
+<li>Choose the file you wish to upload and press ``OK``</li></ul>
 <B>Note:</B> that if you wish to upload several files or even an entire folder, you should first compress your files or folder into a zip file and then upload the zip file (when RStudio receives an uploaded zip file it automatically uncompresses it).
 
 <p align="center"><img src='../img/posts/rstudioserver/upload.png'/></p>
