@@ -72,7 +72,7 @@ customers <- data.frame(
                 outcome=c(1,1,0,0,0))
 ```
 <BR>
-And ask the ``dummyVars`` function to dummify it. The function takes a standard R formula: **something ~ (broken down) by something else or groups of other things**. So we simply use **~ .** and the ``dummyVars`` will transform all characters and factors columns (the function never transforms numeric columns) and return the entire data set:
+And ask the ``dummyVars`` function to dummify it. The function takes a standard R formula: **something ~ (broken down) by something else or groups of other things**. So we simply use <BR><BR>**~ .**<BR><BR> and the ``dummyVars`` will transform all characters and factors columns (the function never transforms numeric columns) and return the entire data set:
 
 ```r
 # dummify the data
