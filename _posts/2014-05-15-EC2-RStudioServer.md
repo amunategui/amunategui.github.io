@@ -7,7 +7,7 @@ year: 2014
 month: 5
 day: 15
 published: true
-summary: Steps you through installing pre-configured AMI's with RStudio Server on AWS EC2, interacting with the web interface, and uploading and downloading files to/from the instance.
+summary: Steps you through installing pre-configured AMIs with RStudio Server on AWS EC2, interacting with the web interface, and uploading and downloading files to/from the instance.
 image: rstudioserver/runninginstance.png
 ---
 
