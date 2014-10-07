@@ -67,7 +67,7 @@ You will be prompted for your credentials. By default, the initial account and p
 
 <p align="center"><img src='../img/posts/rstudioserver/rstudiologin.png'/></p>
 <BR><BR>
-First thing you should do is run the default script to change the password (minimum length required is 8 characters).  Replace the "mypassword" with your new password and hit the run script button. Then log out and back in with the new password:
+First thing you should do is run the default script to change the password (minimum length required is 8 characters).  Replace the "mypassword" with your new password and hit the ``run`` script button. Then log out and back in with the new password:
 
 <p align="center"><img src='../img/posts/rstudioserver/changepassword.png'/></p>
 <BR><BR>
