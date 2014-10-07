@@ -77,10 +77,10 @@ The last part I want to cover is how to upload and download files to your server
 
 **Uploading Files (i.e. bringing file from your local machine to EC2 Instance):**
 
-<ul><li>Switch to the **Files** pane</li>
+<ul><li>Switch to the <B>Files</B> pane</li>
 <li>Navigate to the directory you wish to upload files into</li>
-<li>Click the **Upload** toolbar button. A menu box will open and select the file you want to upload</li>
-<li>Choose the file you wish to upload and press ``OK``</li></ul>
+<li>Click the <B>Upload</B> toolbar button. A menu box will open and select the file you want to upload</li>
+<li>Choose the file you wish to upload and press <B>OK</B></li></ul>
 <B>Note:</B> that if you wish to upload several files or even an entire folder, you should first compress your files or folder into a zip file and then upload the zip file (when RStudio receives an uploaded zip file it automatically uncompresses it).
 
 <p align="center"><img src='../img/posts/rstudioserver/upload.png'/></p>
@@ -89,8 +89,8 @@ The last part I want to cover is how to upload and download files to your server
 
 <ul><li>Switch to directory you want to download files from within the **Files** pane</li>
 <li>Select the file(s) and/or folder(s) you want to download</li>
-<li>Click **More** and **Export** on the toolbar</li>
-<li>You'll then be prompted with a default file name for the download. Either accept the default or specify a custom name then press ``OK``</li></ul>
+<li>Click <B>More</B> and <B>Export</B> on the toolbar</li>
+<li>You'll then be prompted with a default file name for the download. Either accept the default or specify a custom name then press <B>OK</B></li></ul>
 
 <p align="center"><img src='../img/posts/rstudioserver/download.png'/></p>
 <BR><BR>
