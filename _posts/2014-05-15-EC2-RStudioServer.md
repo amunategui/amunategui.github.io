@@ -75,7 +75,7 @@ First thing you should do is run the default script to change the password (mini
 
 The last part I want to cover is how to upload and download files to your server instance.
 
-Uploading Files (i.e. bringing file from your local machine to EC2 Instance):
+**Uploading Files (i.e. bringing file from your local machine to EC2 Instance):**
 
 <ul><li>Switch to the Files pane</li>
 <li>Navigate to the directory you wish to upload files into</li>
@@ -85,18 +85,17 @@ Uploading Files (i.e. bringing file from your local machine to EC2 Instance):
 
 <p align="center"><img src='../img/posts/rstudioserver/upload.png'/></p>
 <BR><BR>
-Downloading Files (i.e. exporting files from EC2 to your local server):
+**Downloading Files (i.e. exporting files from EC2 to your local server):**
 
-Switch to directory you want to download files from within the Files pane
-Select the file(s) and/or folder(s) you want to download
-Click More -> Export on the toolbar
-You'll then be prompted with a default file name for the download. Either accept the default or specify a custom name then press OK:
+<ul><li>Switch to directory you want to download files from within the Files pane</li>
+<li>Select the file(s) and/or folder(s) you want to download</li>
+<li>Click More -> Export on the toolbar</li>
+<li>You'll then be prompted with a default file name for the download. Either accept the default or specify a custom name then press ``OK``</li></ul>
 
 <p align="center"><img src='../img/posts/rstudioserver/download.png'/></p>
 <BR><BR>
 **Important**
 Don't forget to shut down the server or terminate it to remove it completely - otherwise the meter will keep running and you will keep being charged!
-This is my first YouTube video so please leave me feedback if you find anything wrong, annoying, or have tips to improve things. I plan on doing a few more videos on similar advanced advance subjects in the near future.
 
 **Additional Resources (PDFs)**
 
