@@ -44,13 +44,13 @@ You need to have two open ports and a key-pair to communicate with your instance
 
 <p align="center"><img src='../img/posts/rstudioserver/security.png'/></p> 
 <BR><BR>
-After you it 'Launch', the key-pair authenticates client computer's identity to allow it to communicate securely to the AWS instance. If this is your first time using EC2 you'll want to create and download a new key pair:
+After you hit <B>Launch</B>, the key-pair authenticates client computer's identity to allow it to communicate securely to the AWS instance. If this is your first time using EC2 you'll want to create and download a new key pair:
 
 <p align="center"><img src='../img/posts/rstudioserver/key.png'/></p> 
 <BR><BR>
 **View Instance**
 
-After launching your instance, once the 'instance state' goes from 'initializing' to 'running', you can copy the public DNS string and paste it in your browser. This is now the official link to your web interface for your instance. While waiting (hit refresh a few times):
+After launching your instance, once the <B>instance state</B> goes from ``initializing`` to ``running``, you can copy the public DNS string and paste it in your browser. This is now the official link to your web interface for your instance. While waiting (hit refresh a few times):
 
 <p align="center"><img src='../img/posts/rstudioserver/runninginstance.png'/></p>
 
@@ -73,15 +73,15 @@ First thing you should do is run the default script to change the password (mini
 <BR><BR>
 **Uploading and Downloading Files**
 
-Now this is the last part I want to cover and is how to upload and download files to your server instance.
+The last part I want to cover is how to upload and download files to your server instance.
 
 Uploading Files (i.e. bringing file from your local machine to EC2 Instance):
 
-Switch to the Files pane
+<ul>Switch to the Files pane</ul>
 Navigate to the directory you wish to upload files into
 Click the Upload toolbar button. A menu box will open and select the file you want to upload.
-Choose the file you wish to upload and press OK
-Note that if you wish to upload several files or even an entire folder, you should first compress your files or folder into a zip file and then upload the zip file (when RStudio receives an uploaded zip file it automatically uncompresses it).
+Choose the file you wish to upload and press ``OK``
+<B>Note:</B> that if you wish to upload several files or even an entire folder, you should first compress your files or folder into a zip file and then upload the zip file (when RStudio receives an uploaded zip file it automatically uncompresses it).
 
 <p align="center"><img src='../img/posts/rstudioserver/upload.png'/></p>
 <BR><BR>
