@@ -11,7 +11,7 @@ summary: Steps you through installing pre-configured AMIs with RStudio Server on
 image: rstudioserver/runninginstance.png
 ---
 
-<a href="https://www.youtube.com/watch?v=NQu3ugUkYTk&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Transcription of YouTube walkthrough: 'Brief guide on running RStudio Server's web interface on Amazon Web Services'</a>
+<B>Companion YouTube Walkthrough:</B> <a href="https://www.youtube.com/watch?v=NQu3ugUkYTk&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Brief guide on running RStudio Server's web interface on Amazon Web Services</a>
 <BR><BR>
 **Getting There**
 
