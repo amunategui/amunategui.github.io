@@ -38,6 +38,9 @@
 	</div>
   </div>
 </div>
- <BR><BR>
+{% if page.path contains '_posts' %}
 <BR>
+{% else %}
+ <BR><BR><BR>
+{% endif %} 	
 <p align="center"><a href="/tags/exploring" rel="tooltip" title="View posts tagged with &quot;exploring&quot;"><span class="label label-info">exploring</span></a> <a href="/tags/modeling" rel="tooltip" title="View posts tagged with &quot;modeling&quot;"><span class="label label-info">modeling</span></a> <a href="/tags/visualizing" rel="tooltip" title="View posts tagged with &quot;visualizing&quot;"><span class="label label-info">visualizing</span></a> <a href="/tags/rstudioserver" rel="tooltip" title="View posts tagged with &quot;rstudioserver&quot;"><span class="label label-info">rstudioserver</span></a></p>
