@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Brief guide on running RStudio Server on Amazon Web Services
+title: Brief Guide On Running RStudio Server On Amazon Web Services
 category: Machine Learning
 tags: rstudioserver
 year: 2014
