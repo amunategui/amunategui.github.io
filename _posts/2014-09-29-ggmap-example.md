@@ -20,12 +20,13 @@ Even though **ggmap** supports different map providers, I have only used it with
 We're going to load two packages in order to download the data: [RCurl](http://cran.r-project.org/web/packages/RCurl/index.html) to handle HTTP protocols to download the file directly from the Internet and [xlsx](http://cran.r-project.org/web/packages/xlsx/index.html) to read the Excel file and load the sheet named 'Median' into our data.frame:
 
 ```r
-# NOTE: if you can't download the file automatically, download it manually at:
-# 'http://www.psc.isr.umich.edu/dis/census/Features/tract2zip/'
 urlfile <-'http://www.psc.isr.umich.edu/dis/census/Features/tract2zip/MedianZIP-3.xlsx'
 destfile <- "census20062010.xlsx"
 download.file(urlfile, destfile, mode="wb")
 census <- read.xlsx2(destfile, sheetName = "Median")
+
+# NOTE: if you can't download the file automatically, download it manually at:
+# 'http://www.psc.isr.umich.edu/dis/census/Features/tract2zip/'
 ```
 <BR>
 We clean the file by keeping only the zip code and median household income variables and casting the median figures from factor to numbers:
