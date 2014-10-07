@@ -38,9 +38,9 @@ I recommend starting small as it is easy to upgrade an existing instance to some
 **Security**
 
 You need to have two open ports and a key-pair to communicate with your instance. 
-Port 22 should be opened by default and we need to add port 80.
+``Port 22`` should be opened by default and we need to add ``port 80``.
 
-`Port 22 is used to connect a command line terminal tool using SSH. I will not be showing that today. Instead, we'll be using port 80 which gives us access to the web interface of RStudio. So add another rule, sleet HTTP and enter 80, leave the rest as it is:
+``Port 22`` is used to connect a command line terminal tool using SSH. I will not be showing that today. Instead, we'll be using ``port 80`` which gives us access to the web interface of RStudio. So add another rule, sleet HTTP and enter 80, leave the rest as it is:
 
 <p align="center"><img src='../img/posts/rstudioserver/security.png'/></p> 
 <BR><BR>
