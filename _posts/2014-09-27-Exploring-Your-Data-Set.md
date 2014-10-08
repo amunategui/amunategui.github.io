@@ -38,7 +38,7 @@ names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
 adults$income <- ifelse(adults$income==' <=50K',0,1)
 ```
 <BR>
-We load the **caret** package to <a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">dummify</a? (binarize) all factor variables as the correlation function only accepts numerical values:
+We load the **caret** package to <a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">dummify (see my other walkthrough)</a> all factor variables as the correlation function only accepts numerical values:
 
 ```r
 dmy <- dummyVars(" ~ .", data = adults)
