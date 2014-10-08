@@ -36,7 +36,7 @@ adults <- read.csv(textConnection(x), header=F)
 # adults <-read.csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data', header=F)
 ```
 <BR>
-We fill in the missing headers for the UCI set and cast the outcome variable ``Income`` to a binary format of **1** and **0**. I am also changing the direction of the prediction, if it is under $50k, I assign it a 0, and above, I assign it a 1 - this will make the final correlation-matrix plot easier to understand:
+We fill in the missing headers for the UCI set and cast the outcome variable ``Income`` to a binary format of **1** and **0** (here I am reversing the orginal order, if it is under $50k, it is **0**, and above, **1** - this will make the final correlation-matrix plot easier to understand):
 
 ```r
 names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
@@ -100,17 +100,19 @@ The top correlated pairs, as seen above, won't be of much use when they're from 
 
 ```r
 selectedSub <- subset(corList, (abs(cor) > 0.2 & j == 'Income'))
-bestSub <-  sapply(strsplit(as.character(selectedSub$i),'[.]'), "[", 1)
-bestSub <- unique(bestSub)
+bestSub <- c('MaritalStatus..Never.married','Relationship..Own.child',
+  'Sex..Female','Occupation..Exec.managerial','CapitalGain','HoursWeek','Age')
 ```
 <BR>
 Finally we plot the highly correlated pairs using the **{psych}** package's ``pair.panels`` plot (this can be done on the original data as ``pair.panels`` can handle factor and character variables):<BR>
-```{r}
-pairs.panels(adults[c(bestSub, 'Income')])
+```r
+library(psych)
+pairs.panels(adultsTrsf[c(bestSub, 'Income')])
 ```
 <BR>
 ![plot of chunk unnamed-chunk-9](../img/posts/correlations/unnamed-chunk-9.png) 
 <BR><BR>
+The pairs plot, and in particular the last ``income`` column, tell us a lot about our data set. Being never married is the most negatively correlated with income over $50,000/year and hours worked and age are the most postively correlated.<BR>  
 **Things to keep in mind**<BR>
 <li>If you have a huge number of features in your data set, then be ready for extra computing time,</li>
 <li>and don't bother plotting it via ``pair.panels``, it will end up hanging R.</li>
@@ -147,7 +149,7 @@ cor.prob <- function (X, dfr = nrow(X) - 2) {
         R[row(R) == col(R)] <- NA
         R
 }
- 
+
 ## Use this to dump the cor.prob output to a 4 column matrix
 ## with row/column indices, correlation, and p-value.
 ## See StackOverflow question: http://goo.gl/fCUcQ
@@ -169,11 +171,16 @@ print(head(corList,10))
 
 corList <- corMasterList[order(corMasterList$cor),]
 selectedSub <- subset(corList, (abs(cor) > 0.2 & j == 'Income'))
+# to get the best variables from original list:
 bestSub <-  sapply(strsplit(as.character(selectedSub$i),'[.]'), "[", 1)
 bestSub <- unique(bestSub)
 
+# or use the variables from top selectedSub:
+bestSub <- c('MaritalStatus..Never.married','Relationship..Own.child',
+  'Sex..Female','Occupation..Exec.managerial','CapitalGain','HoursWeek','Age')
+
 library(psych)
-pairs.panels(adults[c(bestSub, 'Income')])
+pairs.panels(adultsTrsf[c(bestSub, 'Income')])
 ```
 
 <div class="row">   
