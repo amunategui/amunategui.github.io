@@ -36,7 +36,7 @@ adults <- read.csv(textConnection(x), header=F)
 # adults <-read.csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data', header=F)
 ```
 <BR>
-We fill in the missing headers for the UCI set and cast the outcome variable ``Income`` to a binary format of **1** and **0** (here I am reversing the orginal order, if it is under $50k, it is **0**, and above, **1** - this will make the final correlation-matrix plot easier to understand):
+We fill in the missing headers for the UCI set and cast the outcome variable ``Income`` to a binary format of **1** and **0** (here I am reversing the orginal order, if it is under $50k, it is **0**, and above, **1**; this will make the final correlation-matrix plot easier to understand):
 
 ```r
 names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
@@ -96,10 +96,27 @@ print(head(corList,10))
 ## 497                                age maritalStatus..Never.married -0.5343590 0
 ```
 <BR>
-The top correlated pairs, as seen above, won't be of much use when they're from the same factor. We need to process this a little further to be of practical use. We create a single vector of variable names (using the original names, not the dummified ones) by filtering those with an absolute correlation of 0.2 against or higher against our outcome variable of ``Income``:
+The top correlated pair (sex..Female and sex.Male), as seen above, won't be of much use to us as they are the only two levels of the same factor. We need to process this a little further to be of practical use. We create a single vector of variable names by filtering those with an absolute correlation of 0.2 or higher against the outcome variable of ``Income``:
 
 ```r
 selectedSub <- subset(corList, (abs(cor) > 0.2 & j == 'Income'))
+print(selectedSub)
+                                     i      j        cor p
+## 5811      MaritalStatus..Never.married Income -0.3184403 0
+## 5832           Relationship..Own.child Income -0.2285320 0
+## 5840                       Sex..Female Income -0.2159802 0
+## 5818       Occupation..Exec.managerial Income  0.2148613 0
+## 5841                         Sex..Male Income  0.2159802 0
+## 5842                       CapitalGain Income  0.2233288 0
+## 5844                         HoursWeek Income  0.2296891 0
+## 5779                               Age Income  0.2340371 0
+## 5806                  Education.Number Income  0.3351540 0
+## 5829             Relationship..Husband Income  0.4010353 0
+## 5809 MaritalStatus..Married.civ.spouse Income  0.4446962 0
+```
+<BR><BR>
+We save the most correlated features to the ``bestSub`` variable:
+```r
 bestSub <- c('MaritalStatus..Never.married','Relationship..Own.child',
   'Sex..Female','Occupation..Exec.managerial','CapitalGain','HoursWeek','Age')
 ```
