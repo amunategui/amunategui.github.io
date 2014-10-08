@@ -117,10 +117,10 @@ adults <- read.csv(textConnection(x), header=F)
 # if the above getURL command fails, try this:
 # adults <-read.csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data', header=F)
 
-names(adults)=c('age','workclass','fnlwgt','education','educationNum',
-                'maritalStatus','occupation','relationship','race',
-                'sex','capitalGain','capitalLoss','hoursWeek',
-                'nativeCountry','income')
+names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
+                'MaritalStatus','Occupation','Relationship','Race',
+                'Sex','CapitalGain','CapitalLoss','HoursWeek',
+                'NativeCountry','Income')
 
 adults$income <- ifelse(adults$income==' <=50K',0,1)
 
