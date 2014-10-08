@@ -96,7 +96,7 @@ print(head(corList,10))
 ## 497                                age maritalStatus..Never.married -0.5343590 0
 ```
 <BR>
-The top correlated pair (sex..Female and sex.Male), as seen above, won't be of much use to us as they are the only two levels of the same factor. We need to process this a little further to be of practical use. We create a single vector of variable names by filtering those with an absolute correlation of 0.2 or higher against the outcome variable of ``Income``:
+The top correlated pair (sex..Female and sex.Male), as seen above, won't be of much use as they are the only two levels of the same factor. We need to process this a little further to be of practical use. We create a single vector of variable names by filtering those with an absolute correlation of 0.2 or higher against the outcome variable of ``Income``:
 
 ```r
 selectedSub <- subset(corList, (abs(cor) > 0.2 & j == 'Income'))
@@ -115,13 +115,15 @@ print(selectedSub)
 ## 5809 MaritalStatus..Married.civ.spouse Income  0.4446962 0
 ```
 <BR><BR>
-We save the most correlated features to the ``bestSub`` variable:
+We save the most correlated features to the ``bestSub`` variable:<BR>
+
 ```r
 bestSub <- c('MaritalStatus..Never.married','Relationship..Own.child',
   'Sex..Female','Occupation..Exec.managerial','CapitalGain','HoursWeek','Age')
 ```
 <BR>
 Finally we plot the highly correlated pairs using the **{psych}** package's ``pair.panels`` plot (this can be done on the original data as ``pair.panels`` can handle factor and character variables):<BR>
+
 ```r
 library(psych)
 pairs.panels(adultsTrsf[c(bestSub, 'Income')])
