@@ -17,8 +17,7 @@ image: rstudioserver/runninginstance.png
 
 There are a lot of great resources on the web, but I didn't find one that covered my needs from end to end, and figured others could benefit from a walkthrough.  Here, I'll show how to select, install and run RStudio Server, customize security settings to use the RStudio's web interface, and upload and download data between your local machine and the server.
 
-If you like Kaggle competitions, like I do, this is a great way to quickly add all sorts of computing configurations at your disposal
-Our first stop will be at <a href="http://www.louisaslett.com/RStudio_AMI/" target="_blank">Louis Aslet's web page</a>. Louis curates a series of Amazon Machine Images (referred as AMIs):
+If you like Kaggle competitions, like I do, then this is a great way of quickly adding all sorts of computing configuration for any of your needs. Our first stop will be at <a href="http://www.louisaslett.com/RStudio_AMI/" target="_blank">Louis Aslet's web page</a>. Louis curates a series of Amazon Machine Images (referred as AMIs):
 
 <p align="center"><img src='../img/posts/rstudioserver/amilist.png'></p>
 <BR><BR>
