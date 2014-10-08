@@ -15,7 +15,7 @@ A great way to explore new data is to use a pairwise correlation matrix. This wi
 
 For those not familiar with the correlation coefficient, it is simply a measure of similarity between two vectors of numbers. The measure value can range between **1** and **-1**, where **1** is perfectly correlated, -**1** is perfectly inversly correlated, and **0** is not correlated at all.  
 
-To help us understand this process, let's download the [adult.data set](https://archive.ics.uci.edu/ml/datasets/Adult) from the UCI Machine Learning Repository. The data is from the 1994 Census and attempts to predict those with income exceeding $50,000 a year:
+To help us understand this process, let's download the <a href="https://archive.ics.uci.edu/ml/datasets/Adult" target="_blank">adult.data set</a> from the UCI Machine Learning Repository. The data is from the 1994 Census and attempts to predict those with income exceeding $50,000 a year:
 
 ```r
 library(RCurl) # download https data
@@ -38,14 +38,14 @@ names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
 adults$income <- ifelse(adults$income==' <=50K',0,1)
 ```
 <BR>
-We load the **caret** package to dummify (binarize) all factor variables as the correlation function only accepts numerical values:
+We load the **caret** package to <a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">dummify</a? (binarize) all factor variables as the correlation function only accepts numerical values:
 
 ```r
 dmy <- dummyVars(" ~ .", data = adults)
 adultsTrsf <- data.frame(predict(dmy, newdata = adults))
 ```
 <BR>
-We borrow two very useful functions from [Stephen Turner](https://gist.github.com/stephenturner/3492773): ``cor.prob`` and ``flattenSquareMatrix``. ``cor.prob`` will create a correlation matrix along with <i>p</i>-values and ``flattenSquareMatrix`` will flatten all the combinations from the square matrix into a data frame of 4 columns made up of row names, column names, the correlation value and the <i>p</i>-value:
+We borrow two very useful functions from <a href="https://gist.github.com/stephenturner/3492773" target="_blank">Stephen Turner</a>: ``cor.prob`` and ``flattenSquareMatrix``. ``cor.prob`` will create a correlation matrix along with <i>p</i>-values and ``flattenSquareMatrix`` will flatten all the combinations from the square matrix into a data frame of 4 columns made up of row names, column names, the correlation value and the <i>p</i>-value:
 
 ```r
 corMasterList <- flattenSquareMatrix (cor.prob(adultsTrsf))
