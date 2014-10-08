@@ -15,7 +15,7 @@ A great way to explore new data is to use a pairwise correlation matrix. This wi
 
 For those not familiar with the correlation coefficient, it is simply a measure of similarity between two vectors of numbers. The measure value can range between **1** and **-1**, where **1** is perfectly correlated, -**1** is perfectly inversly correlated, and **0** is not correlated at all.  
 
-To help us understand this process, let's download the [adult.data set](https://archive.ics.uci.edu/ml/datasets/Adult) from the UCI Machine Learning Repository. The data is based on the 1994 Census and attempts to predict those with income exceeding $50,000 a year:
+To help us understand this process, let's download the [adult.data set](https://archive.ics.uci.edu/ml/datasets/Adult) from the UCI Machine Learning Repository. The data is from the 1994 Census and attempts to predict those with income exceeding $50,000 a year:
 
 ```r
 library(RCurl) # download https data
