@@ -18,10 +18,10 @@ For those not familiar with the correlation coefficient, it is simply a measure 
 ```{r}
 print(cor(1:5,1:5))
 ## 1
+print(cor(1:5,5:1))
+## -1
 print(cor(1:5,c(1,2,3,4,4)))
 ## 0.9701425
-print(cor(1:5,c(5,4,3,2,1)))
-## -1
 ```
 
 To help us understand this process, let's download the <a href="https://archive.ics.uci.edu/ml/datasets/Adult" target="_blank">adult.data set</a> from the UCI Machine Learning Repository. The data is from the 1994 Census and attempts to predict those with income under $50,000 a year:
@@ -118,7 +118,7 @@ print(selectedSub)
 We save the most correlated features to the ``bestSub`` variable:<BR>
 
 ```r
-bestSub <- as.character(selectedSub$i[c(1,4,5,6,8,9)])
+bestSub <- as.character(selectedSub$i)
 ```
 <BR>
 Finally we plot the highly correlated pairs using the **{psych}** package's ``pair.panels`` plot (this can also be done on the original data as ``pair.panels`` can handle factor and character variables):<BR>
