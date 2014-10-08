@@ -72,7 +72,7 @@ Once in RStudio, the first thing you need to do is run the loaded script and cha
 <BR><BR>
 **Uploading and Downloading Files**
 
-The last thing I want to cover is how to upload and download files to your server instance.
+The last thing I want to cover is how to upload and download files to and from your EC2 instance.
 
 **Uploading Files (i.e. copying files from your local machine to your EC2 Instance):**
 
