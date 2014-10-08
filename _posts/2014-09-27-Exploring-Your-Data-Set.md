@@ -20,7 +20,7 @@ print(cor(1:5,c(1,2,3,4,4)))
 print(cor(1:5,c(5,4,3,2,1)))
 ``` 
 
-To help us understand this process, let's download the <a href="https://archive.ics.uci.edu/ml/datasets/Adult" target="_blank">adult.data set</a> from the UCI Machine Learning Repository. The data is from the 1994 Census and attempts to predict those with income exceeding $50,000 a year:
+To help us understand this process, let's download the <a href="https://archive.ics.uci.edu/ml/datasets/Adult" target="_blank">adult.data set</a> from the UCI Machine Learning Repository. The data is from the 1994 Census and attempts to predict those with income under $50,000 a year:
 
 ```r
 library(RCurl) # download https data
@@ -32,7 +32,7 @@ adults <- read.csv(textConnection(x), header=F)
 # adults <-read.csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data', header=F)
 ```
 <BR>
-We fill in the missing headers for the UCI set and cast the outcome variable ``Income`` to a binary format of **1** and **0**:
+We fill in the missing headers for the UCI set and cast the outcome variable ``Income`` to a binary format of **1** and **0**. I am also changing the direction of the prediction, if it is under $50k, I assign it a 0, and above, I assign it a 1 - this will make the final correlation-matrix plot easier to understand:
 
 ```r
 names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
@@ -40,7 +40,7 @@ names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
                 'Sex','CapitalGain','CapitalLoss','HoursWeek',
                 'NativeCountry','Income')
 
-adults$Income <- ifelse(adults$Income==' <=50K',1,0)
+adults$Income <- ifelse(adults$Income==' <=50K',0,1)
 ```
 <BR>
 We load the **caret** package to <a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">dummify (see my other walkthrough)</a> all factor variables as the ``cor`` function only accepts numerical values:
@@ -127,7 +127,7 @@ names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
                 'Sex','CapitalGain','CapitalLoss','HoursWeek',
                 'NativeCountry','Income')
 
-adults$Income <- ifelse(adults$Income==' <=50K',1,0)
+adults$Income <- ifelse(adults$Income==' <=50K',0,1)
 
 library(caret)
 dmy <- dummyVars(" ~ .", data = adults)
