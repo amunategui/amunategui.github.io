@@ -339,7 +339,7 @@ dim(sparse.model.matrix(~.,cat_dataframe))
 ```
 ## [1] 14 15
 ```
-The sparse model broke out the 4 levels into 3 new rows. This is because is applied ``Full Rank`` to the set - you're either one of the 3 moods, if you're neither of the 3, then you're assumed to be the forth or ``angry`` (<a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">see my video on dummy variables for more information</a>):
+The sparse model broke out the 4 levels into 3 new columns. This is because it applied ``Full Rank`` to the set - you're either one of the 3 moods, if you're neither of the 3, then you're assumed to be the forth or ``angry`` in this case (<a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">see my walkthrough on dummy variables for more information</a>):
 
 ```r
 print(sparse.model.matrix(~.,cat_dataframe))
