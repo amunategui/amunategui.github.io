@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Sparse Matrix and <B>{glmnet}</B>
+title: The Sparse Matrix and <B>{glmnet}</B>
 category: Machine Learning
 tags: modeling
 year: 2014
@@ -18,9 +18,9 @@ In this walkthough, I am going to show how sparse matrices work in R and how to 
 
 For those that aren't familiar with sparse matrices, or the sparse matrix, as the name implies, it is a large but ideally hollow data set. If your data contains lots of zeros then a sparse matrix is a very memory-efficient way of holding that data. For example, if you have a lot of dummy variables, most of that data will be zeros, and a sparse matrix will only hold non-zero data and ignore the zeros, thus using a lot less memory and allowing the memorization of much larger data sets than traditional data frames.
 
-Wikipedia has great write-up on the sparse matrix and related theories if you want to dive into this in more details. http://en.wikipedia.org/wiki/Sparse_matrix
+**Wikipedia** has great write-up on the <a href='http://en.wikipedia.org/wiki/Sparse_matrix' target='-blank'>sparse matrix and related theories</a> if you want to dive into this in more details. 
 
-Unfortunately the sparse matrix in R doesn't accept NAs, NaNs and Infinites… Also, normalization functions, such as centering or scaling, could affect the zero values and render the data set into a non-sparse matrix therefore defeating the memory-efficiency aspects.
+Unfortunately the sparse matrix in R doesn't accept **NAs**, **NaNs** and **Infinites**… Also, normalization functions, such as centering or scaling, could affect the zero values and render the data set into a non-sparse matrix and defeating any memory-efficient advantages.
 
 Let's start with a simple data set called ``some_dataframe``:
 
@@ -72,7 +72,7 @@ print(some_matrix)
 ## [14,]  0  0  0  0  0  0  0  0  0  49
 ```
 
-But it isn't much different than a data frame. In order to transform it in a sparse matrix, we load the **Matrix library**, call the ``Matrix`` function with the ``sparse`` flag set to true:
+Visually, it isn't much different than the data frame (internally, a matrix is restricted to one data type only). In order to transform it into a sparse matrix, we load the **Matrix library**, call the ``Matrix`` function with the ``sparse`` flag set to true:
 
 ```r
 library(Matrix)
@@ -104,14 +104,14 @@ print(Matrix(some_matrix, sparse=TRUE))
 ## [13,] . . . . .  .  .  . 42  .
 ## [14,] . . . . .  .  .  .  . 49
 ```
-And here he finally get a sense of its efficiency, it only retains non-zero values!
+And here we finally get a sense of its efficiency, it only retains the non-zero values!
 
 **GLMNET package**<BR>
-The help files describes the ``GLMNET`` package as a package containing 'extremely efficient procedures for fitting lasso or elastic-net regularization for linear regression, logistic and multinomial regression models, poisson regression and the Cox model and more (from the help files).'  http://cran.r-project.org/web/packages/glmnet/index.html
+The help files describes the ``GLMNET`` package as a package containing 'extremely efficient procedures for fitting lasso or elastic-net regularization for linear regression, logistic and multinomial regression models, poisson regression and the Cox model and more (<a href="http://cran.r-project.org/web/packages/glmnet/index.html" target="_blank">from the help files</a>).
 
-Unfortunately in R, few models support sparse matrices besides **GLMNET** (that I know of) therefore in modeling with R, when one talks about sparse matrices it is usually followed by GLMNET. 
+Unfortunately in R, few models support sparse matrices besides **GLMNET** (that I know of) therefore in conversations about modeling with R, when the subject of sparse matrices comes up, it is usually followed by the ``glmnet`` model. 
 
-Let's start by splitting our ``some_dataframe`` in two parts: a 2/3 portion that will become our training data set and a 1/3 portion for our testing data set (always set the ``seed`` so random draws can be reproduced):
+Let's start by splitting our ``some_dataframe`` in two parts: a 2/3 portion that will become our training data set and a 1/3 portion for our testing data set (always set the ``seed`` so random draws are reproducible):
 
 ```r
 set.seed(2)
