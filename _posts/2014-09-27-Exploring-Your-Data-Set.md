@@ -40,7 +40,7 @@ names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
                 'Sex','CapitalGain','CapitalLoss','HoursWeek',
                 'NativeCountry','Income')
 
-adults$Income <- ifelse(adults$Income==' <=50K',0,1)
+adults$Income <- ifelse(adults$Income==' <=50K',1,0)
 ```
 <BR>
 We load the **caret** package to <a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">dummify (see my other walkthrough)</a> all factor variables as the ``cor`` function only accepts numerical values:
@@ -127,7 +127,7 @@ names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
                 'Sex','CapitalGain','CapitalLoss','HoursWeek',
                 'NativeCountry','Income')
 
-adults$income <- ifelse(adults$income==' <=50K',0,1)
+adults$Income <- ifelse(adults$Income==' <=50K',1,0)
 
 library(caret)
 dmy <- dummyVars(" ~ .", data = adults)
@@ -164,12 +164,12 @@ corList <- corMasterList[order(-abs(corMasterList$cor)),]
 print(head(corList,10))
 
 corList <- corMasterList[order(corMasterList$cor),]
-selectedSub <- subset(corList, (abs(cor) > 0.2 & j == 'income'))
+selectedSub <- subset(corList, (abs(cor) > 0.2 & j == 'Income'))
 bestSub <-  sapply(strsplit(as.character(selectedSub$i),'[.]'), "[", 1)
 bestSub <- unique(bestSub)
 
 library(psych)
-pairs.panels(adults[c(bestSub, 'income')])
+pairs.panels(adults[c(bestSub, 'Income')])
 ```
 
 <div class="row">   
