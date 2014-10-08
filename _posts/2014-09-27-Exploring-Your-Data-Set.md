@@ -13,7 +13,12 @@ image: correlations/unnamed-chunk-9.png
 
 A great way to explore new data is to use a pairwise correlation matrix. This will measure the correlation between every combination of your variables. It doesn't really matter if you have an outcome (or response) variable at this point, it will compare everything against everything else.
 
-For those not familiar with the correlation coefficient, it is simply a measure of similarity between two vectors of numbers. The measure value can range between **1** and **-1**, where **1** is perfectly correlated, -**1** is perfectly inversly correlated, and **0** is not correlated at all.  
+For those not familiar with the correlation coefficient, it is simply a measure of similarity between two vectors of numbers. The measure value can range between **1** and **-1**, where **1** is perfectly correlated, -**1** is perfectly inversly correlated, and **0** is not correlated at all: 
+```{r}
+print(cor(1:5,1:5))
+print(cor(1:5,c(1,2,3,4,4)))
+print(cor(1:5,c(5,4,3,2,1)))
+``` 
 
 To help us understand this process, let's download the <a href="https://archive.ics.uci.edu/ml/datasets/Adult" target="_blank">adult.data set</a> from the UCI Machine Learning Repository. The data is from the 1994 Census and attempts to predict those with income exceeding $50,000 a year:
 
@@ -27,7 +32,7 @@ adults <- read.csv(textConnection(x), header=F)
 # adults <-read.csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data', header=F)
 ```
 <BR>
-We fill in the missing headers for the UCI set and cast the outcome variable ``income`` to a binary format of **1** and **0**:
+We fill in the missing headers for the UCI set and cast the outcome variable ``Income`` to a binary format of **1** and **0**:
 
 ```r
 names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
@@ -35,7 +40,7 @@ names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
                 'Sex','CapitalGain','CapitalLoss','HoursWeek',
                 'NativeCountry','Income')
 
-adults$income <- ifelse(adults$income==' <=50K',0,1)
+adults$Income <- ifelse(adults$Income==' <=50K',0,1)
 ```
 <BR>
 We load the **caret** package to <a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">dummify (see my other walkthrough)</a> all factor variables as the ``cor`` function only accepts numerical values:
@@ -87,17 +92,17 @@ print(head(corList,10))
 ## 497                                age maritalStatus..Never.married -0.5343590 0
 ```
 <BR>
-The top correlated pairs, as seen above, won't be of much use when they're from the same factor. We need to process this a little further to be of practical use. We create a single vector of variable names (using the original names, not the dummified ones) by filtering those with an absolute correlation of 0.2 against or higher against our outcome variable of 'income':
+The top correlated pairs, as seen above, won't be of much use when they're from the same factor. We need to process this a little further to be of practical use. We create a single vector of variable names (using the original names, not the dummified ones) by filtering those with an absolute correlation of 0.2 against or higher against our outcome variable of ``Income``:
 
 ```r
-selectedSub <- subset(corList, (abs(cor) > 0.2 & j == 'income'))
+selectedSub <- subset(corList, (abs(cor) > 0.2 & j == 'Income'))
 bestSub <-  sapply(strsplit(as.character(selectedSub$i),'[.]'), "[", 1)
 bestSub <- unique(bestSub)
 ```
 <BR>
 Finally we plot the highly correlated pairs using the **{psych}** package's ``pair.panels`` plot (this can be done on the original data as ``pair.panels`` can handle factor and character variables):<BR>
-```r
-pairs.panels(adults[c(bestSub, 'income')])
+```{r}
+pairs.panels(adults[c(bestSub, 'Income')])
 ```
 <BR>
 ![plot of chunk unnamed-chunk-9](../img/posts/correlations/unnamed-chunk-9.png) 
