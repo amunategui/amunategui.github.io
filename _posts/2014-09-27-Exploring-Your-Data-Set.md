@@ -122,7 +122,7 @@ bestSub <- c('MaritalStatus..Never.married','Relationship..Own.child',
   'Sex..Female','Occupation..Exec.managerial','CapitalGain','HoursWeek','Age')
 ```
 <BR>
-Finally we plot the highly correlated pairs using the **{psych}** package's ``pair.panels`` plot (this can be done on the original data as ``pair.panels`` can handle factor and character variables):<BR>
+Finally we plot the highly correlated pairs using the **{psych}** package's ``pair.panels`` plot (this can also be done on the original data as ``pair.panels`` can handle factor and character variables):<BR>
 
 ```r
 library(psych)
@@ -131,7 +131,7 @@ pairs.panels(adultsTrsf[c(bestSub, 'Income')])
 <BR>
 ![plot of chunk unnamed-chunk-9](../img/posts/correlations/unnamed-chunk-9.png) 
 <BR><BR>
-The pairs plot, and in particular the last ``income`` column, tell us a lot about our data set. Being never married is the most negatively correlated with income over $50,000/year and hours worked and age are the most postively correlated.<BR>  
+The pairs plot, and in particular the last ``Income`` column, tell us a lot about our data set. Being never married is the most negatively correlated with income over $50,000/year and ``Hours Worked`` and ``Age`` are the most postively correlated.<BR>  
 **Things to keep in mind**<BR>
 <li>If you have a huge number of features in your data set, then be ready for extra computing time,</li>
 <li>and don't bother plotting it via ``pair.panels``, it will end up hanging R.</li>
