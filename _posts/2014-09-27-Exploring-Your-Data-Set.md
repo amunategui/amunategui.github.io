@@ -194,8 +194,7 @@ bestSub <-  sapply(strsplit(as.character(selectedSub$i),'[.]'), "[", 1)
 bestSub <- unique(bestSub)
 
 # or use the variables from top selectedSub:
-bestSub <- c('MaritalStatus..Never.married','Relationship..Own.child',
-  'Sex..Female','Occupation..Exec.managerial','CapitalGain','HoursWeek','Age')
+bestSub <- as.character(selectedSub$i)
 
 library(psych)
 pairs.panels(adultsTrsf[c(bestSub, 'Income')])
