@@ -86,7 +86,7 @@ The last thing I want to cover is how to upload and download files to and from y
 <BR><BR>
 **Downloading Files (i.e. copying files from your EC2 instance to your local machine):**
 
-<ul><li>Switch to directory you want to download files from within the <B>Files</B> pane</li>
+<ul><li>Switch to the directory you want to download files from the <B>Files</B> pane</li>
 <li>Select the file(s) and/or folder(s) you want to download</li>
 <li>Click <B>More</B> and <B>Export</B> on the toolbar</li>
 <li>You'll then be prompted with a default file name for the download. Either accept the default or specify a custom name then press <B>OK</B></li></ul>
