@@ -27,7 +27,7 @@ adults <- read.csv(textConnection(x), header=F)
 # adults <-read.csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data', header=F)
 ```
 <BR>
-We fill in the missing headers for the UCI set and cast the outcome variable 'income' to a binary format of **1** and **0**:
+We fill in the missing headers for the UCI set and cast the outcome variable ``income`` to a binary format of **1** and **0**:
 
 ```r
 names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
