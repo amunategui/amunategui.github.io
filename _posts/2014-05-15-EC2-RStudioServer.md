@@ -49,20 +49,20 @@ After you hit <B>Launch</B>, a key-pair pop-up box will appear. This is what aut
 <BR><BR>
 **View Instance**
 
-After launching your instance, once the <B>instance state</B> goes from ``initializing`` to ``running``, you simply copy the public DNS string and paste it in your browser. This is now the official link to your RStudio web interface on your instance:
+After launching your instance, once the <B>instance state</B> goes from ``initializing`` to ``running``, the public DNS string is the official link to your instance's RStudio web interface:
 
 <p align="center"><img src='../img/posts/rstudioserver/runninginstance.png'/></p>
 
 <li>Remember where you save this key-pair as you cannot communicate to your instance without it.</li>
 <li>If security is a big concern, there are plenty of additional settings and customizations available, please refer to the online RStudio server and Amazon EC2 help files regarding your options.</li>
 
-Once your instance is running, click on it, copy the Public DNS URL and paste it in your browser:
+Once your instance is running (green light), click on it, copy the Public DNS URL and paste it in your browser:
 
 <p align="center"><img src='../img/posts/rstudioserver/url.png'/></p>
 <BR><BR>
 **Using RStudio Server**
 
-You will be prompted for your credentials. By default, the initial account and password for these AMIs is rstudio, rstudio, all lower case:
+You will be prompted for your credentials. By default, the initial **account** and **password** for these AMIs is ``rstudio``, ``rstudio``, all lower case:
 
 <p align="center"><img src='../img/posts/rstudioserver/rstudiologin.png'/></p>
 <BR><BR>
