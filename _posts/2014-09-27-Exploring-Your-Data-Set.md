@@ -30,10 +30,10 @@ adults <- read.csv(textConnection(x), header=F)
 We fill in the missing headers for the UCI set and cast the outcome variable 'income' to a binary format of **1** and **0**:
 
 ```r
-names(adults)=c('age','workclass','fnlwgt','education','educationNum',
-                'maritalStatus','occupation','relationship','race',
-                'sex','capitalGain','capitalLoss','hoursWeek',
-                'nativeCountry','income')
+names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
+                'MaritalStatus','Occupation','Relationship','Race',
+                'Sex','CapitalGain','CapitalLoss','HoursWeek',
+                'NativeCountry','Income')
 
 adults$income <- ifelse(adults$income==' <=50K',0,1)
 ```
