@@ -94,7 +94,7 @@ The last thing I want to cover is how to upload and download files to and from y
 <p align="center"><img src='../img/posts/rstudioserver/download.png'/></p>
 <BR><BR>
 **Important**
-Don't forget to shut down the server or terminate it to remove it completely - otherwise the meter will keep running and you will keep being charged!
+Don't forget to shut down the server or terminate it completely - otherwise the meter will keep running and you will keep being charged!
 
 **Additional Resources (PDFs)**
 
