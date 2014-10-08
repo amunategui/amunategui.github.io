@@ -39,17 +39,17 @@ I recommend starting small as it is easy to upgrade an existing instance to some
 You need to have two open ports and a key-pair to communicate with your instance. 
 ``Port 22`` should be opened by default and you'll need to add ``port 80``.
 
-``Port 22`` is used to connect a command line terminal tool using SSH. I will not be showing that today. Instead, we'll be using ``port 80`` which allows access to the web interface of RStudio. So add another rule, choose ``HTTP``, enter the value **80**, and leave the rest as it is:
+``Port 22`` is used to connect a command line terminal tool using SSH. I will not be showing that today. Instead, we'll be using ``port 80`` which allows access to the web interface of RStudio. So add another rule, choose ``HTTP``, enter the value **80**, and leave the rest as is:
 
 <p align="center"><img src='../img/posts/rstudioserver/security.png'/></p> 
 <BR><BR>
-After you hit <B>Launch</B>, the key-pair authenticates client computer's identity to allow it to communicate securely to the AWS instance. If this is your first time using EC2 you'll want to create and download a new key pair:
+After you hit <B>Launch</B>, a key-pair pop-up box will appear. This is what authenticates your computer's identity and allows you to communicate securely to your AWS instance. If this is your first time using EC2 you'll want to create and download a new key pair:
 
 <p align="center"><img src='../img/posts/rstudioserver/key.png'/></p> 
 <BR><BR>
 **View Instance**
 
-After launching your instance, once the <B>instance state</B> goes from ``initializing`` to ``running``, you can copy the public DNS string and paste it in your browser. This is now the official link to your web interface for your instance. While waiting (hit refresh a few times):
+After launching your instance, once the <B>instance state</B> goes from ``initializing`` to ``running``, you simply copy the public DNS string and paste it in your browser. This is now the official link to your RStudio web interface on your instance:
 
 <p align="center"><img src='../img/posts/rstudioserver/runninginstance.png'/></p>
 
