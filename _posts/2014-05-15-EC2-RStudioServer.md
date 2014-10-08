@@ -80,7 +80,7 @@ The last thing I want to cover is how to upload and download files to and from y
 <li>Navigate to the directory you wish to upload files into</li>
 <li>Click the <B>Upload</B> toolbar button. A menu box will open and select the file you want to upload</li>
 <li>Choose the file you wish to upload and press <B>OK</B></li></ul>
-<B>Note:</B> that if you wish to upload several files or even an entire folder, you should first compress your files or folder into a zip file and then upload the zip file (when RStudio receives an uploaded zip file it automatically uncompresses it).
+<B>Note:</B> you can upload several files or even an entire folder at once, you just need to compress everything into a zip file and upload it (when RStudio receives an uploaded zip file it will automatically uncompresses it).
 
 <p align="center"><img src='../img/posts/rstudioserver/upload.png'/></p>
 <BR><BR>
