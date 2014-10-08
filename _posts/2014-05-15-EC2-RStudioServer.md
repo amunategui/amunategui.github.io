@@ -66,13 +66,13 @@ You will be prompted for your credentials. By default, the initial **account** a
 
 <p align="center"><img src='../img/posts/rstudioserver/rstudiologin.png'/></p>
 <BR><BR>
-First thing you should do is run the default script to change the password (minimum length required is 8 characters).  Replace the **mypassword** with your new password and hit the ``run`` script button. Then log out and back in with the new password:
+Once in RStudio, the first thing you should do is run the present script to change the password (minimum length required is 8 characters).  Replace the **mypassword** with your new password and hit the ``run`` script button. Then log out and back in with the new password:
 
 <p align="center"><img src='../img/posts/rstudioserver/changepassword.png'/></p>
 <BR><BR>
 **Uploading and Downloading Files**
 
-The last part I want to cover is how to upload and download files to your server instance.
+The last part that I want to cover is how to upload and download files to your server instance.
 
 **Uploading Files (i.e. bringing file from your local machine to EC2 Instance):**
 
