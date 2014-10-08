@@ -72,9 +72,9 @@ Once in RStudio, the first thing you need to do is run the loaded script and cha
 <BR><BR>
 **Uploading and Downloading Files**
 
-The last part that I want to cover is how to upload and download files to your server instance.
+The last thing I want to cover is how to upload and download files to your server instance.
 
-**Uploading Files (i.e. bringing file from your local machine to EC2 Instance):**
+**Uploading Files (i.e. copying files from your local machine to your EC2 Instance):**
 
 <ul><li>Switch to the <B>Files</B> pane</li>
 <li>Navigate to the directory you wish to upload files into</li>
@@ -84,7 +84,7 @@ The last part that I want to cover is how to upload and download files to your s
 
 <p align="center"><img src='../img/posts/rstudioserver/upload.png'/></p>
 <BR><BR>
-**Downloading Files (i.e. exporting files from EC2 to your local server):**
+**Downloading Files (i.e. copying files from your EC2 instance to your local machine):**
 
 <ul><li>Switch to directory you want to download files from within the <B>Files</B> pane</li>
 <li>Select the file(s) and/or folder(s) you want to download</li>
