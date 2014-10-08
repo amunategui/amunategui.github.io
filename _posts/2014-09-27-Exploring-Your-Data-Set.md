@@ -118,8 +118,7 @@ print(selectedSub)
 We save the most correlated features to the ``bestSub`` variable:<BR>
 
 ```r
-bestSub <- c('MaritalStatus..Never.married','Relationship..Own.child',
-  'Sex..Female','Occupation..Exec.managerial','CapitalGain','HoursWeek','Age')
+bestSub <- as.character(selectedSub$i[c(1,4,5,6,8,9)])
 ```
 <BR>
 Finally we plot the highly correlated pairs using the **{psych}** package's ``pair.panels`` plot (this can also be done on the original data as ``pair.panels`` can handle factor and character variables):<BR>
