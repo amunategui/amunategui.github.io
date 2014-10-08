@@ -28,7 +28,7 @@ We're interested in the upper right-hand box where you need to select the AMI cl
 
 <p align="center"><img src='../img/posts/rstudioserver/amzlogin.png'></p> 
 <BR><BR>
-Otherwise it will take you to  Step 2. This is the fun part, its like going to the store and picking up a brand new computer. Here you get to choose how much computing muscle you want. The AMI image you selected earlier will get applied to whatever setup you choose. You can go for more GPU, memory, storage, etc. Throwing more memory at a problem is unfortunately not a guarantee to make it go away - and I'm talking from personal experience here.
+Otherwise it will take you to **Step 2**. This is the fun part. Its like going to the store and picking up a brand new computer. Here you get to choose how much computing muscle you want. The AMI image you selected earlier will get applied to whatever setup you choose. You can go for more GPU, memory, storage, etc. Unfortunately, throwing more memory at a problem is not a guarantee to make it go away - and I'm talking from personal experience here.
 
 <p align="center"><img src='../img/posts/rstudioserver/instance.png'></p> 
 <BR><BR>
