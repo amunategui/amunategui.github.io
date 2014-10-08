@@ -14,11 +14,15 @@ image: correlations/unnamed-chunk-9.png
 A great way to explore new data is to use a pairwise correlation matrix. This will measure the correlation between every combination of your variables. It doesn't really matter if you have an outcome (or response) variable at this point, it will compare everything against everything else.
 
 For those not familiar with the correlation coefficient, it is simply a measure of similarity between two vectors of numbers. The measure value can range between **1** and **-1**, where **1** is perfectly correlated, -**1** is perfectly inversly correlated, and **0** is not correlated at all: 
+
 ```{r}
 print(cor(1:5,1:5))
+## 1
 print(cor(1:5,c(1,2,3,4,4)))
+## 0.9701425
 print(cor(1:5,c(5,4,3,2,1)))
-``` 
+## -1
+```
 
 To help us understand this process, let's download the <a href="https://archive.ics.uci.edu/ml/datasets/Adult" target="_blank">adult.data set</a> from the UCI Machine Learning Repository. The data is from the 1994 Census and attempts to predict those with income under $50,000 a year:
 
