@@ -10,6 +10,8 @@ published: true
 summary: A great way to explore new data is to use a pairwise correlation matrix. This will pair every combination of your variables and measure the correlation between them.
 image: correlations/unnamed-chunk-9.png
 ---
+<i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=igPQ-pI8Bjo&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Using Correlations To Understand Your Data</a></i>
+<BR><BR><BR>
 
 A great way to explore new data is to use a pairwise correlation matrix. This will measure the correlation between every combination of your variables. It doesn't really matter if you have an outcome (or response) variable at this point, it will compare everything against everything else.
 
