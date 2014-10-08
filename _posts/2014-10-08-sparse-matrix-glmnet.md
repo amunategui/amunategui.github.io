@@ -1,13 +1,13 @@
 ---
 layout: post
-title: Sparse Matrix and <B>GLMNET</B>
+title: Sparse Matrix and <B>{glmnet}</B>
 category: Machine Learning
 tags: modeling
 year: 2014
 month: 10
 day: 08
 published: true
-summary: Walkthrough of sparse matrices in R and basic use of them in GLMNET. This will show how to create them and how a sparse matrix 'binarizes' categorical values.
+summary: Walkthrough of sparse matrices in R and basic use of the glmnet package. This will show how to create them, find the best probabilities through the glmnet model, and how a sparse matrix deals with categorical values.
 image: sparse-matrix-glmnet/sparse.png
 ---
 <i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=Ysh2gs8VKvQ&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Sparse Matrix and GLMNET: Machine Learning with R</a></i>
