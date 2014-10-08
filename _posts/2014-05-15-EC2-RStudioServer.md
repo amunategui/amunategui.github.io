@@ -17,11 +17,11 @@ image: rstudioserver/runninginstance.png
 
 There are a lot of great resources on the web, but I didn't find one that covered my needs from end to end, and figured others could benefit from a walkthrough.  Here, I'll show how to select, install and run RStudio Server, customize security settings to use the RStudio's web interface, and upload and download data between your local machine and the server.
 
-If you like Kaggle competitions, like I do, then this is a great way of quickly adding all sorts of computing configuration for any of your needs. Our first stop will be at <a href="http://www.louisaslett.com/RStudio_AMI/" target="_blank">Louis Aslet's web page</a>. Louis curates a series of Amazon Machine Images (referred as AMIs):
+If you like Kaggle competitions, like I do, then this is a great way of quickly adding all sorts of computing configurations to satiate your needs. Our first stop is at <a href="http://www.louisaslett.com/RStudio_AMI/" target="_blank">Louis Aslet's web page</a>. Louis curates a series of Amazon Machine Images (referred as AMIs):
 
 <p align="center"><img src='../img/posts/rstudioserver/amilist.png'></p>
 <BR><BR>
-These are pre-configured images that will install RStudio and common R packages onto a computing instance. This is a huge time and money saver as it automatically installs a whole slew of software under two minutes - and when you're charged by the minute, it all counts big time.    
+These are pre-configured images that will install RStudio and common R packages onto a computing instance. This is a huge time and money saver as it automatically installs a whole slew of software under two minutes - and when you're charged by the minute, every minute counts.    
 
 Louis also has a video, albeit short, on how to setup RStudio and lots of resources. So explore them if you have additional questions. 
 We're interested in the upper, right-hand box where you need to select the AMI for your location and click on it. This will take you to the Amazon Web Services page. If you do not have an AWS account, it will prompt you to set one up:
