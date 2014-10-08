@@ -23,8 +23,8 @@ If you like Kaggle competitions, like I do, then this is a great way of quickly 
 <BR><BR>
 These are pre-configured images that will install RStudio and common R packages onto a computing instance. This is a huge time and money saver as it automatically installs a whole slew of software under two minutes - and when you're charged by the minute, every minute counts.    
 
-Louis also has a video, albeit short, on how to setup RStudio and lots of resources. So explore them if you have additional questions. 
-We're interested in the upper, right-hand box where you need to select the AMI for your location and click on it. This will take you to the Amazon Web Services page. If you do not have an AWS account, it will prompt you to set one up:
+Louis also has a video, albeit short, on how to setup RStudio and lots of additional resources. So explore them if you have unanswered questions. 
+We're interested in the upper right-hand box where you need to select the AMI closest to your location and click on it. This will take you to the Amazon Web Services page. If you do not have an AWS account, it will prompt you to set one up:
 
 <p align="center"><img src='../img/posts/rstudioserver/amzlogin.png'></p> 
 <BR><BR>
