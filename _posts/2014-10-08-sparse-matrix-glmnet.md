@@ -372,7 +372,9 @@ print(sparse.model.matrix(~.,cat_dataframe))
 ```
 <BR><BR>
 [Full Source](https://github.com/amunategui/Sparse-Matrices-And-GLMNET-Demo/blob/master/Sparse-Matrices-And-GLMNET-Demo.R):
+
 ```r
+
 some_dataframe <- read.table(text="c1        c2     c3     c4     c5     c6     c7     c8     c9     c10     outcome<BR>
 2     7     0     0     0     0     0     0     0     0     0<BR>
 0     0     3     0     0     0     0     0     0     0     0<BR>
