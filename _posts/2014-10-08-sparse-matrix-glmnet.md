@@ -7,7 +7,7 @@ year: 2014
 month: 10
 day: 08
 published: true
-summary: Walkthrough of sparse matrices in R and basic use of the glmnet package. This will show how to create them, find the best probabilities through the glmnet model, and how a sparse matrix deals with categorical values.
+summary: Walkthrough of sparse matrices in R and basic use of the <b>glmnet</b> package. This will show how to create them, find the best probabilities through the glmnet model, and how a sparse matrix deals with categorical values.
 image: sparse-matrix-glmnet/sparse.png
 ---
 <i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=Ysh2gs8VKvQ&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Sparse Matrix and GLMNET: Machine Learning with R</a></i>
@@ -373,22 +373,21 @@ print(sparse.model.matrix(~.,cat_dataframe))
 <BR><BR>
 [Full Source](https://github.com/amunategui/Sparse-Matrices-And-GLMNET-Demo/blob/master/Sparse-Matrices-And-GLMNET-Demo.R):
 ```r
-
-some_dataframe <- read.table(text="c1        c2     c3     c4     c5     c6     c7     c8     c9     c10     outcome
-2     7     0     0     0     0     0     0     0     0     0
-0     0     3     0     0     0     0     0     0     0     0
-0     0     0     6     1     0     0     0     0     0     0
-0     0     0     2     0     0     0     0     0     0     0
-0     0     0     0     0     0     0     0     12     0     1
-0     0     0     0     0     25     0     0     0     0     1
-1     0     0     0     2     0     0     0     0     0     0
-0     0     0     2     0     0     0     0     0     0     0
-0     0     0     0     0     0     0     0     14     0     1
-0     0     0     0     0     21     0     0     0     0     1
-0     0     0     0     0     0     28     0     0     0     1
-0     0     0     0     0     0     0     35     0     0     1
-0     0     0     0     0     0     0     0     42     0     1
-0     0     0     0     0     0     0     0     0     49     1", header=T, sep="") 
+some_dataframe <- read.table(text="c1        c2     c3     c4     c5     c6     c7     c8     c9     c10     outcome<BR>
+2     7     0     0     0     0     0     0     0     0     0<BR>
+0     0     3     0     0     0     0     0     0     0     0<BR>
+0     0     0     6     1     0     0     0     0     0     0<BR>
+0     0     0     2     0     0     0     0     0     0     0<BR>
+0     0     0     0     0     0     0     0     12     0     1<BR>
+0     0     0     0     0     25     0     0     0     0     1<BR>
+1     0     0     0     2     0     0     0     0     0     0<BR>
+0     0     0     2     0     0     0     0     0     0     0<BR>
+0     0     0     0     0     0     0     0     14     0     1<BR>
+0     0     0     0     0     21     0     0     0     0     1<BR>
+0     0     0     0     0     0     28     0     0     0     1<BR>
+0     0     0     0     0     0     0     35     0     0     1<BR>
+0     0     0     0     0     0     0     0     42     0     1<BR>
+0     0     0     0     0     0     0     0     0     49     1", header=T, sep="") <BR>
 
 library(Matrix)
 some_matrix <- data.matrix(some_dataframe[1:10])
