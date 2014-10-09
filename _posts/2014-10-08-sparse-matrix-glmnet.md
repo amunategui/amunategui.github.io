@@ -200,7 +200,7 @@ print(head(pred[,1:5]))
 ## 12 0.6667 0.6742 0.6815 0.6884 0.695
 ```
 
-The reason it returns many probability sets is because **GLMNET** fits the model for different regularization parameters at the same time. In order to get help us choose the best one, we can to use function ``cv.glmnet``. This will use cross validation to find the fit with the smallest error. Let's call cv.glmnet and pass the results to the ``s`` paramter (the prenalty parameter) of the ``predict`` function:
+The reason it returns many probability sets is because ``glmnet`` fits the model for different regularization parameters at the same time. To help us choose the best prediction set, we can to use function ``cv.glmnet``. This will use cross validation to find the fit with the smallest error. Let's call cv.glmnet and pass the results to the ``s`` paramter (the prenalty parameter) of the ``predict`` function:
 
 ```r
 # use cv.glmnet to find best lambda/penalty - choosing small nfolds for cv due to… 
