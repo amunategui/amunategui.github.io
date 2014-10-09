@@ -200,7 +200,7 @@ print(head(pred[,1:5]))
 ## 12 0.6667 0.6742 0.6815 0.6884 0.695
 ```
 
-The reason it returns many probability sets is because ``glmnet`` fits the model for different regularization parameters at the same time. To help us choose the best prediction set, we can to use function ``cv.glmnet``. This will use cross validation to find the fit with the smallest error. Let's call cv.glmnet and pass the results to the ``s`` paramter (the prenalty parameter) of the ``predict`` function:
+The reason it returns many probability sets is because ``glmnet`` fits the model for different regularization parameters at the same time. To help us choose the best prediction set, we can use the function ``cv.glmnet``. This will use cross validation to find the fit with the smallest error. Let's call cv.glmnet and pass the results to the ``s`` paramter (the prenalty parameter) of the ``predict`` function:
 
 ```r
 # use cv.glmnet to find best lambda/penalty - choosing small nfolds for cv due to… 
@@ -209,7 +209,7 @@ cv <- cv.glmnet(train_sparse,train[,11],nfolds=3)
 pred <- predict(fit, test_sparse,type="response", s=cv$lambda.min)
 ```
 
-**NOTE**: the ``cv.glmnet`` returns various values that may be important for your modeling needs. In particular ``lambda.min`` and ``lambda.1se``. One is the smallest error and the other is the simplest error. Refer to the help files to get the best results for your needs.
+**NOTE**: the ``cv.glmnet`` returns various values that may be important for your modeling needs. In particular ``lambda.min`` and ``lambda.1se``. One is the smallest error and the other is the simplest error. Refer to the help files to find the best one for your needs.
 
 ```r
 print(names(cv))
@@ -220,7 +220,7 @@ print(names(cv))
 ##  [6] "nzero"      "name"       "glmnet.fit" "lambda.min" "lambda.1se"
 ```
 
-The data is made up so there isn't much point in trying to measure the predictions:
+As the data is made up, let's not read too deeply into these predictions:
 
 ```r
 print(pred)
@@ -235,7 +235,7 @@ print(pred)
 ## 12 0.9898
 ```
  
-Let's see how the ``sparse.model.matrix`` function of the **Matrix** package handles discreet values. I added a categorical variable ``mood`` with two levels: ``happy`` and ``sad``:
+Let's see how the ``sparse.model.matrix`` function of the **Matrix** package handles discreet values. I added a factor variable ``mood`` with two levels: ``happy`` and ``sad``:
 
 
 ```r
@@ -259,7 +259,7 @@ print(cat_dataframe)
 ## 13  0  0  0  0  0  0  0  0 42   0   sad       1
 ## 14  0  0  0  0  0  0  0  0  0  49   sad       1
 ```
-We call the ``sparse.model.matrix`` function and we notice that it turned ``happy`` into 0's and ``sad`` into 1's. Thus, we only see the ones:
+We call the ``sparse.model.matrix`` function and we notice that it turned ``happy`` into 0's and ``sad`` into 1's. Thus, we only see the 1's:
 
 ```r
 sparse.model.matrix(~.,cat_dataframe)
@@ -322,7 +322,7 @@ print(levels(cat_dataframe$mood))
 ```
 ## [1] "angry"   "happy"   "neutral" "sad"
 ```
-We can check the dimensions of both sets:
+We can compare the dimensions of both data sets:
 
 ```r
 dim(cat_dataframe)
@@ -339,7 +339,7 @@ dim(sparse.model.matrix(~.,cat_dataframe))
 ```
 ## [1] 14 15
 ```
-The sparse model broke out the 4 levels into 3 new columns. This is because it applied ``Full Rank`` to the set - you're either one of the 3 moods, if you're neither of the 3, then you're assumed to be the forth or ``angry`` in this case (<a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">see my walkthrough on dummy variables for more information</a>):
+The sparse model has 3 extra columns. It broke out the 4 levels into 3. This is because it applied ``Full Rank`` to the set - you're either one of the 3 moods, if you're neither of the 3, then you're assumed to be the 4th or ``angry``. Check out <a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">my walkthrough on dummy variables for more details</a>:
 
 ```r
 print(sparse.model.matrix(~.,cat_dataframe))
