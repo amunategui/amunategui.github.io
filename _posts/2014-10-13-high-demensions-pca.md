@@ -12,16 +12,17 @@ image: dimension-reduction/pca.png
 ---
 
 **Summary**
+
 YouTube Companion Video: <BR>
 <a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>Full source code</a><BR>
 
 **Packages Used in this Walkthrough**
 
 <ul>
-        <li type="square"><b>prcomp</b> - for pca</li>
-        <li type="square"><b>xgboost</b> - modeling algorithm</li>
-        <li type="square"><b>Metrics</b> - measuring accuracy/AUC</li>
-        <li type="square"><b>caret</b> - reducing zero/near-zero variance</li>
+        <li type="square"><b>{prcomp}</b> - for pca</li>
+        <li type="square"><b>{xgboost}</b> - modeling algorithm</li>
+        <li type="square"><b>{Metrics}</b> - measuring accuracy/AUC</li>
+        <li type="square"><b>{caret}</b> - reducing zero/near-zero variance</li>
 </ul>
 
 **Introduction**
