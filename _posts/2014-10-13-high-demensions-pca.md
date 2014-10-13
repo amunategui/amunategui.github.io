@@ -10,20 +10,10 @@ published: true
 summary: This is a hands-on walkthrough on how <B>PCA</B> can reduce a 1000+ variable data set into 10 variables and barely lose any accuracy! This is incredible, and everytime I play around with this, I still get amazed! 
 image: dimension-reduction/pca.png
 ---
-<i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=Ysh2gs8VKvQ&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Sparse Matrix and GLMNET: Machine Learning with R</a></i>
-<BR><BR><BR>
-
-
-Reducing High Dimensional Data with Principle Component Analysis (PCA): Machine Learning With R
-========================================================
 
 **Summary**
-
-
-
-
 YouTube Companion Video: <BR>
-Full source code: <BR>
+<a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>Full source code</a><BR>
 
 **Packages Used in this Walkthrough**
 
