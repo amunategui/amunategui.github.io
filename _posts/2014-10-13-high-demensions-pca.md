@@ -283,7 +283,7 @@ Though out of scope for this hands-on post, checkout clusterboot
 <BR><BR>        
 <a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>Full source</a>:
 
-```{r eval=FALSE}
+```r
 
 require(xgboost)
 require(Metrics)
