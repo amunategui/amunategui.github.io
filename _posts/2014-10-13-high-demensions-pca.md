@@ -27,11 +27,11 @@ image: dimension-reduction/pca.png
         <li type="square"><b>{caret}</b> - reducing zero/near-zero variance</li>
 </ul>
 <BR>
-**Walkthrough**
+**Introduction**
 
 These days, I rarely work on data sets with less than **1000** features. Not a big deal with today's computing power, but can easily turn into a nightmare when you need to use certain forest-based models, heavy cross-validation, grid tuning, and most ensemble work. <i>Note: the term variables, features, predictors are used throughout and mean the same thing.</i>
 
-Off the bat, there are 3 ways to deal with **high-dimensionality data** (too many variables):
+Off the bat, there are 3 ways to deal with **high-dimensionality data** (i.e. too many variables):
 
 <ol>
 <li>get more computing muscle (like an amazon web server EC2 instance)</li>
