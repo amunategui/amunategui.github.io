@@ -35,8 +35,8 @@ Off the bat, there are 3 ways to deal with **high-dimensionality data** (i.e. to
 
 <ol>
 <li>get more computing muscle (like an amazon web server EC2 instance),</li>
-<li>prune your data set using **feature selection** (measure variables effectiveness and keep only the best - built-in feature selection - see fscaret),</li>
-<li>and finally, the subject of this walkthrough, use **feature reduciton** (also refereed as feature extraction) <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction">...</a> to create new variables made of bits and pieces of the original variables.</li>
+<li>prune your data set using <B>feature selection</B> (measure variables effectiveness and keep only the best - built-in feature selection - see fscaret),</li>
+<li>and finally, the subject of this walkthrough, use <B>feature reduciton</B> (also refereed as feature extraction) <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction">...</a> to create new variables made of bits and pieces of the original variables.</li>
 </ol>
 
 According to <a href='http://en.wikipedia.org/wiki/Dimensionality_reduction' target='_blank'>wikipedia</a>:
