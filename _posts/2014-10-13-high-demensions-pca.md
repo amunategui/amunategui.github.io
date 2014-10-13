@@ -34,8 +34,8 @@ These days, I rarely work on data sets with less than **1000** features. Not a b
 Off the bat, there are 3 ways to deal with **high-dimensionality data** (i.e. too many variables):
 
 <ol>
-<li>get more computing muscle (like an amazon web server EC2 instance)</li>
-<li>prune your data set using **feature selection** (measure variables effectiveness and keep only the best - built-in feature selection - see fscaret)</li>
+<li>get more computing muscle (like an amazon web server EC2 instance),</li>
+<li>prune your data set using **feature selection** (measure variables effectiveness and keep only the best - built-in feature selection - see fscaret),</li>
 <li>and finally, the subject of this walkthrough, use **feature reduciton** (also refereed as feature extraction) <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction">...</a> to create new variables made of bits and pieces of the original variables.</li>
 </ol>
 
