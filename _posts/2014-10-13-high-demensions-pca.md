@@ -178,7 +178,7 @@ pmatrix <- scale(gisette_nzv)
 princ <- prcomp(pmatrix)
 ```
 
-Let's start by running the same cross-validation code with just the first PCA component (remember, this holds most of the variation of the data):
+Let's start by running the same cross-validation code with just the **first PCA component** (remember, this holds most of the variation of the data):
 
 ```r
 nComp <- 1  
@@ -232,50 +232,9 @@ print(mean(lsAUC))
 
 The result isn't that good compared to the orginal, non-transformed data set. Let's try this again with 2 components:
 
-
 ```r
 nComp <- 2  
-dfComponents <- predict(princ, newdata=pmatrix)[,1:nComp]
-
-dfEvaluate <- cbind(as.data.frame(dfComponents),
-              cluster=g_labels$V1)
-
-cvDivider <- floor(nrow(dfEvaluate) / (CVs+1))
-indexCount <- 1
-predictors <- names(dfEvaluate)[!names(dfEvaluate) %in% outcomeName]
-lsErr <- c()
-lsAUC <- c()
-for (cv in seq(1:CVs)) {
-        print(paste('cv',cv))
-        dataTestIndex <- c((cv * cvDivider):(cv * cvDivider + cvDivider))
-        dataTest <- dfEvaluate[dataTestIndex,]
-        dataTrain <- dfEvaluate[-dataTestIndex,]
-        
-        bst <- xgboost(data = as.matrix(dataTrain[,predictors]),
-                       label = dataTrain[,outcomeName],
-                       max.depth=6, eta = 1, verbose=0,
-                       nround=5, nthread=4, 
-                       objective = "reg:linear")
-        
-        predictions <- predict(bst, as.matrix(dataTest[,predictors]), outputmargin=TRUE)
-        err <- rmse(dataTest[,outcomeName], predictions)
-        auc <- auc(dataTest[,outcomeName],predictions)
-        
-        lsErr <- c(lsErr, err)
-        lsAUC <- c(lsAUC, auc)
-        gc()
-}
-```
-
-```
-## [1] "cv 1"
-## [1] "cv 2"
-## [1] "cv 3"
-## [1] "cv 4"
-## [1] "cv 5"
-```
-
-```r
+...
 print(mean(lsAUC))
 ```
 
@@ -286,47 +245,7 @@ Two components still don't give us a great score, let's jump to **5** components
 
 ```r
 nComp <- 5
-dfComponents <- predict(princ, newdata=pmatrix)[,1:nComp]
-
-dfEvaluate <- cbind(as.data.frame(dfComponents),
-              cluster=g_labels$V1)
-
-cvDivider <- floor(nrow(dfEvaluate) / (CVs+1))
-indexCount <- 1
-predictors <- names(dfEvaluate)[!names(dfEvaluate) %in% outcomeName]
-lsErr <- c()
-lsAUC <- c()
-for (cv in seq(1:CVs)) {
-        print(paste('cv',cv))
-        dataTestIndex <- c((cv * cvDivider):(cv * cvDivider + cvDivider))
-        dataTest <- dfEvaluate[dataTestIndex,]
-        dataTrain <- dfEvaluate[-dataTestIndex,]
-        
-        bst <- xgboost(data = as.matrix(dataTrain[,predictors]),
-                       label = dataTrain[,outcomeName],
-                       max.depth=6, eta = 1, verbose=0,
-                       nround=5, nthread=4, 
-                       objective = "reg:linear")
-        
-        predictions <- predict(bst, as.matrix(dataTest[,predictors]), outputmargin=TRUE)
-        err <- rmse(dataTest[,outcomeName], predictions)
-        auc <- auc(dataTest[,outcomeName],predictions)
-        
-        lsErr <- c(lsErr, err)
-        lsAUC <- c(lsAUC, auc)
-        gc()
-}
-```
-
-```
-## [1] "cv 1"
-## [1] "cv 2"
-## [1] "cv 3"
-## [1] "cv 4"
-## [1] "cv 5"
-```
-
-```r
+...
 print(mean(lsAUC))
 ```
 
@@ -337,47 +256,7 @@ Now we're talking! Let's try **10** compoenents:
 
 ```r
 nComp <- 10
-dfComponents <- predict(princ, newdata=pmatrix)[,1:nComp]
-
-dfEvaluate <- cbind(as.data.frame(dfComponents),
-              cluster=g_labels$V1)
-
-cvDivider <- floor(nrow(dfEvaluate) / (CVs+1))
-indexCount <- 1
-predictors <- names(dfEvaluate)[!names(dfEvaluate) %in% outcomeName]
-lsErr <- c()
-lsAUC <- c()
-for (cv in seq(1:CVs)) {
-        print(paste('cv',cv))
-        dataTestIndex <- c((cv * cvDivider):(cv * cvDivider + cvDivider))
-        dataTest <- dfEvaluate[dataTestIndex,]
-        dataTrain <- dfEvaluate[-dataTestIndex,]
-        
-        bst <- xgboost(data = as.matrix(dataTrain[,predictors]),
-                       label = dataTrain[,outcomeName],
-                       max.depth=6, eta = 1, verbose=0,
-                       nround=5, nthread=4, 
-                       objective = "reg:linear")
-        
-        predictions <- predict(bst, as.matrix(dataTest[,predictors]), outputmargin=TRUE)
-        err <- rmse(dataTest[,outcomeName], predictions)
-        auc <- auc(dataTest[,outcomeName],predictions)
-        
-        lsErr <- c(lsErr, err)
-        lsAUC <- c(lsAUC, auc)
-        gc()
-}
-```
-
-```
-## [1] "cv 1"
-## [1] "cv 2"
-## [1] "cv 3"
-## [1] "cv 4"
-## [1] "cv 5"
-```
-
-```r
+...
 print(mean(lsAUC))
 ```
 
@@ -389,47 +268,7 @@ Now we're talking! Let's try **20** compoenents:
 
 ```r
 nComp <- 20
-dfComponents <- predict(princ, newdata=pmatrix)[,1:nComp]
-
-dfEvaluate <- cbind(as.data.frame(dfComponents),
-              cluster=g_labels$V1)
-
-cvDivider <- floor(nrow(dfEvaluate) / (CVs+1))
-indexCount <- 1
-predictors <- names(dfEvaluate)[!names(dfEvaluate) %in% outcomeName]
-lsErr <- c()
-lsAUC <- c()
-for (cv in seq(1:CVs)) {
-        print(paste('cv',cv))
-        dataTestIndex <- c((cv * cvDivider):(cv * cvDivider + cvDivider))
-        dataTest <- dfEvaluate[dataTestIndex,]
-        dataTrain <- dfEvaluate[-dataTestIndex,]
-        
-        bst <- xgboost(data = as.matrix(dataTrain[,predictors]),
-                       label = dataTrain[,outcomeName],
-                       max.depth=6, eta = 1, verbose=0,
-                       nround=5, nthread=4, 
-                       objective = "reg:linear")
-        
-        predictions <- predict(bst, as.matrix(dataTest[,predictors]), outputmargin=TRUE)
-        err <- rmse(dataTest[,outcomeName], predictions)
-        auc <- auc(dataTest[,outcomeName],predictions)
-        
-        lsErr <- c(lsErr, err)
-        lsAUC <- c(lsAUC, auc)
-        gc()
-}
-```
-
-```
-## [1] "cv 1"
-## [1] "cv 2"
-## [1] "cv 3"
-## [1] "cv 4"
-## [1] "cv 5"
-```
-
-```r
+...
 print(mean(lsAUC))
 ```
 
@@ -443,6 +282,7 @@ Though out of scope for this hands-on post, checkout clusterboot
 
 <BR><BR>        
 <a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>Full source</a>:
+
 ```{r eval=FALSE}
 require(xgboost)
 require(Metrics)
