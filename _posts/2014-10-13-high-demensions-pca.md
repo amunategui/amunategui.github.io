@@ -17,6 +17,7 @@ image: dimension-reduction/pca.png
 <li type="square"><a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>Full source code</a>
 </li>
 </ul>
+<BR>
 **Packages Used in this Walkthrough**
 
 <ul>
@@ -25,7 +26,7 @@ image: dimension-reduction/pca.png
         <li type="square"><b>{Metrics}</b> - measuring accuracy/AUC</li>
         <li type="square"><b>{caret}</b> - reducing zero/near-zero variance</li>
 </ul>
-<BR><BR>
+<BR>
 **Walkthrough**
 
 These days, I rarely work on data sets with less than **1000** features. Not a big deal with today's computing power, but can easily turn into a nightmare when you need to use certain forest-based models, heavy cross-validation, grid tuning, and most ensemble work. <i>Note: the term variables, features, predictors are used throughout and mean the same thing.</i>
