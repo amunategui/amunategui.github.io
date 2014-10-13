@@ -12,10 +12,11 @@ image: dimension-reduction/pca.png
 ---
 
 **Summary**
-
-YouTube Companion Video: <BR>
-<a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>Full source code</a><BR>
-
+<ul>
+<li type="square">YouTube Companion Video: </li>
+<li type="square"><a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>Full source code</a>
+</li>
+</ul>
 **Packages Used in this Walkthrough**
 
 <ul>
