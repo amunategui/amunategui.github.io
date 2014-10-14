@@ -121,57 +121,58 @@ Now that we have a data cleaned up and ready to go, let's see how well it perfor
 dfEvaluate <- cbind(as.data.frame(sapply(gisette_nzv, as.numeric)),
               cluster=g_labels$V1)
 ```
-We're going to feed the data to a cross-validation function with ``zxgboost`` model. This will run the data 5 times, each time assigning a new chunk of data as training and testing. This not only allows us to use all the data as both train and test, but it stabilizes our <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC (Area Under the Curve)</a> score.
+We're going to feed the data to a cross-validation function using the ``zxgboost`` model. This is a fast model and does great with large data sets. The repeated cross-validation will run the data 5 times, each time assigning a new chunk of data as training and testing. This not only allows us to use all the data as both train and test, but also stabilizes our <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC (Area Under the Curve)</a> score.
 
 
 ```r
-CVs <- 5
-cvDivider <- floor(nrow(dfEvaluate) / (CVs+1))
-indexCount <- 1
-outcomeName <- c('cluster')
-predictors <- names(dfEvaluate)[!names(dfEvaluate) %in% outcomeName]
-lsErr <- c()
-lsAUC <- c()
-for (cv in seq(1:CVs)) {
-        print(paste('cv',cv))
-        dataTestIndex <- c((cv * cvDivider):(cv * cvDivider + cvDivider))
-        dataTest <- dfEvaluate[dataTestIndex,]
-        dataTrain <- dfEvaluate[-dataTestIndex,]
-        
-        bst <- xgboost(data = as.matrix(dataTrain[,predictors]),
-                       label = dataTrain[,outcomeName],
-                       max.depth=6, eta = 1, verbose=0,
-                       nround=5, nthread=4, 
-                       objective = "reg:linear")
-        
-        predictions <- predict(bst, as.matrix(dataTest[,predictors]), outputmargin=TRUE)
-        err <- rmse(dataTest[,outcomeName], predictions)
-        auc <- auc(dataTest[,outcomeName],predictions)
-        
-        lsErr <- c(lsErr, err)
-        lsAUC <- c(lsAUC, auc)
-        gc()
+
+EvaluateAUC <- function(dfEvaluate) {
+        CVs <- 5
+        cvDivider <- floor(nrow(dfEvaluate) / (CVs+1))
+        indexCount <- 1
+        outcomeName <- c('cluster')
+        predictors <- names(dfEvaluate)[!names(dfEvaluate) %in% outcomeName]
+        lsErr <- c()
+        lsAUC <- c()
+        for (cv in seq(1:CVs)) {
+                print(paste('cv',cv))
+                dataTestIndex <- c((cv * cvDivider):(cv * cvDivider + cvDivider))
+                dataTest <- dfEvaluate[dataTestIndex,]
+                dataTrain <- dfEvaluate[-dataTestIndex,]
+                
+                bst <- xgboost(data = as.matrix(dataTrain[,predictors]),
+                               label = dataTrain[,outcomeName],
+                               max.depth=6, eta = 1, verbose=0,
+                               nround=5, nthread=4, 
+                               objective = "reg:linear")
+                
+                predictions <- predict(bst, as.matrix(dataTest[,predictors]), outputmargin=TRUE)
+                err <- rmse(dataTest[,outcomeName], predictions)
+                auc <- auc(dataTest[,outcomeName],predictions)
+                
+                lsErr <- c(lsErr, err)
+                lsAUC <- c(lsAUC, auc)
+                gc()
+        }
+        print(paste('Mean Error:',mean(lsErr)))
+        print(paste('Mean AUC:',mean(lsAUC)))
 }
 ```
 
-```
+```r
+EvaluateAUC(dfEvaluate)
+
 ## [1] "cv 1"
 ## [1] "cv 2"
 ## [1] "cv 3"
 ## [1] "cv 4"
 ## [1] "cv 5"
-```
 
-```r
-print(mean(lsAUC))
-```
-
-```
 ## [1] 0.9659
 ```
-This yields a great AUC score (remember, <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC</a> of 0.5 is random, and 1.0 is perfect). But we don't really care how well the model did, we just want to use that AUC score as basis to compare the same model but with data transformed through PCA.
+This yields a great **AUC score of 0.9659** (remember, <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC</a> of 0.5 is random, and 1.0 is perfect). But we don't really care how well the model did; we just want to use that AUC score as a basis of comparison against the transformed PCA variables.
 
-So, lets use the same data and run it through ``prcomp``. This will transform all the variables by importance of variation - meaning that the first component variable will contain most of the variation from the data and therefore be the most powerful one (**Warning:** this can be a very slow to process depending on your machine - so do it once and store the resulting data set for later use):
+So, lets use the same data and run it through ``prcomp``. This will transform all the related variables that account for most of the variation - meaning that the first component variable will be the most powerful variable (**Warning:** this can be a very slow to process depending on your machine - so do it once and store the resulting data set for later use):
 
 ```r
 pmatrix <- scale(gisette_nzv)
@@ -187,50 +188,18 @@ dfComponents <- predict(princ, newdata=pmatrix)[,1:nComp]
 dfEvaluate <- cbind(as.data.frame(dfComponents),
               cluster=g_labels$V1)
 
-cvDivider <- floor(nrow(dfEvaluate) / (CVs+1))
-indexCount <- 1
-predictors <- names(dfEvaluate)[!names(dfEvaluate) %in% outcomeName]
-lsErr <- c()
-lsAUC <- c()
-for (cv in seq(1:CVs)) {
-        print(paste('cv',cv))
-        dataTestIndex <- c((cv * cvDivider):(cv * cvDivider + cvDivider))
-        dataTest <- dfEvaluate[dataTestIndex,]
-        dataTrain <- dfEvaluate[-dataTestIndex,]
-        
-        bst <- xgboost(data = as.matrix(dataTrain[,predictors]),
-                       label = dataTrain[,outcomeName],
-                       max.depth=6, eta = 1, verbose=0,
-                       nround=5, nthread=4, 
-                       objective = "reg:linear")
-        
-        predictions <- predict(bst, as.matrix(dataTest[,predictors]), outputmargin=TRUE)
-        err <- rmse(dataTest[,outcomeName], predictions)
-        auc <- auc(dataTest[,outcomeName],predictions)
-        
-        lsErr <- c(lsErr, err)
-        lsAUC <- c(lsAUC, auc)
-        gc()
-}
-```
+EvaluateAUC(dfEvaluate)
 
-```
 ## [1] "cv 1"
 ## [1] "cv 2"
 ## [1] "cv 3"
 ## [1] "cv 4"
 ## [1] "cv 5"
-```
 
-```r
-print(mean(lsAUC))
-```
-
-```
 ## [1] 0.719
 ```
 
-The result isn't that good compared to the orginal, non-transformed data set. Let's try this again with 2 components:
+The resulting **AUC of 0.719** isn't that good compared to the orginal, non-transformed data set. Let's try this again with 2 components:
 
 ```r
 nComp <- 2  
