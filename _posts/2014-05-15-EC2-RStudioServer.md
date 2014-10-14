@@ -11,9 +11,11 @@ summary: Steps you through installing pre-configured AMIs with RStudio Server on
 image: rstudioserver/runninginstance.png
 ---
 
-<i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=NQu3ugUkYTk&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Brief guide on running RStudio Server's web interface on Amazon Web Services</a></i>
-<BR><BR><BR>
-**Getting There**
+**Resources**
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=NQu3ugUkYTk&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
+</ul>
+<BR><BR>
 
 There are a lot of great resources on the web, but I didn't find one that covered my needs from end to end, and figured others could benefit from a walkthrough.  Here, I'll show how to select, install and run RStudio Server, customize security settings to use the RStudio's web interface, and upload and download data between your local machine and the server.
 

@@ -7,7 +7,7 @@ year: 2014
 month: 10
 day: 13
 published: true
-summary: This is a hands-on walkthrough on how <B>PCA</B> can reduce a 1000+ variable data set into 10 variables and barely lose accuracy! This is incredible, and everytime I play around with this, I still get amazed! 
+summary: In this R walkthrough, I'll show you how <B>PCA</B> can reduce a 1000+ variable data set into 10 variables and barely lose accuracy! This is incredible, and everytime I play around with this, I still get amazed! 
 image: dimension-reduction/pca.png
 ---
 
