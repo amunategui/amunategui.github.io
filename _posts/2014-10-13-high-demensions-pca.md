@@ -64,7 +64,7 @@ print(dim(gisetteRaw))
 ## [1] 6000 5001
 ```
 
-``gisetteRaw`` is a large file with **5001** columns and we need to remove the redundant ones that could slow down (or crash the **pca** transformation process). From the **caret** package, we use the ``nearZeroVar`` function and turn the ``saveMetrics`` parameter to **true**. This will return a data frame with the degree of zero variance for each feature:
+``gisetteRaw`` is a large file with **5001** columns and we need to remove the redundant ones that could slow down (or crash) the **pca** transformation process. In the **caret** package, we use the ``nearZeroVar`` function with ``saveMetrics`` parameter set to **true**. This will return a data frame with the degree of zero variance for each feature:
 
 ```r
 nzv <- nearZeroVar(gisetteRaw, saveMetrics = TRUE)
@@ -114,13 +114,13 @@ print(paste('Column count after cutoff:',ncol(gisette_nzv)))
 ```
 ## [1] "Column count before cutoff: 4639"
 ```
-Now that we have a data cleaned up and ready to go, let's see how well it performs. We add the labels (response or outcome variables) to the set:
+The data is cleaned up and ready to go. Let's see how well it performs withough any **PCA** transformation. We bind the labels (response/outcome variables) to the set:
 
 ```r
 dfEvaluate <- cbind(as.data.frame(sapply(gisette_nzv, as.numeric)),
               cluster=g_labels$V1)
 ```
-We're going to feed the data to a cross-validation function using the ``zxgboost`` model. This is a fast model and does great with large data sets. The repeated cross-validation will run the data 5 times, each time assigning a new chunk of data as training and testing. This not only allows us to use all the data as both train and test, but also stabilizes our <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC (Area Under the Curve)</a> score.
+We're going to feed the data into the following cross-validation function using the ``zxgboost`` model. This is a fast model and does great with large data sets. The repeated cross-validation will run the data 5 times, each time assigning a new chunk of data as training and testing. This not only allows us to use all the data as both train and test sets, but also stabilizes our <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC (Area Under the Curve)</a> score.
 
 
 ```r
@@ -171,14 +171,14 @@ EvaluateAUC(dfEvaluate)
 ```
 This yields a great **AUC score of 0.9659** (remember, <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC</a> of 0.5 is random, and 1.0 is perfect). But we don't really care how well the model did; we just want to use that AUC score as a basis of comparison against the transformed PCA variables.
 
-So, lets use the same data and run it through ``prcomp``. This will transform all the related variables that account for most of the variation - meaning that the first component variable will be the most powerful variable (**Warning:** this can be a very slow to process depending on your machine - so do it once and store the resulting data set for later use):
+So, lets use the same data and run it through ``prcomp``. This will transform all the related variables that account for most of the variation - meaning that the first component variable will be the most powerful variable (**Warning:** this can be a very slow to process depending on your machine - it took 20 minutes on my MacBook - so do it once and store the resulting data set for later use):
 
 ```r
 pmatrix <- scale(gisette_nzv)
 princ <- prcomp(pmatrix)
 ```
 
-Let's start by running the same cross-validation code with just the **first PCA component** (remember, this holds most of the variation of the data):
+Let's start by running the same cross-validation code with just the **first PCA component** (remember, this holds most of the variation of our data set):
 
 ```r
 nComp <- 1  
@@ -245,8 +245,9 @@ print(mean(lsAUC))
 ```
 Hmmm, going back down... Let's stop right here and stick with the first 10 PCA components.
 
-**Additional Things**
-Though out of scope for this hands-on post, there are many ways of finding the perfect amount of components to use. Check out <a href='http://astrostatistics.psu.edu/su09/lecturenotes/pca.html' target='_blank'>Eigen angles and vectors</a> and checkout <a href='http://www.inside-r.org/packages/cran/fpc/docs/clusterboot' target='_blank'>clusterboot</a>
+**Additional Stuff**
+
+Though out of scope for this hands-on post, there are many ways of finding the perfect amount of components to use. Check out <a href='http://astrostatistics.psu.edu/su09/lecturenotes/pca.html' target='_blank'>Eigen angles and vectors</a> and check out also <a href='http://www.inside-r.org/packages/cran/fpc/docs/clusterboot' target='_blank'>clusterboot</a>.
 
 
 <BR><BR>        
