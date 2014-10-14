@@ -10,10 +10,22 @@ published: true
 summary: Give <B>fscaret</B> an ensemble of models and some data, and it will have the ensemble vote on the importance of each feature to find the strongest ones. In this walkthrough, we use the classic Titanic data set to predict survivorship.
 image: FSCARET_Walkthrough/titanic.png
 ---
-<i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=dTRDZBltCTg&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">FSCARET - Ensemble Feature Selection on Steroids: Machine Learning with R</a></i>
-<BR><BR><BR>
+**Resources**
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=dTRDZBltCTg&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<BR>
+**Packages Used in this Walkthrough**
 
-The [fscaret](http://cran.r-project.org/web/packages/fscaret/index.html) package, as its name implies, is closely related to the [caret](http://cran.r-project.org/web/packages/caret/index.html) package. It relies on **caret**, and its numerous functions, to get its job done.
+<ul>
+        <li type="square"><b>{fscaret}</b> - feature selection for ensembles</li>
+        <li type="square"><b>{caret}</b> - machine learning tools</li>
+</ul>
+
+<BR><BR>
+
+The <a href='http://cran.r-project.org/web/packages/fscaret/index.html' target='_blank'>fscaret package</a>, as its name implies, is closely related to the <a href='http://cran.r-project.org/web/packages/caret/index.html' target='_blank'>caret package</a>. It relies on **caret**, and its numerous functions, to get its job done.
 <BR><BR>
 **So what does this package do?**
 <BR>
@@ -195,8 +207,9 @@ print(results)
 ```
 So, according to the models chosen, 'Sex.female' is the most important variable to predict survivorship in the Titanic dataset, followed by 'PClass.3rd' and 'Title.Mr'.
 
-<BR>
-[Full source](https://github.com/amunategui/FSCARET-Feature-Selection-On-Steroids/blob/master/FASCARET_FeatureSelectionOnSteroids_Sample.R):
+<BR><BR>
+      
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/FSCARET-Feature-Selection-On-Steroids' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
 # warning: could take over an hour to install all models the first time you install the fscaret package
