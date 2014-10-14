@@ -221,7 +221,7 @@ print(mean(lsAUC))
 ```
 ## [1] 0.9279
 ```
-Now we're talking! Let's try **10** compoenents:
+Now we're talking, **0.9279**!!! Let's try **10** compoenents:
 
 ```r
 nComp <- 10
@@ -233,7 +233,7 @@ print(mean(lsAUC))
 ## [1] 0.9651
 ```
 
-Now we're talking! Let's try **20** compoenents:
+Wow, **0.9651**!! Let's try **20** compoenents:
 
 ```r
 nComp <- 20
@@ -244,9 +244,10 @@ print(mean(lsAUC))
 ```
 ## [1] 0.9641
 ```
+Hmmm, going back down... Let's stop right here and stick with the first 10 PCA components.
 
 **Additional Things**
-Though out of scope for this hands-on post, checkout clusterboot
+Though out of scope for this hands-on post, there are many ways of finding the perfect amount of components to use. Check out <a href='http://astrostatistics.psu.edu/su09/lecturenotes/pca.html' target='_blank'>Eigen angles and vectors</a> and checkout <a href='http://www.inside-r.org/packages/cran/fpc/docs/clusterboot' target='_blank'>clusterboot</a>
 
 
 <BR><BR>        
