@@ -35,7 +35,7 @@ Off the bat, there are 3 ways of dealing with **high-dimensionality data** (i.e.
 <ol>
 <li>get more computing muscle (like RStudio on an <a href='http://amunategui.github.io/EC2-RStudioServer/' target='_blank'>Amazon web server EC2</a> instance),</li>
 <li>prune your data set using <a href='http://en.wikipedia.org/wiki/Feature_selection' target='_blank'>feature selection</a> (measure variables effectiveness and keeps only the best - built-in feature selection - <a href='http://amunategui.github.io/fscaret-Walkthrough/' target='_blank'>see fscaret</a>),</li>
-<li>and finally, the subject of this walkthrough, use <B>feature reduciton</B> (also refereed as <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction">feature extraction</a>) to create new variables made of bits and pieces of the original variables.</li>
+<li>and finally, the subject of this walkthrough, use <B>feature reduction</B> (also refereed as <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction">feature extraction</a>) to create new variables made of bits and pieces of the original variables.</li>
 </ol>
 
 According to <a href='http://en.wikipedia.org/wiki/Dimensionality_reduction' target='_blank'>wikipedia</a>:
@@ -64,7 +64,7 @@ print(dim(gisetteRaw))
 ## [1] 6000 5001
 ```
 <BR><BR>
-``gisetteRaw`` is a large file with **5001** columns and we need to remove the redundant ones that could slow down (or crash) the **pca** transformation process. In the **caret** package, we use the ``nearZeroVar`` function with ``saveMetrics`` parameter set to **true**. This will return a data frame with the degree of zero variance for each feature:
+``gisetteRaw`` is a large file with **5001** columns and we need to remove the redundant ones that could slow down (or crash) the **PCA** transformation process. In the **caret** package, we use the ``nearZeroVar`` function with ``saveMetrics`` parameter set to **true**. This will return a data frame with the degree of zero variance for each feature:
 
 ```r
 nzv <- nearZeroVar(gisetteRaw, saveMetrics = TRUE)
@@ -116,7 +116,7 @@ print(paste('Column count after cutoff:',ncol(gisette_nzv)))
 ## [1] "Column count before cutoff: 4639"
 ```
 <BR><BR>
-The data is cleaned up and ready to go. Let's see how well it performs withough any **PCA** transformation. We bind the labels (response/outcome variables) to the set:
+The data is cleaned up and ready to go. Let's see how well it performs without any **PCA** transformation. We bind the labels (response/outcome variables) to the set:
 
 ```r
 dfEvaluate <- cbind(as.data.frame(sapply(gisette_nzv, as.numeric)),
@@ -226,7 +226,7 @@ print(mean(lsAUC))
 ## [1] 0.9279
 ```
 <BR><BR>
-Now we're talking, **0.9279**!!! Let's try **10** compoenents:
+Now we're talking, **0.9279**!!! Let's try **10** components:
 
 ```r
 nComp <- 10
@@ -238,7 +238,7 @@ print(mean(lsAUC))
 ## [1] 0.9651
 ```
 <BR><BR>
-Yowza!! **0.9651**!! Let's try **20** compoenents:
+Yowza!! **0.9651**!! Let's try **20** components:
 
 ```r
 nComp <- 20
@@ -250,7 +250,7 @@ print(mean(lsAUC))
 ## [1] 0.9641
 ```
 <BR><BR>
-Hmmm, going back down... Let's stop right here and stick with the first **10 PCA** components. So, 10 PCA columns verus 4639 columns - not bad, right?
+Hmmm, going back down... Let's stop right here and stick with the first **10 PCA** components. So, 10 PCA columns versus 4639 columns - not bad, right?
 <BR><BR>   
 **Additional Stuff**
 
