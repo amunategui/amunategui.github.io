@@ -10,8 +10,21 @@ published: true
 summary: The <B>dummyVars</B> function streamlines the creation of dummy variables by quickly hunting down character and factor variables and transforming them into binaries, with or without full rank.
 image: dummyVarWalkthrough/factor4.png
 ---
-<i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=7rgzCjrIA-o&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Walkthrough of the dummyVars function from the {caret} package: Machine Learning with R</a></i>
-<BR><BR><BR>
+**Resources**
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=7rgzCjrIA-o&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<BR>
+**Packages Used in this Walkthrough**
+
+<ul>
+        <li type="square"><b>{caret}</b> - dummyVars function</li>
+</ul>
+
+<BR><BR>
+
+
 As the name implies, the ``dummyVars`` function allows you to create dummy variables - in other words it translates text data into numerical data for modeling purposes.
 
 If you are planning on doing predictive analytics or machine learning and want to use regression or any other modeling technique that requires numerical data, you will need to transform your text data into numbers otherwise you run the risk of leaving a lot of information on the table...
@@ -142,8 +155,9 @@ As you can see, it picked male and sad, if you are **0** in both columns, then y
 **Things to keep in mind**<BR>
 <li>Don't dummy a large data set full of zip codes; you more than likely don't have the computing muscle to add an extra 43,000 columns to your data set.</li>
 <li>You can dummify large, free-text columns. Before running the function, look for reapeated words or sentences, only take the top 50 of them and replace the rest with 'others'. This will allow you to use that field without delving deeply into NLP.</li>
-<BR><BR>        
-<a href='https://github.com/amunategui/Walkthrough-of-the-dummyVars-Function' target='_blank'>Full Source</a>:
+<BR><BR>              
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/Walkthrough-of-the-dummyVars-Function' target='_blank'>also on GitHub</a>)</a>:
+
 ```r
 survey <- data.frame(service=c('very unhappy','unhappy','neutral','happy','very happy'))
 print(survey)
