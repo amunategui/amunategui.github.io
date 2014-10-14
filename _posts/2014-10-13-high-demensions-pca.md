@@ -7,7 +7,7 @@ year: 2014
 month: 10
 day: 13
 published: true
-summary: This is a hands-on walkthrough on how <B>PCA</B> can reduce a 1000+ variable data set into 10 variables and barely lose any accuracy! This is incredible, and everytime I play around with this, I still get amazed! 
+summary: This is a hands-on walkthrough on how <B>PCA</B> can reduce a 1000+ variable data set into 10 variables and barely lose accuracy! This is incredible, and everytime I play around with this, I still get amazed! 
 image: dimension-reduction/pca.png
 ---
 
@@ -29,12 +29,12 @@ image: dimension-reduction/pca.png
 <BR>
 **Introduction**
 
-I can't remember the last time I worked on a data sets with less than **1000** features. Not a big deal with today's computing power, but can turn into a nightmare when you need to use certain forest-based models, heavy cross-validation, grid tuning, and most ensemble work. <i>Note: the term variables, features, predictors are used throughout and mean the same thing.</i>
+I can't remember the last time I worked on a data sets with less than **1000** features. Not a big deal with today's computing power, but it can become a unwieldy when you need to use certain forest-based models, heavy cross-validation, grid tuning, and any ensemble work. <i>Note: the term variables, features, predictors are used throughout and mean the same thing.</i>
 
-Off the bat, there are 3 ways to deal with **high-dimensionality data** (i.e. too many variables):
+Off the bat, there are 3 ways of dealing with **high-dimensionality data** (i.e. having too many variables):
 
 <ol>
-<li>get more computing muscle (like an amazon web server EC2 instance),</li>
+<li>get more computing muscle (like an <a href='http://amunategui.github.io/EC2-RStudioServer/' target='_blank'>Amazon web server EC2</a> instance),</li>
 <li>prune your data set using <B>feature selection</B> (measure variables effectiveness and keep only the best - built-in feature selection - see fscaret),</li>
 <li>and finally, the subject of this walkthrough, use <B>feature reduciton</B> (also refereed as feature extraction) <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction">...</a> to create new variables made of bits and pieces of the original variables.</li>
 </ol>
@@ -281,7 +281,7 @@ Though out of scope for this hands-on post, checkout clusterboot
 
 
 <BR><BR>        
-<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>GitHub</a>)</a>:
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
 
