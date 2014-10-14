@@ -35,7 +35,7 @@ Off the bat, there are 3 ways of dealing with **high-dimensionality data** (i.e.
 
 <ol>
 <li>get more computing muscle (like RStudio on an <a href='http://amunategui.github.io/EC2-RStudioServer/' target='_blank'>Amazon web server EC2</a> instance),</li>
-<li>prune your data set using <a href='http://en.wikipedia.org/wiki/Feature_selection' target='_blank'>feature selection</a> (measure variables effectiveness and keep only the best - built-in feature selection - <a href='http://amunategui.github.io/fscaret-Walkthrough/' target='_blank'>see fscaret</a>),</li>
+<li>prune your data set using <a href='http://en.wikipedia.org/wiki/Feature_selection' target='_blank'>feature selection</a> (measure variables effectiveness and keeps only the best - built-in feature selection - <a href='http://amunategui.github.io/fscaret-Walkthrough/' target='_blank'>see fscaret</a>),</li>
 <li>and finally, the subject of this walkthrough, use <B>feature reduciton</B> (also refereed as <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction">feature extraction</a>) to create new variables made of bits and pieces of the original variables.</li>
 </ol>
 
@@ -43,7 +43,7 @@ According to <a href='http://en.wikipedia.org/wiki/Dimensionality_reduction' tar
 
 <ul>"Principal component analysis (PCA) is a statistical procedure that uses an orthogonal transformation to convert a set of observations of possibly correlated variables into a set of values of linearly uncorrelated variables called principal components."</ul>
 
-You’ll find reams explanations on web, but, in a nutshell, it looks for the set of variables in your data that explains most of your variance and creates a new feature out of it. This becomes your first component. It will then keep doing so on the next set of variables unrelated to the first one, and that will become your next component, and so on and so forth. This is done in an unsupervised manner so it doesn't care what your response variable/outcome is. As a side note, this is the basis of a lot of compression software – its that good.
+You’ll find reams of explanations on the web, but, in a nutshell, it looks for the set of related variables in your data that explain most of the variance and creates a new feature out of it. This becomes your first component. It will then keep doing so on the next set of variables unrelated to the first one, and that will become your next component, and so on and so forth. This is done in an unsupervised manner so it doesn't care what your response variable/outcome is. <i>As a side note, this is the basis of a lot of compression software – its that good.</i>
 
 **Lets code!**
 
