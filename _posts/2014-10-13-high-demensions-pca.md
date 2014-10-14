@@ -13,9 +13,8 @@ image: dimension-reduction/pca.png
 
 **Resources**
 <ul>
-<li type="square">YouTube Companion Video: </li>
-<li type="square"><a href="#sourcecode">Full source code</a>
-</li>
+<li type="square"><a href="https://www.youtube.com/user/mamunate/videos">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full source code</a></li>
 </ul>
 <BR>
 **Packages Used in this Walkthrough**
