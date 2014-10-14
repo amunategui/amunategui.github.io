@@ -43,7 +43,7 @@ According to <a href='http://en.wikipedia.org/wiki/Dimensionality_reduction' tar
 
 <ul>"Principal component analysis (PCA) is a statistical procedure that uses an orthogonal transformation to convert a set of observations of possibly correlated variables into a set of values of linearly uncorrelated variables called principal components."</ul>
 
-There's mountains of details on the web on this topic, but, in a nutshell, it looks for the set of variables in your data that explains most of your variance and creates a new feature out of it. This becomes your first component. It will then keep doing so on the next set of variables unrelated to the first one, and that will become your next component. And so on and so forth. This is done in an unsupervised manner so it doesn't care what your repsonse variable/outcome is. This is the basis of a lot of compression software - and it works really well.
+You’ll find reams explanations on web, but, in a nutshell, it looks for the set of variables in your data that explains most of your variance and creates a new feature out of it. This becomes your first component. It will then keep doing so on the next set of variables unrelated to the first one, and that will become your next component, and so on and so forth. This is done in an unsupervised manner so it doesn't care what your response variable/outcome is. As a side note, this is the basis of a lot of compression software – its that good.
 
 **Lets code!**
 
