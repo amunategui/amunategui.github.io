@@ -63,7 +63,7 @@ print(dim(gisetteRaw))
 ```
 ## [1] 6000 5001
 ```
-
+<BR><BR>
 ``gisetteRaw`` is a large file with **5001** columns and we need to remove the redundant ones that could slow down (or crash) the **pca** transformation process. In the **caret** package, we use the ``nearZeroVar`` function with ``saveMetrics`` parameter set to **true**. This will return a data frame with the degree of zero variance for each feature:
 
 ```r
@@ -88,6 +88,7 @@ print(head(nzv))
 ## V5    980.00        1.5333   FALSE TRUE
 ## V6    140.00        3.5167   FALSE TRUE
 ```
+<BR><BR>
 We remove features with less than 0.1% variance:
 
 ```r
@@ -114,12 +115,14 @@ print(paste('Column count after cutoff:',ncol(gisette_nzv)))
 ```
 ## [1] "Column count before cutoff: 4639"
 ```
+<BR><BR>
 The data is cleaned up and ready to go. Let's see how well it performs withough any **PCA** transformation. We bind the labels (response/outcome variables) to the set:
 
 ```r
 dfEvaluate <- cbind(as.data.frame(sapply(gisette_nzv, as.numeric)),
               cluster=g_labels$V1)
 ```
+<BR><BR>
 We're going to feed the data into the following cross-validation function using the ``zxgboost`` model. This is a fast model and does great with large data sets. The repeated cross-validation will run the data 5 times, each time assigning a new chunk of data as training and testing. This not only allows us to use all the data as both train and test sets, but also stabilizes our <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC (Area Under the Curve)</a> score.
 
 
@@ -169,6 +172,7 @@ EvaluateAUC(dfEvaluate)
 
 ## [1] 0.9659
 ```
+<BR><BR>
 This yields a great **AUC score of 0.9659** (remember, <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC</a> of 0.5 is random, and 1.0 is perfect). But we don't really care how well the model did; we just want to use that AUC score as a basis of comparison against the transformed PCA variables.
 
 So, let's use the same data and run it through ``prcomp``. This will transform all the related variables that account for most of the variation - meaning that the first component variable will be the most powerful variable (**Warning:** this can be a very slow to process depending on your machine - it took 20 minutes on my MacBook - so do it once and store the resulting data set for later use):
@@ -177,7 +181,7 @@ So, let's use the same data and run it through ``prcomp``. This will transform a
 pmatrix <- scale(gisette_nzv)
 princ <- prcomp(pmatrix)
 ```
-
+<BR><BR>
 Let's start by running the same cross-validation code with just the **first PCA component** (remember, this holds most of the variation of our data set):
 
 ```r
@@ -197,7 +201,7 @@ EvaluateAUC(dfEvaluate)
 
 ## [1] 0.719
 ```
-
+<BR><BR>
 The resulting **AUC of 0.719** isn't that good compared to the orginal, non-transformed data set. But we have to remember that this is one variable against almost 5000!! Let's try this again with 2 components:
 
 ```r
@@ -209,6 +213,7 @@ print(mean(lsAUC))
 ```
 ## [1] 0.7228
 ```
+<BR><BR>
 Two components give an **AUC score of 0.7228**, still some ways to go. Let's jump to **5** components:
 
 ```r
@@ -220,6 +225,7 @@ print(mean(lsAUC))
 ```
 ## [1] 0.9279
 ```
+<BR><BR>
 Now we're talking, **0.9279**!!! Let's try **10** compoenents:
 
 ```r
@@ -231,8 +237,8 @@ print(mean(lsAUC))
 ```
 ## [1] 0.9651
 ```
-
-Wow, **0.9651**!! Let's try **20** compoenents:
+<BR><BR>
+Yowza!! **0.9651**!! Let's try **20** compoenents:
 
 ```r
 nComp <- 20
@@ -243,6 +249,7 @@ print(mean(lsAUC))
 ```
 ## [1] 0.9641
 ```
+<BR><BR>
 Hmmm, going back down... Let's stop right here and stick with the first **10 PCA** components.
 <BR><BR>   
 **Additional Stuff**
