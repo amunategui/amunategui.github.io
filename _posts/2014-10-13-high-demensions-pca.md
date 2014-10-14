@@ -25,8 +25,7 @@ image: dimension-reduction/pca.png
         <li type="square"><b>{Metrics}</b> - measuring error & AUC</li>
         <li type="square"><b>{caret}</b> - reducing zero/near-zero variance</li>
 </ul>
-<BR>
-**Introduction**
+<BR><BR>
 
 I can't remember the last time I worked on a data sets with less than **1000** features. This isn't a big deal with today's computing power, but it can become unwieldy when you need to use certain forest-based models, heavy cross-validation, grid tuning, and any ensemble work. <i>Note: the term variables, features, predictors are used throughout and mean the same thing.</i>
 

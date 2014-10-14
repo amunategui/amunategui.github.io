@@ -24,7 +24,7 @@ image: correlations/unnamed-chunk-9.png
         <li type="square"><b>{caret}</b> - dummyVars function</li>
 </ul>
 
-<BR><BR><BR>
+<BR><BR>
 
 A great way to explore new data is to use a pairwise correlation matrix. This will measure the correlation between every combination of your variables. It doesn't really matter if you have an outcome (or response) variable at this point, it will compare everything against everything else.
 
