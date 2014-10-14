@@ -381,8 +381,10 @@ print(sparse.model.matrix(~.,cat_dataframe))
 ## 13 1 . . . . .  .  .  . 42  . . . 1 1
 ## 14 1 . . . . .  .  .  .  . 49 . . 1 1
 ```
-<BR><BR>        
+<BR><BR>
+      
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/Sparse-Matrices-And-GLMNET-Demo' target='_blank'>also on GitHub</a>)</a>:
+
 ```r
 
 some_dataframe <- read.table(text="c1        c2     c3     c4     c5     c6     c7     c8     c9     c10     outcome<BR>
