@@ -64,7 +64,7 @@ print(dim(gisetteRaw))
 ## [1] 6000 5001
 ```
 
-``gisetteRaw`` is a large file with many columns and we need to remove redundant columns that could slow down (or crash the **pca** transformation process). The ``nearZeroVar`` function with the ``saveMetrics`` parameter set to **true** will return the degree of zero variance for each feature:
+``gisetteRaw`` is a large file with many columns and we need to remove redundant columns that could slow down (or crash the **pca** transformation process). From the **caret** package, we use the ``nearZeroVar`` function with the ``saveMetrics`` parameter set to **true** will return the degree of zero variance for each feature:
 
 ```r
 nzv <- nearZeroVar(gisetteRaw, saveMetrics = TRUE)
