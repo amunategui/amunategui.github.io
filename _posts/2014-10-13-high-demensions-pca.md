@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Reducing High Dimensional Data with <B>Principle Component Analysis</B> (PCA)
+title: Reducing High Dimensional Data with <B>Principle Component Analysis</B> (PCA) and <b>{prcomp}</b>
 category: Machine Learning
 tags: exploring modeling
 year: 2014
@@ -14,7 +14,7 @@ image: dimension-reduction/pca.png
 **Resources**
 <ul>
 <li type="square">YouTube Companion Video: </li>
-<li type="square"><a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>Full source code</a>
+<li type="square"><a href="#sourcecode">Full source code</a>
 </li>
 </ul>
 <BR>
@@ -281,7 +281,7 @@ Though out of scope for this hands-on post, checkout clusterboot
 
 
 <BR><BR>        
-<a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>Full source</a>:
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/pca-dimension-reduction' target='_blank'>GitHub</a>)</a>:
 
 ```r
 
