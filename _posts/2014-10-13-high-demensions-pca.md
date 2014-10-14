@@ -47,7 +47,7 @@ You’ll find reams of explanations on the web, but, in a nutshell, it looks for
 
 **Lets code!**
 
-To get started, we need a data set with a lot of columns. We're going to borrow a data set from <a href='http://www.nipsfsc.ecs.soton.ac.uk/' target='_blank'>NIPS (Neural Information Processing Systems)</a> from a completed, 2013 competition where the data is still available. We download the <a href='http://www.nipsfsc.ecs.soton.ac.uk/datasets/' target='_blank'>GISETTE and associated labels</a> data sets (**warning:** this is a large file):
+To get started, we need a data set with a lot of columns. We're going to borrow a data set from <a href='http://www.nipsfsc.ecs.soton.ac.uk/' target='_blank'>NIPS (Neural Information Processing Systems)</a> from a completed, 2013 competition where the data is still available. The meaning of the data is immaterial for our needs. We download the <a href='http://www.nipsfsc.ecs.soton.ac.uk/datasets/' target='_blank'>GISETTE and associated labels</a> data sets (**warning:** this is a large file):
 
 
 ```r
