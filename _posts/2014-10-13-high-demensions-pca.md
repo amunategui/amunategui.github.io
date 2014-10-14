@@ -250,7 +250,7 @@ print(mean(lsAUC))
 ## [1] 0.9641
 ```
 <BR><BR>
-Hmmm, going back down... Let's stop right here and stick with the first **10 PCA** components. So, 10 PCA columsn verus 4639 columns - not bad, right?
+Hmmm, going back down... Let's stop right here and stick with the first **10 PCA** components. So, 10 PCA columns verus 4639 columns - not bad, right?
 <BR><BR>   
 **Additional Stuff**
 
