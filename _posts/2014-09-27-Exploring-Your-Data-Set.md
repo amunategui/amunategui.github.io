@@ -10,7 +10,20 @@ published: true
 summary: A great way to explore new data is to use a pairwise correlation matrix. This will pair every combination of your variables and measure the correlation between them.
 image: correlations/unnamed-chunk-9.png
 ---
-<i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=igPQ-pI8Bjo&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Using Correlations To Understand Your Data</a></i>
+**Resources**
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=igPQ-pI8Bjo&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<BR>
+**Packages Used in this Walkthrough**
+
+<ul>
+        <li type="square"><b>{RCurl}</b> - downloads https data</li>
+        <li type="square"><b>{psych}</b> - correlation matrix plotting</li>
+        <li type="square"><b>{caret}</b> - dummyVars function</li>
+</ul>
+
 <BR><BR><BR>
 
 A great way to explore new data is to use a pairwise correlation matrix. This will measure the correlation between every combination of your variables. It doesn't really matter if you have an outcome (or response) variable at this point, it will compare everything against everything else.
@@ -136,8 +149,9 @@ The pairs plot, and in particular the last ``Income`` column, tell us a lot abou
 **Things to keep in mind**<BR>
 <li>If you have a huge number of features in your data set, then be ready for extra computing time,</li>
 <li>and don't bother plotting it via ``pair.panels``, it will end up hanging R.</li>
-<BR><BR>
-[Full Source](https://github.com/amunategui/Exploring-Data-With-Correlations/blob/master/Correlations.R):
+ 
+<BR><BR>        
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/Exploring-Data-With-Correlations' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
 library(RCurl) # download https data
