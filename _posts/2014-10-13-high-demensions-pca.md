@@ -47,7 +47,7 @@ You’ll find reams explanations on web, but, in a nutshell, it looks for the se
 
 **Lets code!**
 
-To get us started, we need a very large data set. We don't need many rows, but we want as many columns as possible! We're going to borrow a data set from <a href='http://www.nipsfsc.ecs.soton.ac.uk/' target='_blank'>NIPS (Neural Information Processing Systems)</a> from a 2013 competition that they still make avaialble for us to learn from. WE download the <a href='http://www.nipsfsc.ecs.soton.ac.uk/datasets/' target='_blank'>GISETTE</a> data set (**warning:** this is a large file):
+To get started, we need a data set with a lot of columns. We're going to borrow a data set from <a href='http://www.nipsfsc.ecs.soton.ac.uk/' target='_blank'>NIPS (Neural Information Processing Systems)</a> from a 2013 competition that they still make avaialble for us to learn from. WE download the <a href='http://www.nipsfsc.ecs.soton.ac.uk/datasets/' target='_blank'>GISETTE</a> data set (**warning:** this is a large file):
 
 
 ```r
