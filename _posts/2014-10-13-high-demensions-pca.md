@@ -63,7 +63,7 @@ print(dim(gisetteRaw))
 ## [1] 6000 5001
 ```
 <BR><BR>
-``gisetteRaw`` is a large file with **5001** columns and we need to remove the redundant ones that could slow down (or crash) the **PCA** transformation process. In the **caret** package, we use the ``nearZeroVar`` function with ``saveMetrics`` parameter set to **true**. This will return a data frame with the degree of zero variance for each feature:
+The **gisetteRaw** data frame has **5001** columns and that's the kind of size we're looking for. Before we can start the **PCA** transformation process, we need to remove the extreme near-zero variance as it won't help us much and risks crashing the script. We load the **caret** package and call ``nearZeroVar`` function with ``saveMetrics`` parameter set to **true**. This will return a data frame with the degree of zero variance for each feature:
 
 ```r
 nzv <- nearZeroVar(gisetteRaw, saveMetrics = TRUE)
