@@ -43,8 +43,8 @@ According to <a href='http://en.wikipedia.org/wiki/Dimensionality_reduction' tar
 <ul>"Principal component analysis (PCA) is a statistical procedure that uses an orthogonal transformation to convert a set of observations of possibly correlated variables into a set of values of linearly uncorrelated variables called principal components."</ul>
 
 You’ll find reams of explanations on the web, but, in a nutshell, it looks for the set of related variables in your data that explain most of the variance and creates a new feature out of it. This becomes your first component. It will then keep doing so on the next set of variables unrelated to the first, and that becomes your next component, and so on and so forth. This is done in an unsupervised manner so it doesn't care what your response variable/outcome is. <i>As a side note, this is the basis of a lot of compression software – it is that good.</i>
-
-**Lets code!**
+<BR><BR>
+**Let's code!**
 
 To get started, we need a data set with a lot of columns. We're going to borrow a data set from <a href='http://www.nipsfsc.ecs.soton.ac.uk/' target='_blank'>NIPS (Neural Information Processing Systems)</a> from a completed, 2013 competition where the data is still available. The meaning of the data is immaterial for our needs. We download the <a href='http://www.nipsfsc.ecs.soton.ac.uk/datasets/' target='_blank'>GISETTE and associated labels</a> data sets (**warning:** this is a large file):
 
@@ -171,7 +171,7 @@ EvaluateAUC(dfEvaluate)
 ```
 This yields a great **AUC score of 0.9659** (remember, <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC</a> of 0.5 is random, and 1.0 is perfect). But we don't really care how well the model did; we just want to use that AUC score as a basis of comparison against the transformed PCA variables.
 
-So, lets use the same data and run it through ``prcomp``. This will transform all the related variables that account for most of the variation - meaning that the first component variable will be the most powerful variable (**Warning:** this can be a very slow to process depending on your machine - it took 20 minutes on my MacBook - so do it once and store the resulting data set for later use):
+So, let's use the same data and run it through ``prcomp``. This will transform all the related variables that account for most of the variation - meaning that the first component variable will be the most powerful variable (**Warning:** this can be a very slow to process depending on your machine - it took 20 minutes on my MacBook - so do it once and store the resulting data set for later use):
 
 ```r
 pmatrix <- scale(gisette_nzv)
@@ -243,7 +243,7 @@ print(mean(lsAUC))
 ```
 ## [1] 0.9641
 ```
-Hmmm, going back down... Let's stop right here and stick with the first 10 PCA components.
+Hmmm, going back down... Let's stop right here and stick with the first **10 PCA** components.
 <BR><BR>   
 **Additional Stuff**
 
