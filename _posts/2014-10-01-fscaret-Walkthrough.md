@@ -7,7 +7,7 @@ year: 2014
 month: 10
 day: 1
 published: true
-summary: Give <B>fscaret</B> an ensemble of models and some data, and it will have the ensemble vote on the importance of each feature to find the strongest ones. In this walkthrough, we use the classic Titanic data set to predict survivorship.
+summary: Give <B>fscaret</B> an ensemble of models and some data, and it will have the ensemble vote on the importance of each feature to find the strongest ones. In this walkthrough, we use R and the classic Titanic data set to predict survivorship.
 image: FSCARET_Walkthrough/titanic.png
 ---
 **Resources**
@@ -24,7 +24,6 @@ image: FSCARET_Walkthrough/titanic.png
 </ul>
 
 <BR><BR>
-
 The <a href='http://cran.r-project.org/web/packages/fscaret/index.html' target='_blank'>fscaret package</a>, as its name implies, is closely related to the <a href='http://cran.r-project.org/web/packages/caret/index.html' target='_blank'>caret package</a>. It relies on **caret**, and its numerous functions, to get its job done.
 <BR><BR>
 **So what does this package do?**
