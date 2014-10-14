@@ -43,11 +43,11 @@ According to <a href='http://en.wikipedia.org/wiki/Dimensionality_reduction' tar
 
 <ul>"Principal component analysis (PCA) is a statistical procedure that uses an orthogonal transformation to convert a set of observations of possibly correlated variables into a set of values of linearly uncorrelated variables called principal components."</ul>
 
-You’ll find reams of explanations on the web, but, in a nutshell, it looks for the set of related variables in your data that explain most of the variance and creates a new feature out of it. This becomes your first component. It will then keep doing so on the next set of variables unrelated to the first one, and that will become your next component, and so on and so forth. This is done in an unsupervised manner so it doesn't care what your response variable/outcome is. <i>As a side note, this is the basis of a lot of compression software – its that good.</i>
+You’ll find reams of explanations on the web, but, in a nutshell, it looks for the set of related variables in your data that explain most of the variance and creates a new feature out of it. This becomes your first component. It will then keep doing so on the next set of variables unrelated to the first, and that becomes your next component, and so on and so forth. This is done in an unsupervised manner so it doesn't care what your response variable/outcome is. <i>As a side note, this is the basis of a lot of compression software – it is that good.</i>
 
 **Lets code!**
 
-To get started, we need a data set with a lot of columns. We're going to borrow a data set from <a href='http://www.nipsfsc.ecs.soton.ac.uk/' target='_blank'>NIPS (Neural Information Processing Systems)</a> from a 2013 competition that they still make avaialble for us to learn from. WE download the <a href='http://www.nipsfsc.ecs.soton.ac.uk/datasets/' target='_blank'>GISETTE</a> data set (**warning:** this is a large file):
+To get started, we need a data set with a lot of columns. We're going to borrow a data set from <a href='http://www.nipsfsc.ecs.soton.ac.uk/' target='_blank'>NIPS (Neural Information Processing Systems)</a> from a completed, 2013 competition where the data is still available. We download the <a href='http://www.nipsfsc.ecs.soton.ac.uk/datasets/' target='_blank'>GISETTE and associated labels</a> data sets (**warning:** this is a large file):
 
 
 ```r
@@ -65,7 +65,7 @@ print(dim(gisetteRaw))
 ## [1] 6000 5001
 ```
 
-``gisetteRaw`` is a large file with many columns and we need to remove redundant columns that will slow down (or crash the pca process). The ``nearZeroVar`` function with the ``saveMetrics`` parameter set to **true** will return the degree of feature variance:
+``gisetteRaw`` is a large file with many columns and we need to remove redundant columns that will slow down (or crash the **pca** transformation process). The ``nearZeroVar`` function with the ``saveMetrics`` parameter set to **true** will return the degree of zero variance for each feature:
 
 ```r
 nzv <- nearZeroVar(gisetteRaw, saveMetrics = TRUE)
