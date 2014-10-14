@@ -34,9 +34,9 @@ I can't remember the last time I worked on a data sets with less than **1000** f
 Off the bat, there are 3 ways of dealing with **high-dimensionality data** (i.e. having too many variables):
 
 <ol>
-<li>get more computing muscle (like an <a href='http://amunategui.github.io/EC2-RStudioServer/' target='_blank'>Amazon web server EC2</a> instance),</li>
-<li>prune your data set using <B>feature selection</B> (measure variables effectiveness and keep only the best - built-in feature selection - see fscaret),</li>
-<li>and finally, the subject of this walkthrough, use <B>feature reduciton</B> (also refereed as feature extraction) <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction">...</a> to create new variables made of bits and pieces of the original variables.</li>
+<li>get more computing muscle (like RStudio on an <a href='http://amunategui.github.io/EC2-RStudioServer/' target='_blank'>Amazon web server EC2</a> instance),</li>
+<li>prune your data set using <a href='http://en.wikipedia.org/wiki/Feature_selection' target='_blank'>feature selection</a> (measure variables effectiveness and keep only the best - built-in feature selection - <a href='http://amunategui.github.io/fscaret-Walkthrough/' target='_blank'>see fscaret</a>),</li>
+<li>and finally, the subject of this walkthrough, use <B>feature reduciton</B> (also refereed as <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction">feature extraction</a>) to create new variables made of bits and pieces of the original variables.</li>
 </ol>
 
 According to <a href='http://en.wikipedia.org/wiki/Dimensionality_reduction' target='_blank'>wikipedia</a>:
