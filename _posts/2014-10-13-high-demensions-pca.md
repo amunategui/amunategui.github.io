@@ -65,7 +65,7 @@ print(dim(gisetteRaw))
 ## [1] 6000 5001
 ```
 
-``gisetteRaw`` is a large file with many columns and we need to remove redundant columns that will slow down (or crash the **pca** transformation process). The ``nearZeroVar`` function with the ``saveMetrics`` parameter set to **true** will return the degree of zero variance for each feature:
+``gisetteRaw`` is a large file with many columns and we need to remove redundant columns that could slow down (or crash the **pca** transformation process). The ``nearZeroVar`` function with the ``saveMetrics`` parameter set to **true** will return the degree of zero variance for each feature:
 
 ```r
 nzv <- nearZeroVar(gisetteRaw, saveMetrics = TRUE)
@@ -121,7 +121,7 @@ Now that we have a data cleaned up and ready to go, let's see how well it perfor
 dfEvaluate <- cbind(as.data.frame(sapply(gisette_nzv, as.numeric)),
               cluster=g_labels$V1)
 ```
-We're going to feed it to a cross-validation loop in order to run the data 5 times, each time assigning a new chunk as training and testing. This allows to get a stable AUC (Area Under the Curve) score.
+We're going to feed the data to a cross-validation function with ``zxgboost`` model. This will run the data 5 times, each time assigning a new chunk of data as training and testing. This not only allows us to use all the data as both train and test, but it stabilizes our <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC (Area Under the Curve)</a> score.
 
 
 ```r
@@ -169,7 +169,7 @@ print(mean(lsAUC))
 ```
 ## [1] 0.9659
 ```
-This yields a great AUC score (remember, AUC of 0.5 is random, and 1.0 is perfect). But we don't really care how well the model did, we just want to use that AUC score as basis to compare the same model but with data transformed through PCA.
+This yields a great AUC score (remember, <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC</a> of 0.5 is random, and 1.0 is perfect). But we don't really care how well the model did, we just want to use that AUC score as basis to compare the same model but with data transformed through PCA.
 
 So, lets use the same data and run it through ``prcomp``. This will transform all the variables by importance of variation - meaning that the first component variable will contain most of the variation from the data and therefore be the most powerful one (**Warning:** this can be a very slow to process depending on your machine - so do it once and store the resulting data set for later use):
 
