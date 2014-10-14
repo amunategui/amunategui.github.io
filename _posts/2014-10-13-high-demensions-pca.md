@@ -199,7 +199,7 @@ EvaluateAUC(dfEvaluate)
 ## [1] 0.719
 ```
 
-The resulting **AUC of 0.719** isn't that good compared to the orginal, non-transformed data set. Let's try this again with 2 components:
+The resulting **AUC of 0.719** isn't that good compared to the orginal, non-transformed data set. But we have to remember that this is one variable against almost 5000!! Let's try this again with 2 components:
 
 ```r
 nComp <- 2  
@@ -210,7 +210,7 @@ print(mean(lsAUC))
 ```
 ## [1] 0.7228
 ```
-Two components still don't give us a great score, let's jump to **5** components:
+Two components give an **AUC score of 0.7228**, still some ways to go. Let's jump to **5** components:
 
 ```r
 nComp <- 5
