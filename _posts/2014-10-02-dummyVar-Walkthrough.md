@@ -155,6 +155,7 @@ As you can see, it picked male and sad, if you are **0** in both columns, then y
 **Things to keep in mind**<BR>
 <li>Don't dummy a large data set full of zip codes; you more than likely don't have the computing muscle to add an extra 43,000 columns to your data set.</li>
 <li>You can dummify large, free-text columns. Before running the function, look for reapeated words or sentences, only take the top 50 of them and replace the rest with 'others'. This will allow you to use that field without delving deeply into NLP.</li>
+
 <BR><BR>              
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/Walkthrough-of-the-dummyVars-Function' target='_blank'>also on GitHub</a>)</a>:
 

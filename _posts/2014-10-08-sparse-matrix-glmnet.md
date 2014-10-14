@@ -10,10 +10,21 @@ published: true
 summary: Walkthrough of sparse matrices in R and basic use of the <b>glmnet</b> package. This will show how to create them, find the best probabilities through the glmnet model, and how a sparse matrix deals with categorical values.
 image: sparse-matrix-glmnet/sparse.png
 ---
-<i><B>YouTube Companion Video:</B> <a href="https://www.youtube.com/watch?v=Ysh2gs8VKvQ&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">Sparse Matrix and GLMNET: Machine Learning with R</a></i>
-<BR><BR><BR>
+**Resources**
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=Ysh2gs8VKvQ&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<BR>
+**Packages Used in this Walkthrough**
 
+<ul>
+        <li type="square"><b>{Matrix}</b> - creates sparse/dense matrices</li>
+        <li type="square"><b>{glmnet}</b> - generalized linear models</li>
+        <li type="square"><b>{pROC}</b> - ROC tools</li>
+</ul>
 
+<BR><BR>
 In this walkthough, I am going to show how sparse matrices work in R and how to use them with the GLMNET package.
 
 For those that aren't familiar with sparse matrices, or the sparse matrix, as the name implies, it is a large but ideally hollow data set. If your data contains lots of zeros then a sparse matrix is a very memory-efficient way of holding that data. For example, if you have a lot of dummy variables, most of that data will be zeros, and a sparse matrix will only hold non-zero data and ignore the zeros, thus using a lot less memory and allowing the memorization of much larger data sets than traditional data frames.
@@ -370,9 +381,8 @@ print(sparse.model.matrix(~.,cat_dataframe))
 ## 13 1 . . . . .  .  .  . 42  . . . 1 1
 ## 14 1 . . . . .  .  .  .  . 49 . . 1 1
 ```
-<BR><BR>
-[Full Source](https://github.com/amunategui/Sparse-Matrices-And-GLMNET-Demo/blob/master/Sparse-Matrices-And-GLMNET-Demo.R):
-
+<BR><BR>        
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/Sparse-Matrices-And-GLMNET-Demo' target='_blank'>also on GitHub</a>)</a>:
 ```r
 
 some_dataframe <- read.table(text="c1        c2     c3     c4     c5     c6     c7     c8     c9     c10     outcome<BR>
