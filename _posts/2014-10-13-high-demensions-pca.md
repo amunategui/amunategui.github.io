@@ -122,7 +122,7 @@ dfEvaluate <- cbind(as.data.frame(sapply(gisette_nzv, as.numeric)),
               cluster=g_labels$V1)
 ```
 <BR><BR>
-We're going to feed the data into the following cross-validation function using the ``zxgboost`` model. This is a fast model and does great with large data sets. The repeated cross-validation will run the data 5 times, each time assigning a new chunk of data as training and testing. This not only allows us to use all the data as both train and test sets, but also stabilizes our <a href='http://en.wikipedia.org/wiki/Integral' target='_blank'>AUC (Area Under the Curve)</a> score.
+We're going to feed the data into the following cross-validation function using the ``zxgboost`` model. This is a fast model and does great with large data sets. The repeated cross-validation will run the data 5 times, each time assigning a new chunk of data as training and testing. This not only allows us to use all the data as both train and test sets, but also stabilizes our <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>AUC (Area Under the Curve)</a> score.
 
 
 ```r
