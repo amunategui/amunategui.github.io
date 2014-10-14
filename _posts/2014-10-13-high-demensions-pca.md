@@ -244,7 +244,7 @@ print(mean(lsAUC))
 ## [1] 0.9641
 ```
 Hmmm, going back down... Let's stop right here and stick with the first 10 PCA components.
-
+<BR><BR>   
 **Additional Stuff**
 
 Though out of scope for this hands-on post, there are many ways of finding the perfect amount of components to use. Check out <a href='http://astrostatistics.psu.edu/su09/lecturenotes/pca.html' target='_blank'>Eigen angles and vectors</a> and check out also <a href='http://www.inside-r.org/packages/cran/fpc/docs/clusterboot' target='_blank'>clusterboot</a>.
