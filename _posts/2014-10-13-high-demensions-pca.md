@@ -1,13 +1,13 @@
 ---
 layout: post
-title: Reducing High Dimensional Data with <B>Principle Component Analysis (PCA)</B> and <b>{prcomp}</b>
+title: Reducing High Dimensional Data with <B>Principle Component Analysis (PCA)</B> and <b>prcomp</b>
 category: Machine Learning
 tags: exploring modeling
 year: 2014
 month: 10
 day: 13
 published: true
-summary: In this R walkthrough, I'll show you how <B>PCA</B> can reduce a 1000+ variable data set into 10 variables and barely lose accuracy! This is incredible, and everytime I play around with this, I still get amazed! 
+summary: In this R walkthrough, we'll see how <B>PCA</B> can reduce a 1000+ variable data set into 10 variables and barely lose accuracy! This is incredible, and everytime I play around with this, I still get amazed! 
 image: dimension-reduction/pca.png
 ---
 
@@ -20,7 +20,7 @@ image: dimension-reduction/pca.png
 **Packages Used in this Walkthrough**
 
 <ul>
-        <li type="square"><b>{prcomp}</b> - for PCA</li>
+        <li type="square"><b>{stats}</b> - prcomp and PCA</li>
         <li type="square"><b>{xgboost}</b> - fast modeling algorithm</li>
         <li type="square"><b>{Metrics}</b> - measuring error & AUC</li>
         <li type="square"><b>{caret}</b> - reducing zero/near-zero variance</li>
