@@ -181,7 +181,7 @@ pmatrix <- scale(gisette_nzv)
 princ <- prcomp(pmatrix)
 ```
 <BR><BR>
-Let's start by running the same cross-validation code with just the **first PCA component** (remember, this holds most of the variation of our data set):
+Let's start by running the same cross-validation code with just the **first PCA component** (remember, this holds most of the variation of our data set). We need to use our princ result set and call the ``predict`` function to get our data.frame:
 
 ```r
 nComp <- 1  
