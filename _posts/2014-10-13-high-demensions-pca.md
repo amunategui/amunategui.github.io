@@ -29,7 +29,7 @@ image: dimension-reduction/pca.png
 
 I can't remember the last time I worked on a data set with less than **1000** features. This isn't a big deal with today's computing power, but it can become unwieldy when you need to use certain forest-based models, heavy cross-validation, grid tuning, and any ensemble work. <i>Note: the term variables, features, predictors are used throughout and mean the same thing.</i>
 
-Off the bat, there are 3 ways of dealing with **high-dimensionality data** (i.e. having too many variables):
+The 3 common ways of dealing with **high-dimensionality data** (i.e. having too many variables) are:
 
 <ol>
 <li>get more computing muscle (like RStudio on an <a href='http://amunategui.github.io/EC2-RStudioServer/' target='_blank'>Amazon web server EC2</a> instance),</li>
