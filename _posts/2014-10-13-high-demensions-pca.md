@@ -27,12 +27,12 @@ image: dimension-reduction/pca.png
 </ul>
 <BR><BR>
 
-I can't remember the last time I worked on a data set with less than **1000** features. This isn't a big deal with today's computing power, but it can become unwieldy when you need to use certain forest-based models, heavy cross-validation, grid tuning, and any ensemble work. <i>Note: the term variables, features, predictors are used throughout and mean the same thing.</i>
+I can't remember the last time I worked on a data set with less than **500** features. This isn't a big deal with today's computing power, but it can become unwieldy when you need to use certain forest-based models, heavy cross-validation, grid tuning, and any ensemble work. <i>Note: the term variables, features, predictors are used throughout and mean the same thing.</i>
 
 The 3 common ways of dealing with **high-dimensionality data** (i.e. having too many variables) are:
 
 <ol>
-<li>get more computing muscle (like RStudio on an <a href='http://amunategui.github.io/EC2-RStudioServer/' target='_blank'>Amazon web server EC2</a> instance),</li>
+<li>get more computing muscle (like RStudio on an <a href='http://amunategui.github.io/EC2-RStudioServer/' target='_blank'>Amazon Web Services EC2</a> instance),</li>
 <li>prune your data set using <a href='http://en.wikipedia.org/wiki/Feature_selection' target='_blank'>feature selection</a> (measure variables effectiveness and keeps only the best - built-in feature selection - <a href='http://amunategui.github.io/fscaret-Walkthrough/' target='_blank'>see fscaret</a>),</li>
 <li>and finally, the subject of this walkthrough, use <B>feature reduction</B> (also refereed as <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction">feature extraction</a>) to create new variables made of bits and pieces of the original variables.</li>
 </ol>
@@ -252,6 +252,8 @@ print(mean(lsAUC))
 Hmmm, going back down... Let's stop right here and stick with the first **10 PCA** components. So, 10 PCA columns versus 4639 columns - not bad, right?
 <BR><BR>   
 **Additional Stuff**
+
+A common critique about **PCA** is that it is hard to analyze once transformed as many of your variables will get clumped into a new one with a nondescript name. One way around this is top plot your **PCA** data ontop of you discrete variables, see <a href='http://cran.r-project.org/web/packages/FactoMineR/index.html' target='_blank'>FactoMineR</a> for more information.
 
 Though out of scope for this hands-on post, there are many ways of finding the perfect amount of components to use. Check out <a href='http://astrostatistics.psu.edu/su09/lecturenotes/pca.html' target='_blank'>Eigen angles and vectors</a> and check out also <a href='http://www.inside-r.org/packages/cran/fpc/docs/clusterboot' target='_blank'>clusterboot</a>.
 
