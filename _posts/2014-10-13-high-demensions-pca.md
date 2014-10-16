@@ -256,7 +256,7 @@ Hmmm, going back down... Let's stop right here and stick with the first **10 PCA
 <BR><BR>   
 **Additional Stuff**
 
-A common critique about **PCA** is that it is hard to analyze once transformed as many of your variables will get clumped into a new one with a nondescript name. One way around this is top plot your **PCA** data ontop of you discrete variables, see <a href='http://cran.r-project.org/web/packages/FactoMineR/index.html' target='_blank'>FactoMineR</a> for more information.
+A common critique about **PCA** is that it is hard to analyze once transformed as many of variables get clumped together under a nondescript name. One way around this is top plot your **PCA** data ontop of you discrete variables, see <a href='http://cran.r-project.org/web/packages/FactoMineR/index.html' target='_blank'>FactoMineR</a> for more information.
 
 Though out of scope for this hands-on post, there are many ways of finding the perfect amount of components to use - check out <a href='http://astrostatistics.psu.edu/su09/lecturenotes/pca.html' target='_blank'>Eigen angles and vectors</a> and check out also <a href='http://www.inside-r.org/packages/cran/fpc/docs/clusterboot' target='_blank'>clusterboot</a>.
 

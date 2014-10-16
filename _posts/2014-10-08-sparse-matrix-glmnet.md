@@ -380,7 +380,7 @@ print(sparse.model.matrix(~.,cat_dataframe))
 
 ```r
 
-some_dataframe <- read.table(text="c1        c2     c3     c4     c5     c6     c7     c8     c9     c10     outcome<BR>
+some_dataframe <- read.table(text="c1        c2     c3     c4     c5     c6     c7     c8     c9     c10     outcome
 2     7     0     0     0     0     0     0     0     0     0
 0     0     3     0     0     0     0     0     0     0     0
 0     0     0     6     1     0     0     0     0     0     0
