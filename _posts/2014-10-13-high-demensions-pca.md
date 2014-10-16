@@ -129,6 +129,8 @@ We're going to feed the data into the following cross-validation function using 
 ```r
 
 EvaluateAUC <- function(dfEvaluate) {
+        require(xgboost)
+        require(Metrics)
         CVs <- 5
         cvDivider <- floor(nrow(dfEvaluate) / (CVs+1))
         indexCount <- 1
@@ -162,8 +164,6 @@ EvaluateAUC <- function(dfEvaluate) {
 ```
 
 ```r
-library(xgboost)
-library(Metrics)
 EvaluateAUC(dfEvaluate)
 
 ## [1] "cv 1"
@@ -266,13 +266,13 @@ Though out of scope for this hands-on post, there are many ways of finding the p
 
 ```r
 
-require(xgboost)
-require(Metrics)
 require(ROCR)
 require(caret)
 require(ggplot2)
 
 EvaluateAUC <- function(dfEvaluate) {
+        require(xgboost)
+        require(Metrics)
         CVs <- 5
         cvDivider <- floor(nrow(dfEvaluate) / (CVs+1))
         indexCount <- 1
