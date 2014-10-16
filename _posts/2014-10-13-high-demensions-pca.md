@@ -66,6 +66,7 @@ print(dim(gisetteRaw))
 The **gisetteRaw** data frame has **5001** columns and that's the kind of size we're looking for. Before we can start the **PCA** transformation process, we need to remove the extreme near-zero variance as it won't help us much and risks crashing the script. We load the **caret** package and call ``nearZeroVar`` function with ``saveMetrics`` parameter set to **true**. This will return a data frame with the degree of zero variance for each feature:
 
 ```r
+library(caret)
 nzv <- nearZeroVar(gisetteRaw, saveMetrics = TRUE)
 print(paste('Range:',range(nzv$percentUnique)))
 ```
@@ -161,6 +162,8 @@ EvaluateAUC <- function(dfEvaluate) {
 ```
 
 ```r
+library(xgboost)
+library(Metrics)
 EvaluateAUC(dfEvaluate)
 
 ## [1] "cv 1"
