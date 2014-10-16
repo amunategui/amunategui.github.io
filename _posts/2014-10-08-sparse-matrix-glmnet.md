@@ -135,13 +135,6 @@ We then construct a sparse model matrix using the typical **R** formula:
 
 ```r
 library(glmnet) 
-```
-
-```
-## Loaded glmnet 1.9-8
-```
-
-```r
 train_sparse <- sparse.model.matrix(~.,train[1:10])
 test_sparse <- sparse.model.matrix(~.,test[1:10])
 print(train_sparse)
