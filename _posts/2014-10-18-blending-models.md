@@ -8,7 +8,7 @@ month: 10
 day: 18
 published: true
 summary: If you can model, then you can model ensembles! It’s literally as simple as running multiple models on the same data, collecting the predictions, and blending them using a final model. And, if all goes well, you should enjoy an AUC lift!
-image: 
+image: blending-models/blending.png
 ---
 
 **Resources**
@@ -98,6 +98,7 @@ names(getModelInfo())
 ## [166] "vbmpRadial"          "widekernelpls"       "WM"                 
 ## [169] "xyf"
 ```
+<BR><BR>
 As you can see, there should be plenty to satisfy most needs. Most models support either **dual use**, **classification** or **regression** only. For a more comprehensive code base you can test for the type a particular model supports:
 ```r
 getModelInfo()$glm$type
