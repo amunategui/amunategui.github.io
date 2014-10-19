@@ -29,7 +29,10 @@ image:
 There are many reasons to ensemble models but it usually comes down to capturing a deeper understanding of high dimensionality data. The more complex a data set, the more it will benefit from additional models, just like additional eyes, in order to capture more nuances scattered around high dimensionality data.
 
 **Let’s code!**
-This walkthrough leverags the **caret** package for ease of coding but the concept will apply to any models in any statistical programming language. Caret allows you to easily switch a code base through the almost 170 models it currently supports by only having to change one variable. To get a complete list of the models supported by **caret**:
+
+This walkthrough leverages the **caret** package for ease of coding but the concept will apply to any model in any statistical programming language. Caret allows you to easily switch models in a script without having to change much of the code. You can easily write a loop and have it run through the almost 170 models that the package currently supports (<a href='http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf' target='_blank'>Max Kuhn keeps adding new ones</a>) by only having to change one variable. 
+
+To get a complete list of the models supported by **caret**:
 
 ```r
 library(caret)

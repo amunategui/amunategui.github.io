@@ -2,7 +2,7 @@
 layout: post
 title: Reducing High Dimensional Data with <B>Principle Component Analysis (PCA)</B> and <b>prcomp</b>
 category: Machine Learning
-tags: exploring modeling
+tags: modeling
 year: 2014
 month: 10
 day: 13
@@ -252,7 +252,7 @@ print(mean(lsAUC))
 ## [1] 0.9641
 ```
 <BR><BR>
-Hmmm, going back down... Let's stop right here and stick with the first **10 PCA** components. So, 10 PCA columns versus 4639 columns - not bad, right? Keep in mind that you should be able to get closer to the **AUC** of the original data set by adding more **PCA** components as ``prcomp`` should account for all variations in the data. What I just showed is what you can get with very little effort, great results, and an absurdly smaller resulting data set.
+Hmmm, going back down... Let's stop here and stick with the first **10 PCA** components. So, 10 PCA columns versus 4639 columns - not bad, right? Keep in mind that you should be able to get closer to the **AUC** of the original data set by adding more **PCA** components as ``prcomp`` accounts for all variations in the data. On the other hand, by following the steps in this walkthrough, you can get a great **AUC** score with very little effort and an absurdly smaller resulting data set.
 <BR><BR>   
 **Additional Stuff**
 
