@@ -103,10 +103,12 @@ As you can see, there should be plenty to satisfy most needs. Most models suppor
 
 ```r
 getModelInfo()$glm$type
+```
+```
 #  "Regression"     "Classification"
 ```
 
-Here, ``glm`` supports both **regression** and **classification**.
+In the above snippet, ``glm`` supports both **regression** and **classification**.
 <BR><BR>
 We download the **vehicles** data set from <a href='https://github.com/hadley' target='_blank'>Hadley Wickham</a> hosted on Github. To keep this simple, we attempt to predict whether a vehicle has 6 cylinders or not using only the first 24 columns of the data set:
 
@@ -121,10 +123,9 @@ vehicles <- read.csv(textConnection(x))
 #vehicles <- read.csv(text = urlData)
 ```
 <BR><BR>
-We clean the outcome variable ‘cyclinders’ as 1 for 6 cyclinders and 0 for everything else:
+We clean the outcome variable ``cyclinders`` by assigning it ``1`` for 6 cyclinders and ``0`` for everything else:
 
 ```r
-
 vehicles <- vehicles[names(vehicles)[1:24]]
 vehicles <- data.frame(lapply(vehicles, as.character), stringsAsFactors=FALSE)
 vehicles <- data.frame(lapply(vehicles, as.numeric))
@@ -132,15 +133,13 @@ vehicles[is.na(vehicles)] <- 0
 vehicles$cylinders <- ifelse(vehicles$cylinders == 6, 1,0)
 ```
 <BR><BR>
-We call ``prop.table`` to understand the proporting of our outcome variable:
+We call ``prop.table`` to understand the proportions of our outcome variable:
 
 ```r
-
 prop.table(table(vehicles$cylinders))
 ```
 
 ```
-## 
 ##      0      1 
 ## 0.6506 0.3494
 ```
