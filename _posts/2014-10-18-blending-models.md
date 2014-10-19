@@ -105,13 +105,12 @@ As you can see, there should be plenty to satisfy most needs. Most models suppor
 getModelInfo()$glm$type
 #  "Regression"     "Classification"
 ```
-<BR><BR>
-Here, ``glm`` supports both **regression** and **classification**.
 
-We download the **vehicles** data set from <a href='https://github.com/hadley' target='_blank'>Hadley Wickham</a> from Github. To keep this simple, we only attempt to predict whether a vehicle has 6 cylinders using the first 24 columns of the data set:
+Here, ``glm`` supports both **regression** and **classification**.
+<BR><BR>
+We download the **vehicles** data set from <a href='https://github.com/hadley' target='_blank'>Hadley Wickham</a> hosted on Github. To keep this simple, we attempt to predict whether a vehicle has 6 cylinders or not using only the first 24 columns of the data set:
 
 ```r
-
 library(RCurl)
 urlfile <-'https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv'
 x <- getURL(urlfile, ssl.verifypeer = FALSE)
