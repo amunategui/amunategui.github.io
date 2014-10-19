@@ -116,12 +116,14 @@ library(RCurl)
 urlfile <-'https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv'
 x <- getURL(urlfile, ssl.verifypeer = FALSE)
 vehicles <- read.csv(textConnection(x))
+
 # alternative way of getting the data
 #urlData <- getURL('https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv')
 #vehicles <- read.csv(text = urlData)
 ```
 <BR><BR>
 We clean the outcome variable ‘cyclinders’ as 1 for 6 cyclinders and 0 for everything else:
+
 ```r
 vehicles <- vehicles[names(vehicles)[1:24]]
 vehicles <- data.frame(lapply(vehicles, as.character), stringsAsFactors=FALSE)
@@ -129,7 +131,9 @@ vehicles <- data.frame(lapply(vehicles, as.numeric))
 vehicles[is.na(vehicles)] <- 0
 vehicles$cylinders <- ifelse(vehicles$cylinders == 6, 1,0)
 ```
+<BR><BR>
 We call ``prop.table`` to understand the proporting of our outcome variable:
+
 ```r
 prop.table(table(vehicles$cylinders))
 ```
