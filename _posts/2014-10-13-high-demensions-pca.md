@@ -252,7 +252,7 @@ print(mean(lsAUC))
 ## [1] 0.9641
 ```
 <BR><BR>
-Hmmm, going back down... Let's stop right here and stick with the first **10 PCA** components. So, 10 PCA columns versus 4639 columns - not bad, right?
+Hmmm, going back down... Let's stop right here and stick with the first **10 PCA** components. So, 10 PCA columns versus 4639 columns - not bad, right? Keep in mind that you should be able to get closer to the **AUC** of the original data set by adding more **PCA** components as ``prcomp`` should account for all variations in the data. What I just showed is what you can get with very little effort, great results, and an absurdly smaller resulting data set.
 <BR><BR>   
 **Additional Stuff**
 
