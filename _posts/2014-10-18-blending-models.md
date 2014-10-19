@@ -26,7 +26,7 @@ image: blending-models/blending.png
 </ul>
 <BR><BR>
 
-There are many reasons to ensemble models but it usually comes down to capturing a deeper understanding of high dimensionality data. The more complex a data set, the more it will benefit from additional models, just like additional eyes, in order to capture more nuances scattered around high dimensionality data.
+There are many reasons to ensemble models but it usually comes down to capturing a deeper understanding of high dimensionality data. The more complex a data set, the more it benefits from additional models, just like additional eyes, in order to capture more nuances scattered around high dimensionality data.
 
 **Let’s code!**
 
@@ -100,15 +100,18 @@ names(getModelInfo())
 ```
 <BR><BR>
 As you can see, there should be plenty to satisfy most needs. Most models support either **dual use**, **classification** or **regression** only. For a more comprehensive code base you can test for the type a particular model supports:
+
 ```r
 getModelInfo()$glm$type
 #  "Regression"     "Classification"
 ```
+<BR><BR>
 Here, ``glm`` supports both **regression** and **classification**.
 
 We download the **vehicles** data set from <a href='https://github.com/hadley' target='_blank'>Hadley Wickham</a> from Github. To keep this simple, we only attempt to predict whether a vehicle has 6 cylinders using the first 24 columns of the data set:
 
 ```r
+
 library(RCurl)
 urlfile <-'https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv'
 x <- getURL(urlfile, ssl.verifypeer = FALSE)
@@ -117,7 +120,7 @@ vehicles <- read.csv(textConnection(x))
 #urlData <- getURL('https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv')
 #vehicles <- read.csv(text = urlData)
 ```
-
+<BR><BR>
 We clean the outcome variable ‘cyclinders’ as 1 for 6 cyclinders and 0 for everything else:
 ```r
 vehicles <- vehicles[names(vehicles)[1:24]]
