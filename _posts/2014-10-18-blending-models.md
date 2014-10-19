@@ -125,6 +125,7 @@ vehicles <- read.csv(textConnection(x))
 We clean the outcome variable ‘cyclinders’ as 1 for 6 cyclinders and 0 for everything else:
 
 ```r
+
 vehicles <- vehicles[names(vehicles)[1:24]]
 vehicles <- data.frame(lapply(vehicles, as.character), stringsAsFactors=FALSE)
 vehicles <- data.frame(lapply(vehicles, as.numeric))
@@ -135,6 +136,7 @@ vehicles$cylinders <- ifelse(vehicles$cylinders == 6, 1,0)
 We call ``prop.table`` to understand the proporting of our outcome variable:
 
 ```r
+
 prop.table(table(vehicles$cylinders))
 ```
 
