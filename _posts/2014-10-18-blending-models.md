@@ -118,7 +118,7 @@ urlfile <-'https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/
 x <- getURL(urlfile, ssl.verifypeer = FALSE)
 vehicles <- read.csv(textConnection(x))
 
-# alternative way of getting the data
+# alternative way of getting the data if the above snippet doesn't work:
 #urlData <- getURL('https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv')
 #vehicles <- read.csv(text = urlData)
 ```
@@ -145,28 +145,35 @@ prop.table(table(vehicles$cylinders))
 ```
 This tells us that 35% of the data represents a vehicle with 6 cylinders.
 
-Here is the one complicated part, instead of the usual 2 part split of ``train`` and ``test`` data sets, we split our data into 3 parts: ``ensembleData``, ``blenderData``, and ``testingData``.
+Here is the one complicated part, instead of the usual 2 part split of ``train`` and ``test`` data sets, we split our data into 3 parts: ``ensembleData``, ``blenderData``, and ``testingData``:
 
 ```r
-# shuffle and split the data into three parts
 set.seed(1234)
 vehicles <- vehicles[sample(nrow(vehicles)),]
 split <- floor(nrow(vehicles)/3)
 ensembleData <- vehicles[0:split,]
 blenderData <- vehicles[(split+1):(split*2),]
 testingData <- vehicles[(split*2+1):nrow(vehicles),]
+```
+<BR><BR>
+We assign the outcome name to ``labelName`` and the predictor variables to ``predictors``:
 
-# set label name and predictors
+```r
 labelName <- 'cylinders'
 predictors <- names(ensembleData)[names(ensembleData) != labelName]
+```
+<BR><BR>
+We create a **caret** ``trainControl`` object to control the number of cross-validations performed:
 
-# create a caret control object to control the number of cross-validations performed
+```r
 myControl <- trainControl(method='cv', number=3, returnResamp='none')
+```
+<BR><BR>
+We run the data on a ``gbm`` model without any enembling to use as a comparative benchmark:
 
-# quick benchmark model 
+```r
 test_model <- train(blenderData[,predictors], blenderData[,labelName], method='gbm', trControl=myControl)
 ```
-
 ```
 ## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
 ##      1        0.2147             nan     0.1000    0.0128
@@ -174,28 +181,14 @@ test_model <- train(blenderData[,predictors], blenderData[,labelName], method='g
 ##      3        0.1962             nan     0.1000    0.0084
 ...
 ```
+You'll get a whole series of the above lines as it trains. We then use the ``testingData`` to predict the **benchmark** model and use the **pROC** library to calcuate the <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>Area Under the Curve (AUC)</a>:
 
 ```r
 preds <- predict(object=test_model, testingData[,predictors])
-
 library(pROC)
-```
-
-```
-## Type 'citation("pROC")' for a citation.
-## 
-## Attaching package: 'pROC'
-## 
-## The following objects are masked from 'package:stats':
-## 
-##     cov, smooth, var
-```
-
-```r
 auc <- roc(testingData[,labelName], preds)
-print(auc$auc) # Area under the curve: 0.9896
+print(auc$auc) 
 ```
-
 ```
 ## Area under the curve: 0.99
 ```
