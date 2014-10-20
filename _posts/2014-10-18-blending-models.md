@@ -192,7 +192,7 @@ print(auc$auc)
 ```
 ## Area under the curve: 0.99
 ```
-It gives a fairly strong AUC score of 0.99 (remember that 0.5 is random and 1 is perfect). Hard to beleive we can improve this score by using an ensemble of models...
+It gives a fairly strong AUC score of 0.99 (remember that 0.5 is random and 1 is perfect). Hard to beleive we can improve on this score by using an ensemble of models...
 
 But we're going to try. We now use 3 models - ``gbm``, ``rpart``, and ``treebag`` as part of our **ensembles** of models. 
 
