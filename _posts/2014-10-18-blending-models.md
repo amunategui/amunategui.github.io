@@ -163,7 +163,7 @@ labelName <- 'cylinders'
 predictors <- names(ensembleData)[names(ensembleData) != labelName]
 ```
 <BR><BR>
-We create a **caret** ``trainControl`` object to control the number of cross-validations performed (the more the better but for breivity we only run 3):
+We create a **caret** ``trainControl`` object to control the number of cross-validations performed (the more the better but for breivity we only require 3):
 
 ```r
 myControl <- trainControl(method='cv', number=3, returnResamp='none')
@@ -183,10 +183,12 @@ test_model <- train(blenderData[,predictors], blenderData[,labelName], method='g
 ##      3        0.1962             nan     0.1000    0.0084
 ...
 ```
-You'll see a series of the lines (as shown above) as it ``gbm`` trains. We then use the model to predict the 6 cylinder vehicles usign the ``testingData`` data set and **pROC**'s ``roc`` function to get the <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>Area Under the Curve (AUC)</a>:
+You'll see a series of the lines (as shown above) as it trains the``gbm`` model. 
+<BR><BR>
+We then use the model to predict the 6 cylinder vehicles usign the ``testingData`` data set and **pROC**'s ``auc`` function to get the <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>Area Under the Curve (AUC)</a>:
 
 ```r
-preds <- predict(object=test_model, testingData[,predictors])
+preds <- predict(object=test_mode l, testingData[,predictors])
 library(pROC)
 auc <- roc(testingData[,labelName], preds)
 print(auc$auc) 
@@ -194,11 +196,11 @@ print(auc$auc)
 ```
 ## Area under the curve: 0.99
 ```
-It gives a fairly strong AUC score of 0.99 (remember that 0.5 is random and 1 is perfect). Hard to beleive we can improve on this score by using an ensemble of models...
+It gives a fairly strong **AUC** score of 0.99 (remember that 0.5 is random and 1 is perfect). Hard to beleive we can improve this score using an ensemble of models...
 <BR><BR>
 **Ensembles**
 
-But we're going to try. We now use 3 models - ``gbm``, ``rpart``, and ``treebag`` as part of our **ensembles** of models and train them with the ``ensembleData`` data set:
+But we're going to try. We now use 3 models - ``gbm``, ``rpart``, and ``treebag`` as part of our **ensembles** of models and ``train`` them with the ``ensembleData`` data set:
 
 ```r
 model_gbm <- train(ensembleData[,predictors], ensembleData[,labelName], method='gbm', trControl=myControl)
