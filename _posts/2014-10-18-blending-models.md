@@ -195,7 +195,7 @@ print(auc$auc)
 ## Area under the curve: 0.99
 ```
 It gives a fairly strong AUC score of 0.99 (remember that 0.5 is random and 1 is perfect). Hard to beleive we can improve on this score by using an ensemble of models...
-
+<BR><BR>
 **Ensembles**
 
 But we're going to try. We now use 3 models - ``gbm``, ``rpart``, and ``treebag`` as part of our **ensembles** of models and train them with the ``ensembleData`` data set:
@@ -208,7 +208,7 @@ model_rpart <- train(ensembleData[,predictors], ensembleData[,labelName], method
 model_treebag <- train(ensembleData[,predictors], ensembleData[,labelName], method='treebag', trControl=myControl)
 ```
 
-After our 3 models are trained, we use them to predict 6 cylinder vehicles on the other two data sets: ``blenderData`` and ``testingData`` - yes, both!! We need to do this to harvest the predictions from both data sets as we're going to add those predictions as new features to the same data sets. So, as we have 3 models, we're going to add three new columns to both ``blenderData`` and ``testingData``:
+After our 3 models are trained, we use them to predict **6 cylinder vehicles** on the other two data sets: ``blenderData`` and ``testingData`` - **yes, both!!** We need to do this to harvest the predictions from both data sets as we're going to add those predictions as new features to the same data sets. So, as we have 3 models, we're going to add three new columns to both ``blenderData`` and ``testingData``:
 
 ```r
 blenderData$gbm_PROB <- predict(object=model_gbm, blenderData[,predictors])
@@ -219,58 +219,17 @@ testingData$gbm_PROB <- predict(object=model_gbm, testingData[,predictors])
 testingData$rf_PROB <- predict(object=model_rpart, testingData[,predictors])
 testingData$treebag_PROB <- predict(object=model_treebag, testingData[,predictors])
 ```
-And, please note how easy it is to add those values back to the original data set (follow what we're doing with the prediction results above).
+Please note how easy it is to add those values back to the original data set (follow where we're assigning the prediction results above).
 
-For our curiosity, we're going to get the AUC of all three individual models:
-
+Now we train a final **blending** model on the old data and the new predictions:
 ```r
-auc <- roc(testingData[,labelName], testingData$gbm_PROB )
-print(auc$auc)  
-```
-
-```
-## Area under the curve: 0.989
-```
-
-```r
-auc <- roc(testingData[,labelName], testingData$rf_PROB )
-print(auc$auc)  
-```
-
-```
-## Area under the curve: 0.958
-```
-
-```r
-auc <- roc(testingData[,labelName], testingData$treebag_PROB )
-print(auc$auc)  
-```
-
-```
-## Area under the curve: 0.973
-```
-
-As you can see, individually they don't do better as our benchmark model. So lets train a final ``gbm`` model on the newly augmented dataset
-```r
-# run a final model to blend all the probabilities together
 predictors <- names(blenderData)[names(blenderData) != labelName]
 final_blender_model <- train(blenderData[,predictors], blenderData[,labelName], method='gbm', trControl=myControl)
 ```
 
-```
-## Warning: variable 3: charge120 has no variation.
-```
-
-```
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        0.1922             nan     0.1000    0.0355
-##      2        0.1634             nan     0.1000    0.0288
-##      3        0.1393             nan     0.1000    0.0233
-...
-```
+And we call ``predict`` and ``roc``/``auc`` functions to see how our blended ensemble model fared:
 
 ```r
-# See final prediction and AUC of blended ensemble
 preds <- predict(object=final_blender_model, testingData[,predictors])
 auc <- roc(testingData[,labelName], preds)
 print(auc$auc)  # Area under the curve: 0.9922
@@ -279,6 +238,9 @@ print(auc$auc)  # Area under the curve: 0.9922
 ```
 ## Area under the curve: 0.993
 ```
+<BR>
+There you have it, an **AUC** bump of 0.003. This may not seem like much (and there are many ways of improving the score) but it will give you that extra edge in your next data science competition!!
+
 
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SimpleEnsembleBlending' target='_blank'>also on GitHub</a>)</a>:
