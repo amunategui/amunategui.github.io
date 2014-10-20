@@ -209,7 +209,7 @@ model_rpart <- train(ensembleData[,predictors], ensembleData[,labelName], method
 
 model_treebag <- train(ensembleData[,predictors], ensembleData[,labelName], method='treebag', trControl=myControl)
 ```
-
+<BR><BR>
 After our 3 models are trained, we use them to predict **6 cylinder vehicles** on the other two data sets: ``blenderData`` and ``testingData`` - **yes, both!!** We need to do this to harvest the predictions from both data sets as we're going to add those predictions as new features to the same data sets. So, as we have 3 models, we're going to add three new columns to both ``blenderData`` and ``testingData``:
 
 ```r
@@ -221,10 +221,9 @@ testingData$gbm_PROB <- predict(object=model_gbm, testingData[,predictors])
 testingData$rf_PROB <- predict(object=model_rpart, testingData[,predictors])
 testingData$treebag_PROB <- predict(object=model_treebag, testingData[,predictors])
 ```
-<BR>
-Please note how easy it is to add those values back to the original data set (follow where we're assigning the prediction results above).
-
-Now we train a final **blending** model on the old data and the new predictions:
+Please note how easy it is to add those values back to the original data set (follow where we assign the resulting predictions above).
+<BR><BR>
+Now we train a final **blending** model on the old data and the new predictions (we use ``gbm`` but that is completely arbitrary):
 
 ```r
 predictors <- names(blenderData)[names(blenderData) != labelName]
