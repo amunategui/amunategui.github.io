@@ -219,14 +219,16 @@ testingData$gbm_PROB <- predict(object=model_gbm, testingData[,predictors])
 testingData$rf_PROB <- predict(object=model_rpart, testingData[,predictors])
 testingData$treebag_PROB <- predict(object=model_treebag, testingData[,predictors])
 ```
+<BR><BR>
 Please note how easy it is to add those values back to the original data set (follow where we're assigning the prediction results above).
 
 Now we train a final **blending** model on the old data and the new predictions:
+
 ```r
 predictors <- names(blenderData)[names(blenderData) != labelName]
 final_blender_model <- train(blenderData[,predictors], blenderData[,labelName], method='gbm', trControl=myControl)
 ```
-
+<BR><BR>
 And we call ``predict`` and ``roc``/``auc`` functions to see how our blended ensemble model fared:
 
 ```r
@@ -238,7 +240,7 @@ print(auc$auc)  # Area under the curve: 0.9922
 ```
 ## Area under the curve: 0.993
 ```
-<BR>
+<BR><BR>
 There you have it, an **AUC** bump of 0.003. This may not seem like much (and there are many ways of improving the score) but it will give you that extra edge in your next data science competition!!
 
 
