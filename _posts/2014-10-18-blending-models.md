@@ -185,7 +185,7 @@ test_model <- train(blenderData[,predictors], blenderData[,labelName], method='g
 ```
 You'll see a series of the lines (as shown above) as it trains the``gbm`` model. 
 <BR><BR>
-We then use the model to predict the 6 cylinder vehicles usign the ``testingData`` data set and **pROC**'s ``auc`` function to get the <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>Area Under the Curve (AUC)</a>:
+We then use the model to predict 6-cylinder vehicles using the ``testingData`` data set and **pROC**'s ``auc`` function to get the <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>Area Under the Curve (AUC)</a>:
 
 ```r
 preds <- predict(object=test_mode l, testingData[,predictors])
@@ -196,7 +196,7 @@ print(auc$auc)
 ```
 ## Area under the curve: 0.99
 ```
-It gives a fairly strong **AUC** score of 0.99 (remember that 0.5 is random and 1 is perfect). Hard to beleive we can improve this score using an ensemble of models...
+It gives a fairly strong **AUC** score of 0.99 (remember that 0.5 is random and 1 is perfect). Hard to believe we can improve this score using an ensemble of models...
 <BR><BR>
 **Ensembles**
 
