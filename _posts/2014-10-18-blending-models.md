@@ -26,11 +26,11 @@ image: blending-models/blending.png
 </ul>
 <BR><BR>
 
-There are many reasons to ensemble models but it usually comes down to capturing a deeper understanding of high dimensionality data. The more complex a data set, the more it benefits from additional models, just like additional eyes, in order to capture more nuances scattered around high dimensionality data.
-
+There are many reasons to ensemble models but it usually comes down to capturing a deeper understanding of high dimensionality data. The more complex a data set, the more it benefits from additional models, just like additional eyes, to capture more nuances scattered around high dimensionality data.
+<br><br>
 **Let’s code!**
 
-This walkthrough leverages the **caret** package for ease of coding but the concept will apply to any model in any statistical programming language. Caret allows you to easily switch models in a script without having to change much of the code. You can easily write a loop and have it run through the almost 170 models that the package currently supports (<a href='http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf' target='_blank'>Max Kuhn keeps adding new ones</a>) by only having to change one variable. 
+This walkthrough leverages the **caret** package for ease of coding but the concept will apply to any model in any statistical programming language. Caret allows you to easily switch models in a script without having to change much of the code. You can easily write a loop and have it run through the almost 170 models that the package currently supports (<a href='http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf' target='_blank'>Max Kuhn keeps adding new ones</a>) by only changing one variable. 
 
 To get a complete list of the models supported by **caret**:
 
@@ -110,7 +110,7 @@ getModelInfo()$glm$type
 
 In the above snippet, ``glm`` supports both **regression** and **classification**.
 <BR><BR>
-We download the **vehicles** data set from <a href='https://github.com/hadley' target='_blank'>Hadley Wickham</a> hosted on Github. To keep this simple, we attempt to predict whether a vehicle has 6 cylinders or not using only the first 24 columns of the data set:
+We download the **vehicles** data set from <a href='https://github.com/hadley' target='_blank'>Hadley Wickham</a> hosted on Github. To keep this simple, we attempt to predict whether a vehicle has 6 cylinders using only the first 24 columns of the data set:
 
 ```r
 library(RCurl)
@@ -143,9 +143,9 @@ prop.table(table(vehicles$cylinders))
 ##      0      1 
 ## 0.6506 0.3494
 ```
-This tells us that 35% of the data represents a vehicle with 6 cylinders.
+This tells us that 35% of the data represents a vehicle with 6 cylinders. So our data isn't perfectly balanced but it certainly isn't skewed or considered a rare event.
 
-Here is the one complicated part, instead of the usual 2 part split of ``train`` and ``test`` data sets, we split our data into 3 parts: ``ensembleData``, ``blenderData``, and ``testingData``:
+Here is the one complicated part, instead of splitting the data into 2 parts of ``train`` and ``test``, we split the data into 3 parts: ``ensembleData``, ``blenderData``, and ``testingData``:
 
 ```r
 set.seed(1234)
@@ -163,7 +163,7 @@ labelName <- 'cylinders'
 predictors <- names(ensembleData)[names(ensembleData) != labelName]
 ```
 <BR><BR>
-We create a **caret** ``trainControl`` object to control the number of cross-validations performed:
+We create a **caret** ``trainControl`` object to control the number of cross-validations performed (the more the better but for breivity we only run 3):
 
 ```r
 myControl <- trainControl(method='cv', number=3, returnResamp='none')
