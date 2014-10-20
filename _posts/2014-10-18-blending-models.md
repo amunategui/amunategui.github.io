@@ -235,17 +235,17 @@ And we call ``predict`` and ``roc``/``auc`` functions to see how our blended ens
 ```r
 preds <- predict(object=final_blender_model, testingData[,predictors])
 auc <- roc(testingData[,labelName], preds)
-print(auc$auc)  # Area under the curve: 0.9922
+print(auc$auc)
 ```
 
 ```
 ## Area under the curve: 0.993
 ```
-<BR><BR>
-There you have it, an **AUC** bump of 0.003. This may not seem like much (and there are many ways of improving the score) but it will give you that extra edge in your next data science competition!!
+<BR>
+There you have it, an **AUC** bump of 0.003. This may not seem like much (and there are many ways of improving that score) but it should easily give you that extra edge on your next data science competition!!
 
 
-<BR><BR>        
+<BR><BR>  
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SimpleEnsembleBlending' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
