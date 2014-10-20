@@ -7,7 +7,7 @@ year: 2014
 month: 10
 day: 18
 published: true
-summary: If you can model, then you can model ensembles! It’s literally as simple as running multiple models on the same data, collecting the predictions, and blending them using a final model. And, if all goes well, you should enjoy an AUC lift!
+summary: If you can model, then you can model ensembles! It’s literally as simple as running multiple <b>R</b> models on the same data, collecting the predictions, and blending them using a final model. And, if all goes well, you should enjoy a bump in AUC score!
 image: blending-models/blending.png
 ---
 
@@ -192,6 +192,9 @@ print(auc$auc)
 ```
 ## Area under the curve: 0.99
 ```
+It gives a fairly strong AUC score of 0.99 (remember that 0.5 is random and 1 is perfect). Hard to beleive we can improve this score by using an ensemble of models...
+
+But we're going to try. We now use 3 models - ``gbm``, ``rpart``, and ``treebag`` as part of our **ensembles** of models. 
 
 ```r
 # train all the ensemble models with ensembleData
