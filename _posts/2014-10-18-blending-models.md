@@ -194,34 +194,13 @@ print(auc$auc)
 ```
 It gives a fairly strong AUC score of 0.99 (remember that 0.5 is random and 1 is perfect). Hard to beleive we can improve on this score by using an ensemble of models...
 
-But we're going to try. We now use 3 models - ``gbm``, ``rpart``, and ``treebag`` as part of our **ensembles** of models. 
+But we're going to try. We now use 3 models - ``gbm``, ``rpart``, and ``treebag`` as part of our **ensembles** of models and train them with the ``ensembleData`` data set:
 
 ```r
-# train all the ensemble models with ensembleData
 model_gbm <- train(ensembleData[,predictors], ensembleData[,labelName], method='gbm', trControl=myControl)
-```
 
-
-```
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        0.2130             nan     0.1000    0.0127
-##      2        0.2026             nan     0.1000    0.0103
-##      3        0.1943             nan     0.1000    0.0084
-```
-
-```r
 model_rpart <- train(ensembleData[,predictors], ensembleData[,labelName], method='rpart', trControl=myControl)
-```
 
-```
-## Loading required package: rpart
-```
-
-```
-## Warning: There were missing values in resampled performance measures.
-```
-
-```r
 model_treebag <- train(ensembleData[,predictors], ensembleData[,labelName], method='treebag', trControl=myControl)
 ```
 
