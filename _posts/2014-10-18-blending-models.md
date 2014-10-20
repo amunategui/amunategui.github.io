@@ -169,6 +169,8 @@ We create a **caret** ``trainControl`` object to control the number of cross-val
 myControl <- trainControl(method='cv', number=3, returnResamp='none')
 ```
 <BR><BR>
+**Benchmark Model**
+
 We run the data on a ``gbm`` model without any enembling to use as a comparative benchmark:
 
 ```r
@@ -194,6 +196,8 @@ print(auc$auc)
 ```
 It gives a fairly strong AUC score of 0.99 (remember that 0.5 is random and 1 is perfect). Hard to beleive we can improve on this score by using an ensemble of models...
 
+**Ensembles**
+
 But we're going to try. We now use 3 models - ``gbm``, ``rpart``, and ``treebag`` as part of our **ensembles** of models and train them with the ``ensembleData`` data set:
 
 ```r
@@ -203,10 +207,7 @@ model_rpart <- train(ensembleData[,predictors], ensembleData[,labelName], method
 
 model_treebag <- train(ensembleData[,predictors], ensembleData[,labelName], method='treebag', trControl=myControl)
 ```
-
-```
-## Loading required package: ipred
-```
+Then
 
 ```r
 # get predictions for each ensemble model for two last data sets
@@ -214,6 +215,7 @@ model_treebag <- train(ensembleData[,predictors], ensembleData[,labelName], meth
 blenderData$gbm_PROB <- predict(object=model_gbm, blenderData[,predictors])
 blenderData$rf_PROB <- predict(object=model_rpart, blenderData[,predictors])
 blenderData$treebag_PROB <- predict(object=model_treebag, blenderData[,predictors])
+
 testingData$gbm_PROB <- predict(object=model_gbm, testingData[,predictors])
 testingData$rf_PROB <- predict(object=model_rpart, testingData[,predictors])
 testingData$treebag_PROB <- predict(object=model_treebag, testingData[,predictors])
