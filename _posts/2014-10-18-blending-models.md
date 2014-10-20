@@ -7,7 +7,7 @@ year: 2014
 month: 10
 day: 18
 published: true
-summary: If you can model, then you can model ensembles! It’s literally as simple as running multiple <b>R</b> models on the same data, collecting the predictions, and blending them using a final model. And, if all goes well, you should enjoy a bump in AUC score!
+summary: If you can model, then you can model ensembles! It’s literally as simple as running multiple <b>R</b> models on the same data, collecting the predictions, and blending them using a final model. And, if all goes well, you should enjoy a bump in <b>AUC</b> score!
 image: blending-models/blending.png
 ---
 
