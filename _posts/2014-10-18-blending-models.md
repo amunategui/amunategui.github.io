@@ -207,11 +207,10 @@ model_rpart <- train(ensembleData[,predictors], ensembleData[,labelName], method
 
 model_treebag <- train(ensembleData[,predictors], ensembleData[,labelName], method='treebag', trControl=myControl)
 ```
-Then
+
+After our 3 models are trained, we use them to predict 6 cylinder vehicles on the other two data sets: ``blenderData`` and ``testingData`` - yes, both!! We need to do this to harvest the predictions from both data sets as we're going to add those predictions as new features to the same data sets. So, as we have 3 models, we're going to add three new columns to both ``blenderData`` and ``testingData``:
 
 ```r
-# get predictions for each ensemble model for two last data sets
-# and add them back to themselves
 blenderData$gbm_PROB <- predict(object=model_gbm, blenderData[,predictors])
 blenderData$rf_PROB <- predict(object=model_rpart, blenderData[,predictors])
 blenderData$treebag_PROB <- predict(object=model_treebag, blenderData[,predictors])
@@ -219,10 +218,14 @@ blenderData$treebag_PROB <- predict(object=model_treebag, blenderData[,predictor
 testingData$gbm_PROB <- predict(object=model_gbm, testingData[,predictors])
 testingData$rf_PROB <- predict(object=model_rpart, testingData[,predictors])
 testingData$treebag_PROB <- predict(object=model_treebag, testingData[,predictors])
+```
+And, please note how easy it is to add those values back to the original data set (follow what we're doing with the prediction results above).
 
-# see how each individual model performed on its own
+For our curiosity, we're going to get the AUC of all three individual models:
+
+```r
 auc <- roc(testingData[,labelName], testingData$gbm_PROB )
-print(auc$auc) # Area under the curve: 0.9893
+print(auc$auc)  
 ```
 
 ```
@@ -231,7 +234,7 @@ print(auc$auc) # Area under the curve: 0.9893
 
 ```r
 auc <- roc(testingData[,labelName], testingData$rf_PROB )
-print(auc$auc) # Area under the curve: 0.958
+print(auc$auc)  
 ```
 
 ```
@@ -240,13 +243,14 @@ print(auc$auc) # Area under the curve: 0.958
 
 ```r
 auc <- roc(testingData[,labelName], testingData$treebag_PROB )
-print(auc$auc) # Area under the curve: 0.9734
+print(auc$auc)  
 ```
 
 ```
 ## Area under the curve: 0.973
 ```
 
+As you can see, individually they don't do better as our benchmark model. So lets train a final ``gbm`` model on the newly augmented dataset
 ```r
 # run a final model to blend all the probabilities together
 predictors <- names(blenderData)[names(blenderData) != labelName]
