@@ -181,7 +181,7 @@ test_model <- train(blenderData[,predictors], blenderData[,labelName], method='g
 ##      3        0.1962             nan     0.1000    0.0084
 ...
 ```
-You'll get a whole series of the above lines as it trains. We then use the ``testingData`` to predict the **benchmark** model and use the **pROC** library to calcuate the <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>Area Under the Curve (AUC)</a>:
+You'll see a series of the lines (as shown above) as it ``gbm`` trains. We then use the model to predict the 6 cylinder vehicles usign the ``testingData`` data set and **pROC**'s ``roc`` function to get the <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>Area Under the Curve (AUC)</a>:
 
 ```r
 preds <- predict(object=test_model, testingData[,predictors])
