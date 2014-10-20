@@ -1,8 +1,8 @@
 ---
 layout: post
-title: Modeling Ensembles with R and the {Caret}
+title: Modeling Ensembles with <b>R</b> and <b>{Caret}</b>
 category: Machine Learning
-tags: exploring modeling
+tags: modeling
 year: 2014
 month: 10
 day: 18
@@ -119,8 +119,8 @@ x <- getURL(urlfile, ssl.verifypeer = FALSE)
 vehicles <- read.csv(textConnection(x))
 
 # alternative way of getting the data if the above snippet doesn't work:
-#urlData <- getURL('https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv')
-#vehicles <- read.csv(text = urlData)
+# urlData <- getURL('https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv')
+# vehicles <- read.csv(text = urlData)
 ```
 <BR><BR>
 We clean the outcome variable ``cyclinders`` by assigning it ``1`` for 6 cyclinders and ``0`` for everything else:
