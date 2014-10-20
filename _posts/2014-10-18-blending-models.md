@@ -219,7 +219,7 @@ testingData$gbm_PROB <- predict(object=model_gbm, testingData[,predictors])
 testingData$rf_PROB <- predict(object=model_rpart, testingData[,predictors])
 testingData$treebag_PROB <- predict(object=model_treebag, testingData[,predictors])
 ```
-<BR><BR>
+<BR>
 Please note how easy it is to add those values back to the original data set (follow where we're assigning the prediction results above).
 
 Now we train a final **blending** model on the old data and the new predictions:
