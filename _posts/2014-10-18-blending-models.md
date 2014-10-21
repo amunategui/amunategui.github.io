@@ -188,7 +188,7 @@ You'll see a series of the lines (as shown above) as it trains the``gbm`` model.
 We then use the model to predict 6-cylinder vehicles using the ``testingData`` data set and **pROC**'s ``auc`` function to get the <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>Area Under the Curve (AUC)</a>:
 
 ```r
-preds <- predict(object=test_mode l, testingData[,predictors])
+preds <- predict(object=test_model, testingData[,predictors])
 library(pROC)
 auc <- roc(testingData[,labelName], preds)
 print(auc$auc) 
