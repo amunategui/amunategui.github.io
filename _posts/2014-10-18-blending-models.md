@@ -32,7 +32,7 @@ There are many reasons to ensemble models but it usually comes down to capturing
 
 This walkthrough leverages the **caret** package for ease of coding but the concept applies to any model in any statistical programming language. **Caret** allows you to easily switch models in a script without having to change much of the code. You can easily write a loop and have it run through the almost 170 models that the package currently supports (<a href='http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf' target='_blank'>Max Kuhn keeps adding new ones</a>) by only changing one variable. 
 
-To get a complete list of the models supported by **caret**:
+To get a complete list of the models supported by **caret** use the ``getModelInfo`` function:
 
 ```r
 library(caret)
