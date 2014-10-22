@@ -99,7 +99,7 @@ names(getModelInfo())
 ## [169] "xyf"
 ```
 <BR><BR>
-As you can see, there is plenty of models available to satisfy most needs. Some support either **dual use**, while others are either **classification** or **regression** only. You can test for the type a model supports using the same ``getModelInfo`` function:
+As you can see, there are plenty of models available to satisfy most needs. Some support either **dual use**, while others are either **classification** or **regression** only. You can test for the type a model supports using the same ``getModelInfo`` function:
 
 ```r
 getModelInfo()$glm$type
