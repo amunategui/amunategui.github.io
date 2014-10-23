@@ -495,7 +495,7 @@ print(auc$auc)
 
 
 ################################################
-# glm model
+# glmnet model
 ################################################
 
 # pick model gbm and find out what type of model it is
