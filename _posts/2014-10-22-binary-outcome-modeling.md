@@ -27,7 +27,7 @@ image: binary-outcomes/classification.png
 
 This is an introduction to modeling binary outcomes using the **caret** library. A binary outcome is a result that has two possible values - true or false, alive or dead, etc. 
 
-We're going to use two models: <a href="http://www.inside-r.org/packages/cran/gbm/docs/gbm" target="_blank">gbm (Generalized Boosted Models)</a> and <a href="http://www.inside-r.org/packages/glmnet" target="_blank">glmnet (Generalized Linear Models)</a>. Approaching a new data set using very different models is a great way to get a handle on your data, **gbm** uses boosted trees, and **glmnet**  uses regression. 
+We're going to use two models: <a href="http://www.inside-r.org/packages/cran/gbm/docs/gbm" target="_blank">gbm (Generalized Boosted Models)</a> and <a href="http://www.inside-r.org/packages/glmnet" target="_blank">glmnet (Generalized Linear Models)</a>. Approaching a new data set using different models is one way to getting a handle on your data, **gbm** uses boosted trees, and **glmnet**  uses regression. 
 
 **Let's code!**
 
