@@ -499,6 +499,7 @@ axis(2, at=xx, labels=results$VariableName, tick=FALSE, las=2, line=-0.3, cex.ax
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SimpleEnsembleBlending' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
+
 # load libraries
 library(caret)
 library(pROC)
