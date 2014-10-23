@@ -25,35 +25,6 @@ image: binary-outcomes/features.png
 </ul>
 <BR><BR>
 
-
-# load libraries
-library(caret)
-library(pROC)
-
-
-```r
-library(caret)
-```
-
-```
-## Loading required package: lattice
-## Loading required package: ggplot2
-```
-
-```r
-library(pROC)
-```
-
-```
-## Type 'citation("pROC")' for a citation.
-## 
-## Attaching package: 'pROC'
-## 
-## The following objects are masked from 'package:stats':
-## 
-##     cov, smooth, var
-```
-
 This is an introduction to modeling binary outcomes usign the **caret** library. A binary outcome is a result that has two possible values - true or false, alive or dead, etc. 
 
 We're going to use two models: **gbm** (Generalized Boosted Models) http://www.inside-r.org/packages/cran/gbm/docs/gbm and **glmnet** Generalized Linear Models). Approaching a new data set using very different models is a great way to get a handle on your data, **gbm** uses boosted trees, and **glmnet** http://www.inside-r.org/packages/glmnet uses regression. 
@@ -264,220 +235,12 @@ objModel <- train(trainDF[,predictorsNames], trainDF[,outcomeName],
                   metric = "ROC",
                   preProc = c("center", "scale"))
 ```
-
-```
-## Loading required package: gbm
-## Loading required package: survival
-## Loading required package: splines
-## 
-## Attaching package: 'survival'
-## 
-## The following object is masked from 'package:caret':
-## 
-##     cluster
-## 
-## Loading required package: parallel
-## Loaded gbm 2.1
-## Loading required package: plyr
-```
-
 ```
 ## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
 ##      1        1.2314             nan     0.1000    0.0245
 ##      2        1.1948             nan     0.1000    0.0192
 ##      3        1.1594             nan     0.1000    0.0158
-##      4        1.1386             nan     0.1000    0.0105
-##      5        1.1135             nan     0.1000    0.0123
-##      6        1.0969             nan     0.1000    0.0062
-##      7        1.0786             nan     0.1000    0.0095
-##      8        1.0605             nan     0.1000    0.0076
-##      9        1.0437             nan     0.1000    0.0055
-##     10        1.0292             nan     0.1000    0.0069
-##     20        0.9471             nan     0.1000    0.0029
-##     40        0.8917             nan     0.1000   -0.0009
-##     60        0.8716             nan     0.1000   -0.0001
-##     80        0.8616             nan     0.1000   -0.0010
-##    100        0.8548             nan     0.1000   -0.0016
-##    120        0.8518             nan     0.1000   -0.0007
-##    140        0.8487             nan     0.1000   -0.0010
-##    150        0.8471             nan     0.1000   -0.0008
-## 
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.2131             nan     0.1000    0.0347
-##      2        1.1598             nan     0.1000    0.0237
-##      3        1.1156             nan     0.1000    0.0224
-##      4        1.0822             nan     0.1000    0.0174
-##      5        1.0521             nan     0.1000    0.0150
-##      6        1.0270             nan     0.1000    0.0114
-##      7        1.0078             nan     0.1000    0.0104
-##      8        0.9899             nan     0.1000    0.0078
-##      9        0.9743             nan     0.1000    0.0051
-##     10        0.9624             nan     0.1000    0.0041
-##     20        0.8811             nan     0.1000    0.0002
-##     40        0.8358             nan     0.1000   -0.0009
-##     60        0.8129             nan     0.1000   -0.0010
-##     80        0.7968             nan     0.1000   -0.0015
-##    100        0.7860             nan     0.1000   -0.0013
-##    120        0.7794             nan     0.1000   -0.0010
-##    140        0.7721             nan     0.1000   -0.0014
-##    150        0.7689             nan     0.1000   -0.0011
-## 
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.2092             nan     0.1000    0.0377
-##      2        1.1534             nan     0.1000    0.0296
-##      3        1.1046             nan     0.1000    0.0240
-##      4        1.0663             nan     0.1000    0.0190
-##      5        1.0362             nan     0.1000    0.0147
-##      6        1.0070             nan     0.1000    0.0135
-##      7        0.9839             nan     0.1000    0.0104
-##      8        0.9628             nan     0.1000    0.0104
-##      9        0.9471             nan     0.1000    0.0071
-##     10        0.9301             nan     0.1000    0.0076
-##     20        0.8552             nan     0.1000   -0.0003
-##     40        0.8040             nan     0.1000   -0.0015
-##     60        0.7828             nan     0.1000   -0.0009
-##     80        0.7712             nan     0.1000   -0.0023
-##    100        0.7593             nan     0.1000   -0.0005
-##    120        0.7544             nan     0.1000   -0.0019
-##    140        0.7493             nan     0.1000   -0.0018
-##    150        0.7456             nan     0.1000   -0.0018
-## 
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.2274             nan     0.1000    0.0262
-##      2        1.1839             nan     0.1000    0.0201
-##      3        1.1512             nan     0.1000    0.0163
-##      4        1.1247             nan     0.1000    0.0131
-##      5        1.1021             nan     0.1000    0.0107
-##      6        1.0810             nan     0.1000    0.0089
-##      7        1.0635             nan     0.1000    0.0069
-##      8        1.0363             nan     0.1000    0.0113
-##      9        1.0162             nan     0.1000    0.0091
-##     10        1.0029             nan     0.1000    0.0048
-##     20        0.9080             nan     0.1000    0.0016
-##     40        0.8435             nan     0.1000   -0.0000
-##     60        0.8190             nan     0.1000   -0.0007
-##     80        0.8103             nan     0.1000   -0.0015
-##    100        0.8037             nan     0.1000   -0.0009
-##    120        0.7993             nan     0.1000   -0.0002
-##    140        0.7955             nan     0.1000   -0.0006
-##    150        0.7947             nan     0.1000   -0.0003
-## 
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.2154             nan     0.1000    0.0373
-##      2        1.1572             nan     0.1000    0.0260
-##      3        1.1060             nan     0.1000    0.0257
-##      4        1.0654             nan     0.1000    0.0197
-##      5        1.0292             nan     0.1000    0.0160
-##      6        0.9993             nan     0.1000    0.0145
-##      7        0.9767             nan     0.1000    0.0111
-##      8        0.9554             nan     0.1000    0.0095
-##      9        0.9364             nan     0.1000    0.0092
-##     10        0.9190             nan     0.1000    0.0070
-##     20        0.8300             nan     0.1000    0.0020
-##     40        0.7832             nan     0.1000   -0.0009
-##     60        0.7639             nan     0.1000   -0.0013
-##     80        0.7528             nan     0.1000   -0.0004
-##    100        0.7457             nan     0.1000   -0.0007
-##    120        0.7389             nan     0.1000   -0.0009
-##    140        0.7342             nan     0.1000   -0.0010
-##    150        0.7323             nan     0.1000   -0.0011
-## 
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.2092             nan     0.1000    0.0396
-##      2        1.1480             nan     0.1000    0.0313
-##      3        1.0907             nan     0.1000    0.0260
-##      4        1.0454             nan     0.1000    0.0223
-##      5        1.0085             nan     0.1000    0.0180
-##      6        0.9798             nan     0.1000    0.0132
-##      7        0.9573             nan     0.1000    0.0102
-##      8        0.9360             nan     0.1000    0.0114
-##      9        0.9181             nan     0.1000    0.0085
-##     10        0.9008             nan     0.1000    0.0070
-##     20        0.8048             nan     0.1000    0.0010
-##     40        0.7591             nan     0.1000   -0.0008
-##     60        0.7398             nan     0.1000   -0.0023
-##     80        0.7288             nan     0.1000   -0.0024
-##    100        0.7193             nan     0.1000   -0.0014
-##    120        0.7135             nan     0.1000   -0.0018
-##    140        0.7089             nan     0.1000   -0.0008
-##    150        0.7056             nan     0.1000   -0.0016
-## 
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.2381             nan     0.1000    0.0236
-##      2        1.1985             nan     0.1000    0.0185
-##      3        1.1691             nan     0.1000    0.0152
-##      4        1.1434             nan     0.1000    0.0123
-##      5        1.1156             nan     0.1000    0.0105
-##      6        1.0918             nan     0.1000    0.0111
-##      7        1.0749             nan     0.1000    0.0084
-##      8        1.0574             nan     0.1000    0.0059
-##      9        1.0374             nan     0.1000    0.0084
-##     10        1.0247             nan     0.1000    0.0067
-##     20        0.9339             nan     0.1000    0.0017
-##     40        0.8701             nan     0.1000   -0.0003
-##     60        0.8470             nan     0.1000   -0.0002
-##     80        0.8365             nan     0.1000   -0.0006
-##    100        0.8317             nan     0.1000   -0.0002
-##    120        0.8288             nan     0.1000   -0.0005
-##    140        0.8245             nan     0.1000   -0.0007
-##    150        0.8239             nan     0.1000   -0.0008
-## 
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.2095             nan     0.1000    0.0424
-##      2        1.1499             nan     0.1000    0.0280
-##      3        1.1025             nan     0.1000    0.0198
-##      4        1.0682             nan     0.1000    0.0185
-##      5        1.0375             nan     0.1000    0.0145
-##      6        1.0101             nan     0.1000    0.0124
-##      7        0.9860             nan     0.1000    0.0108
-##      8        0.9704             nan     0.1000    0.0062
-##      9        0.9525             nan     0.1000    0.0081
-##     10        0.9383             nan     0.1000    0.0062
-##     20        0.8502             nan     0.1000    0.0022
-##     40        0.7976             nan     0.1000   -0.0004
-##     60        0.7835             nan     0.1000    0.0005
-##     80        0.7716             nan     0.1000   -0.0003
-##    100        0.7648             nan     0.1000   -0.0014
-##    120        0.7559             nan     0.1000   -0.0009
-##    140        0.7490             nan     0.1000   -0.0010
-##    150        0.7483             nan     0.1000   -0.0016
-## 
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.2052             nan     0.1000    0.0365
-##      2        1.1379             nan     0.1000    0.0299
-##      3        1.0854             nan     0.1000    0.0245
-##      4        1.0437             nan     0.1000    0.0193
-##      5        1.0123             nan     0.1000    0.0168
-##      6        0.9836             nan     0.1000    0.0115
-##      7        0.9582             nan     0.1000    0.0112
-##      8        0.9380             nan     0.1000    0.0090
-##      9        0.9190             nan     0.1000    0.0094
-##     10        0.9044             nan     0.1000    0.0053
-##     20        0.8256             nan     0.1000    0.0008
-##     40        0.7785             nan     0.1000   -0.0022
-##     60        0.7598             nan     0.1000   -0.0022
-##     80        0.7460             nan     0.1000   -0.0009
-##    100        0.7345             nan     0.1000   -0.0011
-##    120        0.7261             nan     0.1000   -0.0009
-##    140        0.7190             nan     0.1000   -0.0010
-##    150        0.7166             nan     0.1000   -0.0017
-## 
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.2358             nan     0.1000    0.0251
-##      2        1.1992             nan     0.1000    0.0190
-##      3        1.1640             nan     0.1000    0.0170
-##      4        1.1383             nan     0.1000    0.0130
-##      5        1.1144             nan     0.1000    0.0101
-##      6        1.0911             nan     0.1000    0.0110
-##      7        1.0706             nan     0.1000    0.0088
-##      8        1.0545             nan     0.1000    0.0071
-##      9        1.0378             nan     0.1000    0.0087
-##     10        1.0232             nan     0.1000    0.0071
-##     20        0.9365             nan     0.1000    0.0014
-##     40        0.8747             nan     0.1000    0.0005
-##     60        0.8510             nan     0.1000   -0.0002
-##     80        0.8439             nan     0.1000   -0.0001
-##    100        0.8379             nan     0.1000   -0.0004
+...
 ```
 
 I truncated most of the lines from the training process but you get the idea. We then can call ``summary()`` on our model to find out what variables were key players:
@@ -520,22 +283,7 @@ objModel
 ## 
 ## Pre-processing: centered, scaled 
 ## Resampling: Cross-Validated (3 fold) 
-## 
-## Summary of sample sizes: 657, 658, 657 
-## 
-## Resampling results across tuning parameters:
-## 
-##   interaction.depth  n.trees  ROC  Sens  Spec  ROC SD  Sens SD  Spec SD
-##   1                   50      0.9  0.9   0.6   0.02    0.007    0.05   
-##   1                  100      0.9  0.9   0.6   0.02    0.014    0.06   
-##   1                  150      0.9  0.9   0.6   0.02    0.010    0.05   
-##   2                   50      0.8  1.0   0.6   0.02    0.019    0.02   
-##   2                  100      0.9  0.9   0.6   0.01    0.023    0.02   
-##   2                  150      0.9  0.9   0.6   0.01    0.008    0.03   
-##   3                   50      0.9  0.9   0.6   0.01    0.020    0.03   
-##   3                  100      0.8  0.9   0.6   0.02    0.012    0.04   
-##   3                  150      0.8  0.9   0.6   0.02    0.012    0.04   
-## 
+...
 ## Tuning parameter 'shrinkage' was held constant at a value of 0.1
 ## ROC was used to select the optimal model using  the largest value.
 ## The final values used for the model were n.trees = 100,
@@ -626,23 +374,6 @@ We re-run some of the basic training and prediction functions with some slight c
 ```r
 objControl <- trainControl(method='cv', number=3, returnResamp='none')
 objModel <- train(trainDF[,predictorsNames], trainDF[,outcomeName], method='glmnet',  metric = "RMSE")
-```
-
-```
-## Loading required package: glmnet
-## Loading required package: Matrix
-## Loaded glmnet 1.9-8
-## 
-## 
-## Attaching package: 'glmnet'
-## 
-## The following object is masked from 'package:pROC':
-## 
-##     auc
-```
-
-```
-## Warning: There were missing values in resampled performance measures.
 ```
 
 ```r
