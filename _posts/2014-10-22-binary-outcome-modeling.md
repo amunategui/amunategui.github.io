@@ -289,7 +289,7 @@ objModel
 ## The final values used for the model were n.trees = 100,
 ##  interaction.depth = 1 and shrinkage = 0.1.
 ```
-
+<BR><BR>
 **Evaluate gbm model**
 
 There's two types of evaluation we can do here, ``raw`` or ``prob``. **Raw gives you a class prediction, in our case ``yes`` and ``nope``, while **prob** gives you the probability (one a 0 to 1 scale, how sure is the prediction). I always use **prob**, as I like to be in control of the threshold and also like to use **AUC** https://www.kaggle.com/wiki/AreaUnderCurve which requires the probabilites, not the class. There are situations where having class values comes in handy, such as with multinomial models where you're predicting more than two values. 
@@ -315,7 +315,7 @@ print(postResample(pred=predictions, obs=as.factor(testDF[,outcomeName])))
 ## Accuracy    Kappa 
 ##   0.8135   0.5644
 ```
-
+<BR><BR>
 The accuracy tells us that our model is correct 81.35% of the time - not bad...
 
 Now let's look at probabilities:
@@ -369,7 +369,7 @@ splitIndex <- createDataPartition(titanicDF[,outcomeName], p = .75, list = FALSE
 trainDF <- titanicDF[ splitIndex,]
 testDF  <- titanicDF[-splitIndex,]
 ```
-
+<BR><BR>
 We re-run some of the basic training and prediction functions with some slight changes:
 
 ```r
