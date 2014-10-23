@@ -347,6 +347,7 @@ print(auc$auc)
 ```
 The **AUC** is telling us that our model has a 0.825 **AUC** score (remember that it ranges between **0.5** and **1**, where **0.5** is random and **1** is perfect).
 
+<BR><BR>
 **glmnet modeling**
 
 Let's change gears and try this out on a linear model. Let's look at what modeling types **glmnet** supports and reset our outcome variable as we're going to be using the numerical version instead of the factor.
@@ -389,7 +390,8 @@ print(auc$auc)
 ```
 ## Area under the curve: 0.857
 ```
-This is a stronger **AUC** score than our previous **gbm** model. 
+<BR><BR>
+This is a stronger **AUC** score than our previous **gbm** model - testing with different types of models does pay off (take it with a grain of salt as we didn't tune our models much).
 
 You can also call the **caret** function ``varImp`` to figure out which variables were important to the model. And this is one great feature of the **glmnet** model, it returns positive and negative variable importance unlike most models. This helps you understand your variables, such that being in ``PClass.1st`` leans the probabilites in the survivor's favor while PClass.3rd does the opposite (make sure you set ``scale`` to False):
 
@@ -399,10 +401,7 @@ plot(varImp(objModel,scale=F))
 
 ![plot of chunk unnamed-chunk-10](../img/posts/binary-outcomes/unnamed-chunk-21.png) 
 <BR><BR>
- 
-But the one think I love about the **glmnet** model is that it returns positive and negative variable importance unlike most models. This helps you understand your variables, such that being in ``PClass.1st`` leans the probabilites in the survivor's favor while PClass.3rd does the opposite.
 
-<BR><BR>  
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/modeling-binary-outcomes' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
