@@ -335,6 +335,8 @@ head(predictions)
 ## 5 0.67279 0.3272
 ## 6 0.54616 0.4538
 ```
+<BR><BR>
+To get the **AUC** score, you need to pass the ``yes`` column only to the ``roc`` function (each row adds up to 1 but we're interested in the ``yes``, or the **survivors**):
 
 ```r
 auc <- roc(ifelse(testDF[,outcomeName]=="yes",1,0), predictions[[2]])
