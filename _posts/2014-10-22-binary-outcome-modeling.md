@@ -618,8 +618,6 @@ print(auc$auc)
 
 postResample(pred=predictions, obs=testDF[,outcomeName])
  
-
-
 # find out variable importance
 summary(objModel)
 plot(varImp(objModel))
