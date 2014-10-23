@@ -314,9 +314,9 @@ print(postResample(pred=predictions, obs=as.factor(testDF[,outcomeName])))
 ## Accuracy    Kappa 
 ##   0.8135   0.5644
 ```
-<BR><BR>
+<BR>
 The accuracy tells us that our model is correct 81.35% of the time - not bad...
-
+<BR><BR>
 Now let's look at probabilities:
 
 ```r
