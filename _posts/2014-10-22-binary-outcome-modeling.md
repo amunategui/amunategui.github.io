@@ -217,7 +217,7 @@ trainDF <- titanicDF[ splitIndex,]
 testDF  <- titanicDF[-splitIndex,]
 ```
 <br><br>
-One more step before firing up the model. **Caret** offers many tuning functions to help you get as much as possible out of your models. The ``trainControl`` http://www.inside-r.org/packages/cran/caret/docs/trainControl function allows you to control the resampling of your data. This will split the training data set internally and do its own train/test runs to figure out the best settings for your model. In this case we're going to cross-validate the data 3 times, therefore training it 3 times on different portions of the data before settling on the best tuning parameters (in the case of **gbm** those are ``trees``, ``shirkage``, and ``interaction depth``). Mind you, you can set these values yourself if you don't trust the function.
+One more step before firing up the model. **Caret** offers many tuning functions to help you get as much as possible out of your models. The ``trainControl`` http://www.inside-r.org/packages/cran/caret/docs/trainControl function allows you to control the resampling of your data. This will split the training data set internally and do its own train/test runs to figure out the best settings for your model. In this case we're going to cross-validate the data 3 times, therefore training it 3 times on different portions of the data before settling on the best tuning parameters (in the case of **gbm** those are ``trees``, ``shrinkage``, and ``interaction depth``). Mind you, you can set these values yourself if you don't trust the function.
 
 
 ```r
