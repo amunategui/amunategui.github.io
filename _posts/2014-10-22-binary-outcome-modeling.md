@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Modeling 101 - Predicting Binary Outcomes with R, gbm, glment, and {Caret}</b>
+title: Modeling 101 - Predicting Binary Outcomes with <b>R</b>, <b>gbm</b>, <b>glmnet</b>, and <b>{Caret}</b>
 category: Machine Learning
 tags: modeling
 year: 2014
@@ -27,7 +27,7 @@ image: binary-outcomes/features.png
 
 This is an introduction to modeling binary outcomes usign the **caret** library. A binary outcome is a result that has two possible values - true or false, alive or dead, etc. 
 
-We're going to use two models: **gbm** (Generalized Boosted Models) http://www.inside-r.org/packages/cran/gbm/docs/gbm and **glmnet** Generalized Linear Models). Approaching a new data set using very different models is a great way to get a handle on your data, **gbm** uses boosted trees, and **glmnet** http://www.inside-r.org/packages/glmnet uses regression. 
+We're going to use two models: <a href="http://www.inside-r.org/packages/cran/gbm/docs/gbm" target="_blank">gbm (Generalized Boosted Models)</a> and <a href="http://www.inside-r.org/packages/glmnet" target="_blank">glmnet (Generalized Linear Models)</a>. Approaching a new data set using very different models is a great way to get a handle on your data, **gbm** uses boosted trees, and **glmnet**  uses regression. 
 
 **Let's code!**
 
@@ -79,7 +79,7 @@ print(str(titanicDF))
 ## NULL
 ```
 
-Our data is starting to look good but we have to fix the factor variables as most models only accept **numeric** data. **gbm** can deal directly with factor variables as it will dummify them internally, **glmnet** won't. In a nutshell, dummifying factors breaks all the unique values into separate columns (see my video on Brief Walkthrough Of The dummyVars unction From {caret} http://amunategui.github.io/dummyVar-Walkthrough/). This is a **caret** function:
+Our data is starting to look good but we have to fix the factor variables as most models only accept **numeric** data. **gbm** can deal directly with factor variables as it will dummify them internally, **glmnet** won't. In a nutshell, dummifying factors breaks all the unique values into separate columns (<a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">see my post on Brief Walkthrough Of The dummyVars function from {caret}</a>). This is a **caret** function:
 
 
 ```r
