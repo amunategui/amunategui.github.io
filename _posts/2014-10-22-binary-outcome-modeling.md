@@ -1,0 +1,933 @@
+---
+layout: post
+title: Modeling 101 - Predicting Binary Outcomes with R, gbm, glment, and {Caret}</b>
+category: Machine Learning
+tags: modeling
+year: 2014
+month: 10
+day: 22
+published: true
+summary: This walkthrough will show you how to quickly model using <b>caret<b> models and evaluate your predictions.
+image: binary-outcomes/features.png
+---
+
+**Resources**
+<ul>
+<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<BR>
+**Packages Used in this Walkthrough**
+
+<ul>
+        <li type="square"><b>{caret}</b> - modeling wrapper, functions, commands</li>
+        <li type="square"><b>{pROC}</b> - Area Under the Curve (AUC) functions</li>
+</ul>
+<BR><BR>
+
+
+# load libraries
+library(caret)
+library(pROC)
+
+
+```r
+library(caret)
+```
+
+```
+## Loading required package: lattice
+## Loading required package: ggplot2
+```
+
+```r
+library(pROC)
+```
+
+```
+## Type 'citation("pROC")' for a citation.
+## 
+## Attaching package: 'pROC'
+## 
+## The following objects are masked from 'package:stats':
+## 
+##     cov, smooth, var
+```
+
+This is an introduction to modeling binary outcomes usign the **caret** library. A binary outcome is a result that has two possible values - true or false, alive or dead, etc. 
+
+We're going to use two models: **gbm** (Generalized Boosted Models) http://www.inside-r.org/packages/cran/gbm/docs/gbm and **glmnet** Generalized Linear Models). Approaching a new data set using very different models is a great way to get a handle on your data, **gbm** uses boosted trees, and **glmnet** http://www.inside-r.org/packages/glmnet uses regression. 
+
+**Let's code!**
+
+We're going to use the **Titanic** data set from the **University of Colorado Denver**:
+
+```r
+titanicDF <- read.csv('http://math.ucdenver.edu/RTutorial/titanic.txt',sep='\t')
+print(str(titanicDF))
+```
+
+```
+## 'data.frame':	1313 obs. of  5 variables:
+##  $ Name    : Factor w/ 1310 levels "Abbing, Mr Anthony",..: 22 25 26 27 24 31 45 46 50 54 ...
+##  $ PClass  : Factor w/ 3 levels "1st","2nd","3rd": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Age     : num  29 2 30 25 0.92 47 63 39 58 71 ...
+##  $ Sex     : Factor w/ 2 levels "female","male": 1 1 2 1 2 2 1 2 1 2 ...
+##  $ Survived: int  1 0 0 0 1 1 1 0 1 0 ...
+## NULL
+```
+
+We need to clean up a few things as is customary with any data science projects. The ``Name`` variable is mostly unique so we're going to extract the title and throw out the rest.
+
+```r
+titanicDF$Title <- ifelse(grepl('Mr ',titanicDF$Name),'Mr',ifelse(grepl('Mrs ',titanicDF$Name),'Mrs',ifelse(grepl('Miss',titanicDF$Name),'Miss','Nothing'))) 
+```
+
+The ``Age`` variable has missing data (i.e. ``NA``'s) so we're going to impute it with the mean value of all the available ages. There are many ways of imputing missing data - we could remove those rows, set the values to 0, etc. Either way this will neutralize those values as most models can't handle them directly (actually **gbm** can handle ``NA``s but **glmnet** cannot):
+
+
+```r
+titanicDF$Age[is.na(titanicDF$Age)] <- median(titanicDF$Age, na.rm=T)
+```
+
+It is cleaner to have the **outcome** variable (also known as response) in the last column of our data set:
+
+
+```r
+titanicDF <- titanicDF[c('PClass', 'Age',    'Sex',   'Title', 'Survived')]
+print(str(titanicDF))
+```
+
+```
+## 'data.frame':	1313 obs. of  5 variables:
+##  $ PClass  : Factor w/ 3 levels "1st","2nd","3rd": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Age     : num  29 2 30 25 0.92 47 63 39 58 71 ...
+##  $ Sex     : Factor w/ 2 levels "female","male": 1 1 2 1 2 2 1 2 1 2 ...
+##  $ Title   : chr  "Miss" "Miss" "Mr" "Mrs" ...
+##  $ Survived: int  1 0 0 0 1 1 1 0 1 0 ...
+## NULL
+```
+
+Our data is starting to look good but we have to fix the factor variables as most models only accept **numeric** data. **gbm** can deal directly with factor variables as it will dummify them internally, **glmnet** won't. In a nutshell, dummifying factors breaks all the unique values into separate columns (see my video on Brief Walkthrough Of The dummyVars unction From {caret} http://amunategui.github.io/dummyVar-Walkthrough/). This is a **caret** function:
+
+
+```r
+titanicDF$Title <- as.factor(titanicDF$Title)
+titanicDummy <- dummyVars("~.",data=titanicDF, fullRank=F)
+titanicDF <- as.data.frame(predict(titanicDummy,titanicDF))
+print(names(titanicDF))
+```
+
+```
+##  [1] "PClass.1st"    "PClass.2nd"    "PClass.3rd"    "Age"          
+##  [5] "Sex.female"    "Sex.male"      "Title.Miss"    "Title.Mr"     
+##  [9] "Title.Mrs"     "Title.Nothing" "Survived"
+```
+
+As you can see, each unique factor has been broken into its own column. Next, it is always a good idea to understand the proportion of our outcome variable:
+
+```r
+prop.table(table(titanicDF$Survived))
+```
+
+```
+## 
+##      0      1 
+## 0.6573 0.3427
+```
+
+This tells us that 34.27% of our data set survived the Titanic tragedy. This is an important step because if the proportion was smaller than 15%, it would be considered a **rare event** and can be more challenging to model.
+
+I like generalizing my variables so that I can easily recycle the code for subsequent needs:
+
+```r
+outcomeName <- 'Survived'
+predictorsNames <- names(titanicDF)[names(titanicDF) != outcomeName]
+```
+
+**Let's model!**
+
+Eventhough we already know the models we're going to use in this walkthrough, **caret** supports a huge number of models. Here is how to get the current list supported by the version on your computer:
+
+
+```r
+names(getModelInfo())
+```
+
+```
+##   [1] "ada"                 "ANFIS"               "avNNet"             
+##   [4] "bag"                 "bagEarth"            "bagFDA"             
+##   [7] "bayesglm"            "bdk"                 "blackboost"         
+##  [10] "Boruta"              "brnn"                "bstLs"              
+##  [13] "bstSm"               "bstTree"             "C5.0"               
+##  [16] "C5.0Cost"            "C5.0Rules"           "C5.0Tree"           
+##  [19] "cforest"             "CSimca"              "ctree"              
+##  [22] "ctree2"              "cubist"              "DENFIS"             
+##  [25] "dnn"                 "earth"               "elm"                
+##  [28] "enet"                "evtree"              "extraTrees"         
+##  [31] "fda"                 "FH.GBML"             "FIR.DM"             
+##  [34] "foba"                "FRBCS.CHI"           "FRBCS.W"            
+##  [37] "FS.HGD"              "gam"                 "gamboost"           
+##  [40] "gamLoess"            "gamSpline"           "gaussprLinear"      
+##  [43] "gaussprPoly"         "gaussprRadial"       "gbm"                
+##  [46] "gcvEarth"            "GFS.FR.MOGAL"        "GFS.GCCL"           
+##  [49] "GFS.LT.RS"           "GFS.Thrift"          "glm"                
+##  [52] "glmboost"            "glmnet"              "glmStepAIC"         
+##  [55] "gpls"                "hda"                 "hdda"               
+##  [58] "HYFIS"               "icr"                 "J48"                
+##  [61] "JRip"                "kernelpls"           "kknn"               
+##  [64] "knn"                 "krlsPoly"            "krlsRadial"         
+##  [67] "lars"                "lars2"               "lasso"              
+##  [70] "lda"                 "lda2"                "leapBackward"       
+##  [73] "leapForward"         "leapSeq"             "Linda"              
+##  [76] "lm"                  "lmStepAIC"           "LMT"                
+##  [79] "logicBag"            "LogitBoost"          "logreg"             
+##  [82] "lssvmLinear"         "lssvmPoly"           "lssvmRadial"        
+##  [85] "lvq"                 "M5"                  "M5Rules"            
+##  [88] "mda"                 "Mlda"                "mlp"                
+##  [91] "mlpWeightDecay"      "multinom"            "nb"                 
+##  [94] "neuralnet"           "nnet"                "nodeHarvest"        
+##  [97] "oblique.tree"        "OneR"                "ORFlog"             
+## [100] "ORFpls"              "ORFridge"            "ORFsvm"             
+## [103] "pam"                 "parRF"               "PART"               
+## [106] "partDSA"             "pcaNNet"             "pcr"                
+## [109] "pda"                 "pda2"                "penalized"          
+## [112] "PenalizedLDA"        "plr"                 "pls"                
+## [115] "plsRglm"             "ppr"                 "protoclass"         
+## [118] "qda"                 "QdaCov"              "qrf"                
+## [121] "qrnn"                "rbf"                 "rbfDDA"             
+## [124] "rda"                 "relaxo"              "rf"                 
+## [127] "rFerns"              "RFlda"               "ridge"              
+## [130] "rknn"                "rknnBel"             "rlm"                
+## [133] "rocc"                "rpart"               "rpart2"             
+## [136] "rpartCost"           "RRF"                 "RRFglobal"          
+## [139] "rrlda"               "RSimca"              "rvmLinear"          
+## [142] "rvmPoly"             "rvmRadial"           "SBC"                
+## [145] "sda"                 "sddaLDA"             "sddaQDA"            
+## [148] "simpls"              "SLAVE"               "slda"               
+## [151] "smda"                "sparseLDA"           "spls"               
+## [154] "stepLDA"             "stepQDA"             "superpc"            
+## [157] "svmBoundrangeString" "svmExpoString"       "svmLinear"          
+## [160] "svmPoly"             "svmRadial"           "svmRadialCost"      
+## [163] "svmRadialWeights"    "svmSpectrumString"   "treebag"            
+## [166] "vbmpRadial"          "widekernelpls"       "WM"                 
+## [169] "xyf"
+```
+
+Plenty to satisfy most needs!!
+
+**gbm modeling**
+
+It is important to know what type of modeling a particular model supports. This can be done using the **caret** function ``getModelInfo``:
+
+```r
+getModelInfo()$gbm$type
+```
+
+```
+## [1] "Regression"     "Classification"
+```
+
+This tells us that it supports both **regression** and **classification**. As this is a binary classification, we need to force **gbm** into using the classifciation algorithm. We do this by changing the **outcome** variable to factor (we use a copy of the outcome as we'll need the original one for our next model):
+
+
+```r
+titanicDF$Survived2 <- ifelse(titanicDF$Survived==1,'yes','nope')
+titanicDF$Survived2 <- as.factor(titanicDF$Survived2)
+outcomeName <- 'Survived2'
+```
+
+As with most modeling projects, we need to split our data set into two portions: a **training** portion and a **testing** one. By doing this, we can use one portion to teach the model how to recognize survivors on the Titanic and the other portion to evaluate the model on a portion of the data it has never seen before (setting the seed is paramount for reproducibility as ``createDataPartition`` will shuffle the data randomly before splitting it and by using the same seed you will always get the same split):
+
+
+```r
+set.seed(1234)
+splitIndex <- createDataPartition(titanicDF[,outcomeName], p = .75, list = FALSE, times = 1)
+trainDF <- titanicDF[ splitIndex,]
+testDF  <- titanicDF[-splitIndex,]
+```
+
+One more step before firing up the model. **Caret** offers many tunning functions to help you get as much as possible out of your models. The ``trainControl`` http://www.inside-r.org/packages/cran/caret/docs/trainControl function allows you to control the resampling of your data. This will split the training data set internally and do its own train/test runs to figure out the best settings for your model. In this case we're going to cross-validate the data 3 times, therefore training it 3 times on different portions of the data before settling on the best tuning parameters (in the case of **gbm** those are ``trees``, ``shirkage``, and ``interaction depth``). Mind you, you can set these values yourself if you don't trust the function.
+
+
+```r
+objControl <- trainControl(method='cv', number=3, returnResamp='none', summaryFunction = twoClassSummary, classProbs = TRUE)
+```
+
+This is the heart of our modeling efforts - time to teach our model to recognize Titanic survivors. Because this is a classification model, we're requesting that our metrics use **ROC** http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf instead of **RMSE**:
+
+
+```r
+objModel <- train(trainDF[,predictorsNames], trainDF[,outcomeName], 
+                  method='gbm', 
+                  trControl=objControl,  
+                  metric = "ROC",
+                  preProc = c("center", "scale"))
+```
+
+```
+## Loading required package: gbm
+## Loading required package: survival
+## Loading required package: splines
+## 
+## Attaching package: 'survival'
+## 
+## The following object is masked from 'package:caret':
+## 
+##     cluster
+## 
+## Loading required package: parallel
+## Loaded gbm 2.1
+## Loading required package: plyr
+```
+
+```
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        1.2314             nan     0.1000    0.0245
+##      2        1.1948             nan     0.1000    0.0192
+##      3        1.1594             nan     0.1000    0.0158
+##      4        1.1386             nan     0.1000    0.0105
+##      5        1.1135             nan     0.1000    0.0123
+##      6        1.0969             nan     0.1000    0.0062
+##      7        1.0786             nan     0.1000    0.0095
+##      8        1.0605             nan     0.1000    0.0076
+##      9        1.0437             nan     0.1000    0.0055
+##     10        1.0292             nan     0.1000    0.0069
+##     20        0.9471             nan     0.1000    0.0029
+##     40        0.8917             nan     0.1000   -0.0009
+##     60        0.8716             nan     0.1000   -0.0001
+##     80        0.8616             nan     0.1000   -0.0010
+##    100        0.8548             nan     0.1000   -0.0016
+##    120        0.8518             nan     0.1000   -0.0007
+##    140        0.8487             nan     0.1000   -0.0010
+##    150        0.8471             nan     0.1000   -0.0008
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        1.2131             nan     0.1000    0.0347
+##      2        1.1598             nan     0.1000    0.0237
+##      3        1.1156             nan     0.1000    0.0224
+##      4        1.0822             nan     0.1000    0.0174
+##      5        1.0521             nan     0.1000    0.0150
+##      6        1.0270             nan     0.1000    0.0114
+##      7        1.0078             nan     0.1000    0.0104
+##      8        0.9899             nan     0.1000    0.0078
+##      9        0.9743             nan     0.1000    0.0051
+##     10        0.9624             nan     0.1000    0.0041
+##     20        0.8811             nan     0.1000    0.0002
+##     40        0.8358             nan     0.1000   -0.0009
+##     60        0.8129             nan     0.1000   -0.0010
+##     80        0.7968             nan     0.1000   -0.0015
+##    100        0.7860             nan     0.1000   -0.0013
+##    120        0.7794             nan     0.1000   -0.0010
+##    140        0.7721             nan     0.1000   -0.0014
+##    150        0.7689             nan     0.1000   -0.0011
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        1.2092             nan     0.1000    0.0377
+##      2        1.1534             nan     0.1000    0.0296
+##      3        1.1046             nan     0.1000    0.0240
+##      4        1.0663             nan     0.1000    0.0190
+##      5        1.0362             nan     0.1000    0.0147
+##      6        1.0070             nan     0.1000    0.0135
+##      7        0.9839             nan     0.1000    0.0104
+##      8        0.9628             nan     0.1000    0.0104
+##      9        0.9471             nan     0.1000    0.0071
+##     10        0.9301             nan     0.1000    0.0076
+##     20        0.8552             nan     0.1000   -0.0003
+##     40        0.8040             nan     0.1000   -0.0015
+##     60        0.7828             nan     0.1000   -0.0009
+##     80        0.7712             nan     0.1000   -0.0023
+##    100        0.7593             nan     0.1000   -0.0005
+##    120        0.7544             nan     0.1000   -0.0019
+##    140        0.7493             nan     0.1000   -0.0018
+##    150        0.7456             nan     0.1000   -0.0018
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        1.2274             nan     0.1000    0.0262
+##      2        1.1839             nan     0.1000    0.0201
+##      3        1.1512             nan     0.1000    0.0163
+##      4        1.1247             nan     0.1000    0.0131
+##      5        1.1021             nan     0.1000    0.0107
+##      6        1.0810             nan     0.1000    0.0089
+##      7        1.0635             nan     0.1000    0.0069
+##      8        1.0363             nan     0.1000    0.0113
+##      9        1.0162             nan     0.1000    0.0091
+##     10        1.0029             nan     0.1000    0.0048
+##     20        0.9080             nan     0.1000    0.0016
+##     40        0.8435             nan     0.1000   -0.0000
+##     60        0.8190             nan     0.1000   -0.0007
+##     80        0.8103             nan     0.1000   -0.0015
+##    100        0.8037             nan     0.1000   -0.0009
+##    120        0.7993             nan     0.1000   -0.0002
+##    140        0.7955             nan     0.1000   -0.0006
+##    150        0.7947             nan     0.1000   -0.0003
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        1.2154             nan     0.1000    0.0373
+##      2        1.1572             nan     0.1000    0.0260
+##      3        1.1060             nan     0.1000    0.0257
+##      4        1.0654             nan     0.1000    0.0197
+##      5        1.0292             nan     0.1000    0.0160
+##      6        0.9993             nan     0.1000    0.0145
+##      7        0.9767             nan     0.1000    0.0111
+##      8        0.9554             nan     0.1000    0.0095
+##      9        0.9364             nan     0.1000    0.0092
+##     10        0.9190             nan     0.1000    0.0070
+##     20        0.8300             nan     0.1000    0.0020
+##     40        0.7832             nan     0.1000   -0.0009
+##     60        0.7639             nan     0.1000   -0.0013
+##     80        0.7528             nan     0.1000   -0.0004
+##    100        0.7457             nan     0.1000   -0.0007
+##    120        0.7389             nan     0.1000   -0.0009
+##    140        0.7342             nan     0.1000   -0.0010
+##    150        0.7323             nan     0.1000   -0.0011
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        1.2092             nan     0.1000    0.0396
+##      2        1.1480             nan     0.1000    0.0313
+##      3        1.0907             nan     0.1000    0.0260
+##      4        1.0454             nan     0.1000    0.0223
+##      5        1.0085             nan     0.1000    0.0180
+##      6        0.9798             nan     0.1000    0.0132
+##      7        0.9573             nan     0.1000    0.0102
+##      8        0.9360             nan     0.1000    0.0114
+##      9        0.9181             nan     0.1000    0.0085
+##     10        0.9008             nan     0.1000    0.0070
+##     20        0.8048             nan     0.1000    0.0010
+##     40        0.7591             nan     0.1000   -0.0008
+##     60        0.7398             nan     0.1000   -0.0023
+##     80        0.7288             nan     0.1000   -0.0024
+##    100        0.7193             nan     0.1000   -0.0014
+##    120        0.7135             nan     0.1000   -0.0018
+##    140        0.7089             nan     0.1000   -0.0008
+##    150        0.7056             nan     0.1000   -0.0016
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        1.2381             nan     0.1000    0.0236
+##      2        1.1985             nan     0.1000    0.0185
+##      3        1.1691             nan     0.1000    0.0152
+##      4        1.1434             nan     0.1000    0.0123
+##      5        1.1156             nan     0.1000    0.0105
+##      6        1.0918             nan     0.1000    0.0111
+##      7        1.0749             nan     0.1000    0.0084
+##      8        1.0574             nan     0.1000    0.0059
+##      9        1.0374             nan     0.1000    0.0084
+##     10        1.0247             nan     0.1000    0.0067
+##     20        0.9339             nan     0.1000    0.0017
+##     40        0.8701             nan     0.1000   -0.0003
+##     60        0.8470             nan     0.1000   -0.0002
+##     80        0.8365             nan     0.1000   -0.0006
+##    100        0.8317             nan     0.1000   -0.0002
+##    120        0.8288             nan     0.1000   -0.0005
+##    140        0.8245             nan     0.1000   -0.0007
+##    150        0.8239             nan     0.1000   -0.0008
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        1.2095             nan     0.1000    0.0424
+##      2        1.1499             nan     0.1000    0.0280
+##      3        1.1025             nan     0.1000    0.0198
+##      4        1.0682             nan     0.1000    0.0185
+##      5        1.0375             nan     0.1000    0.0145
+##      6        1.0101             nan     0.1000    0.0124
+##      7        0.9860             nan     0.1000    0.0108
+##      8        0.9704             nan     0.1000    0.0062
+##      9        0.9525             nan     0.1000    0.0081
+##     10        0.9383             nan     0.1000    0.0062
+##     20        0.8502             nan     0.1000    0.0022
+##     40        0.7976             nan     0.1000   -0.0004
+##     60        0.7835             nan     0.1000    0.0005
+##     80        0.7716             nan     0.1000   -0.0003
+##    100        0.7648             nan     0.1000   -0.0014
+##    120        0.7559             nan     0.1000   -0.0009
+##    140        0.7490             nan     0.1000   -0.0010
+##    150        0.7483             nan     0.1000   -0.0016
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        1.2052             nan     0.1000    0.0365
+##      2        1.1379             nan     0.1000    0.0299
+##      3        1.0854             nan     0.1000    0.0245
+##      4        1.0437             nan     0.1000    0.0193
+##      5        1.0123             nan     0.1000    0.0168
+##      6        0.9836             nan     0.1000    0.0115
+##      7        0.9582             nan     0.1000    0.0112
+##      8        0.9380             nan     0.1000    0.0090
+##      9        0.9190             nan     0.1000    0.0094
+##     10        0.9044             nan     0.1000    0.0053
+##     20        0.8256             nan     0.1000    0.0008
+##     40        0.7785             nan     0.1000   -0.0022
+##     60        0.7598             nan     0.1000   -0.0022
+##     80        0.7460             nan     0.1000   -0.0009
+##    100        0.7345             nan     0.1000   -0.0011
+##    120        0.7261             nan     0.1000   -0.0009
+##    140        0.7190             nan     0.1000   -0.0010
+##    150        0.7166             nan     0.1000   -0.0017
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        1.2358             nan     0.1000    0.0251
+##      2        1.1992             nan     0.1000    0.0190
+##      3        1.1640             nan     0.1000    0.0170
+##      4        1.1383             nan     0.1000    0.0130
+##      5        1.1144             nan     0.1000    0.0101
+##      6        1.0911             nan     0.1000    0.0110
+##      7        1.0706             nan     0.1000    0.0088
+##      8        1.0545             nan     0.1000    0.0071
+##      9        1.0378             nan     0.1000    0.0087
+##     10        1.0232             nan     0.1000    0.0071
+##     20        0.9365             nan     0.1000    0.0014
+##     40        0.8747             nan     0.1000    0.0005
+##     60        0.8510             nan     0.1000   -0.0002
+##     80        0.8439             nan     0.1000   -0.0001
+##    100        0.8379             nan     0.1000   -0.0004
+```
+
+I truncated most of the lines from the training process but you get the idea. We then can call ``summary()`` on our model to find out what variables were key players:
+
+
+```r
+# find out variable importance
+summary(objModel)
+```
+
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
+
+```
+##                         var rel.inf
+## Title.Mr           Title.Mr 26.2756
+## PClass.3rd       PClass.3rd 20.8523
+## Sex.male           Sex.male 20.7569
+## Sex.female       Sex.female 11.4357
+## Age                     Age 10.3042
+## PClass.1st       PClass.1st  8.2905
+## Title.Mrs         Title.Mrs  1.7515
+## Title.Miss       Title.Miss  0.3332
+## PClass.2nd       PClass.2nd  0.0000
+## Title.Nothing Title.Nothing  0.0000
+```
+
+
+
+```r
+# find out model details
+objModel
+```
+
+```
+## Stochastic Gradient Boosting 
+## 
+## 986 samples
+##  10 predictor
+##   2 classes: 'nope', 'yes' 
+## 
+## Pre-processing: centered, scaled 
+## Resampling: Cross-Validated (3 fold) 
+## 
+## Summary of sample sizes: 657, 658, 657 
+## 
+## Resampling results across tuning parameters:
+## 
+##   interaction.depth  n.trees  ROC  Sens  Spec  ROC SD  Sens SD  Spec SD
+##   1                   50      0.9  0.9   0.6   0.02    0.007    0.05   
+##   1                  100      0.9  0.9   0.6   0.02    0.014    0.06   
+##   1                  150      0.9  0.9   0.6   0.02    0.010    0.05   
+##   2                   50      0.8  1.0   0.6   0.02    0.019    0.02   
+##   2                  100      0.9  0.9   0.6   0.01    0.023    0.02   
+##   2                  150      0.9  0.9   0.6   0.01    0.008    0.03   
+##   3                   50      0.9  0.9   0.6   0.01    0.020    0.03   
+##   3                  100      0.8  0.9   0.6   0.02    0.012    0.04   
+##   3                  150      0.8  0.9   0.6   0.02    0.012    0.04   
+## 
+## Tuning parameter 'shrinkage' was held constant at a value of 0.1
+## ROC was used to select the optimal model using  the largest value.
+## The final values used for the model were n.trees = 100,
+##  interaction.depth = 1 and shrinkage = 0.1.
+```
+
+**Evaluate gbm model**
+
+There's two types of evaluation we can do here, ``raw`` or ``prob``. **Raw gives you a class prediction, in our case ``yes`` and ``nope``, while **prob** gives you the probability (one a 0 to 1 scale, how sure is the prediction). I always use **prob**, as I like to be in control of the threshold and also like to use **AUC** https://www.kaggle.com/wiki/AreaUnderCurve which requires the probabilites, not the class. There are situations where having class values comes in handy, such as with multinomial models where you're predicting more than two values. 
+
+We now call the ``predict`` function and pass it our trained model and our testing data. Let's start by looking at class predictions and using the **caret** ``postResample`` function to get an accuracy score:
+
+
+```r
+predictions <- predict(object=objModel, testDF[,predictorsNames], type='raw')
+head(predictions)
+```
+
+```
+## [1] yes  nope yes  nope nope nope
+## Levels: nope yes
+```
+
+```r
+print(postResample(pred=predictions, obs=as.factor(testDF[,outcomeName])))
+```
+
+```
+## Accuracy    Kappa 
+##   0.8135   0.5644
+```
+
+The accuracy tells us that our model is correct 81.35% of the time - not bad...
+
+Now let's look at probabilities:
+
+```r
+# probabilites 
+library(pROC)
+predictions <- predict(object=objModel, testDF[,predictorsNames], type='prob')
+head(predictions)
+```
+
+```
+##      nope    yes
+## 1 0.07292 0.9271
+## 2 0.76058 0.2394
+## 3 0.43309 0.5669
+## 4 0.67279 0.3272
+## 5 0.67279 0.3272
+## 6 0.54616 0.4538
+```
+
+```r
+auc <- roc(ifelse(testDF[,outcomeName]=="yes",1,0), predictions[[2]])
+print(auc$auc)
+```
+
+```
+## Area under the curve: 0.825
+```
+The **AUC** is telling us that our model has a 0.825 **AUC** score (remember that it ranges between **0.5** and **1**, where **0.5** is random and **1** is perfect).
+
+**glmnet modeling**
+
+Let's change gears and try this out on a linear model. Let's look at what modeling types **glmnet** supports and reset our outcome variable as we're going to be using the numerical version instead of the factor.
+
+
+```r
+getModelInfo()$glmnet$type
+```
+
+```
+## [1] "Regression"     "Classification"
+```
+
+```r
+outcomeName <- 'Survived'
+
+set.seed(1234)
+splitIndex <- createDataPartition(titanicDF[,outcomeName], p = .75, list = FALSE, times = 1)
+trainDF <- titanicDF[ splitIndex,]
+testDF  <- titanicDF[-splitIndex,]
+```
+
+We re-run some of the basic training and prediction functions with some slight changes:
+
+```r
+objControl <- trainControl(method='cv', number=3, returnResamp='none')
+objModel <- train(trainDF[,predictorsNames], trainDF[,outcomeName], method='glmnet',  metric = "RMSE")
+```
+
+```
+## Loading required package: glmnet
+## Loading required package: Matrix
+## Loaded glmnet 1.9-8
+## 
+## 
+## Attaching package: 'glmnet'
+## 
+## The following object is masked from 'package:pROC':
+## 
+##     auc
+```
+
+```
+## Warning: There were missing values in resampled performance measures.
+```
+
+```r
+predictions <- predict(object=objModel, testDF[,predictorsNames])
+```
+
+
+```r
+auc <- roc(testDF[,outcomeName], predictions)
+print(auc$auc)
+```
+
+```
+## Area under the curve: 0.857
+```
+
+```r
+# find out variable importance
+summary(objModel)
+```
+
+```
+##             Length Class      Mode     
+## a0           70    -none-     numeric  
+## beta        700    dgCMatrix  S4       
+## df           70    -none-     numeric  
+## dim           2    -none-     numeric  
+## lambda       70    -none-     numeric  
+## dev.ratio    70    -none-     numeric  
+## nulldev       1    -none-     numeric  
+## npasses       1    -none-     numeric  
+## jerr          1    -none-     numeric  
+## offset        1    -none-     logical  
+## call          5    -none-     call     
+## nobs          1    -none-     numeric  
+## lambdaOpt     1    -none-     numeric  
+## xNames       10    -none-     character
+## problemType   1    -none-     character
+## tuneValue     2    data.frame list     
+## obsLevels     1    -none-     logical
+```
+
+```r
+plot(varImp(objModel))
+```
+
+![plot of chunk unnamed-chunk-21](figure/unnamed-chunk-21.png) 
+
+```r
+# find out model details
+objModel
+```
+
+```
+## glmnet 
+## 
+## 985 samples
+##  10 predictor
+## 
+## No pre-processing
+## Resampling: Bootstrapped (25 reps) 
+## 
+## Summary of sample sizes: 985, 985, 985, 985, 985, 985, ... 
+## 
+## Resampling results across tuning parameters:
+## 
+##   alpha  lambda  RMSE  Rsquared  RMSE SD  Rsquared SD
+##   0.1    0.1     0.4   0.3       0.008    0.04       
+##   0.1    0.5     0.4   0.3       0.006    0.04       
+##   0.1    0.8     0.4   0.3       0.007    0.05       
+##   0.1    1.2     0.4   0.3       0.007    0.05       
+##   0.1    1.6     0.5   0.3       0.007    0.05       
+##   0.1    1.9     0.5   0.3       0.007    0.04       
+##   0.1    2.3     0.5   0.2       0.007    0.04       
+##   0.1    2.6     0.5   0.2       0.006      NA       
+##   0.1    3.0     0.5   NaN       0.006      NA       
+##   0.6    0.1     0.4   0.3       0.007    0.04       
+##   0.6    0.5     0.5   0.2       0.006    0.03       
+##   0.6    0.8     0.5   NaN       0.006      NA       
+##   0.6    1.2     0.5   NaN       0.006      NA       
+##   0.6    1.6     0.5   NaN       0.006      NA       
+##   0.6    1.9     0.5   NaN       0.006      NA       
+##   0.6    2.3     0.5   NaN       0.006      NA       
+##   0.6    2.6     0.5   NaN       0.006      NA       
+##   0.6    3.0     0.5   NaN       0.006      NA       
+##   1.0    0.1     0.4   0.3       0.007    0.04       
+##   1.0    0.5     0.5   NaN       0.006      NA       
+##   1.0    0.8     0.5   NaN       0.006      NA       
+##   1.0    1.2     0.5   NaN       0.006      NA       
+##   1.0    1.6     0.5   NaN       0.006      NA       
+##   1.0    1.9     0.5   NaN       0.006      NA       
+##   1.0    2.3     0.5   NaN       0.006      NA       
+##   1.0    2.6     0.5   NaN       0.006      NA       
+##   1.0    3.0     0.5   NaN       0.006      NA       
+## 
+## RMSE was used to select the optimal model using  the smallest value.
+## The final values used for the model were alpha = 0.1 and lambda = 0.1.
+```
+
+Here is one of my favorite parts of the **glmnet** model, it gives you the variable importance on a positive and negative scale. This helps you understand your variables, such that being in ``PClass.1st`` leans the probabilites in the survivor's favor while PClass.3rd does the opposite.
+
+
+```r
+# display variable importance on a +/- scale
+vimp <- varImp(objModel, scale=F)
+results <- data.frame(row.names(vimp$importance),vimp$importance$Overall)
+results$VariableName <- rownames(vimp)
+colnames(results) <- c('VariableName','Weight')
+results <- results[order(results$Weight),]
+results <- results[(results$Weight != 0),]
+
+par(mar=c(5,15,4,2)) # increase y-axis margin. 
+xx <- barplot(results$Weight, width = 0.85, 
+              main = paste("Variable Importance -",outcomeName), horiz = T, 
+              xlab = "< (-) importance >  < neutral >  < importance (+) >", axes = FALSE, 
+              col = ifelse((results$Weight > 0), 'blue', 'red')) 
+axis(2, at=xx, labels=results$VariableName, tick=FALSE, las=2, line=-0.3, cex.axis=0.6)  
+```
+
+![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22.png) 
+
+
+<BR><BR>  
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SimpleEnsembleBlending' target='_blank'>also on GitHub</a>)</a>:
+
+```r
+# load libraries
+library(caret)
+library(pROC)
+
+#################################################
+# data prep
+#################################################
+
+# load data
+titanicDF <- read.csv('http://math.ucdenver.edu/RTutorial/titanic.txt',sep='\t')
+titanicDF$Title <- ifelse(grepl('Mr ',titanicDF$Name),'Mr',ifelse(grepl('Mrs ',titanicDF$Name),'Mrs',ifelse(grepl('Miss',titanicDF$Name),'Miss','Nothing'))) 
+titanicDF$Age[is.na(titanicDF$Age)] <- median(titanicDF$Age, na.rm=T)
+
+# miso format
+titanicDF <- titanicDF[c('PClass', 'Age',    'Sex',   'Title', 'Survived')]
+
+# dummy variables for factors/characters
+titanicDF$Title <- as.factor(titanicDF$Title)
+titanicDummy <- dummyVars("~.",data=titanicDF, fullRank=F)
+titanicDF <- as.data.frame(predict(titanicDummy,titanicDF))
+print(names(titanicDF))
+
+
+# what is the proportion of your outcome variable?
+prop.table(table(titanicDF$Survived))
+
+# save the outcome for the glmnet model
+tempOutcome <- titanicDF$Survived  
+
+# generalize outcome and predictor variables
+outcomeName <- 'Survived'
+predictorsNames <- names(titanicDF)[names(titanicDF) != outcomeName]
+
+#################################################
+# model it
+#################################################
+# get names of all caret supported models 
+names(getModelInfo())
+
+titanicDF$Survived <- ifelse(titanicDF$Survived==1,'yes','nope')
+
+# pick model gbm and find out what type of model it is
+getModelInfo()$gbm$type
+
+# split data into training and testing chunks
+set.seed(1234)
+splitIndex <- createDataPartition(titanicDF[,outcomeName], p = .75, list = FALSE, times = 1)
+trainDF <- titanicDF[ splitIndex,]
+testDF  <- titanicDF[-splitIndex,]
+
+# create caret trainControl object to control the number of cross-validations performed
+objControl <- trainControl(method='cv', number=3, returnResamp='none', summaryFunction = twoClassSummary, classProbs = TRUE)
+
+
+# run model
+objModel <- train(trainDF[,predictorsNames], as.factor(trainDF[,outcomeName]), 
+                  method='gbm', 
+                  trControl=objControl,  
+                  metric = "ROC",
+                  preProc = c("center", "scale"))
+)
+
+# find out variable importance
+summary(objModel)
+
+# find out model details
+objModel
+
+#################################################
+# evalute mdoel
+#################################################
+# get predictions on your testing data
+
+# class prediction
+predictions <- predict(object=objModel, testDF[,predictorsNames], type='raw')
+head(predictions)
+postResample(pred=predictions, obs=as.factor(testDF[,outcomeName]))
+
+# probabilites 
+predictions <- predict(object=objModel, testDF[,predictorsNames], type='prob')
+head(predictions)
+postResample(pred=predictions, obs=testDF[,outcomeName])
+
+auc <- roc(ifelse(testDF[,outcomeName]=="yes",1,0), predictions[[2]])
+print(auc$auc)
+
+
+################################################
+# glm model
+################################################
+
+# pick model gbm and find out what type of model it is
+getModelInfo()$glmnet$type
+
+# save the outcome for the glmnet model
+titanicDF$Survived  <- tempOutcome
+
+# split data into training and testing chunks
+set.seed(1234)
+splitIndex <- createDataPartition(titanicDF[,outcomeName], p = .75, list = FALSE, times = 1)
+trainDF <- titanicDF[ splitIndex,]
+testDF  <- titanicDF[-splitIndex,]
+
+# create caret trainControl object to control the number of cross-validations performed
+objControl <- trainControl(method='cv', number=3, returnResamp='none')
+
+# run model
+objModel <- train(trainDF[,predictorsNames], trainDF[,outcomeName], method='glmnet',  metric = "RMSE")
+
+# get predictions on your testing data
+predictions <- predict(object=objModel, testDF[,predictorsNames])
+
+library(pROC)
+auc <- roc(testDF[,outcomeName], predictions)
+print(auc$auc)
+
+postResample(pred=predictions, obs=testDF[,outcomeName])
+ 
+
+
+# find out variable importance
+summary(objModel)
+plot(varImp(objModel))
+
+# find out model details
+objModel
+
+# display variable importance on a +/- scale
+vimp <- varImp(objModel, scale=F)
+results <- data.frame(row.names(vimp$importance),vimp$importance$Overall)
+results$VariableName <- rownames(vimp)
+colnames(results) <- c('VariableName','Weight')
+results <- results[order(results$Weight),]
+results <- results[(results$Weight != 0),]
+
+par(mar=c(5,15,4,2)) # increase y-axis margin. 
+xx <- barplot(results$Weight, width = 0.85, 
+              main = paste("Variable Importance -",outcomeName), horiz = T, 
+              xlab = "< (-) importance >  < neutral >  < importance (+) >", axes = FALSE, 
+              col = ifelse((results$Weight > 0), 'blue', 'red')) 
+axis(2, at=xx, labels=results$VariableName, tick=FALSE, las=2, line=-0.3, cex.axis=0.6)  
+
+
+################################################
+# advanced stuff
+################################################
+
+# boosted tree model (gbm) adjust learning rate and and trees
+gbmGrid <-  expand.grid(interaction.depth =  c(1, 5, 9),
+                        n.trees = 50,
+                        shrinkage = 0.01)
+
+# run model
+objModel <- train(trainDF[,predictorsNames], trainDF[,outcomeName], method='gbm', trControl=objControl, tuneGrid = gbmGrid, verbose=F)
+
+# get predictions on your testing data
+predictions <- predict(object=objModel, testDF[,predictorsNames])
+
+library(pROC)
+auc <- roc(testDF[,outcomeName], predictions)
+print(auc$auc)
+```
