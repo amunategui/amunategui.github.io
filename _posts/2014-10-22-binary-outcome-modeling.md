@@ -25,7 +25,7 @@ image: binary-outcomes/classification.png
 </ul>
 <BR><BR>
 
-This is an introduction to modeling binary outcomes usign the **caret** library. A binary outcome is a result that has two possible values - true or false, alive or dead, etc. 
+This is an introduction to modeling binary outcomes using the **caret** library. A binary outcome is a result that has two possible values - true or false, alive or dead, etc. 
 
 We're going to use two models: <a href="http://www.inside-r.org/packages/cran/gbm/docs/gbm" target="_blank">gbm (Generalized Boosted Models)</a> and <a href="http://www.inside-r.org/packages/glmnet" target="_blank">glmnet (Generalized Linear Models)</a>. Approaching a new data set using very different models is a great way to get a handle on your data, **gbm** uses boosted trees, and **glmnet**  uses regression. 
 
@@ -54,7 +54,7 @@ We need to clean up a few things as is customary with any data science projects.
 titanicDF$Title <- ifelse(grepl('Mr ',titanicDF$Name),'Mr',ifelse(grepl('Mrs ',titanicDF$Name),'Mrs',ifelse(grepl('Miss',titanicDF$Name),'Miss','Nothing'))) 
 ```
 <br><br>
-The ``Age`` variable has missing data (i.e. ``NA``'s) so we're going to impute it with the mean value of all the available ages. There are many ways of imputing missing data - we could remove those rows, set the values to 0, etc. Either way this will neutralize those values as most models can't handle them directly (actually **gbm** can handle ``NA``s but **glmnet** cannot):
+The ``Age`` variable has missing data (i.e. ``NA``'s) so we're going to impute it with the mean value of all the available ages. There are many ways of imputing missing data - we could remove those rows, set the values to 0, etc. Either way this will neutralize those values, as most models can't handle them directly (actually **gbm** can handle ``NA``s but **glmnet** cannot):
 
 ```r
 titanicDF$Age[is.na(titanicDF$Age)] <- median(titanicDF$Age, na.rm=T)
@@ -117,7 +117,7 @@ predictorsNames <- names(titanicDF)[names(titanicDF) != outcomeName]
 <br><br>
 **Let's model!**
 
-Eventhough we already know the models we're going to use in this walkthrough, **caret** supports a huge number of models. Here is how to get the current list supported by the version on your computer:
+Even though we already know the models we're going to use in this walkthrough, **caret** supports a huge number of models. Here is how to get the current list supported by the version on your computer:
 
 
 ```r
@@ -198,7 +198,7 @@ getModelInfo()$gbm$type
 ## [1] "Regression"     "Classification"
 ```
 <br><br>
-This tells us that it supports both **regression** and **classification**. As this is a binary classification, we need to force **gbm** into using the classifciation algorithm. We do this by changing the **outcome** variable to factor (we use a copy of the outcome as we'll need the original one for our next model):
+This tells us that it supports both **regression** and **classification**. As this is a binary classification, we need to force **gbm** into using the classification algorithm. We do this by changing the **outcome** variable to factor (we use a copy of the outcome as we'll need the original one for our next model):
 
 
 ```r
@@ -217,7 +217,7 @@ trainDF <- titanicDF[ splitIndex,]
 testDF  <- titanicDF[-splitIndex,]
 ```
 <br><br>
-One more step before firing up the model. **Caret** offers many tunning functions to help you get as much as possible out of your models. The ``trainControl`` http://www.inside-r.org/packages/cran/caret/docs/trainControl function allows you to control the resampling of your data. This will split the training data set internally and do its own train/test runs to figure out the best settings for your model. In this case we're going to cross-validate the data 3 times, therefore training it 3 times on different portions of the data before settling on the best tuning parameters (in the case of **gbm** those are ``trees``, ``shirkage``, and ``interaction depth``). Mind you, you can set these values yourself if you don't trust the function.
+One more step before firing up the model. **Caret** offers many tuning functions to help you get as much as possible out of your models. The ``trainControl`` http://www.inside-r.org/packages/cran/caret/docs/trainControl function allows you to control the resampling of your data. This will split the training data set internally and do its own train/test runs to figure out the best settings for your model. In this case we're going to cross-validate the data 3 times, therefore training it 3 times on different portions of the data before settling on the best tuning parameters (in the case of **gbm** those are ``trees``, ``shirkage``, and ``interaction depth``). Mind you, you can set these values yourself if you don't trust the function.
 
 
 ```r
@@ -246,7 +246,6 @@ I truncated most of the lines from the training process but you get the idea. We
 
 
 ```r
-# find out variable importance
 summary(objModel)
 ```
 ![plot of chunk unnamed-chunk-10](../img/posts/binary-outcomes/unnamed-chunk-15.png) 
@@ -267,10 +266,9 @@ summary(objModel)
 ## Title.Nothing Title.Nothing  0.0000
 ```
 
-
-
+<BR><BR>
+Get information about the model iteslf such as the final number of ``trees``, ``shrinkage`` and ``interaction depth``:
 ```r
-# find out model details
 objModel
 ```
 
@@ -292,7 +290,7 @@ objModel
 <BR><BR>
 **Evaluate gbm model**
 
-There's two types of evaluation we can do here, ``raw`` or ``prob``. **Raw gives you a class prediction, in our case ``yes`` and ``nope``, while **prob** gives you the probability (one a 0 to 1 scale, how sure is the prediction). I always use **prob**, as I like to be in control of the threshold and also like to use **AUC** https://www.kaggle.com/wiki/AreaUnderCurve which requires the probabilites, not the class. There are situations where having class values comes in handy, such as with multinomial models where you're predicting more than two values. 
+There are two types of evaluation we can do here, ``raw`` or ``prob``. **Raw gives you a class prediction, in our case ``yes`` and ``nope``, while **prob** gives you the probability (one a 0 to 1 scale, how sure is the prediction). I always use **prob**, as I like to be in control of the threshold and also like to use **AUC** https://www.kaggle.com/wiki/AreaUnderCurve which requires the probabilities, not the class. There are situations where having class values comes in handy, such as with multinomial models where you're predicting more than two values. 
 
 We now call the ``predict`` function and pass it our trained model and our testing data. Let's start by looking at class predictions and using the **caret** ``postResample`` function to get an accuracy score:
 
@@ -393,7 +391,7 @@ print(auc$auc)
 <BR><BR>
 This is a stronger **AUC** score than our previous **gbm** model - testing with different types of models does pay off (take it with a grain of salt as we didn't tune our models much).
 
-You can also call the **caret** function ``varImp`` to figure out which variables were important to the model. And this is one great feature of the **glmnet** model, it returns positive and negative variable importance unlike most models. This helps you understand your variables, such that being in ``PClass.1st`` leans the probabilites in the survivor's favor while PClass.3rd does the opposite (make sure you set ``scale`` to False):
+You can also call the **caret** function ``varImp`` to figure out which variables were important to the model. And this is one great feature of the **glmnet** model; it returns positive and negative variable importance unlike most models. This helps you understand your variables, such that being in ``PClass.1st`` leans the probabilities  in the survivor's favor while PClass.3rd does the opposite (make sure you set ``scale`` to False):
 
 ```r
 plot(varImp(objModel,scale=F))
