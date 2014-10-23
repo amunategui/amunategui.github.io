@@ -403,7 +403,7 @@ plot(varImp(objModel,scale=F))
 But the one think I love about the **glmnet** model is that it returns positive and negative variable importance unlike most models. This helps you understand your variables, such that being in ``PClass.1st`` leans the probabilites in the survivor's favor while PClass.3rd does the opposite.
 
 <BR><BR>  
-<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SimpleEnsembleBlending' target='_blank'>also on GitHub</a>)</a>:
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/modeling-binary-outcomes' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
 
