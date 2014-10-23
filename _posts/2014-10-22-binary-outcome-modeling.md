@@ -389,35 +389,18 @@ print(auc$auc)
 ```
 ## Area under the curve: 0.857
 ```
-This is a stronger **AUC** score than our previous **gbm** model. You can also call the **caret** function ``varImp`` to find the important variables:
+This is a stronger **AUC** score than our previous **gbm** model. 
+
+You can also call the **caret** function ``varImp`` to figure out which variables were important to the model. And this is one great feature of the **glmnet** model, it returns positive and negative variable importance unlike most models. This helps you understand your variables, such that being in ``PClass.1st`` leans the probabilites in the survivor's favor while PClass.3rd does the opposite (make sure you set ``scale`` to False):
 
 ```r
-plot(varImp(objModel))
+plot(varImp(objModel,scale=F))
 ```
 
 ![plot of chunk unnamed-chunk-10](../img/posts/binary-outcomes/unnamed-chunk-21.png) 
 <BR><BR>
  
 But the one think I love about the **glmnet** model is that it returns positive and negative variable importance unlike most models. This helps you understand your variables, such that being in ``PClass.1st`` leans the probabilites in the survivor's favor while PClass.3rd does the opposite.
-
-```r
-# display variable importance on a +/- scale
-vimp <- varImp(objModel, scale=F)
-results <- data.frame(row.names(vimp$importance),vimp$importance$Overall)
-results$VariableName <- rownames(vimp)
-colnames(results) <- c('VariableName','Weight')
-results <- results[order(results$Weight),]
-results <- results[(results$Weight != 0),]
-
-par(mar=c(5,15,4,2)) # increase y-axis margin. 
-xx <- barplot(results$Weight, width = 0.85, 
-              main = paste("Variable Importance -",outcomeName), horiz = T, 
-              xlab = "< (-) importance >  < neutral >  < importance (+) >", axes = FALSE, 
-              col = ifelse((results$Weight > 0), 'blue', 'red')) 
-axis(2, at=xx, labels=results$VariableName, tick=FALSE, las=2, line=-0.3, cex.axis=0.6)  
-```
-
-![plot of chunk unnamed-chunk-10](../img/posts/binary-outcomes/unnamed-chunk-22.png) 
 
 <BR><BR>  
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SimpleEnsembleBlending' target='_blank'>also on GitHub</a>)</a>:
@@ -544,12 +527,12 @@ postResample(pred=predictions, obs=testDF[,outcomeName])
  
 # find out variable importance
 summary(objModel)
-plot(varImp(objModel))
+plot(varImp(objModel,scale=F))
 
 # find out model details
 objModel
 
-# display variable importance on a +/- scale
+# display variable importance on a +/- scale 
 vimp <- varImp(objModel, scale=F)
 results <- data.frame(row.names(vimp$importance),vimp$importance$Overall)
 results$VariableName <- rownames(vimp)
