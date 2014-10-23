@@ -94,7 +94,7 @@ print(names(titanicDF))
 ##  [9] "Title.Mrs"     "Title.Nothing" "Survived"
 ```
 <br><br>
-As you can see, each unique factor has been broken into its own column. Next, it is always a good idea to understand the proportion of our outcome variable:
+As you can see, each unique factor is now separated into its own column. Next, it is always a good idea to understand the proportion of our outcome variable:
 
 ```r
 prop.table(table(titanicDF$Survived))
