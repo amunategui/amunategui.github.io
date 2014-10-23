@@ -267,9 +267,10 @@ summary(objModel)
 ```
 
 <BR><BR>
-Get information about the model iteslf such as the final number of ``trees``, ``shrinkage`` and ``interaction depth``:
+To get information about the model iteslf such as the final number of ``trees``, ``shrinkage`` and ``interaction depth``:
+
 ```r
-objModel
+print(objModel)
 ```
 
 ```
