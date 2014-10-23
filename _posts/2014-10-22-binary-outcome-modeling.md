@@ -249,7 +249,7 @@ I truncated most of the lines from the training process but you get the idea. We
 # find out variable importance
 summary(objModel)
 ```
-![plot of chunk unnamed-chunk-10](../img/posts/MappingTheUSWithGGMAP/unnamed-chunk-15.png) 
+![plot of chunk unnamed-chunk-10](../img/posts/binary-outcomes/unnamed-chunk-15.png) 
 <BR>
 
 
@@ -420,7 +420,7 @@ summary(objModel)
 plot(varImp(objModel))
 ```
 
-![plot of chunk unnamed-chunk-10](../img/posts/MappingTheUSWithGGMAP/unnamed-chunk-21.png) 
+![plot of chunk unnamed-chunk-10](../img/posts/binary-outcomes/unnamed-chunk-21.png) 
 <BR>
 ```r
 # find out model details
@@ -493,7 +493,7 @@ xx <- barplot(results$Weight, width = 0.85,
 axis(2, at=xx, labels=results$VariableName, tick=FALSE, las=2, line=-0.3, cex.axis=0.6)  
 ```
 
-![plot of chunk unnamed-chunk-10](../img/posts/MappingTheUSWithGGMAP/unnamed-chunk-22.png) 
+![plot of chunk unnamed-chunk-10](../img/posts/binary-outcomes/unnamed-chunk-22.png) 
 
 <BR><BR>  
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SimpleEnsembleBlending' target='_blank'>also on GitHub</a>)</a>:
