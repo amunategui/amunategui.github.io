@@ -389,92 +389,16 @@ print(auc$auc)
 ```
 ## Area under the curve: 0.857
 ```
-
-```r
-# find out variable importance
-summary(objModel)
-```
-
-```
-##             Length Class      Mode     
-## a0           70    -none-     numeric  
-## beta        700    dgCMatrix  S4       
-## df           70    -none-     numeric  
-## dim           2    -none-     numeric  
-## lambda       70    -none-     numeric  
-## dev.ratio    70    -none-     numeric  
-## nulldev       1    -none-     numeric  
-## npasses       1    -none-     numeric  
-## jerr          1    -none-     numeric  
-## offset        1    -none-     logical  
-## call          5    -none-     call     
-## nobs          1    -none-     numeric  
-## lambdaOpt     1    -none-     numeric  
-## xNames       10    -none-     character
-## problemType   1    -none-     character
-## tuneValue     2    data.frame list     
-## obsLevels     1    -none-     logical
-```
+This is a stronger **AUC** score than our previous **gbm** model. You can also call the **caret** function ``varImp`` to find the important variables:
 
 ```r
 plot(varImp(objModel))
 ```
 
 ![plot of chunk unnamed-chunk-10](../img/posts/binary-outcomes/unnamed-chunk-21.png) 
-<BR>
-```r
-# find out model details
-objModel
-```
-
-```
-## glmnet 
-## 
-## 985 samples
-##  10 predictor
-## 
-## No pre-processing
-## Resampling: Bootstrapped (25 reps) 
-## 
-## Summary of sample sizes: 985, 985, 985, 985, 985, 985, ... 
-## 
-## Resampling results across tuning parameters:
-## 
-##   alpha  lambda  RMSE  Rsquared  RMSE SD  Rsquared SD
-##   0.1    0.1     0.4   0.3       0.008    0.04       
-##   0.1    0.5     0.4   0.3       0.006    0.04       
-##   0.1    0.8     0.4   0.3       0.007    0.05       
-##   0.1    1.2     0.4   0.3       0.007    0.05       
-##   0.1    1.6     0.5   0.3       0.007    0.05       
-##   0.1    1.9     0.5   0.3       0.007    0.04       
-##   0.1    2.3     0.5   0.2       0.007    0.04       
-##   0.1    2.6     0.5   0.2       0.006      NA       
-##   0.1    3.0     0.5   NaN       0.006      NA       
-##   0.6    0.1     0.4   0.3       0.007    0.04       
-##   0.6    0.5     0.5   0.2       0.006    0.03       
-##   0.6    0.8     0.5   NaN       0.006      NA       
-##   0.6    1.2     0.5   NaN       0.006      NA       
-##   0.6    1.6     0.5   NaN       0.006      NA       
-##   0.6    1.9     0.5   NaN       0.006      NA       
-##   0.6    2.3     0.5   NaN       0.006      NA       
-##   0.6    2.6     0.5   NaN       0.006      NA       
-##   0.6    3.0     0.5   NaN       0.006      NA       
-##   1.0    0.1     0.4   0.3       0.007    0.04       
-##   1.0    0.5     0.5   NaN       0.006      NA       
-##   1.0    0.8     0.5   NaN       0.006      NA       
-##   1.0    1.2     0.5   NaN       0.006      NA       
-##   1.0    1.6     0.5   NaN       0.006      NA       
-##   1.0    1.9     0.5   NaN       0.006      NA       
-##   1.0    2.3     0.5   NaN       0.006      NA       
-##   1.0    2.6     0.5   NaN       0.006      NA       
-##   1.0    3.0     0.5   NaN       0.006      NA       
-## 
-## RMSE was used to select the optimal model using  the smallest value.
-## The final values used for the model were alpha = 0.1 and lambda = 0.1.
-```
-
-Here is one of my favorite parts of the **glmnet** model, it gives you the variable importance on a positive and negative scale. This helps you understand your variables, such that being in ``PClass.1st`` leans the probabilites in the survivor's favor while PClass.3rd does the opposite.
-
+<BR><BR>
+ 
+But the one think I love about the **glmnet** model is that it returns positive and negative variable importance unlike most models. This helps you understand your variables, such that being in ``PClass.1st`` leans the probabilites in the survivor's favor while PClass.3rd does the opposite.
 
 ```r
 # display variable importance on a +/- scale
@@ -660,3 +584,33 @@ library(pROC)
 auc <- roc(testDF[,outcomeName], predictions)
 print(auc$auc)
 ```
+
+<div class="row">   
+    <div class="span9 column">
+            <p class="pull-right">{% if page.previous.url %} <a href="{{page.previous.url}}" title="Previous Post: {{page.previous.title}}"><i class="icon-chevron-left"></i></a>   {% endif %}   {% if page.next.url %}    <a href="{{page.next.url}}" title="Next Post: {{page.next.title}}"><i class="icon-chevron-right"></i></a>   {% endif %} </p>  
+    </div>
+</div>
+
+<div class="row">   
+    <div class="span9 columns">    
+        <h2>Comments Section</h2>
+        <p>Feel free to comment on the post but keep it clean and on topic.</p> 
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'amunategui'; // required: replace example with your forum shortname
+            var disqus_identifier = '{{ page.url }}';
+            var disqus_url = 'http://amunategui.github.com{{ page.url }}';
+            
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+</div>
+ 
