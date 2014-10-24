@@ -186,7 +186,7 @@ names(getModelInfo())
 
 Plenty to satisfy most needs!!
 <br><br>
-**gbm modeling**
+**Gbm Modeling**
 
 It is important to know what type of modeling a particular model supports. This can be done using the **caret** function ``getModelInfo``:
 
@@ -291,7 +291,7 @@ print(objModel)
 <BR><BR>
 **Evaluate gbm model**
 
-There are two types of evaluation we can do here, ``raw`` or ``prob``. **Raw gives you a class prediction, in our case ``yes`` and ``nope``, while **prob** gives you the probability (one a 0 to 1 scale, how sure is the prediction). I always use **prob**, as I like to be in control of the threshold and also like to use **AUC** https://www.kaggle.com/wiki/AreaUnderCurve which requires the probabilities, not the class. There are situations where having class values comes in handy, such as with multinomial models where you're predicting more than two values. 
+There are two types of evaluation we can do here, ``raw`` or ``prob``. **Raw** gives you a class prediction, in our case ``yes`` and ``nope``, while **prob** gives you the probability on how sure the model is about its choice. I always use **prob**, as I like to be in control of the threshold and also like to use <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>AUC</a> score  which requires probabilities, not classes. There are situations where having class values can come in handy, such as with multinomial models where you're predicting more than two values. 
 
 We now call the ``predict`` function and pass it our trained model and our testing data. Let's start by looking at class predictions and using the **caret** ``postResample`` function to get an accuracy score:
 
@@ -315,7 +315,7 @@ print(postResample(pred=predictions, obs=as.factor(testDF[,outcomeName])))
 ##   0.8135   0.5644
 ```
 <BR>
-The accuracy tells us that our model is correct 81.35% of the time - not bad...
+The accuracy tells us that our model is correct **81.35%** of the time - not bad...
 <BR><BR>
 Now let's look at probabilities:
 
@@ -336,7 +336,7 @@ head(predictions)
 ## 6 0.54616 0.4538
 ```
 <BR><BR>
-To get the **AUC** score, you need to pass the ``yes`` column only to the ``roc`` function (each row adds up to 1 but we're interested in the ``yes``, or the **survivors**):
+To get the **AUC** score, you need to pass the ``yes`` column to the ``roc`` function (each row adds up to 1 but we're interested in the ``yes``, the **survivors**):
 
 ```r
 auc <- roc(ifelse(testDF[,outcomeName]=="yes",1,0), predictions[[2]])
@@ -346,12 +346,12 @@ print(auc$auc)
 ```
 ## Area under the curve: 0.825
 ```
-The **AUC** is telling us that our model has a 0.825 **AUC** score (remember that it ranges between **0.5** and **1**, where **0.5** is random and **1** is perfect).
+The **AUC** is telling us that our model has a **0.825 AUC** score (remember that an **AUC** ranges between **0.5** and **1**, where **0.5** is random and **1** is perfect).
 
 <BR><BR>
-**glmnet modeling**
+**Glmnet Modeling**
 
-Let's change gears and try this out on a linear model. Let's look at what modeling types **glmnet** supports and reset our outcome variable as we're going to be using the numerical version instead of the factor.
+Let's change gears and try this out on a regression model. Let's look at what modeling types **glmnet** supports and reset our outcome variable as we're going to be using the numerical outcome instead of the factor.
 
 
 ```r
