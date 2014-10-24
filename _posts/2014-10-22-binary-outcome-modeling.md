@@ -392,9 +392,9 @@ print(auc$auc)
 ## Area under the curve: 0.857
 ```
 <BR><BR>
-This is a stronger **AUC** score than our previous **gbm** model - testing with different types of models does pay off (take it with a grain of salt as we didn't tune our models much).
+This is a stronger **AUC** score than our previous **gbm** model. Testing with different types of models does pay off (take it with a grain of salt as we didn't tune our models much).
 
-You can also call the **caret** function ``varImp`` to figure out which variables were important to the model. And this is one great feature of the **glmnet** model; it returns positive and negative variable importance unlike most models. This helps you understand your variables, such that being in ``PClass.1st`` leans the probabilities  in the survivor's favor while PClass.3rd does the opposite (make sure you set ``scale`` to False):
+You can also call the **caret** function ``varImp`` to figure out the variables that were important to the model. And this is one great feature of the **glmnet** model; it returns positive and negative variable importance unlike most models. This helps deepens your understanding about your variables, such that being in ``PClass.1st`` leans the probabilities in the survivor's favor while ``PClass.3rd`` does the opposite (make sure you set ``scale`` to False):
 
 ```r
 plot(varImp(objModel,scale=F))
