@@ -7,7 +7,7 @@ year: 2014
 month: 10
 day: 22
 published: true
-summary: This walkthrough shows how to easily model binary outcomes using <b>caret</b> models and how to evaluate the predictions.
+summary: This walkthrough shows how to easily model binary outcomes using <b>caret</b> models, how to evaluate the predictions, and how to display variable importance.
 image: binary-outcomes/classification.png
 ---
 
