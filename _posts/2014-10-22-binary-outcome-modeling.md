@@ -224,7 +224,7 @@ testDF  <- titanicDF[-splitIndex,]
 objControl <- trainControl(method='cv', number=3, returnResamp='none', summaryFunction = twoClassSummary, classProbs = TRUE)
 ```
 <br><br>
-This is the heart of our modeling process, time to teach our model how to recognize Titanic survivors. Because this is a classification model, we're requesting that our metrics use <a href='http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf' target='_blank'>ROC</a> instead of **RMSE**:
+This is the heart of our modeling process, time to teach our model how to recognize Titanic survivors. Because this is a classification model, we're requesting that our metrics use <a href='http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf' target='_blank'>ROC</a> instead of the default **RMSE**:
 
 
 ```r
