@@ -48,19 +48,19 @@ print(str(titanicDF))
 ## NULL
 ```
 <br><br>
-We need to clean up a few things as is customary with any data science projects. The ``Name`` variable is mostly unique so we're going to extract the title and throw out the rest.
+We need to clean up a few things as is customary with any data science project. The ``Name`` variable is mostly unique so we're going to extract the title and throw the rest away.
 
 ```r
 titanicDF$Title <- ifelse(grepl('Mr ',titanicDF$Name),'Mr',ifelse(grepl('Mrs ',titanicDF$Name),'Mrs',ifelse(grepl('Miss',titanicDF$Name),'Miss','Nothing'))) 
 ```
 <br><br>
-The ``Age`` variable has missing data (i.e. ``NA``'s) so we're going to impute it with the mean value of all the available ages. There are many ways of imputing missing data - we could remove those rows, set the values to 0, etc. Either way this will neutralize those values, as most models can't handle them directly (actually **gbm** can handle ``NA``s but **glmnet** cannot):
+The ``Age`` variable has missing data (i.e. ``NA``'s) so we're going to impute it with the mean value of all the available ages. There are many ways of imputing missing data - we could delete those rows, set the values to 0, etc. Either way, this will neutralize the missing fields with a common value, and allow the models that can't handle them normally to function (**gbm** can handle ``NA``s but **glmnet** cannot):
 
 ```r
 titanicDF$Age[is.na(titanicDF$Age)] <- median(titanicDF$Age, na.rm=T)
 ```
 <br><br>
-It is cleaner to have the **outcome** variable (also known as response) in the last column of our data set:
+It is customary to have the **outcome** variable (also known as response variable) located in the last column of a data set:
 
 
 ```r
@@ -78,7 +78,7 @@ print(str(titanicDF))
 ## NULL
 ```
 <br><br>
-Our data is starting to look good but we have to fix the factor variables as most models only accept **numeric** data. **Gbm** can deal directly with factor variables as it will dummify them internally, **glmnet** won't. In a nutshell, dummifying factors breaks all the unique values into separate columns (<a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">see my post on Brief Walkthrough Of The dummyVars function from {caret}</a>). This is a **caret** function:
+Our data is starting to look good but we have to fix the **factor** variables as most models only accept **numeric** data. Again, **gbm** can deal with factor variables as it will dummify them internally, but **glmnet** won't. In a nutshell, dummifying factors breaks all the unique values into separate columns (<a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">see my post on Brief Walkthrough Of The dummyVars function from {caret}</a>). This is a **caret** function:
 
 
 ```r
@@ -94,7 +94,7 @@ print(names(titanicDF))
 ##  [9] "Title.Mrs"     "Title.Nothing" "Survived"
 ```
 <br><br>
-As you can see, each unique factor is now separated into its own column. Next, it is always a good idea to understand the proportion of our outcome variable:
+As you can see, each unique factor is now separated into its own column. Next, we need to understand the proportion of our outcome variable:
 
 ```r
 prop.table(table(titanicDF$Survived))
@@ -106,7 +106,7 @@ prop.table(table(titanicDF$Survived))
 ## 0.6573 0.3427
 ```
 <br><br>
-This tells us that <b>34.27%</b> of our data set survived the Titanic tragedy. This is an important step because if the proportion was smaller than 15%, it would be considered a **rare event** and can be more challenging to model.
+This tells us that <b>34.27%</b> of our data contains survivors of the Titanic tragedy. This is an important step because if the proportion was smaller than 15%, it would be considered a **rare event** and would be more challenging to model.
 
 I like generalizing my variables so that I can easily recycle the code for subsequent needs:
 
@@ -117,7 +117,7 @@ predictorsNames <- names(titanicDF)[names(titanicDF) != outcomeName]
 <br><br>
 **Let's model!**
 
-Even though we already know the models we're going to use in this walkthrough, **caret** supports a huge number of models. Here is how to get the current list supported by the version on your computer:
+Even though we already know the models we're going to use in this walkthrough, **caret** supports a huge number of models. Here is how to get the current list of supported models:
 
 
 ```r
@@ -198,7 +198,7 @@ getModelInfo()$gbm$type
 ## [1] "Regression"     "Classification"
 ```
 <br><br>
-This tells us that it supports both **regression** and **classification**. As this is a binary classification, we need to force **gbm** into using the classification algorithm. We do this by changing the **outcome** variable to factor (we use a copy of the outcome as we'll need the original one for our next model):
+This tells us that ``gbm`` supports both **regression** and **classification**. As this is a binary classification, we need to force **gbm** into using the classification mode. We do this by changing the **outcome** variable to a factor (we use a copy of the outcome as we'll need the original one for our next model):
 
 
 ```r
@@ -207,7 +207,7 @@ titanicDF$Survived2 <- as.factor(titanicDF$Survived2)
 outcomeName <- 'Survived2'
 ```
 <br><br>
-As with most modeling projects, we need to split our data set into two portions: a **training** portion and a **testing** one. By doing this, we can use one portion to teach the model how to recognize survivors on the Titanic and the other portion to evaluate the model on a portion of the data it has never seen before (setting the seed is paramount for reproducibility as ``createDataPartition`` will shuffle the data randomly before splitting it and by using the same seed you will always get the same split):
+As with most modeling projects, we need to split our data into two portions: a **training** and a **testing** portion. By doing this, we can use one portion to teach the model how to recognize survivors on the Titanic and the other portion to evaluate the model. Setting the **seed** is paramount for reproducibility as ``createDataPartition`` will shuffle the data randomly before splitting it. By using the same seed you will always get the same split in subsequent runs:
 
 
 ```r
