@@ -217,14 +217,14 @@ trainDF <- titanicDF[ splitIndex,]
 testDF  <- titanicDF[-splitIndex,]
 ```
 <br><br>
-**Caret** offers many tuning functions to help you get as much as possible out of your models; the <a href='http://www.inside-r.org/packages/cran/caret/docs/trainControl' target='_blank'>trainControl</a> function allows you to control the resampling of your data. This will split the training data set internally and do its own train/test runs to figure out the best settings for your model. In this case, we're going to cross-validate the data 3 times, therefore training it 3 times on different portions of the data before settling on the best tuning parameters (for **gbm** it is ``trees``, ``shrinkage``, and ``interaction depth``). Mind you, you can set these values yourself if you don't trust the function.
+**Caret** offers many tuning functions to help you get as much as possible out of your models; the <a href='http://www.inside-r.org/packages/cran/caret/docs/trainControl' target='_blank'>trainControl</a> function allows you to control the resampling of your data. This will split the training data set internally and do its own train/test runs to figure out the best settings for your model. In this case, we're going to cross-validate the data 3 times, therefore training it 3 times on different portions of the data before settling on the best tuning parameters (for **gbm** it is ``trees``, ``shrinkage``, and ``interaction depth``). You can also set these values yourself if you don't trust the function.
 
 
 ```r
 objControl <- trainControl(method='cv', number=3, returnResamp='none', summaryFunction = twoClassSummary, classProbs = TRUE)
 ```
 <br><br>
-This is the heart of our modeling process, time to teach our model how to recognize Titanic survivors. Because this is a classification model, we're requesting that our metrics use <a href='http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf' target='_blank'>ROC</a> instead of the default **RMSE**:
+This is the heart of our modeling adventure, time to teach our model how to recognize Titanic survivors. Because this is a classification model, we're requesting that our metrics use <a href='http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf' target='_blank'>ROC</a> instead of the default **RMSE**:
 
 
 ```r
@@ -242,7 +242,7 @@ objModel <- train(trainDF[,predictorsNames], trainDF[,outcomeName],
 ...
 ```
 <br><br>
-I truncated most of the lines from the training process but you get the idea. We then can call ``summary()`` on our model to find out what variables were key players:
+I truncated most of the lines from the training process but you get the idea. We then can call ``summary()`` function on our model to find out what variables were most important:
 
 
 ```r
@@ -267,7 +267,7 @@ summary(objModel)
 ```
 
 <BR><BR>
-To get information about the model iteslf such as the final number of ``trees``, ``shrinkage`` and ``interaction depth``:
+We can find out what tuning parameters were most important to the model (notice the last lines about ``trees``, ``shrinkage`` and ``interaction depth``:
 
 ```r
 print(objModel)
