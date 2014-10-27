@@ -38,7 +38,7 @@ print(cor(1:5,5:1))
 print(cor(1:5,c(1,2,3,4,4)))
 ## 0.9701425
 ```
-
+<BR><BR>
 To help us understand this process, let's download the <a href="https://archive.ics.uci.edu/ml/datasets/Adult" target="_blank">adult.data set</a> from the UCI Machine Learning Repository. The data is from the 1994 Census and attempts to predict those with income under $50,000 a year:
 
 ```r
