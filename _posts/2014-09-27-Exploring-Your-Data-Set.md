@@ -50,7 +50,7 @@ adults <- read.csv(textConnection(x), header=F)
 # if the above getURL command fails, try this:
 # adults <-read.csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data', header=F)
 ```
-<BR>
+<BR><BR>
 We fill in the missing headers for the UCI set and cast the outcome variable ``Income`` to a binary format of **1** and **0** (here I am reversing the orginal order, if it is under $50k, it is **0**, and above, **1**; this will make the final correlation-matrix plot easier to understand):
 
 ```r
@@ -61,14 +61,14 @@ names(adults)=c('Age','Workclass','FinalWeight','Education','EducationNumber',
 
 adults$Income <- ifelse(adults$Income==' <=50K',0,1)
 ```
-<BR>
+<BR><BR>
 We load the **caret** package to <a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">dummify (see my other walkthrough)</a> all factor variables as the ``cor`` function only accepts numerical values:
 
 ```r
 dmy <- dummyVars(" ~ .", data = adults)
 adultsTrsf <- data.frame(predict(dmy, newdata = adults))
 ```
-<BR>
+<BR><BR>
 We borrow two very useful functions from <a href="https://gist.github.com/stephenturner/3492773" target="_blank">Stephen Turner</a>: ``cor.prob`` and ``flattenSquareMatrix``. **cor.prob** will create a correlation matrix along with <i>p</i>-values and **flattenSquareMatrix** will flatten all the combinations from the square matrix into a data frame of 4 columns made up of row names, column names, the correlation value and the <i>p</i>-value:
 
 ```r
@@ -89,7 +89,7 @@ print(head(corMasterList,10))
 ## 9  workclass..Federal.gov workclass..Never.worked -0.002556 6.447e-01
 ## 10   workclass..Local.gov workclass..Never.worked -0.003843 4.880e-01
 ```
-<BR>
+<BR><BR>
 This final format allows you to easily order the pairs however you want - for example, by those with the highest absolute correlation value:
 
 ```r
@@ -110,7 +110,7 @@ print(head(corList,10))
 ## 1306 maritalStatus..Married.civ.spouse  relationship..Not.in.family -0.5375883 0
 ## 497                                age maritalStatus..Never.married -0.5343590 0
 ```
-<BR>
+<BR><BR>
 The top correlated pair (sex..Female and sex.Male), as seen above, won't be of much use as they are the only two levels of the same factor. We need to process this a little further to be of practical use. We create a single vector of variable names by filtering those with an absolute correlation of 0.2 or higher against the outcome variable of ``Income``:
 
 ```r
@@ -135,14 +135,14 @@ We save the most correlated features to the ``bestSub`` variable:<BR>
 ```r
 bestSub <- as.character(selectedSub$i)
 ```
-<BR>
+<BR><BR>
 Finally we plot the highly correlated pairs using the **{psych}** package's ``pair.panels`` plot (this can also be done on the original data as ``pair.panels`` can handle factor and character variables):<BR>
 
 ```r
 library(psych)
 pairs.panels(adultsTrsf[c(bestSub, 'Income')])
 ```
-<BR>
+<BR><BR>
 ![plot of chunk unnamed-chunk-9](../img/posts/correlations/unnamed-chunk-9.png) 
 <BR><BR>
 The pairs plot, and in particular the last ``Income`` column, tell us a lot about our data set. Being ``never married`` is the most negatively correlated with income over $50,000/year and ``Hours Worked`` and ``Age`` are the most postively correlated.<BR>  
