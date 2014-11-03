@@ -47,8 +47,10 @@ In a nutshell, this allows you to predict a factor of multiple levels (more than
 
 If your data is linear in nature, then instead of using multiple models and doing ``A`` versus ``B``, ``B`` versus ``C``, and ``C`` versus ``A``, and finally going through the hassle of concatenating the resulting probabilities, you can let <b>nnet</b> do it all in one shot. And this becomes exponentialy more difficult as you predict more than 3 outcome levels!! 
 <BR><BR>
+
 The ``multinom`` function will do all that for you in one shot and allow you to observe the probabilities of each subset to interpret things (now that's really cool). 
 <BR><BR>
+  
 **Let's code!**
 
 We're going to use a <a href='http://had.co.nz/' target='_blank'>Hadley Wickham</a> data set to predict how many cylinders a vehicle has. 
