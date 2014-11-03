@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Modeling 101 - Predicting Binary Outcomes with <b>R</b>, <b>gbm</b>, <b>glmnet</b>, and <b>{Caret}</b>
+title: Modeling 101 - Predicting Binary Outcomes with <b>R</b>, <b>gbm</b>, <b>glmnet</b>, and <b>{caret}</b>
 category: Machine Learning
 tags: modeling
 year: 2014

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Modeling Ensembles with <b>R</b> and <b>{Caret}</b>
+title: Modeling Ensembles with <b>R</b> and <b>{caret}</b>
 category: Machine Learning
 tags: modeling
 year: 2014
