@@ -321,3 +321,117 @@ for (cv in seq(1:cv)) {
 ```
 ## [1] 0.7177
 ```
+
+<BR><BR>        
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/MultinomWalkThru' target='_blank'>also on GitHub</a>)</a>:
+
+```r
+
+
+library(nnet)
+?multinom
+
+library(caret)
+library(RCurl)
+library(Metrics)
+
+#####################################################################
+# Load data from Hadley Wickham on Github 
+urlfile <-'https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv'
+x <- getURL(urlfile, ssl.verifypeer = FALSE)
+vehicles <- read.csv(textConnection(x))
+
+# clean up the data and only use the first 24 columns
+vehicles <- vehicles[names(vehicles)[1:24]]
+vehicles <- data.frame(lapply(vehicles, as.character), stringsAsFactors=FALSE)
+vehicles <- data.frame(lapply(vehicles, as.numeric))
+vehicles[is.na(vehicles)] <- 0
+
+# use cyclinder column as outcome and cast to factor
+vehicles$cylinders <- as.factor(vehicles$cylinders)
+table(vehicles$cylinders)
+#####################################################################
+
+
+# shuffle and split
+set.seed(1234)
+vehicles <- vehicles[sample(nrow(vehicles)),]
+split <- floor(nrow(vehicles)/2)
+vehiclesTrain <- vehicles[0:split,]
+vehiclesTest <- vehicles[(split+1):nrow(vehicles),]
+
+
+# see how multinom predicts cylinders
+# set the maxit to a large number, enough so the neural net can converge to smallest error
+cylModel <- multinom(cylinders~., data=vehiclesTrain, maxit=500, trace=T)
+
+# Sort by most influential variables
+topModels <- varImp(cylModel)
+topModels$Variables <- row.names(topModels)
+topModels <- topModels[order(-topModels$Overall),]
+
+# class/probs (best option, second best option?)
+preds1 <- predict(cylModel, type="probs", newdata=vehiclesTest)
+preds2 <- predict(cylModel, type="class", newdata=vehiclesTest)
+
+# resample for accuracy - the mean squared error and R-squared are calculated of forfactors, the overall agreement rate and Kappa
+postResample(vehiclesTest$cylinders,preds2)[[1]]
+preds
+
+library(Metrics)
+classificationError <- ce(as.numeric(vehiclesTest$cylinders), as.numeric(preds))
+
+# repeat cross validate by iterating through all the data to give every variable a chance of being test and train portions
+totalError <- c()
+cv <- 10
+maxiterations <- 500 # try it again with a lower value and notice the mean error
+cvDivider <- floor(nrow(vehiclesTrain) / (cv+1))
+
+for (cv in seq(1:cv)) {
+        # assign chunk to data test
+        dataTestIndex <- c((cv * cvDivider):(cv * cvDivider + cvDivider))
+        dataTest <- vehiclesTrain[dataTestIndex,]
+        # everything else to train
+        dataTrain <- vehiclesTrain[-dataTestIndex,]
+        
+        cylModel <- multinom(cylinders~., data=dataTrain, maxit=maxiterations, trace=T) 
+        
+        pred <- predict(cylModel, dataTest)
+        
+        #  classification error
+        err <- ce(as.numeric(dataTest$cylinders), as.numeric(pred))
+        totalError <- c(totalError, err)
+}
+print(paste('Mean error of all repeated cross validations:',mean(totalError)))
+
+
+```
+
+<div class="row">   
+    <div class="span9 column">
+            <p class="pull-right">{% if page.previous.url %} <a href="{{page.previous.url}}" title="Previous Post: {{page.previous.title}}"><i class="icon-chevron-left"></i></a>   {% endif %}   {% if page.next.url %}    <a href="{{page.next.url}}" title="Next Post: {{page.next.title}}"><i class="icon-chevron-right"></i></a>   {% endif %} </p>  
+    </div>
+</div>
+
+<div class="row">   
+    <div class="span9 columns">    
+        <h2>Comments Section</h2>
+        <p>Feel free to comment on the post but keep it clean and on topic.</p> 
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'amunategui'; // required: replace example with your forum shortname
+            var disqus_identifier = '{{ page.url }}';
+            var disqus_url = 'http://amunategui.github.com{{ page.url }}';
+            
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+</div>
