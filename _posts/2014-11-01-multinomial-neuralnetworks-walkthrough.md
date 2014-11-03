@@ -40,7 +40,7 @@ library(nnet)
 ?multinom
 ```
 
-<blockquote>'Fits multinomial log-linear models via neural networks'</blockquote>
+<blockquote>Fits multinomial log-linear models via neural networks</blockquote>
 
 In a nutshell, this allows you to predict a factor of multiple levels (more than two) in one shot with the power of neural networks. <b>Neural networks</b> are great at working through multiple combinations and also great with linear models, so it's an ideal combination!
 
@@ -125,7 +125,7 @@ cylModel <- multinom(cylinders~., data=vehiclesTrain, maxit=500, trace=T)
 ```
 When you see the word <b>converged</b> in the log output, you know the model went as far as it could.
 <BR><BR>
-Let's sort by most influential variables by using <b>caret's</b> ``varImp`` function:
+Let's find the most influential variables by using <b>caret's</b> ``varImp`` function:
 
 ```r
 library(caret)
@@ -135,16 +135,16 @@ mostImportantVariables <- mostImportantVariables[order(-mostImportantVariables$O
 print(head(mostImportantVariables))
 ```
 ```
-##             Overall  Variables
-## charge240  625.5732  charge240
-## cityUF     596.4079     cityUF
-## combinedUF 580.1112 combinedUF
-## displ      434.8038      displ
-## cityE      395.3533      cityE
-## combA08    322.2910    combA08
+## Variables  Overall    
+## charge240  625.5732   
+## cityUF     596.4079      
+## combinedUF 580.1112  
+## displ      434.8038
+## cityE      395.3533       
+## combA08    322.2910     
 ```
 <BR><BR>
-Next we predict ``cylinders`` using the ``predict`` function and our testing data set. There are two ways we can get our predictions, ``class`` or ``probs``:
+Next we predict ``cylinders`` using the ``predict`` function on the testing data set. There are two ways we compute our predictions, ``class`` or ``probs``:
 
 ```r
 preds1 <- predict(cylModel, type="probs", newdata=vehiclesTest)
@@ -178,7 +178,7 @@ head(preds2)
 ## Levels: 0 2 3 4 5 6 8 10 12 16
 ```
 <BR><BR>
-The above two predictions will depend on your needs. If you just want the ``cylinders``, use ``class``.
+Choosing which of the two predictions will depend on your needs. If you just want your ``cylinders``predictions, use ``class``, if you need to do anything more complex, like measure the strengths of each prediction, use the ``probs`` option.
 <BR>
 To check the <B>accuracy</B>, we call the ``postResample`` function from <b>caret</b>- the mean squared error and R-squared are calculated for numeric vectors and the overall agreement rate and Kappa for factors:
 
@@ -255,7 +255,7 @@ for (cv in seq(1:cv)) {
 ```
 ## [1] 0.635
 ```
-You will notice that the log output never prints the word <b>converged</b>. This means the model never reaches the lowest error or global minima and therefore isn't the best fit.
+The <b>mean accuracy</b> of 0.635 is much lower than the accuracy of 0.9034 that we got with the original simple split. You will notice that the log output never prints the word <b>converged</b>. This means the model never reaches the lowest error or global minima and therefore isn't the best fit. 
 <BR><BR>
 Let's try this again and let the model converge by setting the ``maxit`` to a large number
 
