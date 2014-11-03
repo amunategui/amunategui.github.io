@@ -40,9 +40,10 @@ library(nnet)
 ?multinom
 ```
 
-<blockquote>Fits multinomial log-linear models via neural networks</blockquote>
+<blockquote>Fits multinomial log-linear models via neural networks.</blockquote>
+<BR><BR>
+In a nutshell, this allows you to predict a factor of multiple levels (more than two) in one shot with the power of neural networks. <b>Neural networks</b> are great at working through multiple combinations and also great with linear models, so it's an ideal combination.
 
-In a nutshell, this allows you to predict a factor of multiple levels (more than two) in one shot with the power of neural networks. <b>Neural networks</b> are great at working through multiple combinations and also great with linear models, so it's an ideal combination!
 
 If your data is linear in nature, then instead of using multiple models and doing ``A`` versus ``B``, ``B`` versus ``C``, and ``C`` versus ``A``, and finally going through the hassle of concatenating the resulting probabilities, you can let <b>nnet</b> do it all in one shot. And this becomes exponentialy more difficult as you predict more than 3 outcome levels!! 
 
