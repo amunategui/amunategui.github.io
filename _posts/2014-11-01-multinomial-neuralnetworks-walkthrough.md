@@ -27,11 +27,11 @@ image: multinom-neuralnetworks/converged.png
 
 <BR><BR>
 
-So, what is a multionmial model? 
+So, what is a <b>multionmial model</b>? 
 
-From <a href='http://en.wikipedia.org/wiki/Multinomial_logistic_regression' target='_blank'>Wiki</a>:
+From <a href='http://en.wikipedia.org/wiki/Multinomial_logistic_regression' target='_blank'>Wikipedia</a>:
 
-<i>Multinomial logistic regression is a simple extension of binary logistic regression that allows for more than two categories of the dependent or outcome variable.</i>
+<blockquote>Multinomial logistic regression is a simple extension of binary logistic regression that allows for more than two categories of the dependent or outcome variable.</blockquote>
 
 And from the ``multinom`` {nnet} help file:
 
