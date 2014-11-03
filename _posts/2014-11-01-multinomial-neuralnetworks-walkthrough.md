@@ -95,8 +95,10 @@ table(vehicles$cylinders)
 ##     0     2     3     4     5     6     8    10    12    16 
 ##    66    51   182 13133   757 12101  7715   138   481     7
 ```
+We see that the 4 and 6 cylinder vehicles are the most numerous.
 <BR><BR>
-Shuffle the data and split it into two equal data frames:
+
+Shuffle the data and split it into two equal data frames so we can have a training and a testing data set:
 
 ```r
 set.seed(1234)
