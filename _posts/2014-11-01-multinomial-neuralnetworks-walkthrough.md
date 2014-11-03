@@ -7,7 +7,7 @@ year: 2014
 month: 11
 day: 1
 published: true
-summary: Using the <b>multinom</b> function from the <b>nnet</b> package, we can easily predict discrete values (factors) of more than <b>2</b> levels. We also use <b>Repeated Cross Validation</b> to get an accurate model score and to understand the importance of allowing the model to converge (reaching global minima).
+summary: Using the <b>multinom</b> function from the <b>nnet</b> package, we can easily predict discrete values (factors) of more than <b>2</b> levels. We also use <b>Repeated Cross Validation</b> to get an accurate model score and to understand the importance of allowing the model to <b>converge</b> (reaching global minima).
 image: multinom-neuralnetworks/converged.png
 ---
 **Resources**
