@@ -47,23 +47,16 @@ In a nutshell, this allows you to predict a factor of multiple levels (more than
 
 If your data is linear in nature, then instead of using multiple models and doing ``A`` versus ``B``, ``B`` versus ``C``, and ``C`` versus ``A``, and finally going through the hassle of concatenating the resulting probabilities, you can let <b>nnet</b> do it all in one shot. And this becomes exponentialy more difficult as you predict more than 3 outcome levels!! 
 
-The ``multinom`` function will do all that for you in one shot and allow you to observe the probabilities of the prediction to interpret things (that's really cool). 
+The ``multinom`` function will do all that for you in one shot and allow you to observe the probabilities of each subset to interpret things (now that's really cool). 
 <BR><BR>
 **Let's code!**
 
-We're going to use a <a href='https://github.com/hadley' target='_blank'>Hadley Wickham</a> data set to predict how many cylinders a vehicle has. 
+We're going to use a <a href='http://had.co.nz/' target='_blank'>Hadley Wickham</a> data set to predict how many cylinders a vehicle has. 
 
-Load data from Hadley Wickham on Github 
+Load data from <a href='https://github.com/hadley' target='_blank'>Hadley Wickham</a> on Github 
 
 ```r
 library(RCurl)
-```
-
-```
-## Loading required package: bitops
-```
-
-```r
 urlfile <-'https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv'
 x <- getURL(urlfile, ssl.verifypeer = FALSE)
 vehicles <- read.csv(textConnection(x))
@@ -76,6 +69,7 @@ vehicles <- vehicles[names(vehicles)[1:24]]
 vehicles <- data.frame(lapply(vehicles, as.character), stringsAsFactors=FALSE)
 vehicles <- data.frame(lapply(vehicles, as.numeric))
 vehicles[is.na(vehicles)] <- 0
+names(vehicles)
 ```
 <BR><BR>
 Use the ``cyclinder`` column as the model's outcome and cast it to a factor. Use the ``table`` function to see how many types of cylinders we are dealing with (BTW a ``0`` cylinder vehicle is an electric vehicle):
@@ -91,7 +85,7 @@ table(vehicles$cylinders)
 ##    66    51   182 13133   757 12101  7715   138   481     7
 ```
 <BR><BR>
-Finally shuffle the data and split it into two equal data frames:
+Shuffle the data and split it into two equal data frames:
 
 ```r
 set.seed(1234)
@@ -102,7 +96,7 @@ vehiclesTest <- vehicles[(split+1):nrow(vehicles),]
 ```
 
 <BR><BR>
-Let's put <b>nnet</b> to work and predict cyclinders. The ``maxiter`` variable defaults to 100 when omitted so let's start with a large number the first around to make sure we find the lowest possible error level (i.e. global minimum - solution with the lowest error possible):
+Let's put <b>nnet</b> to work and predict cyclinders. The ``maxiter`` variable defaults to 100 when omitted so let's start with a large number during the first round to make sure we find the lowest possible error level (i.e. global minimum - solution with the lowest error possible):
 
 
 ```r
@@ -119,24 +113,16 @@ cylModel <- multinom(cylinders~., data=vehiclesTrain, maxit=500, trace=T)
 ## final  value 5217.398483 
 ## converged
 ```
+When you see the word <b>converged</b> in the log output, you know the model went as far as it could.
 <BR><BR>
-When you see the ``converged`` log output, you know the model went as far as it could.
-<BR><BR>
-Sort by most influential variables by using <b>caret's</b> ``varImp`` function:
+Let's sort by most influential variables by using <b>caret's</b> ``varImp`` function:
 
 ```r
 library(caret)
-```
-
-```
-## Loading required package: lattice
-## Loading required package: ggplot2
-```
-
-```r
 topModels <- varImp(cylModel)
 topModels$Variables <- row.names(topModels)
 topModels <- topModels[order(-topModels$Overall),]
+print(head(topModels))
 ```
 <BR><BR>
 Next we predict ``cylinders`` using the ``predict`` function and our testing data set. There are two ways we can get our predictions, ``class`` or ``probs``:
