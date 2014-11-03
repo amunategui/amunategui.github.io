@@ -181,7 +181,7 @@ head(preds2)
 ## Levels: 0 2 3 4 5 6 8 10 12 16
 ```
 
-Choosing which of the two predictions will depend on your needs. If you just want your ``cylinders`` predictions, use ``class``, if you need to do anything more complex, like measure the conviction of each prediction, use the ``probs`` option.
+Choosing which of the two predictions will depend on your needs. If you just want your ``cylinders`` predictions, use ``class``, if you need to do anything more complex, like measure the conviction of each prediction, use the ``probs`` option (every row will add up to 1).
 <BR><BR>
 
 To check the <B>accuracy</B> of the model, we call the ``postResample`` function from <b>caret</b>. For numeric vectors, it uses the mean squared error and R-squared and for factors, the overall agreement rate and Kappa:
