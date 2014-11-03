@@ -1,13 +1,13 @@
 ---
 layout: post
-title: Predicting Multiple Discrete Values with Multinomials, Neural Networks and the { nnet } Package
+title: Predicting Multiple Discrete Values with <b>Multinomials</b>, <b>Neural Networks</b> and the <b>{nnet}</b> Package
 category: Machine Learning
 tags: modeling
 year: 2014
 month: 11
 day: 1
 published: true
-summary: Using the multinom function from the { nnet } package we can easily predict discrete / factors of more than 2 levels. With the help of Repeated Cross Validation, we understand the importance of allowing models to converge (reaching global minima).
+summary: Using the <b>multinom</b> function from the <b>nnet</b> package, we can easily predict discrete/factors of more than <b>2</b> levels. We also use <b>Repeated Cross Validation</b> to get an accurate model score and we understand the importance of allowing models to converge (reaching global minima).
 image: multinom-neuralnetworks/converged.png
 ---
 **Resources**
