@@ -50,12 +50,10 @@ If your data is linear in nature, then instead of using multiple models and doin
 
 The ``multinom`` function will do all that for you in one shot and allow you to observe the probabilities of each subset to interpret things (now that's really cool). 
 <BR><BR>
-  
+
 **Let's code!**
 
-We're going to use a <a href='http://had.co.nz/' target='_blank'>Hadley Wickham</a> data set to predict how many cylinders a vehicle has. 
-
-Let's load data from <a href='https://github.com/hadley' target='_blank'>Hadley Wickham</a> on Github 
+We're going to use a <a href='http://had.co.nz/' target='_blank'>Hadley Wickham</a> data set to predict how many cylinders a vehicle has. We download the data from <a href='https://github.com/hadley' target='_blank'>Github</a>:
 
 ```r
 library(RCurl)
