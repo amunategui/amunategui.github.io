@@ -33,7 +33,7 @@ From <a href='http://en.wikipedia.org/wiki/Multinomial_logistic_regression' targ
 
 <blockquote>Multinomial logistic regression is a simple extension of binary logistic regression that allows for more than two categories of the dependent or outcome variable.</blockquote>
 
-And from the ``multinom`` {nnet} help file:
+And from the ``multinom`` <b>{nnet}</b> help file:
 
 
 ```r
@@ -41,11 +41,11 @@ library(nnet)
 ?multinom
 ```
 
-<i>'Fits multinomial log-linear models via neural networks'</i>
+<blockquote>'Fits multinomial log-linear models via neural networks'</blockquote>
+<BR><BR>
+In a nutshell, this allows you to predict a factor of multiple levels (more than two) in one shot with the power of neural networks. <b>Neural networks</b> are great at working with combinations and also great with linear models so it's a perfect combination!
 
-Basically, this will allow you to predict a factor of multiple levels (more than two) in one shot with the power of neural networks. <b>Neural networks</b> are great at working with combinations and also great with linear models, it's a perfect combination. 
-
-So, if your data is linear in nature, then instead of multiple models like ``A`` versus ``B``, ``B`` versus ``C``, and ``C`` versus ``A``, let <b>nnet</b> do it all in one shot. And this becomes exponentialy more difficult when you're predicting more than 3 outcome levels! 
+If your data is linear in nature, then instead of using multiple models and doing ``A`` versus ``B``, ``B`` versus ``C``, and ``C`` versus ``A``, let <b>nnet</b> do it all in one shot. And this becomes exponentialy more difficult when you're predicting more than 3 outcome levels! 
 
 The ``multinom`` function will do all that for you in one shot and allow you to observe the probabilities of the prediction to interpret things (really cool). 
 
