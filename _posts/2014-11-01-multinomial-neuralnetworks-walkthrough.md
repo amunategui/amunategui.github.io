@@ -42,15 +42,16 @@ library(nnet)
 ```
 
 <blockquote>'Fits multinomial log-linear models via neural networks'</blockquote>
+
+In a nutshell, this allows you to predict a factor of multiple levels (more than two) in one shot with the power of neural networks. <b>Neural networks</b> are great at working through multiple combinations and also great with linear models, so it's an ideal combination!
+
+If your data is linear in nature, then instead of using multiple models and doing ``A`` versus ``B``, ``B`` versus ``C``, and ``C`` versus ``A``, and finally going through the hassle of concatenating the resulting probabilities, you can let <b>nnet</b> do it all in one shot. And this becomes exponentialy more difficult as you predict more than 3 outcome levels!! 
+
+The ``multinom`` function will do all that for you in one shot and allow you to observe the probabilities of the prediction to interpret things (that's really cool). 
 <BR><BR>
-In a nutshell, this allows you to predict a factor of multiple levels (more than two) in one shot with the power of neural networks. <b>Neural networks</b> are great at working with combinations and also great with linear models so it's a perfect combination!
-
-If your data is linear in nature, then instead of using multiple models and doing ``A`` versus ``B``, ``B`` versus ``C``, and ``C`` versus ``A``, let <b>nnet</b> do it all in one shot. And this becomes exponentialy more difficult when you're predicting more than 3 outcome levels! 
-
-The ``multinom`` function will do all that for you in one shot and allow you to observe the probabilities of the prediction to interpret things (really cool). 
-
 **Let's code!**
-We're going to use a <b>Hadley Wickham</b> data set to predict how many cylinders a vehicle has. 
+
+We're going to use a <a href='https://github.com/hadley' target='_blank'>Hadley Wickham</a> data set to predict how many cylinders a vehicle has. 
 
 Load data from Hadley Wickham on Github 
 
