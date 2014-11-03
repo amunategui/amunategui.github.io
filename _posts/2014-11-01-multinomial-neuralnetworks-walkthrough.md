@@ -147,7 +147,7 @@ print(head(mostImportantVariables))
 ## combA08    322.2910     
 ```
 <BR><BR>
-Next we predict ``cylinders`` using the ``predict`` function on the testing data set. There are two ways we compute our predictions, ``class`` or ``probs``:
+Next we predict ``cylinders`` using the ``predict`` function on the testing data set. There are two ways to compute predictions, ``class`` or ``probs``:
 
 ```r
 preds1 <- predict(cylModel, type="probs", newdata=vehiclesTest)
@@ -180,9 +180,10 @@ head(preds2)
 ## [1] 6 4 8 6 4 8
 ## Levels: 0 2 3 4 5 6 8 10 12 16
 ```
+
+Choosing which of the two predictions will depend on your needs. If you just want your ``cylinders``predictions, use ``class``, if you need to do anything more complex, like measure the conviction of each prediction, use the ``probs`` option.
 <BR><BR>
-Choosing which of the two predictions will depend on your needs. If you just want your ``cylinders``predictions, use ``class``, if you need to do anything more complex, like measure the strengths of each prediction, use the ``probs`` option.
-<BR>
+
 To check the <B>accuracy</B>, we call the ``postResample`` function from <b>caret</b>- the mean squared error and R-squared are calculated for numeric vectors and the overall agreement rate and Kappa for factors:
 
 ```r
