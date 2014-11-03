@@ -181,10 +181,10 @@ head(preds2)
 ## Levels: 0 2 3 4 5 6 8 10 12 16
 ```
 
-Choosing which of the two predictions will depend on your needs. If you just want your ``cylinders``predictions, use ``class``, if you need to do anything more complex, like measure the conviction of each prediction, use the ``probs`` option.
+Choosing which of the two predictions will depend on your needs. If you just want your ``cylinders`` predictions, use ``class``, if you need to do anything more complex, like measure the conviction of each prediction, use the ``probs`` option.
 <BR><BR>
 
-To check the <B>accuracy</B>, we call the ``postResample`` function from <b>caret</b>- the mean squared error and R-squared are calculated for numeric vectors and the overall agreement rate and Kappa for factors:
+To check the <B>accuracy</B> of the model, we call the ``postResample`` function from <b>caret</b>. For numeric vectors, it uses the mean squared error and R-squared and for factors, the overall agreement rate and Kappa:
 
 ```r
 postResample(vehiclesTest$cylinders,preds2)
@@ -259,7 +259,7 @@ for (cv in seq(1:cv)) {
 ```
 ## [1] 0.635
 ```
-The <b>mean accuracy</b> of 0.635 is much lower than the accuracy of 0.9034 that we got with the original simple split. You will notice that the log output never prints the word <b>converged</b>. This means the model never reaches the lowest error or global minima and therefore isn't the best fit. 
+The <b>mean accuracy</b> of <b>0.635</b> is much lower than the accuracy of <b>0.9034</b> that we got with the original simple split. You will notice that the log output never prints the word <b>converged</b>. This means the model never reaches the lowest error or global minima and therefore isn't the best fit. 
 <BR><BR>
 Let's try this again and let the model converge by setting the ``maxit`` to a large number
 
@@ -276,7 +276,7 @@ for (cv in seq(1:cv)) {
   # everything else to train
   dataTrain <- vehicles[-dataTestIndex,]
  
-  cylModel <- multinom(cylinders~., data=dataTrain, maxit=500, trace=T) 
+  cylModel <- multinom(cylinders~., data=dataTrain, maxit=1000, trace=T) 
  
   pred <- predict(cylModel, newdata=dataTest, type="class")
  
@@ -320,12 +320,11 @@ for (cv in seq(1:cv)) {
 ```
 
 ```r
- mean(totalAccuracy)  
-```
+mean(totalAccuracy)  
 
-```
 ## [1] 0.9052
 ```
+The score using the <b>repeated cross validation</b> code is better than the original simple split of <b>0.9304</b> and we let each loop converge. The point of using the <b>repeated cross validation</b> code isn't that it will return a higher accuracy score (and it doesn't always) but that it will give you a much more accuracte score as it uses all of your data. 
 
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/MultinomWalkThru' target='_blank'>also on GitHub</a>)</a>:
