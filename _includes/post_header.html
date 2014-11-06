@@ -6,7 +6,7 @@
 </div>		
 <div class="row">	
 	<div class="span3 column">
-		<h5><strong>{{ page.date | date: "%B %e, %Y" }} <small> <a href="http://amunategui.github.com{{ page.url }}#disqus_thread" data-disqus-identifier="{{ page.url }}">Comments</a></small></strong><small> Tags: {% for tag in page.tags %} <a href="/tags/{{ tag }}" title="View posts tagged with &quot;{{ tag }}&quot;"><u>{{ tag }}</u></a>  {% if forloop.last != true %} {% endif %} {% endfor %} </small><br/><br/>
+		<h5><strong>{{ page.date | date: "%B %e, %Y" }}</strong><small> Tags: {% for tag in page.tags %} <a href="/tags/{{ tag }}" title="View posts tagged with &quot;{{ tag }}&quot;"><u>{{ tag }}</u></a>  {% if forloop.last != true %} {% endif %} {% endfor %} </small><br/><br/>
 		 <g:plusone size="medium"></g:plusone></h5>
 	</div>		
 	<div class="span6 column">
