@@ -7,7 +7,7 @@ year: 2014
 month: 11
 day: 4
 published: true
-summary: Using the function <b>read.table()</b> we break file into chunks in oder to process them. This allows processing files of any size beyond what the machine's RAM can handle.
+summary: Using the function <b>read.table()</b> we break file into chunks in order to process them. This allows processing files of any size beyond what the machine's RAM can handle.
 image: dealing-with-large-files/memory.png
 ---
 **Resources**
@@ -30,7 +30,6 @@ To get an estimate on how much memory a data frame needs remember that an intege
 options(scipen=999) # block scientific notation
 print(paste((8*100*100000) / 2^20, 'megabytes'))
 ```
-
 ```
 ## [1] "76.2939453125 megabytes"
 ```
@@ -40,19 +39,19 @@ print(paste((8*100*100000) / 2^20, 'megabytes'))
 Let's download a large <b>CSV</b> file from the <a href='http://archive.ics.uci.edu/ml/datasets.html' target='_blank'>University of California, Irvine's Machine Learning Repository</a>. Download the compressed 
 HIGGS Data Set and unzip it (NOTE: this is a huge file that unzips at over 8 GB): 
 
+```r
 setwd('Enter Your Folder Path Here...')
 download.file('http://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz', 'HIGGS.csv.gz')
-
+```
+<BR><BR>
 If the above code doesn't work, you can download it directly <a href='http://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz' target='_blank'>here</a>.
 
 Once you unzipped it, we can run the ``file.info`` to get some details about it without loading it in memory(NOTE: 2^30 will convert bytes to gigabytes):
 
 
 ```r
-setwd('/Users/manuelamunategui/Downloads')
 print(paste(file.info('HIGGS.csv')$size  / 2^30, 'gigabytes'))
 ```
-
 ```
 ## [1] "7.48364066705108 gigabytes"
 ```
@@ -63,7 +62,6 @@ The ``readLines()`` function is a workhorse when it comes to peeking into a very
  
 
 ```r
-setwd('/Users/manuelamunategui/Downloads')
 transactFile <- 'HIGGS.csv'
 readLines(transactFile, n=1)
 ```
@@ -72,7 +70,6 @@ readLines(transactFile, n=1)
 ## [1] "1.000000000000000000e+00,8.692932128906250000e-01,-6.350818276405334473e-01,2.256902605295181274e-01,3.274700641632080078e-01,-6.899932026863098145e-01,7.542022466659545898e-01,-2.485731393098831177e-01,-1.092063903808593750e+00,0.000000000000000000e+00,1.374992132186889648e+00,-6.536741852760314941e-01,9.303491115570068359e-01,1.107436060905456543e+00,1.138904333114624023e+00,-1.578198313713073730e+00,-1.046985387802124023e+00,0.000000000000000000e+00,6.579295396804809570e-01,-1.045456994324922562e-02,-4.576716944575309753e-02,3.101961374282836914e+00,1.353760004043579102e+00,9.795631170272827148e-01,9.780761599540710449e-01,9.200048446655273438e-01,7.216574549674987793e-01,9.887509346008300781e-01,8.766783475875854492e-01"
 ```
 <BR><BR>
-[1] "1.000000000000000000e+00,8.692932128906250000e-01,-6.350818276405334473e-01,2.256902605295181274e-01,3.274700641632080078e-01,-6.899932026863098145e-01,7.542022466659545898e-01,-2.485731393098831177e-01,-1.092063903808593750e+00,0.000000000000000000e+00,1.374992132186889648e+00,-6.536741852760314941e-01,9.303491115570068359e-01,1.107436060905456543e+00,1.138904333114624023e+00,-1.578198313713073730e+00,-1.046985387802124023e+00,0.000000000000000000e+00,6.579295396804809570e-01,-1.045456994324922562e-02,-4.576716944575309753e-02,3.101961374282836914e+00,1.353760004043579102e+00,9.795631170272827148e-01,9.780761599540710449e-01,9.200048446655273438e-01,7.216574549674987793e-01,9.887509346008300781e-01,8.766783475875854492e-01" 
 
 You could easily use readLines to loop through smaller chunks in memory one at a time.  But I prefer ``read.table()`` and that is what I use.
 <BR><BR>
@@ -85,7 +82,6 @@ higgs_colnames <- c('label','lepton_pT','lepton_eta','lepton_phi','missing_energ
 <BR><BR>
 
 ```r
-setwd('/Users/manuelamunategui/Downloads')
 transactFile <- 'HIGGS.csv'
 chunkSize <- 100000
 con <- file(description= transactFile, open="r")   
@@ -156,6 +152,7 @@ repeat {
         print(head(dataChunk))
         break
 }
+close(con)
 ```
 
 ```
@@ -182,10 +179,6 @@ repeat {
 ## 5 -1.8235  0.7967 0.000 0.8101 0.9102 0.9831 0.7197 1.0245 0.8279 0.7211
 ## 6  0.1903  0.5586 3.102 0.8816 0.8454 0.9974 0.6951 0.7871 0.6577 0.7211
 ```
-
-```r
-close(con)
-```
 <BR><BR>
 
 If you need the column names, then you will have to reapply them after each loop.
@@ -204,7 +197,6 @@ Now that you understand this chunking mechanism, lets see if we can get a total 
 
 
 ```r
-setwd('/Users/manuelamunategui/Downloads')
 index <- 0
 chunkSize <- 100000
 con <- file(description=transactFile,open="r")   
@@ -228,8 +220,8 @@ repeat {
         if (index > 3) break
 
 }
+close(con)
 ```
-
 ```
 ## [1] "Processing rows: 100000"
 ## [1] "Processing rows: 200000"
@@ -238,11 +230,8 @@ repeat {
 ```
 
 ```r
-close(con)
-
 print(paste0('lepton_pT mean: ',  total_lepton_pT / counter))
 ```
-
 ```
 ## [1] "lepton_pT mean: 0.992386268476397"
 ```
@@ -257,6 +246,75 @@ I hope this helps.
 
 ```r
 
+options(scipen=999) # block scientific notation
+print(paste((8*100*100000) / 2^20, 'megabytes'))
+
+setwd('Enter Your Folder Path Here...')
+download.file('http://archive.ics.uci.edu/ml/machine-learning-databases/00280/HIGGS.csv.gz', 'HIGGS.csv.gz')
+
+print(paste(file.info('HIGGS.csv')$size  / 2^30, 'gigabytes'))
+
+transactFile <- 'HIGGS.csv'
+readLines(transactFile, n=1)
+
+higgs_colnames <- c('label','lepton_pT','lepton_eta','lepton_phi','missing_energy_magnitude','missing_energy_phi','jet_1_pt','jet_1_eta','jet_1_phi','jet_1_b_tag','jet_2_pt','jet_2_eta','jet_2_phi','jet_2_b_tag','jet_3_pt','jet_3_eta','jet_3_phi','jet_3_b-tag','jet_4_pt','jet_4_eta','jet_4_phi','jet_4_b_tag','m_jj','m_jjj','m_lv','m_jlv','m_bb','m_wbb','m_wwbb')
+
+transactFile <- 'HIGGS.csv'
+chunkSize <- 100000
+con <- file(description= transactFile, open="r")   
+data <- read.table(con, nrows=chunkSize, header=T, fill=TRUE, sep=",")
+close(con)
+names(data) <- higgs_colnames
+print(head(data))
+
+setwd('/Users/manuelamunategui/Downloads')
+index <- 0
+chunkSize <- 100000
+con <- file(description=transactFile,open="r")   
+dataChunk <- read.table(con, nrows=chunkSize, header=T, fill=TRUE, sep=",")
+         
+repeat {
+        index <- index + 1
+        print(paste('Processing rows:', index * chunkSize))
+ 
+        if (nrow(dataChunk) != chunkSize){
+                print('Processed all files!')
+                break}
+       
+        dataChunk <- read.table(con, nrows=chunkSize, skip=0, header=FALSE, fill = TRUE, sep=",")
+        print(head(dataChunk))
+        break
+}
+close(con)
+
+dataChunk <- read.table(con, nrows=chunkSize, skip=0, header=FALSE, fill = TRUE, col.names=higgs_colnames)
+
+index <- 0
+chunkSize <- 100000
+con <- file(description=transactFile,open="r")   
+dataChunk <- read.table(con, nrows=chunkSize, header=T, fill=TRUE, sep=",", col.names=higgs_colnames)
+
+counter <- 0
+total_lepton_pT <- 0
+repeat {
+        index <- index + 1
+        print(paste('Processing rows:', index * chunkSize))
+        
+        total_lepton_pT <- total_lepton_pT + sum(dataChunk$lepton_pT)
+        counter <- counter + nrow(dataChunk)
+ 
+        if (nrow(dataChunk) != chunkSize){
+                print('Processed all files!')
+                break}
+        
+        dataChunk <- read.table(con, nrows=chunkSize, skip=0, header=FALSE, fill = TRUE, sep=",", col.names=higgs_colnames)
+        
+        if (index > 3) break
+
+}
+close(con)
+
+print(paste0('lepton_pT mean: ',  total_lepton_pT / counter))
 
 ```
 
