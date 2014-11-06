@@ -7,7 +7,7 @@ year: 2014
 month: 11
 day: 4
 published: true
-summary: Using the function <b>read.table()</b> we break file into chunks in order to process them. This allows processing files of any size beyond what the machine's RAM can handle.
+summary: Using the function <b>read.table()</b>, we break file into chunks in order to process them. This allows processing files of any size beyond what the machine's RAM can handle.
 image: dealing-with-large-files/memory.png
 ---
 **Resources**
@@ -128,8 +128,7 @@ print(head(data))
 ## 5 0.4306 0.9614 0.9578
 ## 6 0.6987 0.9773 0.8288
 ```
-
-
+<BR><BR>
 The next step is to build the looping mechanism to repeat this for each subsequent chunk and keep track of each chunk:
  
 
@@ -315,4 +314,8 @@ close(con)
 print(paste0('lepton_pT mean: ',  total_lepton_pT / counter))
 
 ```
-
+<div class="row">   
+    <div class="span9 column">
+            <p class="pull-right">{% if page.previous.url %} <a href="{{page.previous.url}}" title="Previous Post: {{page.previous.title}}"><i class="icon-chevron-left"></i></a>   {% endif %}   {% if page.next.url %}    <a href="{{page.next.url}}" title="Next Post: {{page.next.title}}"><i class="icon-chevron-right"></i></a>   {% endif %} </p>  
+    </div>
+</div>
