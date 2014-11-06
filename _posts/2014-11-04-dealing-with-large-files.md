@@ -134,7 +134,6 @@ The next step is to build the looping mechanism to repeat this for each subseque
  
 
 ```r
-setwd('/Users/manuelamunategui/Downloads')
 index <- 0
 chunkSize <- 100000
 con <- file(description=transactFile,open="r")   
@@ -267,7 +266,6 @@ close(con)
 names(data) <- higgs_colnames
 print(head(data))
 
-setwd('/Users/manuelamunategui/Downloads')
 index <- 0
 chunkSize <- 100000
 con <- file(description=transactFile,open="r")   
