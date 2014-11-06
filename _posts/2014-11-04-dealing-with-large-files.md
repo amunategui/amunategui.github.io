@@ -73,15 +73,10 @@ readLines(transactFile, n=1)
 
 You could easily use readLines to loop through smaller chunks in memory one at a time.  But I prefer ``read.table()`` and that is what I use.
 <BR><BR>
-I copied from the UCI repository the column names:
-
-
+I copied the column names from the UCI repository:
 ```r
 higgs_colnames <- c('label','lepton_pT','lepton_eta','lepton_phi','missing_energy_magnitude','missing_energy_phi','jet_1_pt','jet_1_eta','jet_1_phi','jet_1_b_tag','jet_2_pt','jet_2_eta','jet_2_phi','jet_2_b_tag','jet_3_pt','jet_3_eta','jet_3_phi','jet_3_b-tag','jet_4_pt','jet_4_eta','jet_4_phi','jet_4_b_tag','m_jj','m_jjj','m_lv','m_jlv','m_bb','m_wbb','m_wwbb')
-```
-<BR><BR>
 
-```r
 transactFile <- 'HIGGS.csv'
 chunkSize <- 100000
 con <- file(description= transactFile, open="r")   
@@ -90,7 +85,6 @@ close(con)
 names(data) <- higgs_colnames
 print(head(data))
 ```
-
 ```
 ##   label lepton_pT lepton_eta lepton_phi missing_energy_magnitude
 ## 1     1    0.9075     0.3291   0.359412                   1.4980
@@ -179,15 +173,10 @@ close(con)
 ```
 <BR><BR>
 
-If you need the column names, then you will have to reapply them after each loop.
-
+If you need the column names, then you will have to reapply them after each loop. This is easy to do as the ``read.table`` function has a parameter just for that:
 
 ```r
 dataChunk <- read.table(con, nrows=chunkSize, skip=0, header=FALSE, fill = TRUE, col.names=higgs_colnames)
-```
-
-```
-## Error: invalid connection
 ```
 <BR><BR>
  
@@ -233,8 +222,7 @@ print(paste0('lepton_pT mean: ',  total_lepton_pT / counter))
 ```
 ## [1] "lepton_pT mean: 0.992386268476397"
 ```
-  
-  
+<BR><BR>
 We broke out of the loop a little early but you get the point. This type of approach may not work for a real median, unless your live memory can hold the entire column of data at the very least. But anything that can be worked in chunks, like the above mean, can easily be extended into parallel or distributed systems.
  
 I hope this helps.
