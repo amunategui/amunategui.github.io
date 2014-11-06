@@ -74,6 +74,7 @@ readLines(transactFile, n=1)
 You could easily use readLines to loop through smaller chunks in memory one at a time.  But I prefer ``read.table()`` and that is what I use.
 <BR><BR>
 I copied the column names from the UCI repository:
+
 ```r
 higgs_colnames <- c('label','lepton_pT','lepton_eta','lepton_phi','missing_energy_magnitude','missing_energy_phi','jet_1_pt','jet_1_eta','jet_1_phi','jet_1_b_tag','jet_2_pt','jet_2_eta','jet_2_phi','jet_2_b_tag','jet_3_pt','jet_3_eta','jet_3_phi','jet_3_b-tag','jet_4_pt','jet_4_eta','jet_4_phi','jet_4_b_tag','m_jj','m_jjj','m_lv','m_jlv','m_bb','m_wbb','m_wwbb')
 
