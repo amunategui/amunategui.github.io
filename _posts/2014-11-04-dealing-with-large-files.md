@@ -7,7 +7,7 @@ year: 2014
 month: 11
 day: 4
 published: true
-summary: Using the function <b>read.table()</b>, we break file into chunks in order to process them. This allows processing files of any size beyond what the machine's RAM can handle.
+summary: Using the function <b>read.table()</b>, we break file into chunks in order to process them. This allows processing files of any size beyond what the machine's <b>RAM</b> can handle.
 image: dealing-with-large-files/memory.png
 ---
 **Resources**
