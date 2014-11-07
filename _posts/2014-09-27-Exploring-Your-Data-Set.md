@@ -7,7 +7,7 @@ year: 2014
 month: 9
 day: 27
 published: true
-summary: A great way to explore new data in R is to use a pairwise correlation matrix. This will pair every combination of your variables and measure the correlation between them.
+summary: A great way to explore new data in <b>R</b> is to use a pairwise correlation matrix. This will pair every combination of your variables and measure the correlation between them.
 image: correlations/unnamed-chunk-9.png
 ---
 **Resources**
