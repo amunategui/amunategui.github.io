@@ -125,7 +125,7 @@ print(head(data))
 ```
 <BR><BR>
 **The Loop**
-<BR>
+<BR><BR>
 The next step is to build the looping mechanism to repeat this for each subsequent chunk and keep track of each chunk:
  
 
@@ -181,6 +181,8 @@ If you need the column names, then you will have to reapply them after each loop
 ```r
 dataChunk <- read.table(con, nrows=chunkSize, skip=0, header=FALSE, fill = TRUE, col.names=higgs_colnames)
 ```
+<BR><BR>
+**Getting Something Out Of Each Loop**
 <BR><BR>
  
 Now that you understand this chunking mechanism, lets see if we can get a total mean for a row from multiple chunks.
