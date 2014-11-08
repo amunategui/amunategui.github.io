@@ -124,6 +124,8 @@ print(head(data))
 ## 6 0.6987 0.9773 0.8288
 ```
 <BR><BR>
+**The Loop**
+<BR>
 The next step is to build the looping mechanism to repeat this for each subsequent chunk and keep track of each chunk:
  
 
