@@ -64,7 +64,7 @@ addBBands(n = 20, sd = 2, ma = "SMA", draw = 'bands', on = -1)
 <BR><BR>
 Moving deeper into quantitative finance, let's design a pattern-based system to predict whether the a particular financial product will see a raise or drop in volume the following trading day.
 <BR><BR>
-We'll use <b>quantmod</b> to download all the stocks that compose the <b>Nasdaq 100</b>. The we'll ``merge`` together to synchronize all our time series together. This will collate the data by time and fill in any missing data with ``NA``s:
+We'll use <b>quantmod</b> to download all the stocks that compose the <b>NASDAQ 100 Index</b>. The we'll ``merge`` together to synchronize all our time series together. This will collate the data by time and fill in any missing data with ``NA``s:
 
 ```r
 Nasdaq100_Symbols <- c("AAPL", "ADBE", "ADI", "ADP", "ADSK", "AKAM", "ALTR", "ALXN", 
@@ -137,7 +137,7 @@ head(nasdaq100[,1:12],2)
 ## 2007-01-04     4503700         40.82
 ```
 <BR><BR>
-Now that we have a handful of years of market data for every stock currently in the the <b>NASDAQ 100</b> index, we need to do something with it. We're going to create a variety of measures between price and volume points. The idea is to quantify stock moves as patterns by subtracting one day versus a previous one. We'll create a series of differences: 
+Now that we have a handful of years of market data for every stock currently in the the <b>NASDAQ 100 Index</b>, we need to do something with it. We're going to create a variety of measures between price and volume points. The idea is to quantify stock moves as patterns by subtracting one day versus a previous one. We'll create a series of differences: 
 <ul>
 <li type="square">1 day versus 2 days ago</li>
 <li type="square">1 day versus 3 days ago</li>
@@ -338,7 +338,7 @@ getSymbols(c("^GSPC"))
 chartSeries(GSPC, subset='last 3 months')
 addBBands(n = 20, sd = 2, ma = "SMA", draw = 'bands', on = -1)
 
-# get market data for all symbols making up the Nasdaq 100 index
+# get market data for all symbols making up the NASDAQ 100 Index
 Nasdaq100_Symbols <- c("AAPL", "ADBE", "ADI", "ADP", "ADSK", "AKAM", "ALTR", "ALXN", 
 "AMAT", "AMGN", "AMZN", "ATVI", "AVGO", "BBBY", "BIDU", "BIIB", 
 "BRCM", "CA", "CELG", "CERN", "CHKP", "CHRW", "CHTR", "CMCSA", 
