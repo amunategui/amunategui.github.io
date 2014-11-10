@@ -26,10 +26,9 @@ image: wallstreet/unnamed-chunk-11.png
 
 <BR><BR>
 
-This walkthrough has two parts - first is a very basic introduciton to <b>Quantmod</b> library and, if you haven't used it before and need basic access to daily stock market data and charting, you're in for a <b>huge</b> treat. The second part goes deeper into quantative finance by leveraging <b>Quantmod</b> to access all the stocks composing the <b>Nasdaq 100</b> index and using that data to predict increasing or decreasing participation volume for the upcoming trading day.
+This walkthrough has two parts - the first is a very basic introduciton to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat. The second part goes deeper into quantative finance by leveraging <b>quantmod</b> to access all the stocks composing the <b>Nasdaq 100</b> index and using that data to predict increasing or decreasing participation volume for the upcoming trading day.
 <BR><BR>
-
-<b>Quantmod</b> stands for "Quantitative Financial Modelling and Trading Framework for R"
+<b>quantmod</b> stands for "Quantitative Financial Modelling and Trading Framework for R"
 <BR><BR>
 It has many features so check out the help file for a full coverage or the <a href='http://www.quantmod.com/' target='_blank'>Quantmod's official website</a>. 
 Let's see how Amazon has been doing lately:
