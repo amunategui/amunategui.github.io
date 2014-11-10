@@ -35,42 +35,8 @@ Let's see how Amazon has been doing lately:
 
 ```r
 library(quantmod)
-```
-
-```
-## Loading required package: xts
-## Loading required package: zoo
-## 
-## Attaching package: 'zoo'
-## 
-## The following objects are masked from 'package:base':
-## 
-##     as.Date, as.Date.numeric
-## 
-## Loading required package: TTR
-## Version 0.4-0 included new data defaults. See ?getSymbols.
-```
-
-```r
 getSymbols(c("AMZN"))
 ```
-
-```
-##     As of 0.4-0, 'getSymbols' uses env=parent.frame() and
-##  auto.assign=TRUE by default.
-## 
-##  This  behavior  will be  phased out in 0.5-0  when the call  will
-##  default to use auto.assign=FALSE. getOption("getSymbols.env") and 
-##  getOptions("getSymbols.auto.assign") are now checked for alternate defaults
-## 
-##  This message is shown once per session and may be disabled by setting 
-##  options("getSymbols.warning4.0"=FALSE). See ?getSymbol for more details
-```
-
-```
-## [1] "AMZN"
-```
-
 ```r
 barChart(AMZN,theme='white.mono',bar.type='hlc') 
 ```
@@ -82,22 +48,14 @@ The ``getSymbols`` function downloaded daily data going all the way back to Janu
 It gets better - let's see how easy it is to display a full stock chart with indicators in just 3 lines of code:
 
 ```r
-library(quantmod)
 getSymbols(c("^GSPC"))
-```
-
-```
-## [1] "GSPC"
-```
-
-```r
 chartSeries(GSPC, subset='last 3 months')
 addBBands(n = 20, sd = 2, ma = "SMA", draw = 'bands', on = -1)
 ```
 <BR><BR>
 ![plot of chunk unnamed-chunk-22](../img/posts/wallstreet/unnamed-chunk-22.png) 
 <BR><BR>
-<b>Quantmod</b> uses Yahoo to get its financial data. In the above example ``^GSPC`` stands for the <b>S&P500</b>. Most financial products symbols are straightforward ala <b>MSFT</b> for <b>Microsoft</b>. For indexes and other esoteric symbols, refer to <a href='http://finance.yahoo.com/lookup' target='_blank'>finance.yahoo.com/lookup</a> to verify abbreviated form.
+<b>quantmod</b> uses Yahoo to get its financial data. In the above example ``^GSPC`` stands for the <b>S&P500</b>. Most financial products symbols are straightforward ala <b>MSFT</b> for <b>Microsoft</b>. For indexes and other esoteric symbols, refer to <a href='http://finance.yahoo.com/lookup' target='_blank'>finance.yahoo.com/lookup</a> to verify abbreviated form.
 <BR><BR>
 ``chartSeries`` is straightforward and will plot whatever symbol has been downloaded to memory using ``getSymbols``. ``addBBands`` function will plot Bollinger Bands around your price series. There are many ways to customize you display, for some examples check out the <a href='http://www.quantmod.com/gallery/' target='_blank'>Quantmod Gallery</a>.
 <BR><BR>
