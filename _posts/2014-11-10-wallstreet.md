@@ -365,8 +365,8 @@ print(paste('AUC score:', auc$auc))
 ```
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/quantmod-wallstreet' target='_blank'>also on GitHub</a>)</a>:
-```r
 
+```r
 
 library(quantmod)
 
