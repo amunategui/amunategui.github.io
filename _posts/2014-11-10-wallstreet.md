@@ -319,6 +319,8 @@ print(paste('AUC score:', auc$auc))
 ## [1] "AUC score: 0.719931972789116"
 ```
 <BR><BR>  
+**Conclusion**
+<BR><BR>  
 Not bad, right? An <b>AUC</b> of 0.719 for very little work (remember that an <b>AUC</b> ranges between <b>0.5</b> and <b>1</b>, where <b>0.5</b> is random and <b>1</b> is perfect). Hopefully this will pique your imagination with the many possibilities of <b>quantmod</b> and <b>R</b>.
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/quantmod-wallstreet' target='_blank'>also on GitHub</a>)</a>:
