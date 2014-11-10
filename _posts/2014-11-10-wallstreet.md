@@ -56,11 +56,12 @@ addBBands(n = 20, sd = 2, ma = "SMA", draw = 'bands', on = -1)
 <BR><BR>
 ![plot of chunk unnamed-chunk-22](../img/posts/wallstreet/unnamed-chunk-22.png) 
 <BR><BR>
-<b>quantmod</b> uses Yahoo to get its financial data. In the above example ``^GSPC`` stands for the <b>S&P500</b>. Most financial product symbols are straightforward ala <b>MSFT</b> for <b>Microsoft</b>. For indexes and other esoteric symbols, refer to <a href='http://finance.yahoo.com/lookup' target='_blank'>finance.yahoo.com/lookup</a> to verify abbreviated form.
+<b>quantmod</b> uses <b>Yahoo</b> to get its financial data. In the above example ``^GSPC`` stands for the <b>S&P500</b>. Most financial product symbols are straightforward ala <b>MSFT</b> for <b>Microsoft</b>. For indexes and other esoteric symbols, refer to <a href='http://finance.yahoo.com/lookup' target='_blank'>finance.yahoo.com/lookup</a> to see how they abbreviated it.
 <BR><BR>
-``chartSeries`` is straightforward and will plot whatever symbol has been downloaded to memory using ``getSymbols``. ``addBBands`` function will plot Bollinger Bands around your price series. There are many ways to customize you display, for some examples check out the <a href='http://www.quantmod.com/gallery/' target='_blank'>Quantmod Gallery</a>.
+``chartSeries`` is straightforward and will plot whatever symbol has been downloaded to memory using ``getSymbols``. ``addBBands`` function will plot <b>Bollinger Bands</b> around your price series. There are many ways to customize the display, for some examples check out the <a href='http://www.quantmod.com/gallery/' target='_blank'>Quantmod Gallery</a>.
 <BR><BR>
-<B>Quant Time</B>
+**Quant Time**
+<BR><BR>
 Moving deeper into quantitative finance, let's design a pattern-based system to predict whether the a particular financial product will see a raise or drop in volume the following trading day.
 <BR><BR>
 We'll use <b>quantmod</b> to download all the stocks that compose the <b>Nasdaq 100</b>. The we'll ``merge`` together to synchronize all our time series together. This will collate the data by time and fill in any missing data with ``NA``s:
