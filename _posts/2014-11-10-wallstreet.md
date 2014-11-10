@@ -272,7 +272,8 @@ nasdaq100 <- subset(nasdaq100, select=-c(date))
 nasdaq100 <- nasdaq100[sample(nrow(nasdaq100)),]
 ```
 <BR><BR>
-<B>Let's Model It!</b>
+**Let's Model It!**
+<BR><BR>
 We'll use a simple <b>xgboost</b> model to get an ``AUC`` score. You can get more details regarding parameter settings for this model at the <a href='https://github.com/tqchen/xgboost/wiki/Parameters' target='_blank'>xgboost wiki</a>:
 
 
@@ -317,6 +318,7 @@ print(paste('AUC score:', auc$auc))
 ```
 ## [1] "AUC score: 0.719931972789116"
 ```
+<BR><BR>  
 Not bad, right? An <b>AUC</b> of 0.719 with very little work (remember that an <b>AUC</b> ranges between <b>0.5</b> and <b>1</b>, where <b>0.5</b> is random and <b>1</b> is perfect).
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/quantmod-wallstreet' target='_blank'>also on GitHub</a>)</a>:
