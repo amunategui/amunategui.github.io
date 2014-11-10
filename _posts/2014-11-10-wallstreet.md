@@ -2,7 +2,7 @@
 layout: post
 title: Let's Get Rich With <b>quantmod</b> And <b>R</b>! Rich With Knowledge! 
 category: Machine Learning
-tags: exploring visualizing
+tags: exploring modeling visualizing
 year: 2014
 month: 11
 day: 10
@@ -26,7 +26,7 @@ image: wallstreet/unnamed-chunk-11.png
 
 <BR><BR>
 
-This walkthrough has two parts - the first is a very basic introduction to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat. The second part goes deeper into quantitative finance by leveraging <b>quantmod</b> to access all the stocks composing the <b>NASDAQ 100</b> index and using that data to predict increasing or decreasing participation volume for the upcoming trading day.
+This walkthrough has two parts - the first part is a very basic introduction to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat. The second part goes deeper into quantitative finance by leveraging <b>quantmod</b> to access all the stocks composing the <b>NASDAQ 100 Index</b>  and using that data to predict increasing or decreasing participation volume for the upcoming trading day.
 <BR><BR>
 <b>quantmod</b> stands for "Quantitative Financial Modeling and Trading Framework for R"
 <BR><BR>
