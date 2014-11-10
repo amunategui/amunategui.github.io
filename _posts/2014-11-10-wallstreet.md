@@ -28,7 +28,7 @@ image: wallstreet/unnamed-chunk-11.png
 
 This walkthrough has two parts - the first part is a very basic introduction to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat. The second part goes deeper into quantitative finance by leveraging <b>quantmod</b> to access all the stocks composing the <b>NASDAQ 100 Index</b>  and using that data to predict increasing or decreasing participation volume for the upcoming trading day.
 <BR><BR>
-<b>quantmod</b> stands for "Quantitative Financial Modeling and Trading Framework for R"
+<b>quantmod</b> stands for <i>"Quantitative Financial Modeling and Trading Framework for R"</i>
 <BR><BR>
 It has many features so check out the help file for a full coverage or the <a href='http://www.quantmod.com/' target='_blank'>Quantmod's official website</a>. 
 <BR><BR>
@@ -318,7 +318,7 @@ print(paste('AUC score:', auc$auc))
 ```
 ## [1] "AUC score: 0.719931972789116"
 ```
-<BR><BR>  
+<BR>  
 **Conclusion**
 <BR><BR>  
 Not bad, right? An <b>AUC</b> of <b>0.719</b> for very little work (remember that an <b>AUC</b> ranges between <b>0.5</b> and <b>1</b>, where <b>0.5</b> is random and <b>1</b> is perfect). Hopefully this will pique your imagination with the many possibilities of <b>quantmod</b> and <b>R</b>.
