@@ -180,9 +180,9 @@ head(nasdaq100[,1:12],2)
 Now that we have a handful of years of market data for every stock currently in the the <b>NASDAQ 100</b> index, we need to do something with it. We're going to create a variety of measures between price and volume points. The idea is to quantify stock moves as patterns by subtracting one day versus a previous one. We'll create a series of differences: 
 <ul>
 <li type="square">1 day versus 2 days ago</li>
-<li type="square"><b>1 day versus 3 days ago</li>
-<li type="square"><b>1 day versus 5 days ago</li>
-<li type="square"><b>1 day versus 20 days ago (akin a 20 day moving average)</li>
+<li type="square">1 day versus 3 days ago</li>
+<li type="square">1 day versus 5 days ago</li>
+<li type="square">1 day versus 20 days ago (akin a 20 day moving average)</li>
 </ul>
 <BR><BR>
 <b>Creating The Outcome Variable</b>
