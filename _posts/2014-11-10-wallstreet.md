@@ -78,8 +78,8 @@ barChart(AMZN,theme='white.mono',bar.type='hlc')
 ![plot of chunk unnamed-chunk-1](../img/posts/wallstreet/unnamed-chunk-1.png) 
 <BR><BR>
 The ``getSymbols`` function downloaded daily data going all the way back to January 2007. The ``barChart`` function displays the data in a nice clean fashion following a theme-based parameter (<a href='http://www.quantmod.com/' target='_blank'>see the help file for more</a>). Not bad for 2 lines of code!!
-<BR>
-I gets better - let's see how easy it is to display a full stock chart with indicators in just 3 lines of code:
+<BR><BR>
+It gets better - let's see how easy it is to display a full stock chart with indicators in just 3 lines of code:
 
 ```r
 library(quantmod)
