@@ -299,19 +299,6 @@ bst <- xgboost(data = as.matrix(train[,predictorNames]),
 predictions <- predict(bst, as.matrix(test[,predictorNames]), outputmargin=TRUE)
  
 library(pROC)
-```
-
-```
-## Type 'citation("pROC")' for a citation.
-## 
-## Attaching package: 'pROC'
-## 
-## The following objects are masked from 'package:stats':
-## 
-##     cov, smooth, var
-```
-
-```r
 auc <- roc(test$outcome, predictions)
 print(paste('AUC score:', auc$auc))
 ```     
