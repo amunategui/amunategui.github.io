@@ -352,11 +352,11 @@ library(pROC)
 ```r
 auc <- roc(test$outcome, predictions)
 print(paste('AUC score:', auc$auc))
-```
-
+```     
 ```
 ## [1] "AUC score: 0.719931972789116"
 ```
+Not bad, right? An <b>AUC</b> of 0.719 with very little work (remember that an <b>AUC</b> ranges between <b>0.5</b> and <b>1</b>, where <b>0.5</b> is random and <b>1</b> is perfect).
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/quantmod-wallstreet' target='_blank'>also on GitHub</a>)</a>:
 
