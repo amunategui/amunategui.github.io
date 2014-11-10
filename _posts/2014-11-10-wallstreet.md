@@ -1,13 +1,13 @@
 ---
 layout: post
-title: Let's Get Rich with Quantmod! Rich with knowledge! 
+title: Let's Get Rich with Quantmod and R! Rich with knowledge! 
 category: Machine Learning
 tags: exploring visualizing
 year: 2014
 month: 11
 day: 10
 published: true
-summary: See how easy it is to download, visualize, manipulate stock market data with the <b>Quantmod</b> library and use all of it to build a complex trading model.
+summary: See how easy it is to download, visualize, manipulate stock market data with the <b>quantmod</b> library and use all of it to build a complex trading model.
 image: wallstreet/unnamed-chunk-11.png
 ---
 **Resources**
@@ -365,8 +365,9 @@ print(paste('AUC score:', auc$auc))
 ```
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/quantmod-wallstreet' target='_blank'>also on GitHub</a>)</a>:
-
 ```r
+
+
 library(quantmod)
 
 # display a simple bar chart
@@ -486,4 +487,4 @@ predictions <- predict(bst, as.matrix(test[,predictorNames]), outputmargin=TRUE)
 library(pROC)
 auc <- roc(test$outcome, predictions)
 print(paste('AUC score:', auc$auc))
-
+```
