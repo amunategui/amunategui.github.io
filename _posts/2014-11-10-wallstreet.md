@@ -26,9 +26,9 @@ image: wallstreet/unnamed-chunk-11.png
 
 <BR><BR>
 
-This walkthrough has two parts - the first is a very basic introduciton to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat. The second part goes deeper into quantative finance by leveraging <b>quantmod</b> to access all the stocks composing the <b>Nasdaq 100</b> index and using that data to predict increasing or decreasing participation volume for the upcoming trading day.
+This walkthrough has two parts - the first is a very basic introduction to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat. The second part goes deeper into quantitative finance by leveraging <b>quantmod</b> to access all the stocks composing the <b>NASDAQ 100</b> index and using that data to predict increasing or decreasing participation volume for the upcoming trading day.
 <BR><BR>
-<b>quantmod</b> stands for "Quantitative Financial Modelling and Trading Framework for R"
+<b>quantmod</b> stands for "Quantitative Financial Modeling and Trading Framework for R"
 <BR><BR>
 It has many features so check out the help file for a full coverage or the <a href='http://www.quantmod.com/' target='_blank'>Quantmod's official website</a>. 
 Let's see how Amazon has been doing lately:
@@ -77,7 +77,7 @@ barChart(AMZN,theme='white.mono',bar.type='hlc')
 
 ![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
 <BR><BR>
-The ``getSymbols`` function dowloded daily data going all the way back to January 2007. The ``barChart`` function displays the data in a nice clean fashion following a theme-based parameter (<a href='http://www.quantmod.com/' target='_blank'>see the help file for more</a>). Not bad for 2 lines of code!!
+The ``getSymbols`` function downloaded daily data going all the way back to January 2007. The ``barChart`` function displays the data in a nice clean fashion following a theme-based parameter (<a href='http://www.quantmod.com/' target='_blank'>see the help file for more</a>). Not bad for 2 lines of code!!
 <BR>
 I gets better - let's see how easy it is to display a full stock chart with indicators in just 3 lines of code:
 
@@ -107,9 +107,9 @@ addBBands(n = 20, sd = 2, ma = "SMA", draw = 'bands', on = -1)
 ``chartSeries`` is straightforward and will plot whatever symbol has been downloaded to memory using ``getSymbols``. ``addBBands`` function will plot Bollinger Bands around your price series. There are many ways to customize you display, for some examples check out the <a href='http://www.quantmod.com/gallery/' target='_blank'>Quantmod Gallery</a>.
 <BR><BR>
 <B>Quant Time</B>
-Moving deeper into quantative finance, let's design a pattern-based system to predict whether the a particular financial product will see a raise or drop in volume the following trading day.
+Moving deeper into quantitative finance, let's design a pattern-based system to predict whether the a particular financial product will see a raise or drop in volume the following trading day.
 <BR><BR>
-We'll use <b>Quantmod</b> to download all the stocks that compose the <b>Nasdaq 100</b>. The we'll ``merge`` together to synchronize all our time series together. This will collate the data by time and fill in any missing data with ``NA``s:
+We'll use <b>quantmod</b> to download all the stocks that compose the <b>Nasdaq 100</b>. The we'll ``merge`` together to synchronize all our time series together. This will collate the data by time and fill in any missing data with ``NA``s:
 
 ```r
 Nasdaq100_Symbols <- c("AAPL", "ADBE", "ADI", "ADP", "ADSK", "AKAM", "ALTR", "ALXN", 
@@ -150,7 +150,7 @@ getSymbols(Nasdaq100_Symbols)
 ##  [97] "VOD"   "VRSK"  "VRTX"  "WDC"   "WFM"   "WYNN"  "XLNX"  "YHOO"
 ```
 <BR><BR>
-Be warned, that this does take a little time as <b>Quantmod</b> will throttle the download. Each symbol is loaded in memory under the symbol name, therefore we have over 100 new objects loaded in memrory each with years of daily market data. As these are independent time series, we have to merge everything together and fill in missing data so everything fits nicely in a data frame. We'll use the ``merge.xts`` function to merge by time all these objects into one data frame: 
+Be warned, that this does take a little time as <b>quantmod</b> will throttle the download. Each symbol is loaded in memory under the symbol name, therefore we have over 100 new objects loaded in memory each with years of daily market data. As these are independent time series, we have to merge everything together and fill in missing data so everything fits nicely in a data frame. We'll use the ``merge.xts`` function to merge by time all these objects into one data frame: 
 
 
 ```r
@@ -182,7 +182,7 @@ head(nasdaq100[,1:12],2)
 ## 2007-01-04     4503700         40.82
 ```
 <BR><BR>
-Now that we have a handful of years of market data for every stock currently in the the <b>Nasdaq 100</b> index, we need to do something with it. We're going to create a variety of measures between price and volume points. The idea is to quantify stock moves as patterns by substracting one day versus a previous one. We'll create a series of differences: 
+Now that we have a handful of years of market data for every stock currently in the the <b>NASDAQ 100</b> index, we need to do something with it. We're going to create a variety of measures between price and volume points. The idea is to quantify stock moves as patterns by subtracting one day versus a previous one. We'll create a series of differences: 
 <ul>
 <li type="square">1 day versus 2 days ago</li>
 <li type="square"><b>1 day versus 3 days ago</li>
@@ -218,7 +218,7 @@ nasdaq100$date <- as.Date(row.names(nasdaq100))
 nasdaq100 <- nasdaq100[order(as.Date(nasdaq100$date, "%m/%d/%Y"), decreasing = TRUE),]
 ```
 <BR><BR>
-Here is the pattern maker function. This will take our raw market data and scale all of it so that we can compare any symbol with any other symbole. It then subtracts the different day ranges requested by the ``days`` parameter and puts them all on the same row along with the outcome. To make things even more compatible, the ``roundByScaler`` parameter can round results.
+Here is the pattern maker function. This will take our raw market data and scale all of it so that we can compare any symbol with any other symbol. It then subtracts the different day ranges requested by the ``days`` parameter and puts them all on the same row along with the outcome. To make things even more compatible, the ``roundByScaler`` parameter can round results.
 
 
 ```r
@@ -317,7 +317,7 @@ nasdaq100 <- nasdaq100[sample(nrow(nasdaq100)),]
 ```
 <BR><BR>
 <B>Let's Model It!</b>
-We'll use a simple <b>xgboos</b> model to get an ``AUC`` score. You can get more details regarding parameter settings for this model at the <a href='https://github.com/tqchen/xgboost/wiki/Parameters' target='_blank'>xgboost wiki</a>:
+We'll use a simple <b>xgboost</b> model to get an ``AUC`` score. You can get more details regarding parameter settings for this model at the <a href='https://github.com/tqchen/xgboost/wiki/Parameters' target='_blank'>xgboost wiki</a>:
 
 
 ```r
