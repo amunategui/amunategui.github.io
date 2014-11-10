@@ -74,8 +74,8 @@ getSymbols(c("AMZN"))
 ```r
 barChart(AMZN,theme='white.mono',bar.type='hlc') 
 ```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
+<BR><BR>
+![plot of chunk unnamed-chunk-1](../img/posts/wallstreet/unnamed-chunk-1.png) 
 <BR><BR>
 The ``getSymbols`` function downloaded daily data going all the way back to January 2007. The ``barChart`` function displays the data in a nice clean fashion following a theme-based parameter (<a href='http://www.quantmod.com/' target='_blank'>see the help file for more</a>). Not bad for 2 lines of code!!
 <BR>
@@ -92,15 +92,10 @@ getSymbols(c("^GSPC"))
 
 ```r
 chartSeries(GSPC, subset='last 3 months')
-```
-
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-21.png) 
-
-```r
 addBBands(n = 20, sd = 2, ma = "SMA", draw = 'bands', on = -1)
 ```
-
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-22.png) 
+<BR><BR>
+![plot of chunk unnamed-chunk-22](../img/posts/wallstreet/unnamed-chunk-22.png) 
 <BR><BR>
 <b>Quantmod</b> uses Yahoo to get its financial data. In the above example ``^GSPC`` stands for the <b>S&P500</b>. Most financial products symbols are straightforward ala <b>MSFT</b> for <b>Microsoft</b>. For indexes and other esoteric symbols, refer to <a href='http://finance.yahoo.com/lookup' target='_blank'>finance.yahoo.com/lookup</a> to verify abbreviated form.
 <BR><BR>
