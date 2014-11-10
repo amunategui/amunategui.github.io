@@ -31,6 +31,7 @@ This walkthrough has two parts - the first part is a very basic introduction to 
 <b>quantmod</b> stands for "Quantitative Financial Modeling and Trading Framework for R"
 <BR><BR>
 It has many features so check out the help file for a full coverage or the <a href='http://www.quantmod.com/' target='_blank'>Quantmod's official website</a>. 
+<BR><BR>
 Let's see how Amazon has been doing lately:
 
 ```r
