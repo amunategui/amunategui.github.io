@@ -145,7 +145,8 @@ Now that we have a handful of years of market data for every stock currently in 
 <li type="square">1 day versus 20 days ago (akin a 20 day moving average)</li>
 </ul>
 <BR><BR>
-<b>Creating The Outcome Variable</b>
+**Creating The Outcome Variable**
+<BR><BR>
 This is the heart of the system and its a bit tedious so hold on. What are we trying to predict?
 Whether the next trading day's volume for a chosen symbol will be higher or lower than the current trading day (this doesn't have to be the ``volume`` field of <b>FISV</b>, it could be the ``high`` or ``close`` of any other symbol for which we have data):
 
