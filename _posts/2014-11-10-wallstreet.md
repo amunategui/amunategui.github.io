@@ -1,13 +1,13 @@
 ---
 layout: post
-title: Let's Get Rich with Quantmod and R! Rich with knowledge! 
+title: Let's Get Rich With <b>quantmod</b> And <b>R</b>! Rich With Knowledge! 
 category: Machine Learning
 tags: exploring visualizing
 year: 2014
 month: 11
 day: 10
 published: true
-summary: See how easy it is to download, visualize, manipulate stock market data with the <b>quantmod</b> library and use all of it to build a complex trading model.
+summary: See how easy it is to download, visualize, manipulate daily stock market data with the <b>quantmod</b> library and use all of it to build a complex trading model.
 image: wallstreet/unnamed-chunk-11.png
 ---
 **Resources**
