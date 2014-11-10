@@ -26,7 +26,7 @@ image: wallstreet/unnamed-chunk-11.png
 
 <BR><BR>
 
-This walkthrough has two parts - the first part is a very basic introduction to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat. The second part goes deeper into quantitative finance by leveraging <b>quantmod</b> to access all the stocks composing the <b>NASDAQ 100 Index</b>  and using that data to predict increasing or decreasing participation volume for the upcoming trading day.
+This walkthrough has two parts - the first part is a very basic introduction to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat. The second part goes deeper into quantitative finance by leveraging <b>quantmod</b> to access all the stocks composing the <a href='http://www.nasdaq.com/markets/indices/nasdaq-100.aspx' target='_blank>'>NASDAQ 100 Index</a> and using that data to predict increasing or decreasing participation volume for the upcoming trading day.
 <BR><BR>
 <b>quantmod</b> stands for <i>"Quantitative Financial Modeling and Trading Framework for R"</i>
 <BR><BR>
