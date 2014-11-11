@@ -7,7 +7,7 @@ year: 2014
 month: 11
 day: 10
 published: true
-summary: See how easy it is to download, visualize, manipulate daily stock market data with the <b>quantmod</b> library and use all of it to build a complex trading model.
+summary: See how easy it is to download, visualize and manipulate daily stock market data and use it all to build a complex market model.
 image: wallstreet/unnamed-chunk-11.png
 ---
 **Resources**
@@ -26,7 +26,13 @@ image: wallstreet/unnamed-chunk-11.png
 
 <BR><BR>
 
-This walkthrough has two parts - the first part is a very basic introduction to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat. The second part goes deeper into quantitative finance by leveraging <b>quantmod</b> to access all the stocks composing the <a href='http://www.nasdaq.com/markets/indices/nasdaq-100.aspx' target='_blank>'>NASDAQ 100 Index</a> and using that data to predict increasing or decreasing participation volume for the upcoming trading day.
+This walkthrough has two parts:
+
+<ol type="1">
+ <li>The first part is a very basic introduction to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat.</li> 
+<li>The second part goes deeper into quantitative finance by leveraging <b>quantmod</b> to access all the stocks composing the <a href='http://www.nasdaq.com/markets/indices/nasdaq-100.aspx' target='_blank>'>NASDAQ 100 Index</a> to build a vocabulary of market moves and attempt to predict whether the following trading day's <b>volumne</b> will be <b>higher</b> or <b>lower</b>.</li>
+</ol>
+
 <BR><BR>
 <b>quantmod</b> stands for <i>"Quantitative Financial Modeling and Trading Framework for R"</i>
 <BR><BR>
