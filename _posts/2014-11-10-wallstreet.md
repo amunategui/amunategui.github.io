@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Let's Get Rich With <b>quantmod</b> And <b>R</b>! Rich With Knowledge! 
+title: Let's Get Rich With quantmod And R! Rich With Knowledge! 
 category: Machine Learning
 tags: exploring modeling visualizing
 year: 2014

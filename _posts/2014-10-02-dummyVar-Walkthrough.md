@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Brief Walkthrough Of The <B>dummyVars</B> Function From {caret}"
+title: Brief Walkthrough Of The dummyVars Function From {caret}
 category: Machine Learning
 tags: exploring
 year: 2014

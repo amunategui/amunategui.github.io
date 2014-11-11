@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Reducing High Dimensional Data with <B>Principle Component Analysis (PCA)</B> and <b>prcomp</b>
+title: Reducing High Dimensional Data with Principle Component Analysis (PCA) and prcomp
 category: Machine Learning
 tags: modeling
 year: 2014

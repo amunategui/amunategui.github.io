@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Mapping The United States Census With <B>{ggmap}</B>
+title: Mapping The United States Census With {ggmap}
 category: Visualization
 tags: visualizing
 year: 2014

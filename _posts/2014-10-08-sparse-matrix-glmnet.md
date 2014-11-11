@@ -1,6 +1,6 @@
 ---
 layout: post
-title: The Sparse Matrix and <B>{glmnet}</B>
+title: The Sparse Matrix and {glmnet}
 category: Machine Learning
 tags: modeling
 year: 2014

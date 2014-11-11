@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Predicting Multiple Discrete Values with <b>Multinomials</b>, <b>Neural Networks</b> and the <b>{nnet}</b> Package
+title: Predicting Multiple Discrete Values with Multinomials, Neural Networks and the {nnet} Package
 category: Machine Learning
 tags: modeling
 year: 2014

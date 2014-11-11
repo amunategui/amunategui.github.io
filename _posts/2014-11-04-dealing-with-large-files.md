@@ -1,6 +1,6 @@
 ---
 layout: post
-title: How to work with files that are too large for a computer’s <b>RAM</b>? Using <b>R</b> to process large data in chunks.
+title: How to work with files that are too large for a computer’s RAM? Using R to process large data in chunks.
 category: Machine Learning
 tags: exploring
 year: 2014
