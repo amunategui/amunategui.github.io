@@ -1,13 +1,13 @@
 ---
 layout: post
-title: Let's Get Rich With quantmod And R! Rich With Knowledge! 
+title: Let's Get Rich With {quantmod} And R! Rich With Knowledge! 
 category: Machine Learning
 tags: exploring modeling visualizing
 year: 2014
 month: 11
 day: 10
 published: true
-summary: See how easy it is to download, visualize and manipulate daily stock market data and use it all to build a complex market model.
+summary: See how easy it is display great looking current stock charts in 2 lines of code and then stock market data and use it all to build a complex market model.
 image: wallstreet/unnamed-chunk-11.png
 ---
 **Resources**
@@ -180,7 +180,7 @@ nasdaq100$date <- as.Date(row.names(nasdaq100))
 nasdaq100 <- nasdaq100[order(as.Date(nasdaq100$date, "%m/%d/%Y"), decreasing = TRUE),]
 ```
 <BR><BR>
-Here is the pattern maker function. This will take our raw market data and scale all of it so that we can compare any symbol with any other symbol. It then subtracts the different day ranges requested by the ``days`` parameter and puts them all on the same row along with the outcome. To make things even more compatible, the ``roundByScaler`` parameter can round results.
+Here is the pattern maker function. This will take our raw market data and ``scale`` it so that we can compare any symbol with any other symbol. It then subtracts the different day ranges requested by the ``days`` parameter using the ``diff`` and ``lag`` calls and puts them all on the same row along with the outcome. To make things even more compatible, the ``roundByScaler`` parameter can round results.
 
 
 ```r
