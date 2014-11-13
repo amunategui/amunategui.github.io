@@ -12,7 +12,7 @@ image: wallstreet/unnamed-chunk-11.png
 ---
 **Resources**
 <ul>
-<li type="square"><a href="http://youtu.be/lDgvaJFpybU" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=lDgvaJFpybU&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
 <BR>

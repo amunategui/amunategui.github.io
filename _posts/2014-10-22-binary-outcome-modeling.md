@@ -13,7 +13,7 @@ image: binary-outcomes/classification.png
 
 **Resources**
 <ul>
-<li type="square"><a href="https://www.youtube.com/watch?v=-nai4NBx5zI" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=-nai4NBx5zI&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
 <BR>

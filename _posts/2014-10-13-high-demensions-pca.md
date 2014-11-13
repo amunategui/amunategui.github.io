@@ -13,7 +13,7 @@ image: dimension-reduction/pca.png
 
 **Resources**
 <ul>
-<li type="square"><a href="https://www.youtube.com/watch?v=qhvkVxuwvLk" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=qhvkVxuwvLk&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
 <BR>

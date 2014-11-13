@@ -12,7 +12,7 @@ image: multinom-neuralnetworks/converged.png
 ---
 **Resources**
 <ul>
-<li type="square"><a href="https://www.youtube.com/watch?v=zTlbMHw9CeY" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=zTlbMHw9CeY&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
 <BR>
