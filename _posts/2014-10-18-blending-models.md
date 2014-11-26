@@ -249,116 +249,85 @@ There you have it, an **AUC** bump of 0.003. This may not seem like much (and th
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SimpleEnsembleBlending' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
+library(caret)
+names(getModelInfo())
 
-require(ROCR)
-require(caret)
-require(ggplot2)
+# Load data from Hadley Wickham on Github - Vehicle data set and predict 6 cylinder vehicles
+library(RCurl)
+#urlData <- getURL('https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv')
+#vehicles <- read.csv(text = urlData)
 
-EvaluateAUC <- function(dfEvaluate) {
-        require(xgboost)
-        require(Metrics)
-        CVs <- 5
-        cvDivider <- floor(nrow(dfEvaluate) / (CVs+1))
-        indexCount <- 1
-        outcomeName <- c('cluster')
-        predictors <- names(dfEvaluate)[!names(dfEvaluate) %in% outcomeName]
-        lsErr <- c()
-        lsAUC <- c()
-        for (cv in seq(1:CVs)) {
-                print(paste('cv',cv))
-                dataTestIndex <- c((cv * cvDivider):(cv * cvDivider + cvDivider))
-                dataTest <- dfEvaluate[dataTestIndex,]
-                dataTrain <- dfEvaluate[-dataTestIndex,]
-                
-                bst <- xgboost(data = as.matrix(dataTrain[,predictors]),
-                               label = dataTrain[,outcomeName],
-                               max.depth=6, eta = 1, verbose=0,
-                               nround=5, nthread=4, 
-                               objective = "reg:linear")
-                
-                predictions <- predict(bst, as.matrix(dataTest[,predictors]), outputmargin=TRUE)
-                err <- rmse(dataTest[,outcomeName], predictions)
-                auc <- auc(dataTest[,outcomeName],predictions)
-                
-                lsErr <- c(lsErr, err)
-                lsAUC <- c(lsAUC, auc)
-                gc()
-        }
-        print(paste('Mean Error:',mean(lsErr)))
-        print(paste('Mean AUC:',mean(lsAUC)))
-}
+# alternative way of getting the data
+urlfile <-'https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv'
+x <- getURL(urlfile, ssl.verifypeer = FALSE)
+vehicles <- read.csv(textConnection(x))
 
-##########################################################################################
-## Download data
-##########################################################################################
+# clean up the data and only use the first 24 columns
+vehicles <- vehicles[names(vehicles)[1:24]]
+vehicles <- data.frame(lapply(vehicles, as.character), stringsAsFactors=FALSE)
+vehicles <- data.frame(lapply(vehicles, as.numeric))
+vehicles[is.na(vehicles)] <- 0
+vehicles$cylinders <- ifelse(vehicles$cylinders == 6, 1,0)
 
-# http://www.nipsfsc.ecs.soton.ac.uk/datasets/GISETTE.zip
-# http://stat.ethz.ch/R-manual/R-devel/library/stats/html/princomp.html
-temp <- tempfile()
+prop.table(table(vehicles$cylinders))
 
-# word of warning, this is 20mb - slow
-download.file("http://www.nipsfsc.ecs.soton.ac.uk/datasets/GISETTE.zip",temp, mode="wb")
-dir(tempdir())
+# shuffle and split the data into three parts
+set.seed(1234)
+vehicles <- vehicles[sample(nrow(vehicles)),]
+split <- floor(nrow(vehicles)/3)
+ensembleData <- vehicles[0:split,]
+blenderData <- vehicles[(split+1):(split*2),]
+testingData <- vehicles[(split*2+1):nrow(vehicles),]
 
-unzip(temp, "GISETTE/gisette_train.data")
-gisetteRaw <- read.table("GISETTE/gisette_train.data", sep=" ",skip=0, header=F)
-unzip(temp, "GISETTE/gisette_train.labels")
-g_labels <- read.table("GISETTE/gisette_train.labels", sep=" ",skip=0, header=F)
+# set label name and predictors
+labelName <- 'cylinders'
+predictors <- names(ensembleData)[names(ensembleData) != labelName]
 
-##########################################################################################
-## Remove zero and close to zero variance
-##########################################################################################
+library(caret)
+# create a caret control object to control the number of cross-validations performed
+myControl <- trainControl(method='cv', number=3, returnResamp='none')
 
-nzv <- nearZeroVar(gisetteRaw, saveMetrics = TRUE)
-range(nzv$percentUnique)
+# quick benchmark model 
+test_model <- train(blenderData[,predictors], blenderData[,labelName], method='gbm', trControl=myControl)
+preds <- predict(object=test_model, testingData[,predictors])
 
-# how many have no variation at all
-print(length(nzv[nzv$zeroVar==T,]))
+library(pROC)
+auc <- roc(testingData[,labelName], preds)
+print(auc$auc) # Area under the curve: 0.9896
 
-print(paste('Column count before cutoff:',ncol(gisetteRaw)))
+# train all the ensemble models with ensembleData
+model_gbm <- train(ensembleData[,predictors], ensembleData[,labelName], method='gbm', trControl=myControl)
+model_rpart <- train(ensembleData[,predictors], ensembleData[,labelName], method='rpart', trControl=myControl)
+model_treebag <- train(ensembleData[,predictors], ensembleData[,labelName], method='treebag', trControl=myControl)
 
-# how many have less than 0.1 percent variance
-dim(nzv[nzv$percentUnique > 0.1,])
+# get predictions for each ensemble model for two last data sets
+# and add them back to themselves
+blenderData$gbm_PROB <- predict(object=model_gbm, blenderData[,predictors])
+blenderData$rf_PROB <- predict(object=model_rpart, blenderData[,predictors])
+blenderData$treebag_PROB <- predict(object=model_treebag, blenderData[,predictors])
+testingData$gbm_PROB <- predict(object=model_gbm, testingData[,predictors])
+testingData$rf_PROB <- predict(object=model_rpart, testingData[,predictors])
+testingData$treebag_PROB <- predict(object=model_treebag, testingData[,predictors])
 
-# remove zero & near-zero variance from original data set
-gisette_nzv <- gisetteRaw[c(rownames(nzv[nzv$percentUnique > 0.1,])) ]
-print(paste('Column count after cutoff:',ncol(gisette_nzv)))
+# see how each individual model performed on its own
+auc <- roc(testingData[,labelName], testingData$gbm_PROB )
+print(auc$auc) # Area under the curve: 0.9893
 
-##########################################################################################
-# Run model on original data set
-##########################################################################################
+auc <- roc(testingData[,labelName], testingData$rf_PROB )
+print(auc$auc) # Area under the curve: 0.958
 
-dfEvaluate <- cbind(as.data.frame(sapply(gisette_nzv, as.numeric)),
-                    cluster=g_labels$V1)
+auc <- roc(testingData[,labelName], testingData$treebag_PROB )
+print(auc$auc) # Area under the curve: 0.9734
 
-EvaluateAUC(dfEvaluate)
+# run a final model to blend all the probabilities together
+predictors <- names(blenderData)[names(blenderData) != labelName]
+final_blender_model <- train(blenderData[,predictors], blenderData[,labelName], method='gbm', trControl=myControl)
 
-##########################################################################################
-# Run prcomp on the data set
-##########################################################################################
+# See final prediction and AUC of blended ensemble
+preds <- predict(object=final_blender_model, testingData[,predictors])
+auc <- roc(testingData[,labelName], preds)
+print(auc$auc)  # Area under the curve: 0.9922
 
-pmatrix <- scale(gisette_nzv)
-princ <- prcomp(pmatrix)
-
-# plot the first two components
-ggplot(dfEvaluate, aes(x=PC1, y=PC2, colour=as.factor(g_labels$V1+1))) +
-        geom_point(aes(shape=as.factor(g_labels$V1))) + scale_colour_hue()
-
-# full - 0.965910574495451
-nComp <- 5  
-nComp <- 10  
-nComp <- 90     
-nComp <- 20  
-nComp <- 50   
-nComp <- 100   
-
-# change nComp to try different numbers of component variables (10 works great)
-nComp <- 10  # 0.9650
-dfComponents <- predict(princ, newdata=pmatrix)[,1:nComp]
-dfEvaluate <- cbind(as.data.frame(dfComponents),
-                    cluster=g_labels$V1)
-
-EvaluateAUC(dfEvaluate)
 ```
 
 <div class="row">   
