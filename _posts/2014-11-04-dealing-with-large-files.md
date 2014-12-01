@@ -1,6 +1,6 @@
 ---
 layout: post
-title: How to work with files too large for a computer’s RAM? Using R to process large data in chunks.
+title: "How To Work With Files Too Large For A Computer’s RAM? Using R To Process Large Data In Chunks"
 category: Machine Learning
 tags: exploring
 year: 2014
@@ -307,8 +307,3 @@ close(con)
 print(paste0('lepton_pT mean: ',  total_lepton_pT / counter))
 
 ```
-<div class="row">   
-    <div class="span9 column">
-            <p class="pull-right">{% if page.previous.url %} <a href="{{page.previous.url}}" title="Previous Post: {{page.previous.title}}"><i class="icon-chevron-left"></i></a>   {% endif %}   {% if page.next.url %}    <a href="{{page.next.url}}" title="Next Post: {{page.next.title}}"><i class="icon-chevron-right"></i></a>   {% endif %} </p>  
-    </div>
-</div>
