@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "Using String Distance {stringdist} To Handle Large Text Factors And Group Them Logical Clusters" 
+title: "Using String Distance {stringdist} To Handle Large Text Factors And Cluster Them Into Supersets" 
 category: Machine Learning
 tags: exploring visualizing
 year: 2014
 month: 11
 day: 30
 published: true
-summary: "{stringdist} can help make sense of large factor variables by clustering them into supersets."
+summary: "<b>{stringdist}</b> can help make sense of large, text factor variables by clustering them into supersets. It allows preserving some of the contents substance without having to revert to full on natural language processing."
 image: stringdist/unnamed-chunk-6.png
 ---
 
