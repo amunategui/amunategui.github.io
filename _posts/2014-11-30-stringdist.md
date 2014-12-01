@@ -38,18 +38,18 @@ So that we are on the same page, imagine a data set with 10 million rows with at
 <BR><BR>
 **Grouping With {stringdist}**
 
-Can those 10,000 possibilities mentioned earlier be grouped into a superset representing only a tenth or a fifth of its original size? What is close to impossible to do by hand is trivial with <a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>string distance</a>:
+Could those 10,000 possibilities mentioned earlier be grouped into a superset representing only a tenth or a fifth of its original size? What is close to impossible to do by hand is trivial with <a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>string distance</a>:
 
-<blockquote>...is a metric that measures distance ("inverse similarity") between two text strings for approximate string matching or comparison and in fuzzy string searching. (Source: <a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>Wikipedia</a>)
+<blockquote>...a metric that measures distance ("inverse similarity") between two text strings for approximate string matching or comparison and in fuzzy string searching. (Source: <a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>Wikipedia</a>)
 </blockquote> 
 
 The <a href='http://cran.r-project.org/web/packages/stringdist/index.html' target='_blank'>{strndist}</a> package offers 'Apporximate string matching and string distance functions'. It offers many algorithms but the two I found the most interesting for short sets of words are:
 
-<blockquote>...the **Jaro–Winkler distance** (Winkler, 1990) is a measure of similarity between two strings. The higher the Jaro–Winkler distance for two strings is, the more similar the strings are. The Jaro–Winkler distance metric is designed and best suited for short strings such as person names. The score is normalized such that 0 equates to no similarity and 1 is an exact match. (Source: <a href='http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance' targer='_blank'>Wikipedia</a>)</blockquote> 
+<blockquote>...the <b>Jaro–Winkler distance</b> (Winkler, 1990) is a measure of similarity between two strings. The higher the Jaro–Winkler distance for two strings is, the more similar the strings are. The Jaro–Winkler distance metric is designed and best suited for short strings such as person names. The score is normalized such that 0 equates to no similarity and 1 is an exact match. (Source: <a href='http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance' targer='_blank'>Wikipedia</a>)</blockquote> 
 
 and
 
-<blockquote>...the **Levenshtein distance** between two words is the minimum number of single-character edits (i.e. insertions, deletions or substitutions) required to change one word into the other. (Source: <a href='http://en.wikipedia.org/wiki/Levenshtein_distance' targer='_blank'>Wikipedia</a>) </blockquote> 
+<blockquote>...the <b>Levenshtein distance</b> between two words is the minimum number of single-character edits (i.e. insertions, deletions or substitutions) required to change one word into the other. (Source: <a href='http://en.wikipedia.org/wiki/Levenshtein_distance' targer='_blank'>Wikipedia</a>) </blockquote> 
 <BR><BR>
 **Let's Code!**
 
