@@ -49,7 +49,7 @@ The <a href='http://cran.r-project.org/web/packages/stringdist/index.html' targe
 
 and
 
-<q>...the **Levenshtein distance** between two words is the minimum number of single-character edits (i.e. insertions, deletions or substitutions) required to change one word into the other. (Source: <a href='http://en.wikipedia.org/wiki/Levenshtein_distance' targer='_blank'>wikipedia</a>) </q> 
+<blockquote>...the **Levenshtein distance** between two words is the minimum number of single-character edits (i.e. insertions, deletions or substitutions) required to change one word into the other. (Source: <a href='http://en.wikipedia.org/wiki/Levenshtein_distance' targer='_blank'>wikipedia</a>) </blockquote> 
 <BR><BR>
 **Let's Code!**
 
