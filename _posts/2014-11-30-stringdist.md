@@ -7,7 +7,7 @@ year: 2014
 month: 11
 day: 30
 published: true
-summary: "<b>{stringdist}</b> can help make sense of large, text factor variables by clustering them into supersets. It allows preserving some of the contents substance without having to revert to full on natural language processing."
+summary: "<b>{stringdist}</b> can help make sense of large, text-based factor variables by clustering them into supersets. This approach preserves of some of the contents substance without having to revert to full-on natural language processing."
 image: stringdist/unnamed-chunk-6.png
 ---
 
@@ -25,31 +25,31 @@ image: stringdist/unnamed-chunk-6.png
 </ul>
 
 <BR><BR>
-If you're wondering whether you're getting the most out of a **text-based, factor variable** from a large data set, then you're not alone. There are so many ways of desconstructing text variables. If every entry is made up of text repeated from a small set of values, then <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>dummifying</a> it is the easiest way to proceed, on the other hand, if every entry is unique, then resorting to <a href='http://en.wikipedia.org/wiki/Natural_language_processing' target='_blank'>Natural Language Processing (NLP)</a> may be required. This article tackles that gray area in between, where the data is neither unique nor small, where dummifying won't work but NLP may be avoided.
+If you're wondering whether you're getting the most out of a **text-based, factor variable** from a large data set, then you're not alone. There are so many ways of deconstructing text variables. If every entry is made up of text repeated from a small set of values, then <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>dummifying</a> it is the easiest way to proceed, on the other hand, if every entry is unique, then resorting to <a href='http://en.wikipedia.org/wiki/Natural_language_processing' target='_blank'>Natural Language Processing (NLP)</a> may be required. This article tackles that gray area in between, where the data is neither unique nor small, where dummifying won't work but NLP may be avoided.
 
-So that we are on the same page, imagine a data set with 10 million rows with at least one feature/column being a text-based factor. It isn't made up of free-text where every entry is unique, instead, its made up of repeated text: for example 10,000 possibilites repeated over 10 million rows. This would be hard to dummify as it will blow up your feature space and impossible to group by hand as it would take forever.
+So that we are on the same page, imagine a data set with 10 million rows with at least one feature/column being a text-based factor. It isn't made up of free-text where every entry is unique, instead, its made up of repeated text: for example 10,000 possibilities repeated over 10 million rows. This would be hard to dummify as it will blow up your feature space and impossible to group by hand as it would take forever.
 <BR><BR>
 **What Is One To Do?**
 <ul>
-<li>We could encode them as integers or binaries and hope for the best (as it is not ordinal in nature, linear models will suffer but classifaction models may be OK).</li>
+<li>We could encode them as integers or binaries and hope for the best (as it is not ordinal in nature, linear models will suffer but classification models may be OK).</li>
 <li>We could take the top X most popular ones and overwrite the rest as 'other' and dummify the resulting set (I have used that method many times and will write up a post on the subject).</li>
 <li>But a more interesting approach, and the subject of this walkthrough, that affords much less loss of information, is grouping them into supersets.</li>
 </ul>
 <BR><BR>
 **Grouping With {stringdist}**
 
-Can those 10,000 possibilites mentioned earlier be grouped into a superset representing only a tenth or a fifth of its original size? What is close to impossible to do by hand is trivial with <a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>string distance</a>:
+Can those 10,000 possibilities mentioned earlier be grouped into a superset representing only a tenth or a fifth of its original size? What is close to impossible to do by hand is trivial with <a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>string distance</a>:
 
-<blockquote>...is a metric that measures distance ("inverse similarity") between two text strings for approximate string matching or comparison and in fuzzy string searching. (Source: <a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>wikipedia</a>)
+<blockquote>...is a metric that measures distance ("inverse similarity") between two text strings for approximate string matching or comparison and in fuzzy string searching. (Source: <a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>Wikipedia</a>)
 </blockquote> 
 
-The <a href='http://cran.r-project.org/web/packages/stringdist/index.html' target='_blank'>{strndist}</a> package offers 'Apporximate string mathching and string distance fucntions'. It offers many algorightms but the two I found the most interesting for short sets of words are:
+The <a href='http://cran.r-project.org/web/packages/stringdist/index.html' target='_blank'>{strndist}</a> package offers 'Apporximate string matching and string distance functions'. It offers many algorithms but the two I found the most interesting for short sets of words are:
 
-<blockquote>...the **Jaro–Winkler distance** (Winkler, 1990) is a measure of similarity between two strings. The higher the Jaro–Winkler distance for two strings is, the more similar the strings are. The Jaro–Winkler distance metric is designed and best suited for short strings such as person names. The score is normalized such that 0 equates to no similarity and 1 is an exact match. (Source: <a href='http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance' targer='_blank'>wikipedia</a>)</blockquote> 
+<blockquote>...the **Jaro–Winkler distance** (Winkler, 1990) is a measure of similarity between two strings. The higher the Jaro–Winkler distance for two strings is, the more similar the strings are. The Jaro–Winkler distance metric is designed and best suited for short strings such as person names. The score is normalized such that 0 equates to no similarity and 1 is an exact match. (Source: <a href='http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance' targer='_blank'>Wikipedia</a>)</blockquote> 
 
 and
 
-<blockquote>...the **Levenshtein distance** between two words is the minimum number of single-character edits (i.e. insertions, deletions or substitutions) required to change one word into the other. (Source: <a href='http://en.wikipedia.org/wiki/Levenshtein_distance' targer='_blank'>wikipedia</a>) </blockquote> 
+<blockquote>...the **Levenshtein distance** between two words is the minimum number of single-character edits (i.e. insertions, deletions or substitutions) required to change one word into the other. (Source: <a href='http://en.wikipedia.org/wiki/Levenshtein_distance' targer='_blank'>Wikipedia</a>) </blockquote> 
 <BR><BR>
 **Let's Code!**
 
@@ -245,7 +245,7 @@ head (dfClust[c('cluster','modelname')],50)
 ## 12        5           Legacy Wagon
 ```
 
-Out of the 200 clusters we requested, cluster 73 is the largest containing 11 models. Clearly, it picked up on the word **pickup** flanked by two words on either side with the right one being **2WD** or **4WD**. Cluster 123 looked for **Cab Chassis**, even picking up a **Cab/Chassis** in the process. You get the idea and, hopefully, are impressed how a few lines of code reduced 2000 observations into 200 groups. The exact same process would apply to 20,000 observatiosn or 20 million...
+Out of the 200 clusters we requested, cluster 73 is the largest containing 11 models. Clearly, it picked up on the word **pickup** flanked by two words on either side with the right one being **2WD** or **4WD**. Cluster 123 looked for **Cab Chassis**, even picking up a **Cab/Chassis** in the process. You get the idea and, hopefully, are impressed how a few lines of code reduced 2000 observations into 200 groups. The exact same process would apply to 20,000 observations or 20 million...
 <BR><BR>
 **Creating New Variables Through Combining Features**
 
