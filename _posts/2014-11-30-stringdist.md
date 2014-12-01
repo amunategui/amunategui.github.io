@@ -136,7 +136,7 @@ rect.hclust(hc,k=20)
 
 ![plot of chunk unnamed-chunk-6](../img/posts/stringdist/unnamed-chunk-6.png) 
 <BR><BR>
-It created a **Wagon** and **Taurus** group along with some number groups. So far it isn't extremely impressive as its only using a small subset of data - wait till we open things up!
+``stringdistmatrix`` works in tandem with ``hclust``, one creates the model, the other enforces the clusters. So, our algorithm created a **Wagon** and **Taurus** group along with some number groups. So far it isn't extremely impressive as its only using a small subset of data - wait till we open things up!
 <BR><BR>
 Next, lets look at a bigger subset of the **vehicles**. Let's pull the first 2000 observations:
 
