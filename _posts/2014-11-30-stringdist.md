@@ -8,7 +8,7 @@ month: 11
 day: 30
 published: true
 summary: "{stringdist} can help make sense of large factor variables by grouping them into clusters."
-image: smote/title.png
+image: stringdist/unnamed-chunk-6.png
 ---
 
 **Resources**
