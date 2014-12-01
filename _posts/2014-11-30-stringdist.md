@@ -74,7 +74,7 @@ nrow(vehicles)
 ```
 
 ```
-## [1] 34631
+[1] 34631
 ```
 
 ```r
@@ -82,24 +82,24 @@ length(unique(vehicles$model))
 ```
 
 ```
-## [1] 3234
+[1] 3234
 ```
 <BR><BR>
-So, we have a data set of over 30,000 vehicles, but ``model`` is comprised of only 3,000 unique model names but is repeated through out all those observations/rows. Let's look at the first 100 rows so we don't get overwhelmed with all the data:
+So, we have a data set of over <b>34,631</b> vehicles, but ``model`` is comprised of only <b>3,234</b> unique model names repeated through out all the observations/rows. Let's look at the first <b>100</b> rows so we don't get overwhelmed with too much the data:
 
 
 ```r
 vehicles_small <- vehicles[1:100,]
 ```
 <BR><BR>
-So, out of those 100 observations, ``model`` has only **45** unique model names and here is a small sample of what it holds:
+Out of those <b>100</b> observations, ``model`` has only <b>45</b> unique model names and here is a small sample of what it holds:
 
 ```r
 length(unique(vehicles_small$model))
 ```
 
 ```
-## [1] 45
+[1] 45
 ```
 
 ```r
@@ -107,11 +107,11 @@ head(unique(as.character(vehicles_small$model)))
 ```
 
 ```
-## [1] "Spider Veloce 2000"  "Testarossa"          "Charger"            
-## [4] "B150/B250 Wagon 2WD" "Legacy AWD Turbo"    "Loyale"
+[1] "Spider Veloce 2000"  "Testarossa"          "Charger"            
+[4] "B150/B250 Wagon 2WD" "Legacy AWD Turbo"    "Loyale"
 ```
-
-Let's run some basic string distance on this subset by calling the ``stringdistmatrix`` function to see how it classifies these into supersets. In its simplest form, the function ``stringdistmatrix`` only requires a unique set of text values and the method to cluster the data:
+<BR><BR>
+Let's run some basic string distance on this subset by calling the ``stringdistmatrix`` function to see how it can help us tame the ``model`` variable into smaller supersets. In its simplest form, the function ``stringdistmatrix`` only requires a unique set of text values and the method to cluster the data:
 
 
 ```r
@@ -121,7 +121,7 @@ stringdistmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
         useNames = FALSE, ncores = 1, cluster = NULL)
 ```
 <BR><BR>
-We'll pass it the unique list of ``models``, request the **Jaro–Winkler distance** algorithm, cluster the results into 20 groups with the ``hclust`` function and plot the resulting <a href='http://en.wikipedia.org/wiki/Dendrogram' target='_blank'>dendrogram</a>:
+We'll pass it the unique list of ``models``, request the **Jaro–Winkler distance** algorithm (my favorite for this task), cluster the results into <b>20</b> groups with the ``hclust`` function and plot the resulting <a href='http://en.wikipedia.org/wiki/Dendrogram' target='_blank'>dendrogram</a>:
 
 
 ```r
