@@ -7,7 +7,7 @@ year: 2014
 month: 11
 day: 30
 published: true
-summary: "{stringdist} can help make sense of large factor variables by grouping them into clusters."
+summary: "{stringdist} can help make sense of large factor variables by clustering them into supersets."
 image: stringdist/unnamed-chunk-6.png
 ---
 
