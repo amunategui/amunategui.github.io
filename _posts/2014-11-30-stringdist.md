@@ -178,7 +178,7 @@ print(paste('Average number of models per cluster:', mean(table(dfClust$cluster)
 ## [1] "Average number of models per cluster: 2.405"
 ```
 <BR><BR>
-The largest cluster contains over <b>10</b> models but the average is <b>2.4<b> models per cluster. Now, lets look at the top groups and see what the algorithm did (don't sweat this code, it simply orders the data by cluster size):
+The largest cluster contains over <b>10</b> models but the average is <b>2.4</b> models per cluster. Now, lets look at the top groups and see what the algorithm did (don't sweat this code, it simply orders the data by cluster size):
 
 ```r
 t <- table(dfClust$cluster)
@@ -244,7 +244,7 @@ head (dfClust[c('cluster','modelname')],50)
 ## 13        5       Legacy AWD Turbo
 ## 12        5           Legacy Wagon
 ```
-
+<BR><BR>
 Out of the <b>200</b> clusters we requested, cluster 73 is the largest holding <b>11</b> models. Clearly, it picked up on the word **pickup** flanked by two words on either side with the right one being **2WD** or **4WD**. Cluster 123 looked for **Cab Chassis**, even picking up a **Cab/Chassis** in the process. You get the idea and, hopefully, are impressed with how a few lines of code reduced <b>2000</b> observations into <b>200</b> groups. The exact same process would apply to <b>20,000</b> observations or <b>20</b> million...
 <BR><BR>
 **Creating New Variables Through Combining Multiple Features**
