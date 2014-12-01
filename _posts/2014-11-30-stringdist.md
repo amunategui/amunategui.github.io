@@ -40,11 +40,11 @@ So that we are on the same page, imagine a data set with 10 million rows with at
 
 Can those 10,000 possibilites mentioned earlier be grouped into a superset representing only a tenth or a fifth of its original size? What is close to impossible to do by hand is trivial with <a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>string distance</a>:
 
-<q>...is a metric that measures distance ("inverse similarity") between two text strings for approximate string matching or comparison and in fuzzy string searching.</q> (<a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>wikipedia</a>)
+<blockquote>...is a metric that measures distance ("inverse similarity") between two text strings for approximate string matching or comparison and in fuzzy string searching.</blockquote> (<a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>wikipedia</a>)
 
 The <a href='http://cran.r-project.org/web/packages/stringdist/index.html' target='_blank'>{strndist}</a> package offers 'Apporximate string mathching and string distance fucntions'. It offers many algorightms but the two I found the most interesting for short sets of words are:
 
-<q>...the **Jaro–Winkler distance** (Winkler, 1990) is a measure of similarity between two strings. The higher the Jaro–Winkler distance for two strings is, the more similar the strings are. The Jaro–Winkler distance metric is designed and best suited for short strings such as person names. The score is normalized such that 0 equates to no similarity and 1 is an exact match.</q> (source: <a href='http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance' targer='_blank'>wikipedia</a>)
+<blockquote>...the **Jaro–Winkler distance** (Winkler, 1990) is a measure of similarity between two strings. The higher the Jaro–Winkler distance for two strings is, the more similar the strings are. The Jaro–Winkler distance metric is designed and best suited for short strings such as person names. The score is normalized such that 0 equates to no similarity and 1 is an exact match.</blockquote> (source: <a href='http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance' targer='_blank'>wikipedia</a>)
 
 and
 
