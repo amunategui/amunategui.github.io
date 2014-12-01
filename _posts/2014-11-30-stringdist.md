@@ -136,9 +136,9 @@ rect.hclust(hc,k=20)
 
 ![plot of chunk unnamed-chunk-6](../img/posts/stringdist/unnamed-chunk-6.png) 
 <BR><BR>
-``stringdistmatrix`` works in tandem with ``hclust``, one creates the model, the other enforces the clusters. So, our algorithm created a **Wagon** and **Taurus** group along with some number groups. So far it isn't extremely impressive as its only using a small subset of data - wait till we open things up!
+``stringdistmatrix`` works in tandem with ``hclust``, one creates the model, the other enforces the clusters. Our algorithm created a **Wagon** and **Taurus** group along with some number groups. So far it isn't extremely impressive as its only using a small subset of data - wait till we open things up!
 <BR><BR>
-Next, lets look at a bigger subset of the **vehicles**. Let's pull the first 2000 observations:
+We now look at a bigger subset of the **vehicles** data set. Let's pull the first 2000 observations:
 
 
 ```r
@@ -147,7 +147,7 @@ length(unique(vehicles_small$model))
 ```
 
 ```
-## [1] 481
+[1] 481
 ```
 <BR><BR>
 Out of those 2000 observations, we have 481 unique model names. Let's ask ``stringdistmatrix`` to group those into 200 groups: 
@@ -162,7 +162,7 @@ dfClust <- data.frame(uniquemodels, cutree(hc, k=200))
 names(dfClust) <- c('modelname','cluster')
 ```
 <BR><BR>
-Let's visualize the quantities of models for each group created by the **Jaro–Winkler distance** algorithm:
+Let's visualize the quantities of models in each group created by the **Jaro–Winkler distance** algorithm:
 
 ```r
 plot(table(dfClust$cluster))
@@ -178,7 +178,7 @@ print(paste('Average number of models per cluster:', mean(table(dfClust$cluster)
 ## [1] "Average number of models per cluster: 2.405"
 ```
 <BR><BR>
-The largest cluster contains over 10 models but the average is 2.4 models per cluster. Now, lets look at the top groups and see what the algorithm did (don't sweat this code, it simply orders the data by cluster size):
+The largest cluster contains over <b>10</b> models but the average is <b>2.4<b> models per cluster. Now, lets look at the top groups and see what the algorithm did (don't sweat this code, it simply orders the data by cluster size):
 
 ```r
 t <- table(dfClust$cluster)
@@ -245,9 +245,9 @@ head (dfClust[c('cluster','modelname')],50)
 ## 12        5           Legacy Wagon
 ```
 
-Out of the 200 clusters we requested, cluster 73 is the largest containing 11 models. Clearly, it picked up on the word **pickup** flanked by two words on either side with the right one being **2WD** or **4WD**. Cluster 123 looked for **Cab Chassis**, even picking up a **Cab/Chassis** in the process. You get the idea and, hopefully, are impressed how a few lines of code reduced 2000 observations into 200 groups. The exact same process would apply to 20,000 observations or 20 million...
+Out of the <b>200</b> clusters we requested, cluster 73 is the largest holding <b>11</b> models. Clearly, it picked up on the word **pickup** flanked by two words on either side with the right one being **2WD** or **4WD**. Cluster 123 looked for **Cab Chassis**, even picking up a **Cab/Chassis** in the process. You get the idea and, hopefully, are impressed with how a few lines of code reduced <b>2000</b> observations into <b>200</b> groups. The exact same process would apply to <b>20,000</b> observations or <b>20</b> million...
 <BR><BR>
-**Creating New Variables Through Combining Features**
+**Creating New Variables Through Combining Multiple Features**
 
 An offshoot of this process is to create new groups by combining existing features and running the results through ``stringdistmatrix``. Let's try combining ``model`` with ``trany``: 
 
@@ -261,7 +261,7 @@ print(length(unique(vehicles_small$modelAndTrany)))
 ## [1] 808
 ```
 <BR><BR>
-Our new field has 808 unique values out of our 2000 ``small_vehicles`` data frame. Let's run it through the **Jaro–Winkler distance** algorithm, request 500 clusters and look at the top groups:
+Our new field has <b>808</b> unique values out of our <b>2000</b> ``small_vehicles`` data frame. Let's run it through the **Jaro–Winkler distance** algorithm, request <b>500</b> clusters and check out the top groups:
 
 
 ```r
