@@ -140,7 +140,7 @@ plot(hc)
 rect.hclust(hc,k=20)
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-6](../img/posts/stringdist/unnamed-chunk-6.png) 
 <BR><BR>
 It created a **Wagon** and **Taurus** group along with some number groups. So far it isn't extremely impressive as its only using a small subset of data - wait till we open things up!
 <BR><BR>
@@ -174,7 +174,7 @@ Let's visualize the quantities of models for each group created by the **Jaro–
 plot(table(dfClust$cluster))
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+![plot of chunk unnamed-chunk-9](../img/posts/stringdist/unnamed-chunk-9.png) 
 
 ```r
 print(paste('Average number of models per cluster:', mean(table(dfClust$cluster))))
