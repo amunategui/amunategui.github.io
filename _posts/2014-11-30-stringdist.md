@@ -28,14 +28,14 @@ image: stringdist/unnamed-chunk-6.png
 If you're wondering whether you're getting the most out of a **text-based, factor variable** from a large data set, then you're not alone. There are so many ways of desconstructing text variables. If every entry is made up of text repeated from a small set of values, then <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>dummifying</a> it is the easiest way to proceed, on the other hand, if every entry is unique, then resorting to <a href='http://en.wikipedia.org/wiki/Natural_language_processing' target='_blank'>Natural Language Processing (NLP)</a> may be required. This article tackles that gray area in between, where the data is neither unique nor small, where dummifying won't work but NLP may be avoided.
 
 So that we are on the same page, imagine a data set with 10 million rows with at least one feature/column being a text-based factor. It isn't made up of free-text where every entry is unique, instead, its made up of repeated text: for example 10,000 possibilites repeated over 10 million rows. This would be hard to dummify as it will blow up your feature space and impossible to group by hand as it would take forever.
-
+<BR><BR>
 **What Is One To Do?**
 <ul>
 <li>We could encode them as integers or binaries and hope for the best (as it is not ordinal in nature, linear models will suffer but classifaction models may be OK).</li>
 <li>We could take the top X most popular ones and overwrite the rest as 'other' and dummify the resulting set (I have used that method many times and will write up a post on the subject).</li>
 <li>But a more interesting approach, and the subject of this walkthrough, that affords much less loss of information, is grouping them into supersets.</li>
 </ul>
-
+<BR><BR>
 **Grouping With {stringdist}**
 
 Can those 10,000 possibilites mentioned earlier be grouped into a superset representing only a tenth or a fifth of its original size? What is close to impossible to do by hand is trivial with <a href='http://en.wikipedia.org/wiki/String_metric' target='_blank'>string distance</a>:
@@ -49,7 +49,7 @@ The <a href='http://cran.r-project.org/web/packages/stringdist/index.html' targe
 and
 
 <q>...the **Levenshtein distance** between two words is the minimum number of single-character edits (i.e. insertions, deletions or substitutions) required to change one word into the other.</q> (source: <a href='http://en.wikipedia.org/wiki/Levenshtein_distance' targer='_blank'>wikipedia</a>) 
-
+<BR><BR>
 **Let's Code!**
 
 Enough chitchat, let's download the vehicles data set from <a href='https://github.com/hadley' target='_blank'>Hadley Wickham hosted on Github</a>. It is a big and diverse data set, perfect for our needs:
@@ -252,7 +252,7 @@ head (dfClust[c('cluster','modelname')],50)
 ```
 
 Out of the 200 clusters we requested, cluster 73 is the largest containing 11 models. Clearly, it picked up on the word **pickup** flanked by two words on either side with the right one being **2WD** or **4WD**. Cluster 123 looked for **Cab Chassis**, even picking up a **Cab/Chassis** in the process. You get the idea and, hopefully, are impressed how a few lines of code reduced 2000 observations into 200 groups. The exact same process would apply to 20,000 observatiosn or 20 million...
-
+<BR><BR>
 **Creating New Variables Through Combining Features**
 
 An offshoot of this process is to create new groups by combining existing features and running the results through ``stringdistmatrix``. Let's try combining ``model`` with ``trany``: 
@@ -340,7 +340,7 @@ head (dfClust[c('cluster','modelname')],50)
 ## 46       18               840ci Automatic 5-spd
 ## 45       18               740il Automatic 5-spd
 ```
-
+<BR><BR>
 **Conclusion**
 
 ``stringdistmatrix`` is a very flexible function with many tunable features. The cluster size, the algorithm, the concatenation of text with text and/or numbers create numerous and mind-boggling possibilities. Even with all these settings it is still so much easier than creating supersets by hand! Have fun with this...
