@@ -341,11 +341,9 @@ head (dfClust[c('cluster','modelname')],50)
 ## 45       18               740il Automatic 5-spd
 ```
 
-conclusion
-This is a tuning-intensive funciton
+**Conclusion**
 
-**Levenshtein distance**
-
+``stringdistmatrix`` is a very flexible function with many tunable features. The cluster size, the algorithm, the concatenation of text with text and/or numbers create numerous and mind-boggling possibilities. Even with all these settings it is still so much easier than creating supersets by hand! Have fun with this...
 
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/' target='_blank'>also on GitHub</a>)</a>:
