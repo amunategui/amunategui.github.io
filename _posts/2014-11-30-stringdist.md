@@ -7,7 +7,7 @@ year: 2014
 month: 11
 day: 30
 published: true
-summary: "<b>{stringdist}</b> can help make sense of large, text-based factor variables by clustering them into supersets. This approach preserves some of the contents substance without having to revert to full-on, natural language processing."
+summary: "<b>{stringdist}</b> can help make sense of large, text-based factor variables by clustering them into supersets. This approach preserves some of the content's substance without having to resort to full-on, natural language processing."
 image: stringdist/unnamed-chunk-6.png
 ---
 
