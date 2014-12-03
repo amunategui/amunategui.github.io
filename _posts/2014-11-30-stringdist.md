@@ -121,7 +121,7 @@ stringdistmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
         useNames = FALSE, ncores = 1, cluster = NULL)
 ```
 <BR><BR>
-We'll pass it the unique list of ``models``, request the **Jaro–Winkler distance** algorithm (my favorite for this task), cluster the results into <b>20</b> groups with the ``hclust`` function and plot the resulting <a href='http://en.wikipedia.org/wiki/Dendrogram' target='_blank'>dendrogram</a>:
+We'll pass it the unique list of ``models``, request the **Jaro–Winkler distance** algorithm (my favorite for this task), cluster the results into <b>20</b> groups with the <a href='https://stat.ethz.ch/R-manual/R-patched/library/stats/html/hclust.html' target='_blank'>hclust</a> function and plot the resulting <a href='http://en.wikipedia.org/wiki/Dendrogram' target='_blank'>dendrogram</a>:
 
 
 ```r
