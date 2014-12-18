@@ -60,11 +60,11 @@ OK, let's pull some data and analyze it in <b>R</b>. Query ``wine`` as the first
 ![plot of chunk beerandwine](../img/posts/google-trends-walkthrough/beerandwine.png) 
 <BR><BR>
 
-Download the <b>csv</b> file from the dropdown located in the upper right corner.
+Download the <b>csv</b> file from the dropdown located in the upper right corner:
 <BR>
 ![plot of chunk download](../img/posts/google-trends-walkthrough/download.png) 
 <BR><BR>
-
+Now, let's access the file through <b>R</b>:
 ```r
 filename <- "beervswine.csv"
 ```
