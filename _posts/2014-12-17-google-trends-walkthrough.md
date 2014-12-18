@@ -195,7 +195,7 @@ boxplot(wine_clean~year, data=newData, notch=TRUE,
 <BR>
 ![plot of chunk boxplotnooutlier](../img/posts/google-trends-walkthrough/boxplotnooutlier.png) 
 <BR><BR>
-Clearly, the term ``beer`` is trending upwards while ``wine`` is more erratic and range bound. <a href='http://cran.r-project.org/web/packages/ggplot2/index.html' target='_blank'>GGplot</a> has great plotting functions to smooth out noise and amplify trends for better understanding:
+Clearly, the term ``beer`` is trending upwards while ``wine`` is more erratic and range bound. <a href='http://cran.r-project.org/web/packages/ggplot2/index.html' target='_blank'>{ggplot2}</a> has great plotting functions to smooth out noise and amplify trends for better understanding:
 
 
 ```r
