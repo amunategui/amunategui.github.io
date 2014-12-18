@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Using R To Analyze Google Trends Data" 
+title: "Downloading Data from Google Trends And Analyzing It With R" 
 category: Machine Learning
 tags: exploring visualizing
 year: 2014
