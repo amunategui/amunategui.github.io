@@ -32,7 +32,7 @@ In this walkthrough, I introduce the tool by accessing it directly through a web
 
 Let’s start by entering the term ``cycling`` and limiting our scope to the United States. There seems to be a decline in usage of that term between 2005 to 2014 as the oscillations are constant but the overall trend is dropping. 
 <BR><BR>
-![plot of chunk unnamed-chunk-6](../img/posts/google-trends-walkthrough/cycling.png) 
+![plot of chunk cycling](../img/posts/google-trends-walkthrough/cycling.png) 
 <BR><BR>
 
 The highest peak is July 2014 and represents the 100% maximum search for the term. Everything else is scaled from that peak, and that is how Google Trends displays a single search term over time (i.e. nothing will be over 100 in the graph). The term also peaks with clockwork regularity every summer. This decline can mean that people's interest in cycling is declining, that the term cycling in the english language is replaced by another more popular term, or that cyclists aren’t using Google like they used to (insert your theory here as they are all but guesses). 
@@ -40,7 +40,7 @@ The highest peak is July 2014 and represents the 100% maximum search for the ter
 Let’s make things more interesting and add a second search term to our graph. Let’s add the term ``snowboarding``.
 
 <BR>
-![plot of chunk unnamed-chunk-6](../img/posts/google-trends-walkthrough/cyclingandsnowboarding.png) 
+![plot of chunk cyclingandsnowboarding](../img/posts/google-trends-walkthrough/cyclingandsnowboarding.png) 
 <BR><BR>
 
 This creates a mirror image of ``cycling``, where the peaks of one term are the troughs of the other. ``Snowboarding`` peaks every December, and, unlike cycling, the term seems to have been used constantly over the past 10 years in the US.
@@ -48,7 +48,7 @@ This creates a mirror image of ``cycling``, where the peaks of one term are the 
 We’ve seen two interesting pieces of data using Google Trends: the term's popularity and its seasonal effect. There is plenty more to explore and compare as trends can be narrowed by time, region and city. Here we see both terms applied to ``Australia``. Clearly, ``cycling`` is more popular than ``snowboarding``...
 
 <BR>
-![plot of chunk unnamed-chunk-6](../img/posts/google-trends-walkthrough/cyclingandsnowboardingaustralia.png) 
+![plot of chunk cyclingandsnowboardingaustralia](../img/posts/google-trends-walkthrough/cyclingandsnowboardingaustralia.png) 
 <BR><BR>
 **Let's Code!**
 
