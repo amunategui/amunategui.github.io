@@ -119,7 +119,7 @@ lines(newData$StartDate, newData$wine, type='l', col='Red')
 <BR>
 ![plot of chunk firstplot](../img/posts/google-trends-walkthrough/firstplot.png) 
 <BR><BR>
-At first glance, it seems ``beer`` is trending upwards. Let's plot it by year in a ``boxplot`` to better view the differences:
+At first glance ``beer`` seems to be trending upwards. Let's plot it by year in a ``boxplot`` to better view the differences:
 
 
 ```r
@@ -134,7 +134,8 @@ boxplot(wine~year, data=newData, notch=TRUE,
         main="Yearly wine trend")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+<BR>
+![plot of chunk firstplot](../img/posts/google-trends-walkthrough/boxplotraw.png) 
 <BR><BR>
 <b>Outliers</b> seem to be plaguing ``wine``. These seem to account for the December spikes. Let's remove them and try again:
 
@@ -162,7 +163,8 @@ boxplot(wine_clean~year, data=newData, notch=TRUE,
         main="Yearly wine trend")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
+<BR>
+![plot of chunk boxplotnooutlier](../img/posts/google-trends-walkthrough/boxplotnooutlier.png) 
 <BR><BR>
 Clearly, the term ``beer`` is trending upwards while ``wine`` has been strong but trending flattly over the years. ``GGplot`` is a great plotting mechanism to smooth out the noise and simplify the trend for better udnerstanding:
 
