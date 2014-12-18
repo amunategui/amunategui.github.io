@@ -124,7 +124,7 @@ newData$year <- sapply(strsplit(as.character(newData$StartDate), "-"), `[`, 1)
 newData<- newData[c("StartDate", "EndDate", "beer", "wine", "year")]
 ```
 <br><br>
-Google Trends returns date ranges for each observations (rows), so we need to separate those into a ``StartDate`` and ``EndDate`` column. I pull a ``year`` column from the start date for the <a href='http://stat.ethz.ch/R-manual/R-patched/library/graphics/html/boxplot.html' target='_blank'>boxplots</a>.
+Google Trends returns date ranges for each observations (rows), so we need to separate those into a ``StartDate`` and ``EndDate`` column. I also create a ``year`` column from the start date for use in <a href='http://stat.ethz.ch/R-manual/R-patched/library/graphics/html/boxplot.html' target='_blank'>boxplots</a>.
 
 ```
 > head(newData)
