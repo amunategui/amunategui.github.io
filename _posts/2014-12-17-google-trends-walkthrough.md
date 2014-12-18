@@ -39,14 +39,16 @@ The highest peak is July 2014 and represents the 100% maximum search for the ter
 
 Let’s make things more interesting and add a second search term to our graph. Let’s add the term ``snowboarding``.
 
-<BR><BR>
+<BR>
 ![plot of chunk unnamed-chunk-6](../img/posts/google-trends-walkthrough/cyclingandsnowboarding.png) 
 <BR><BR>
 
-This creates a mirror image of ``cycling``, where the peaks of one term are the troughs of the other. ``Snowboarding`` peaks every December, and, unlike cycling, the term seems to be used constantly over the past 10 years in the US.
+This creates a mirror image of ``cycling``, where the peaks of one term are the troughs of the other. ``Snowboarding`` peaks every December, and, unlike cycling, the term seems to have been used constantly over the past 10 years in the US.
 
-We’ve seen two interesting pieces of data using Google Trends: the term's popularity and its seasonal effect. There is plenty more to explore and compare as trends can be narrowed by time and region.
+We’ve seen two interesting pieces of data using Google Trends: the term's popularity and its seasonal effect. There is plenty more to explore and compare as trends can be narrowed by time, region and city. Here we see both terms applied to ``Australia``. Clearly, ``cycling`` is more popular than ``snowboarding``...
 
+<BR>
+![plot of chunk unnamed-chunk-6](../img/posts/google-trends-walkthrough/cyclingandsnowboardingaustralia.png) 
 <BR><BR>
 **Let's Code!**
 
