@@ -119,7 +119,7 @@ lines(newData$StartDate, newData$wine, type='l', col='Red')
 <BR>
 ![plot of chunk firstplot](../img/posts/google-trends-walkthrough/firstplot.png) 
 <BR><BR>
-At first glance, it seems ``beer`` is trending upwards. Let's plot it by year in a ``boxplot`` to better view the difference:
+At first glance, it seems ``beer`` is trending upwards. Let's plot it by year in a ``boxplot`` to better view the differences:
 
 
 ```r
