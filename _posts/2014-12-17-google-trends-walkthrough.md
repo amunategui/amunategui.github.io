@@ -90,7 +90,7 @@ while (length(oneLine <- readLines(con, n = 1, warn = FALSE)) > 0) {
 }
 close(con)
 ```
-<br><br>
+<br>
 There are a few caveats worth talking about when working with <b>Google Trends</b> data. It can come in three time flavors: monthly, weekly, and daily. To get daily data, you need to query less than 3 months timespan. For longer term trends, you will usually get weekly data unless it is low popularity, and then you will get montly data. One more point, if you query multiple terms and some are don't return enough data, the csv will automatically exclude them.
 
 ```
@@ -103,10 +103,10 @@ There are a few caveats worth talking about when working with <b>Google Trends</
 5 2004-02-01 - 2004-02-07 29 47
 6 2004-02-08 - 2004-02-14 30 53
 ```
-
+<br>
 In order to avoid the uncertainties of the final exported format, it is best to not hard code anything. To circumvent all this, we read the data line by line and store it all in one long string ``stringdata`` and add a line feed at the end of each line. We then use the ``read.table`` with ``textConnection`` to parse the ``stringdata`` into a flat file and append the dynamic column names pulled from line 5 of the csv. This allows us to get the correct header names whether Google returns 1 or 10 features/columns - this should avoid surprises especially when working with many downloads.
 
-
+<br>
 ```r
 newData <- read.table(textConnection(stringdata), sep=",", header=FALSE, stringsAsFactors = FALSE)
 names(newData) <- rowheaders
