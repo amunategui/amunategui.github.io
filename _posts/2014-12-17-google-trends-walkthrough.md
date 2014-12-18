@@ -35,7 +35,7 @@ Let’s start by entering the term ``cycling`` and limiting our scope to the Uni
 ![plot of chunk unnamed-chunk-6](../img/posts/google-trends-walkthrough/cycling.png) 
 <BR><BR>
 
-The highest peak is July 2014 and represents the 100% maximum search for the term. Everything else is scaled from that peak, and that is how Google Trends displays a single search term over time (i.e. nothing will be over 100 in the graph). This decline can mean that people's interest in cycling is declining, that the term cycling in the english language is replaced by another more popular term, or that cyclists aren’t using Google like they used to (insert your theory here as they are all but guesses). 
+The highest peak is July 2014 and represents the 100% maximum search for the term. Everything else is scaled from that peak, and that is how Google Trends displays a single search term over time (i.e. nothing will be over 100 in the graph). The term also peaks with clockwork regularity every summer. This decline can mean that people's interest in cycling is declining, that the term cycling in the english language is replaced by another more popular term, or that cyclists aren’t using Google like they used to (insert your theory here as they are all but guesses). 
 
 Let’s make things more interesting and add a second search term to our graph. Let’s add the term ``snowboarding``.
 
@@ -43,9 +43,9 @@ Let’s make things more interesting and add a second search term to our graph. 
 ![plot of chunk unnamed-chunk-6](../img/posts/google-trends-walkthrough/cyclingandsnowboarding.png) 
 <BR><BR>
 
-This creates a mirror image of cycling, where the peaks of one term are the troughs of the other and vice versa. Snowboarding peaks every December, and, unlike cycling, this term seems to be used constantly in the past 10 years in the US as the the overall trend is fairly flat.
+This creates a mirror image of ``cycling``, where the peaks of one term are the troughs of the other. ``Snowboarding`` peaks every December, and, unlike cycling, the term seems to be used constantly over the past 10 years in the US.
 
-We’ve seen two interesting pieces of data using Google Trends: the term's popularity and its seasonal effects. There is plenty more to explore and compare as trends can be narrowed by time and region.
+We’ve seen two interesting pieces of data using Google Trends: the term's popularity and its seasonal effect. There is plenty more to explore and compare as trends can be narrowed by time and region.
 
 <BR><BR>
 **Let's Code!**
