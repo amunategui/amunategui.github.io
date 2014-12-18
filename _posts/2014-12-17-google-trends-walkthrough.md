@@ -193,7 +193,7 @@ boxplot(wine_clean~year, data=newData, notch=TRUE,
 ```
 
 <BR>
-![plot of chunk boxplotraw](../img/posts/google-trends-walkthrough/boxplotraw.png) 
+![plot of chunk boxplotnooutlier](../img/posts/google-trends-walkthrough/boxplotnooutlier.png) 
 <BR><BR>
 Clearly, the term ``beer`` is trending upwards while ``wine`` has been strong but trending flatly over the years. ``GGplot`` is a great plotting mechanism to smooth out the noise and amplify the trend for better understanding:
 
