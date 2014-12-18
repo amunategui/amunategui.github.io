@@ -136,7 +136,7 @@ Google Trends returns date ranges for each observations (rows), so we need to se
 5 2004-02-01 2004-02-07   29   47 2004         47
 6 2004-02-08 2004-02-14   30   53 2004         53
 ```
-
+<Br><BR>
 **Plots**
 
 Here we confirm that the data is correct and should be similar to what we saw earlier on <b>Google Trends</b>.
