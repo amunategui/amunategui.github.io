@@ -213,7 +213,8 @@ ggplot(newData,aes(x=StartDate)) +
 ```
 <BR><BR>
 **Conclusion**
-There is no way of finding an apt conclusion for this tool. Your limits are your imagination and creativity - have fun! For more information on this tool, read this <a href='http://static.googleusercontent.com/media/www.google.com/en/us/googleblogs/pdfs/google_predicting_the_present.pdf' target='_blank'>great article by Hyunyoung Choi and Hal Varian</a>.
+
+There isn't an easy way of concluding this - possibilities are endless. Analyze away! For more information on this tool, read this <a href='http://static.googleusercontent.com/media/www.google.com/en/us/googleblogs/pdfs/google_predicting_the_present.pdf' target='_blank'>great article by Hyunyoung Choi and Hal Varian</a>.
 
 
 <BR>
