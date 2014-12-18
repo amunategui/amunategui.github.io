@@ -65,6 +65,7 @@ Download the <b>csv</b> file from the dropdown located in the upper right corner
 ![plot of chunk download](../img/posts/google-trends-walkthrough/download.png) 
 <BR><BR>
 Now, let's access the file through <b>R</b>:
+
 ```r
 filename <- "beervswine.csv"
 ```
