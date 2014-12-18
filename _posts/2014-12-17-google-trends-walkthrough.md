@@ -8,7 +8,7 @@ month: 12
 day: 17
 published: true
 summary: "In this walkthrough, I introduce the Google Trends by queriying it directly through the web, download a comma-delimited file of the results, and extract and analyze it in R."
-image: stringdist/unnamed-chunk-6.png
+image: google-trends-walkthrough/googletrends.png
 ---
 
 **Resources**
