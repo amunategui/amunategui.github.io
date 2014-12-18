@@ -37,7 +37,7 @@ Let’s start by entering the term ``cycling`` and limiting our scope to the Uni
 ![plot of chunk cycling](../img/posts/google-trends-walkthrough/cycling.png) 
 <BR><BR>
 
-The highest peak is July 2014 and represents the 100% maximum search for the term. Everything else is scaled from that peak, and that is how Google Trends displays a single search term over time (i.e. nothing will be over 100 in the graph). The term also peaks with clockwork regularity every summer. This decline can mean that people's interest in cycling is declining, that the term cycling in the English language is replaced by another more popular term, or that cyclists aren’t using Google like they used to (insert your theory here as they are all but guesses). 
+The highest peak is July 2014 and represents the 100% maximum search for the term. Everything else is scaled from that peak, and that is how Google Trends displays a single search term over time (i.e. nothing will be over 100 in the graph). The term also peaks with clockwork regularity every summer. This decline can mean that people's interest in cycling is declining, that the term cycling in the English language is replaced by another more popular term, or that cyclists aren’t using Google like they used to (your theory is as good as mine). 
 
 Let’s make things more interesting and add a second search term to our graph. Let’s add the term ``snowboarding``.
 
