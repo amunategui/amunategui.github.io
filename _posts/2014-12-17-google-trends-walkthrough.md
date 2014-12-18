@@ -52,7 +52,7 @@ We’ve seen two interesting pieces of data using Google Trends: the term's popu
 <BR><BR>
 **Let's Code!**
 
-OK, let's pull some data and analyze it in <b>R</b>. I'm going to query ``wine`` as the first term and ``beer`` as the second for the US, and finally download the csv file (don't forget to update the working directory with your own details).
+OK, let's pull some data and analyze it in <b>R</b>. I'm going to query ``wine`` as the first term and ``beer`` as the second one, limit it to the US, and finally download the csv file (don't forget to update the working directory with your own details).
 
 <BR>
 ![plot of chunk beerandwine](../img/posts/google-trends-walkthrough/beerandwine.png) 
@@ -116,8 +116,8 @@ Here we confirm that the data is correct and should be similar to what we saw ea
 plot(newData$StartDate, newData$beer, type='l', col='Blue', main="US Wine vs Beer on Google Trends", xlab="year", ylab="beverage")
 lines(newData$StartDate, newData$wine, type='l', col='Red')
 ```
-
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+<BR>
+![plot of chunk firstplot](../img/posts/google-trends-walkthrough/firstplot.png) 
 <BR><BR>
 At first glance, it seems ``beer`` is trending upwards. Let's plot it by year in a ``boxplot`` to better view the difference:
 
