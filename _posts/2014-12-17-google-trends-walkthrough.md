@@ -211,6 +211,10 @@ ggplot(newData,aes(x=StartDate)) +
         ylab("beverage") +
         ggtitle("US Wine Versus Beer on Google Trends")
 ```
+<BR><BR>
+**Conclusion**
+There is no way of finding an apt conclusion for this tool. Your limits are your imagination and creativity - have fun! For more information on this tool, read this <a href='http://static.googleusercontent.com/media/www.google.com/en/us/googleblogs/pdfs/google_predicting_the_present.pdf' target='_blank'>great article by Hyunyoung Choi and Hal Varian</a>.
+
 
 <BR>
 ![plot of chunk ggplot2](../img/posts/google-trends-walkthrough/ggplot2.png) 
