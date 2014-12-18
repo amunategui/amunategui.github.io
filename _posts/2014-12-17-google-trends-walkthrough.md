@@ -166,7 +166,7 @@ boxplot(wine~year, data=newData, notch=TRUE,
 <BR>
 ![plot of chunk boxplotraw](../img/posts/google-trends-walkthrough/boxplotraw.png) 
 <BR><BR>
-<b>Outliers</b> seem to be plaguing ``wine``. This may account for the December spikes. Let's remove them and try plotting again:
+<b>Outliers</b> seem to be plaguing ``wine`` - this may account for the December spikes. Let's remove them and try plotting again:
 
 ```r
 # shamelessly borrowed from aL3xa -
