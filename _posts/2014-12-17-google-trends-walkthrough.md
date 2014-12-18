@@ -13,7 +13,7 @@ image: google-trends-walkthrough/googletrends.png
 
 **Resources**
 <ul>
-<li type="square"><a href="https://www.youtube.com/watch?v=Tq-B95qbVXg&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
 <BR>
@@ -28,18 +28,20 @@ image: google-trends-walkthrough/googletrends.png
 
 <blockquote>Google Trends is a public web facility of Google Inc., based on Google Search, that shows how often a particular search-term is entered relative to the total search-volume across various regions of the world, and in various languages. (Source: <a href='http://en.wikipedia.org/wiki/Google_Trends' target='_blank'>Wikipedia.com</a>)</blockquote>
 
-In this walkthrough, I introduce the tool by accessing it directly through a web browser then how to extract the data to be analyzed with R.
+In this walkthrough, I introduce the tool by accessing it directly through a web browser to extract data and analyze it in R.
 
-Let’s start by entering the term ``cycling`` and limiting our scope to the United States. There seems to be a decline of usage of that search term from 2005 to 2014 as the oscillations are constant but the overall trend is dropping. 
+Let’s start by entering the term ``cycling`` and limiting our scope to the United States. There seems to be a decline in usage of that term between 2005 to 2014 as the oscillations are constant but the overall trend is dropping. 
 <BR><BR>
 ![plot of chunk unnamed-chunk-6](../img/posts/google-trends-walkthrough/cycling.png) 
 <BR><BR>
 
-The highest peak is July 2014 and represents the 100% max search for the term. Everything else is scaled down from that peak, and that is how Google Trends displays a single search term over time (i.e. nothing over 100 in the graph). This decline can mean that people's interest in cycling is declining, that the term cycling in the english language is replaced by another more popular term or that cyclers aren’t using Google like they used to (or a slew of other correlational theories). 
+The highest peak is July 2014 and represents the 100% maximum search for the term. Everything else is scaled from that peak, and that is how Google Trends displays a single search term over time (i.e. nothing will be over 100 in the graph). This decline can mean that people's interest in cycling is declining, that the term cycling in the english language is replaced by another more popular term, or that cyclists aren’t using Google like they used to (insert your theory here as they are all but guesses). 
 
-Let’s make things more interesting and add a second search term to our graph. Let’s add the term snowboarding.
+Let’s make things more interesting and add a second search term to our graph. Let’s add the term ``snowboarding``.
 
-Screen Shot 2014-12-17 at 8.15.55 PM
+<BR><BR>
+![plot of chunk unnamed-chunk-6](../img/posts/google-trends-walkthrough/cyclingandsnowboarding.png) 
+<BR><BR>
 
 This creates a mirror image of cycling, where the peaks of one term are the troughs of the other and vice versa. Snowboarding peaks every December, and, unlike cycling, this term seems to be used constantly in the past 10 years in the US as the the overall trend is fairly flat.
 
