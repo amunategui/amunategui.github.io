@@ -29,7 +29,7 @@ image: google-trends-walkthrough/googletrends.png
 <blockquote>Google Trends is a public web facility of Google Inc., based on Google Search, that shows how often a particular search-term is entered relative to the total search-volume across various regions of the world, and in various languages. (Source: <a href='http://en.wikipedia.org/wiki/Google_Trends' target='_blank'>Wikipedia.com</a>)</blockquote>
 
 In this walkthrough, I introduce the tool by accessing it directly through a web browser to extract data and analyze it in R.
-
+<BR><BR>
 **Google Trends**
 
 Let’s start by entering the term ``cycling`` and limiting our scope to the United States. There seems to be a decline in usage of that term between 2005 to 2014 as the oscillations are constant but the overall trend is dropping. 
