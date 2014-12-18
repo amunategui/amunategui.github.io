@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "Using R to Understand Google Trends Data" 
+title: "Using R To Analyze Google Trends Data" 
 category: Machine Learning
 tags: exploring visualizing
 year: 2014
 month: 12
 day: 17
 published: true
-summary: "In this walkthrough, I introduce the Google Trends by queriying it directly through the web, download a comma-delimited file of the results, and extract and analyze it in R."
+summary: "In this walkthrough, I introduce <b>Google Trends</b> by queriying it directly through the web, downloading a comma-delimited file of the results, and analyzing it in R."
 image: google-trends-walkthrough/googletrends.png
 ---
 
@@ -32,7 +32,8 @@ In this walkthrough, I introduce the tool by accessing it directly through a web
 
 Let’s start by entering the term ‘cycling’ and limiting our scope to the United States. There seems to be a decline of usage of that search term from 2005 to 2014 as the oscillations are constant but the overall trend is dropping. 
 
-Screen Shot 2014-12-17 at 8.13.27 PM
+![plot of chunk unnamed-chunk-6](../img/posts/google-trends-walkthrough/cycling.png) 
+<BR><BR>
 
 The highest peak is July 2014 and represents the 100% max search for the term. Everything else is scaled down from that peak, and that is how Google Trends displays a single search term over time (i.e. nothing over 100 in the graph). This decline can mean that people's interest in cycling is declining, that the term cycling in the english language is replaced by another more popular term or that cyclers aren’t using Google like they used to (or a slew of other correlational theories). 
 
