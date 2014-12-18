@@ -24,7 +24,7 @@ image: google-trends-walkthrough/googletrends.png
 </ul>
 
 <BR><BR>
-<b>Google Trends</b> has been around, in one form or another, for many years. Yet, it wasn't until I needed free Internet sentiment data that I took a closer look at this service and have been loving it ever since.
+<b>Google Trends</b> has been around, in one form or another, for many years. Yet, it wasn't until I needed free Internet sentiment data that I took a closer look at this service and have been loving it ever since. With this tool you can easily target a time or region and find out what is trending up, down, or not at all - imagine all the possibilities!
 
 <blockquote>Google Trends is a public web facility of Google Inc., based on Google Search, that shows how often a particular search-term is entered relative to the total search-volume across various regions of the world, and in various languages. (Source: <a href='http://en.wikipedia.org/wiki/Google_Trends' target='_blank'>Wikipedia.com</a>)</blockquote>
 
