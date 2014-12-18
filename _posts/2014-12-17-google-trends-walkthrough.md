@@ -20,8 +20,7 @@ image: google-trends-walkthrough/googletrends.png
 **Packages Used in this Walkthrough**
 
 <ul>
-        <li type="square"><b>{stringdist}</b> - feature selection for ensembles</li>
-        <li type="square"><b>{RCurl}</b> - machine learning tools</li>
+        <li type="square"><b>{ggplot2}</b> - graphics</li>
 </ul>
 
 <BR><BR>
