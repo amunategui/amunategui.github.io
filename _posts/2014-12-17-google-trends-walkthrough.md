@@ -52,8 +52,11 @@ We’ve seen two interesting pieces of data using Google Trends: the term's popu
 <BR><BR>
 **Let's Code!**
 
-OK, let's pull some data and analyze it in <b>R</b>. I'm going to query 'wine' as the first term and 'beer' as the second for the US, and finally download the csv file (don't forget to update the working directory with your own details).
+OK, let's pull some data and analyze it in <b>R</b>. I'm going to query ``wine`` as the first term and ``beer`` as the second for the US, and finally download the csv file (don't forget to update the working directory with your own details).
 
+<BR>
+![plot of chunk beerandwine](../img/posts/google-trends-walkthrough/beerandwine.png) 
+<BR><BR>
 
 ```r
 setwd('//Users//manuelamunategui//downloads')
