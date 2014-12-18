@@ -7,7 +7,7 @@ year: 2014
 month: 12
 day: 17
 published: true
-summary: "In this walkthrough, I introduce <b>Google Trends</b> by queriying it directly through the web, downloading a comma-delimited file of the results, and analyzing it in R."
+summary: "In this walkthrough, I introduce <b>Google Trends</b> by querying it directly through the web, downloading a comma-delimited file of the results, and analyzing it in R."
 image: google-trends-walkthrough/googletrends.png
 ---
 
@@ -24,7 +24,7 @@ image: google-trends-walkthrough/googletrends.png
 </ul>
 
 <BR><BR>
-<b>Google Trends</b> has been around, in one form or another, for many years. Yet it wasn’t until I needed free internet sentiment data that I took a closer look at this service and have been loving it ever since.
+<b>Google Trends</b> has been around, in one form or another, for many years. Yet it wasn't until I needed free Internet sentiment data that I took a closer look at this service and have been loving it ever since.
 
 <blockquote>Google Trends is a public web facility of Google Inc., based on Google Search, that shows how often a particular search-term is entered relative to the total search-volume across various regions of the world, and in various languages. (Source: <a href='http://en.wikipedia.org/wiki/Google_Trends' target='_blank'>Wikipedia.com</a>)</blockquote>
 
@@ -35,7 +35,7 @@ Let’s start by entering the term ``cycling`` and limiting our scope to the Uni
 ![plot of chunk cycling](../img/posts/google-trends-walkthrough/cycling.png) 
 <BR><BR>
 
-The highest peak is July 2014 and represents the 100% maximum search for the term. Everything else is scaled from that peak, and that is how Google Trends displays a single search term over time (i.e. nothing will be over 100 in the graph). The term also peaks with clockwork regularity every summer. This decline can mean that people's interest in cycling is declining, that the term cycling in the english language is replaced by another more popular term, or that cyclists aren’t using Google like they used to (insert your theory here as they are all but guesses). 
+The highest peak is July 2014 and represents the 100% maximum search for the term. Everything else is scaled from that peak, and that is how Google Trends displays a single search term over time (i.e. nothing will be over 100 in the graph). The term also peaks with clockwork regularity every summer. This decline can mean that people's interest in cycling is declining, that the term cycling in the English language is replaced by another more popular term, or that cyclists aren’t using Google like they used to (insert your theory here as they are all but guesses). 
 
 Let’s make things more interesting and add a second search term to our graph. Let’s add the term ``snowboarding``.
 
@@ -52,7 +52,7 @@ We’ve seen two interesting pieces of data using Google Trends: the term's popu
 <BR><BR>
 **Let's Code!**
 
-OK, let's pull some data and analyze it in <b>R</b>. I'm going to query ``wine`` as the first term and ``beer`` as the second one, limit it to the US, and finally download the csv file (don't forget to update the working directory with your own details).
+OK, let's pull some data and analyze it in <b>R</b>. I'm going to query ``wine`` as the first term and ``beer`` as the second one, limit it to the US, and finally download the <b>csv</b> file (don't forget to update the working directory with your own details).
 
 <BR>
 ![plot of chunk beerandwine](../img/posts/google-trends-walkthrough/beerandwine.png) 
@@ -63,7 +63,7 @@ setwd('//Users//manuelamunategui//downloads')
 filename <- "beervswine.csv"
 ```
 <BR><BR>
-If you open the csv you will notice all sorts of information there. In order to just pull the main time series we need to loop through each line and start pulling the data at the 5th line and stop pulling as soon as we encounter empty fields. 
+If you open the csv file you will notice all sorts of information there. In order to just pull the main time series we need to loop through each line and start pulling the data at the 5th line and stop pulling as soon as we encounter empty fields. 
 
 
 ```r
@@ -93,7 +93,18 @@ close(con)
 <br><br>
 There are a few caveats worth talking about when working with <b>Google Trends</b> data. It can come in three time flavors: monthly, weekly, and daily. To get daily data, you need to query less than 3 months timespan. For longer term trends, you will usually get weekly data unless it is low popularity, and then you will get montly data. One more point, if you query multiple terms and some are don't return enough data, the csv will automatically exclude them.
 
-In order to avoid the uncertainties of the final exported format, it is best to not hard code anything. To cicumvent all this, we read the data line by line and store it all in one long string ``stringdata`` and add a line feed at the end of each line. We then use the ``read.table`` with ``textConnection`` to parse the ``stringdata`` into a flat file and append the dynamic column names pulled from line 5 of the csv. This allows us to get the correct header names whether Google returns 1 or 10 features/columns - this should avoid surprises especially when working with many downloads.
+```
+> head(newData)
+                       V1 V2 V3
+1 2004-01-04 - 2004-01-10 31 57
+2 2004-01-11 - 2004-01-17 30 54
+3 2004-01-18 - 2004-01-24 31 57
+4 2004-01-25 - 2004-01-31 30 50
+5 2004-02-01 - 2004-02-07 29 47
+6 2004-02-08 - 2004-02-14 30 53
+```
+
+In order to avoid the uncertainties of the final exported format, it is best to not hard code anything. To circumvent all this, we read the data line by line and store it all in one long string ``stringdata`` and add a line feed at the end of each line. We then use the ``read.table`` with ``textConnection`` to parse the ``stringdata`` into a flat file and append the dynamic column names pulled from line 5 of the csv. This allows us to get the correct header names whether Google returns 1 or 10 features/columns - this should avoid surprises especially when working with many downloads.
 
 
 ```r
@@ -107,6 +118,17 @@ newData<- newData[c("StartDate", "EndDate", "beer", "wine", "year")]
 ```
 <br><br>
 Google Trends returns date ranges for each observations (rows), so we need to separate those into a ``StartDate`` and ``EndDate`` column. I pull a ``year`` column from the start date for the <a href='http://stat.ethz.ch/R-manual/R-patched/library/graphics/html/boxplot.html' target='_blank'>boxplots</a>.
+
+```
+> head(newData)
+   StartDate    EndDate beer wine year wine_clean
+1 2004-01-04 2004-01-10   31   57 2004         57
+2 2004-01-11 2004-01-17   30   54 2004         54
+3 2004-01-18 2004-01-24   31   57 2004         57
+4 2004-01-25 2004-01-31   30   50 2004         50
+5 2004-02-01 2004-02-07   29   47 2004         47
+6 2004-02-08 2004-02-14   30   53 2004         53
+```
 
 **Plots**
 
@@ -166,7 +188,7 @@ boxplot(wine_clean~year, data=newData, notch=TRUE,
 <BR>
 ![plot of chunk boxplotraw](../img/posts/google-trends-walkthrough/boxplotraw.png) 
 <BR><BR>
-Clearly, the term ``beer`` is trending upwards while ``wine`` has been strong but trending flattly over the years. ``GGplot`` is a great plotting mechanism to smooth out the noise and simplify the trend for better udnerstanding:
+Clearly, the term ``beer`` is trending upwards while ``wine`` has been strong but trending flatly over the years. ``GGplot`` is a great plotting mechanism to smooth out the noise and amplify the trend for better understanding:
 
 
 ```r
