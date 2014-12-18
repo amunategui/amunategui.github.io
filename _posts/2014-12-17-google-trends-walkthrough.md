@@ -24,14 +24,14 @@ image: google-trends-walkthrough/googletrends.png
 </ul>
 
 <BR><BR>
-<b>Google Trends</b> has been around, in one form or another, for many years. But wasn’t until I needed free internet sentiment data that I dug deeper into this service and have been loving it ever since.
+<b>Google Trends</b> has been around, in one form or another, for many years. Yet it wasn’t until I needed free internet sentiment data that I took a closer look at this service and have been loving it ever since.
 
 <blockquote>Google Trends is a public web facility of Google Inc., based on Google Search, that shows how often a particular search-term is entered relative to the total search-volume across various regions of the world, and in various languages. (Source: <a href='http://en.wikipedia.org/wiki/Google_Trends' target='_blank'>Wikipedia.com</a>)</blockquote>
 
 In this walkthrough, I introduce the tool by accessing it directly through a web browser then how to extract the data to be analyzed with R.
 
-Let’s start by entering the term ‘cycling’ and limiting our scope to the United States. There seems to be a decline of usage of that search term from 2005 to 2014 as the oscillations are constant but the overall trend is dropping. 
-
+Let’s start by entering the term ``cycling`` and limiting our scope to the United States. There seems to be a decline of usage of that search term from 2005 to 2014 as the oscillations are constant but the overall trend is dropping. 
+<BR><BR>
 ![plot of chunk unnamed-chunk-6](../img/posts/google-trends-walkthrough/cycling.png) 
 <BR><BR>
 
