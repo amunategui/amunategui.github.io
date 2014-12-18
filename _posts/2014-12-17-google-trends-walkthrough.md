@@ -54,14 +54,18 @@ So far, we’ve seen two interesting pieces of data using Google Trends: the ter
 <BR><BR>
 **Let's Code!**
 
-OK, let's pull some data and analyze it in <b>R</b>. I'm going to query ``wine`` as the first term and ``beer`` as the second one, limit it to the US, and finally download the <b>csv</b> file (don't forget to update the working directory with your own details).
+OK, let's pull some data and analyze it in <b>R</b>. Query ``wine`` as the first term and ``beer`` as the second one and limit it to the US:
 
 <BR>
 ![plot of chunk beerandwine](../img/posts/google-trends-walkthrough/beerandwine.png) 
 <BR><BR>
 
+Download the <b>csv</b> file from the dropdown located in the upper right corner.
+<BR>
+![plot of chunk download](../img/posts/google-trends-walkthrough/download.png) 
+<BR><BR>
+
 ```r
-setwd('//Users//manuelamunategui//downloads')
 filename <- "beervswine.csv"
 ```
 <BR><BR>
