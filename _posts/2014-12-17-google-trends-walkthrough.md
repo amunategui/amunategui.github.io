@@ -111,7 +111,7 @@ There are a few caveats worth talking about when working with <b>Google Trends</
 6 2004-02-08 - 2004-02-14 30 53
 ```
 <br>
-In order to avoid the uncertainties of the final exported format, it is best to not hard code anything. To circumvent all this, we read the data line by line and store it all in one long string ``stringdata`` and add a line feed at the end of each line. We then use the ``read.table`` with ``textConnection`` to parse the ``stringdata`` into a flat file and append the dynamic column names pulled from line 5 of the csv. This allows us to get the correct header names whether Google returns 1 or 10 features/columns - this should avoid surprises especially when working with many downloads.
+In order to avoid the uncertainties of the final exported format, it is best to not hard code anything. To circumvent all this, we read the data line by line and store it all in one long string ``stringdata`` and add a line feed at the end of each line. We then use the ``read.table`` with ``textConnection`` to parse the ``stringdata`` into a flat file and append the dynamic column names pulled from line 5 of the csv. This allows us to get the correct header names whether Google returns ``1`` or ``10`` features/columns - this should limit surprises especially when working with multiple downloads.
 
 <br>
 ```r
