@@ -264,7 +264,7 @@ newData<- newData[c("StartDate", "EndDate", "beer", "wine", "year")]
 
 head(newData)
 
-plot(newData$year, newData$beer, type='l', col='Blue')
+plot(newData$StartDate, newData$beer, type='l', col='Blue')
 lines(newData$StartDate, newData$wine, type='l', col='Red')
 
 par(mfrow = c(2, 1))
