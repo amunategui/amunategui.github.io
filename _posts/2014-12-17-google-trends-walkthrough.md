@@ -221,7 +221,7 @@ ggplot(newData,aes(x=StartDate)) +
 There isn't an easy way of concluding this - possibilities are endless. Analyze away! For more information on this tool, read this great article by Hyunyoung Choi and Hal Varian: <a href='http://static.googleusercontent.com/media/www.google.com/en/us/googleblogs/pdfs/google_predicting_the_present.pdf' target='_blank'>Predicting the Present with Google Trends</a>.
 
  <BR><BR>
-<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/' target='_blank'>also on GitHub</a>)</a>:
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/google-trends-walkthrough' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
 
