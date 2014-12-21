@@ -9,9 +9,6 @@
 		<h5><strong>{{ page.date | date: "%B %e, %Y" }}</strong><small> Tags: {% for tag in page.tags %} <i>{{ tag }}</i>{% if forloop.last != true %} {% endif %} {% endfor %} </small><br/><br/>
 		 <g:plusone size="medium"></g:plusone></h5>
 	</div>		
-	<div class="span6 column">
-		<p class="pull-right">{% if page.previous.url %} <a href="{{page.previous.url}}" title="Previous Post: {{page.previous.title}}"><i class="icon-chevron-left"></i></a> 	{% endif %}   {% if page.next.url %} 	<a href="{{page.next.url}}" title="Next Post: {{page.next.title}}"><i class="icon-chevron-right"></i></a> 	{% endif %} </p>  
-	</div>	
 </div>
 <div class="row">
 	<div class="span9 column">
