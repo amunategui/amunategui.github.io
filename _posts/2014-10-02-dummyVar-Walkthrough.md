@@ -29,7 +29,7 @@ As the name implies, the ``dummyVars`` function allows you to create dummy varia
 
 If you are planning on doing predictive analytics or machine learning and want to use regression or any other modeling technique that requires numerical data, you will need to transform your text data into numbers otherwise you run the risk of leaving a lot of information on the table...
 
-In R, there are plenty of ways of translating text into numerical data. You can do it manually, use a base function, such as **matrix**, or a packaged function like dummyVarfrom the caret package. One of the big advantages of going with the caret package is that it's full of features, including hundreds of algorithms and pre-processing functions. Once your data fits into caret's modular design, it can be run throughdifferent models with minimal tweaking.
+In R, there are plenty of ways of translating text into numerical data. You can do it manually, use a base function, such as **matrix**, or a packaged function like dummyVarfrom the caret package. One of the big advantages of going with the caret package is that it's full of features, including hundreds of algorithms and pre-processing functions. Once your data fits into caret's modular design, it can be run through different models with minimal tweaking.
 
 Let's look at a few examples of dummy variables. If you have a survey question with 5 categorical values such as very unhappy, unhappy, neutral, happy and very happy.
 
@@ -65,7 +65,7 @@ print(survey)
 <BR>
 So, the above could easily be used in a model that needs numbers and still represent that data accurately using the 'rank' variable instead of 'service'. **But** this only works in specific situations where you have somewhat linear and continuous-like data. What happens with categorical values such as marital status, gender, alive?
 <BR><BR>
-Does it make sense to be a quarter female? Or half single? Even numerical data of a categorical nature may require transformation. Take the zip code system. Does thehalf-way point between two zip codes make geographical sense? Because that is how a regression model would use it. 
+Does it make sense to be a quarter female? Or half single? Even numerical data of a categorical nature may require transformation. Take the zip code system. Does the half-way point between two zip codes make geographical sense? Because that is how a regression model would use it. 
 <BR><BR
 It may work in a fuzzy-logic way but it won't help in predicting much; therefore we need a more precise way of translating these values into numbers so that they can be regressed by the model.
 
@@ -126,7 +126,7 @@ print(trsf)
 ## 5             1           0
 ```
 <BR>
-The ``fullRank`` parameter is worth mentioning here. The general rule for creating dummy variables is to have one less variable than the number of categories present to avoid perfect collinearity (**dummy variable trap**). You basically want to avoid highly correlated variables but it also save space. If you have a factor column comprised of two levels 'male' and 'female', then you don't need to tranform it into two columns, instead, you pick one of the variables and you are either female, if its a **1**, or male if its a **0**.
+The ``fullRank`` parameter is worth mentioning here. The general rule for creating dummy variables is to have one less variable than the number of categories present to avoid perfect collinearity (**dummy variable trap**). You basically want to avoid highly correlated variables but it also save space. If you have a factor column comprised of two levels 'male' and 'female', then you don't need to transform it into two columns, instead, you pick one of the variables and you are either female, if its a **1**, or male if its a **0**.
 <BR>
 Let's turn on ``fullRank`` and try our data frame again:
 
@@ -154,7 +154,7 @@ As you can see, it picked male and sad, if you are **0** in both columns, then y
 <BR><BR>
 **Things to keep in mind**<BR>
 <li>Don't dummy a large data set full of zip codes; you more than likely don't have the computing muscle to add an extra 43,000 columns to your data set.</li>
-<li>You can dummify large, free-text columns. Before running the function, look for reapeated words or sentences, only take the top 50 of them and replace the rest with 'others'. This will allow you to use that field without delving deeply into NLP.</li>
+<li>You can dummify large, free-text columns. Before running the function, look for repeated words or sentences, only take the top 50 of them and replace the rest with 'others'. This will allow you to use that field without delving deeply into NLP.</li>
 
 <BR><BR>              
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/Walkthrough-of-the-dummyVars-Function' target='_blank'>also on GitHub</a>)</a>:

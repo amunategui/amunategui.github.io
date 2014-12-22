@@ -32,7 +32,7 @@ In this walkthrough, I introduce the tool by accessing it directly through a web
 <BR><BR>
 **Google Trends**
 
-Let’s start by entering the term ``cycling`` and limiting our scope to the United States. There seems to be a decline in usage of that term between 2005 to 2014 as the oscillations are constant but the overall trend is dropping. 
+Let’s start by entering the term ``cycling`` and limiting our scope to the United States. There seems to be a decline in usage for that term from 2005 to 2014 as the oscillations are constant but the overall trend is dropping. 
 <BR><BR>
 ![plot of chunk cycling](../img/posts/google-trends-walkthrough/cycling.png) 
 <BR><BR>
