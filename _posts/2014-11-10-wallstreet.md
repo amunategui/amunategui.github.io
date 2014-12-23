@@ -62,15 +62,15 @@ addBBands(n = 20, sd = 2, ma = "SMA", draw = 'bands', on = -1)
 <BR><BR>
 ![plot of chunk unnamed-chunk-22](../img/posts/wallstreet/unnamed-chunk-22.png) 
 <BR><BR>
-<b>quantmod</b> uses <b>Yahoo</b> to get its financial data. In the above example ``^GSPC`` represents the <b>S&P 500 Index</b>. Most financial product symbols are straightforward ala <b>MSFT</b> for <b>Microsoft</b>. For indexes and other esoteric symbols, refer to <a href='http://finance.yahoo.com/lookup' target='_blank'>finance.yahoo.com/lookup</a> to see how they abbreviated it.
+<b>quantmod</b> uses <b>Yahoo</b> to get it's financial data. In the above example ``^GSPC`` represents the <b>S&P 500 Index</b>. Most financial product symbols are straightforward like <b>MSFT</b> for <b>Microsoft</b>. For indexes and other esoteric symbols, refer to <a href='http://finance.yahoo.com/lookup' target='_blank'>finance.yahoo.com/lookup</a> to see how they abbreviated it.
 <BR><BR>
 ``chartSeries`` is straightforward and will plot whatever symbol has been downloaded to memory using ``getSymbols``. ``addBBands`` function will plot <b>Bollinger Bands</b> around your price series. There are many ways to customize the display, for some examples check out the <a href='http://www.quantmod.com/gallery/' target='_blank'>Quantmod Gallery</a>.
 <BR><BR>
 **Quant Time**
 <BR><BR>
-Moving deeper into quantitative finance, let's design a pattern-based system to predict whether the a particular financial product will see a raise or drop in volume the following trading day.
+Moving deeper into quantitative finance, let's design a pattern-based system to predict whether a particular financial product will see a raise or drop in volume the following trading day.
 <BR><BR>
-We'll use <b>quantmod</b> to download all the stocks that compose the <b>NASDAQ 100 Index</b>. The we'll ``merge`` together to synchronize all our time series together. This will collate the data by time and fill in any missing data with ``NA``s:
+We'll use <b>quantmod</b> to download all the stocks that compose the <b>NASDAQ 100 Index</b>. Then we'll ``merge`` together all our time series to synchronize them. This will collate the data by time and fill in any missing data with ``NA``s:
 
 ```r
 Nasdaq100_Symbols <- c("AAPL", "ADBE", "ADI", "ADP", "ADSK", "AKAM", "ALTR", "ALXN", 
@@ -143,7 +143,7 @@ head(nasdaq100[,1:12],2)
 ## 2007-01-04     4503700         40.82
 ```
 <BR><BR>
-Now that we have a handful of years of market data for every stock currently in the the <b>NASDAQ 100 Index</b>, we need to do something with it. We're going to create a variety of measures between price and volume points. The idea is to quantify stock moves as patterns by subtracting one day versus a previous one. We'll create a series of differences: 
+Now that we have a handful of years of market data for every stock currently in the <b>NASDAQ 100 Index</b>, we need to do something with it. We're going to create a variety of measures between price and volume points. The idea is to quantify stock moves as patterns by subtracting one day versus a previous one. We'll create a series of differences: 
 <ul>
 <li type="square">1 day versus 2 days ago</li>
 <li type="square">1 day versus 3 days ago</li>
@@ -153,7 +153,7 @@ Now that we have a handful of years of market data for every stock currently in 
 <BR><BR>
 **Creating The Outcome Variable**
 <BR><BR>
-This is the heart of the system and its a bit tedious so hold on. What are we trying to predict?
+This is the heart of the system and it's a bit tedious so hold on. What are we trying to predict?
 Whether the next trading day's volume for a chosen symbol will be higher or lower than the current trading day (this doesn't have to be the ``volume`` field of <b>FISV</b>, it could be the ``high`` or ``close`` of any other symbol for which we have data):
 
 
@@ -161,7 +161,7 @@ Whether the next trading day's volume for a chosen symbol will be higher or lowe
 outcomeSymbol <- 'FISV.Volume'
 ```
 <BR><BR>
-Shift the result we're trying to predict down one trading day using the ``lag`` function. This will add the ``volume`` field of our outcome symbol with a lag of 1 trading day so its on the same line as the predictors. We will rely on this value for training and testing purposes. A value of ``1`` means the volume went up, and a ``0``, that it went down:
+Shift the result we're trying to predict down one trading day using the ``lag`` function. This will add the ``volume`` field of our outcome symbol with a lag of 1 trading day so it's on the same line as the predictors. We will rely on this value for training and testing purposes. A value of ``1`` means the volume went up, and a ``0``, that it went down:
 
 ```r
 library(xts)
