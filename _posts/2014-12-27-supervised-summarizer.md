@@ -163,7 +163,7 @@ head(stats,6)
 ## Max.      6        1.000        1.000
 ```
 <BR><BR>
-The logical next step is to plot it:
+The logical next step is to plot it (that's how the plots were generated in the start of the walkthrough):
 
 
 ```r
