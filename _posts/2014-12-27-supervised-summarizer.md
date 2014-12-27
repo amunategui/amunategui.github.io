@@ -176,11 +176,9 @@ p <- ggplot(data=stats, aes(ind)) +
 p
 ```
 
-![plot of chunk unnamed-chunk-7](../img/posts/supervised-summarizer/sex.female-predictor.png) 
+![plot of chunk sex.female-predictor](../img/posts/supervised-summarizer/sex.female-predictor.png) 
 <BR><BR>
-Obviously, we're going to generalize this into a neat function, but, by doing it by hand for a single variable you should start seeing the power of looking at summary data is such manner. By using <a href='http://ggplot2.org/' target='_blank'>ggplot2</a>, it is easy to display the summary measures on the ``x`` axis. 
-<BR><BR>
-The green line represents the females that survied and the red one, those that didn't survived. As you can see both lines are far apart, the green line is well above the red one, and this means that the variable is a powerful predictor for survivability. 
+Obviously, we're going to generalize this into a neat function, but, by doing it by hand for a single variable you should start seeing the power of looking at summary data is such manner. By using <a href='http://ggplot2.org/' target='_blank'>ggplot2</a>, it is easy to display the summary measures on the ``x`` axis. The green line represents the females that survived and the red one, those that didn't. As you can see both lines are far apart, the green line is well above the red one, and this means that the variable is a powerful predictor for survivability (i.e. we have a positive spread). 
 <BR><BR>
 If we generalize this spread into a single number, we'll be able to bypass the graphing phase and apply this to huge data sets.
 
@@ -234,7 +232,7 @@ p <- ggplot(data=stats, aes(ind)) +
 p
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+![plot of chunk unnamed-chunk-10](../img/posts/supervised-summarizer/unnamed-chunk-10.png) 
 <BR><BR>
 It is time to generalize all this so we don't have to tediously type each variable name every time we want to measure these relationships.
 <BR><BR>
@@ -403,7 +401,7 @@ multiplot(p1,p2,p3,p4,cols=2)
 ## Loading required package: grid
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
+![plot of chunk unnamed-chunk-14](../img/posts/supervised-summarizer/unnamed-chunk-14.png) 
 <BR><BR>
 And now for the capper, let's plot everything on a bar graph so we can easily compare the strongest predictors and the direction they affect the model:
 
@@ -429,7 +427,7 @@ xx <- barplot(results$Weight, width = 0.85,
 axis(2, at=xx, labels=results$VariableName, tick=FALSE, las=2, line=-0.3, cex.axis=0.6)  
 ```
 
-![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
+![plot of chunk unnamed-chunk-15](../img/posts/supervised-summarizer/unnamed-chunk-15.png) 
 <BR><BR>
 
 **Conclusion**
