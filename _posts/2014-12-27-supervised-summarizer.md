@@ -25,17 +25,16 @@ image: supervised-summarizer/summarized-summary-plots.png
 </ul>
 
 <BR><BR>
-You're probably famliar withn the <a href='https://stat.ethz.ch/R-manual/R-devel/library/base/html/summary.html' target='_blank'>summary()</a> function in R. It's an essential funciton, used all the time, that can reveal so much about your data. Yet, by extending it just a tad, we can quickly figure out top predictors, even on extremely large data sets.
+You're probably familiar within the <a href='https://stat.ethz.ch/R-manual/R-devel/library/base/html/summary.html' target='_blank'>summary()</a> function in R. It's an essential function, used all the time, that can reveal so much about your data. Yet, by extending it just a tad, we can quickly figure out top predictors, even on extremely large data sets.
 
-
-![plot of chunk unnamed-chunk-10](../img/posts/supervised-summarizer/intro-chart.png) 
+![plot of chunk two-predictors](../img/posts/supervised-summarizer/two-predictors.png.png) 
 <BR><BR>
 
-The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize them then. Comparing the results from both sets will tell you how well you preditor behaves towards your outcome variable. 
+The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize them then. Comparing the results from both sets will tell you how well you predictor behaves towards your outcome variable. The above plots shows the summary of two predictors the spreads between outcomes - clearly, this first plot is a powerful predictor, while the second one isn't.
 
-Let's first measure a single predictor to see how this works, then we'll quantify this techinque to apply it to entire data sets.
+Let's first measure a single predictor to see how this works, then we'll quantify this technique to apply it to entire data sets.
 
-We’ll pull in the classic <b>Titanic</b> data set that I’ve already used in many of my walkthroughs. The code below will download the data from the <b>University of Colorado</b>, clean it up and yeild a numeric-only, modeling-ready data frame:
+We’ll pull in the classic <b>Titanic</b> data set that I’ve already used in many of my walkthroughs. The code below will download the data from the <b>University of Colorado</b>, clean it up and yield a numeric-only, modeling-ready data frame:
 
 
 ```r
@@ -118,7 +117,7 @@ summary(titanicDF)
 <BR><BR>
 As you can see, this yields a version of the <a href='http://en.wikipedia.org/wiki/Five-number_summary' target='_blank'>five-number summary</a> displaying the <b>min, max, 1st & 3rd quantile, mean, medium</b> of each variable.
 <BR><BR>
-Though extremely useful, this doesn't help us uderstand how our outcome variable interacts with its predictors. To remedy this, we split the data into two separate data sets, an outcome-positive data set, and an outcome-negative data set. Let's look at ``Sex.female``:
+Though extremely useful, this doesn't help us understand how our outcome variable interacts with its predictors. To remedy this, we split the data into two separate data sets, an outcome-positive data set, and an outcome-negative data set. Let's look at ``Sex.female``:
 
 
 ```r
