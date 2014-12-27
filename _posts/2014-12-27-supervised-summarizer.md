@@ -7,7 +7,7 @@ year: 2014
 month: 12
 day: 27
 published: true
-summary: We split the data into two sets, one for each outcome, and summarize them individually. We then compare and plot these results to easily measure how a predictor behaves towards the outcome variable.
+summary: We split the data into two sets, one for each outcome, and summarize them individually. We then compare and plot these results to easily measure how a predictor behaves towards the outcome variable. Simple, easy, and fast!
 image: supervised-summarizer/summarized-summary-plots.png
 ---
 **Resources**
