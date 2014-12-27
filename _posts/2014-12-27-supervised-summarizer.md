@@ -233,19 +233,22 @@ p
 ```
 
 ![plot of chunk unnamed-chunk-10](../img/posts/supervised-summarizer/unnamed-chunk-10.png) 
-<BR><BR>
+<BR>
+
+**Let's Generalize**
+
 It is time to generalize all this so we don't have to tediously type each variable name every time we want to measure these relationships.
 <BR><BR>
-We'll call it ``GetSummaryAndPlots()``. It requires a scaled data set, the ``outcome`` variable (what we're trying to predict), the ``predictor`` variable, and whether we want it to be plotted. If we don't want it plotted, it will return the spread:
+We'll create a function called ``GetSummaryAndPlots()``. It takes a scaled data set of each outcome, the ``predictorName`` variable, and whether we want it to be plotted. If we don't want it plotted, it will return the spread:
 
 
 ```r
-GetSummaryPlot <- function(objdfscaled0, objdfscaled1, outcomename, varname, plotit=TRUE) {
+GetSummaryPlot <- function(objdfscaled0, objdfscaled1, predictorName, plotit=TRUE) {
      require(ggplot2)
     
-     stats0 <- (summary(objdfscaled0[,varname]))
+     stats0 <- (summary(objdfscaled0[,predictorName]))
      stats0 <- c(stats0[1:6])
-     stats1 <- (summary(objdfscaled1[,varname]))
+     stats1 <- (summary(objdfscaled1[,predictorName]))
      stats1 <- c(stats1[1:6])
      stats <- data.frame('ind'=c(1:6), 'stats1'=stats1,'stats0'=stats0)
     
