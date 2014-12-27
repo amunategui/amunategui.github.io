@@ -25,14 +25,14 @@ image: supervised-summarizer/summarized-summary-plots.png
 </ul>
 
 <BR><BR>
-You're probably familiar within the <a href='https://stat.ethz.ch/R-manual/R-devel/library/base/html/summary.html' target='_blank'>summary()</a> function in R. It's an essential function, used all the time, that can reveal so much about your data. Yet, by extending it just a tad, we can quickly highlight top predictors, even on extremely large data sets.
+You're probably familiar within the <a href='https://stat.ethz.ch/R-manual/R-devel/library/base/html/summary.html' target='_blank'>summary()</a> function in <b>R</b>. It's an essential function, used all the time, that can reveal so much about your data. Yet, by extending it just a tad, we can quickly highlight top predictors, even on extremely large data sets.
 
 ![plot of chunk two-predictors](../img/posts/supervised-summarizer/two-predictors.png) 
 <BR><BR>
 
 The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize them then. Comparing the results from both sets will tell you how well you predictor behaves towards your outcome variable. The above plots shows the summary of two predictors and their individual spreads - clearly, this first plot is a powerful predictor as the spread between the green and red line is large, while the second one isn't.
 
-Let's first measure a single predictor to see how this works, then we'll quantify this technique to apply it to entire data sets.
+Let's first measure a single predictor to see how this works, then we'll quantify this technique to it can be applied to entire data sets.
 
 We’ll pull in the classic <b>Titanic</b> data set that I’ve already used in many of my walkthroughs. The code below will download the data from the <b>University of Colorado</b>, clean it up and yield a numeric-only, modeling-ready data frame:
 
@@ -57,7 +57,7 @@ titanicDummy <- dummyVars("~.",data=titanicDF, fullRank=F)
 titanicDF <- as.data.frame(predict(titanicDummy,titanicDF))
 ```
 <BR><BR>
-Let's call ``head`` on our variables to see what we are dealing with. ``Survived`` is our outcome variable:
+Let's call ``head`` on our variables to see what we are dealing with. ``Survived`` is our <b>outcome</b> variable:
 
 
 ```r
@@ -75,7 +75,7 @@ head(titanicDF, 3)
 ## 3        1         0             0        0
 ```
 <BR><BR>
-Calling the ``summary`` function or the <a href='https://stat.ethz.ch/R-manual/R-devel/library/utils/html/str.html' target='_blank'>str</a> function on an entire data frame is a great way of getting aquainted with it:
+Calling the ``summary`` function or the <a href='https://stat.ethz.ch/R-manual/R-devel/library/utils/html/str.html' target='_blank'>str</a> function on an entire data frame is a great way of getting acquainted with it:
 
 
 ```r
@@ -131,7 +131,7 @@ summary(df_survived_0$Sex.female)
 ##   0.000   0.000   0.000   0.178   0.000   1.000
 ```
 <BR><BR>
-Now, a much clearer picture emerges regarding that variable when using an outcome-specific perspective. We learn that almost 70% of those that survived where females! I think you can see where I am going with this.
+Now, a much clearer picture emerges regarding that variable when using an outcome-specific perspective. We learn that almost 70% of those that survived were females, and that only 18% of those that died were females. I think you can see where I am going with this.
 <BR><BR>
 Let's see how we can graph this information in an intuitive way. The idea is to create a vector of summary information for both outcomes, overlaying them together and measuring the spread. We'll continue with the ``Sex.female`` variable as it should already be apparent how strong of a predictor it is.
 
