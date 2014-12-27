@@ -438,7 +438,7 @@ axis(2, at=xx, labels=results$VariableName, tick=FALSE, las=2, line=-0.3, cex.ax
 This approach only works when attempting to predict a binary outcome and won't work for continuous outcomes (such as linear regression models). Also, it is a naive-based variable importance calculator as it doesn't account for interactions between predictors. Yet, it is a fast way to size up data for any supervised modeling and should handle extremely large dimensions. Happy explorations!
 
 <BR><BR>        
-<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/' target='_blank'>also on GitHub</a>)</a>:
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/spread-summarizer' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
 
