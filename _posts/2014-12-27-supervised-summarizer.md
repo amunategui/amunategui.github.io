@@ -27,6 +27,10 @@ image: supervised-summarizer/summarized-summary-plots.png
 <BR><BR>
 You're probably famliar withn the <a href='https://stat.ethz.ch/R-manual/R-devel/library/base/html/summary.html' target='_blank'>summary()</a> function in R. It's an essential funciton, used all the time, that can reveal so much about your data. Yet, by extending it just a tad, we can quickly figure out top predictors, even on extremely large data sets.
 
+
+![plot of chunk unnamed-chunk-10](../img/posts/supervised-summarizer/intro-chart.png) 
+<BR><BR>
+
 The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize them then. Comparing the results from both sets will tell you how well you preditor behaves towards your outcome variable. 
 
 Let's first measure a single predictor to see how this works, then we'll quantify this techinque to apply it to entire data sets.
@@ -441,3 +445,9 @@ axis(2, at=xx, labels=results$VariableName, tick=FALSE, las=2, line=-0.3, cex.ax
 **Conclusion**
 
 This approach only works when attempting to predict a binary outcome and won't work if predicting a continous variable. Also, it is a naive-based variable importance calcluator as it dosen't account for interactions between predictors. Yet, it is a fast way to size up a data set for supervised modeling and should handle very large dimensions. Happy explorations!
+
+<BR><BR>        
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/' target='_blank'>also on GitHub</a>)</a>:
+
+```r
+```
