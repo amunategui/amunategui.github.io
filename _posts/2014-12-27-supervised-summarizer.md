@@ -146,7 +146,7 @@ stats <- data.frame('ind'=c(1:6),
                     'Sex.Female_0'=Sex.Female_0)
 ```
 <BR><BR>
-``stats`` is the data frame holding the summary data for ``Sex.female`` for both outcomes. This data frame holds three varialbes, an index column, a predictor column where the outcome is positive and another where the outcome is negative, and 6 rows, one for each summary output:
+``stats`` is the data frame holding the summary data for ``Sex.female`` for both outcomes. This data frame holds three variables, an index column, a predictor column where the outcome is positive and another where the outcome is negative, and 6 rows, one for each summary output:
 
 
 ```r
@@ -307,7 +307,7 @@ for (predictorName in predictorNames)
 ## [1] "Title.Nothing : 0.1241"
 ```
 <BR><BR>
-Pretty cool, right? With a quick glance we see that ``Sex.male`` and ``Title.Mr`` have a substantial negative effect on survivabilty while ``Sex.female`` has a sustantial poistive effect.
+Pretty cool, right? With a quick glance we see that ``Sex.male`` and ``Title.Mr`` have a substantial negative effect on survivability while ``Sex.female`` has a substantial positive.
 <BR><BR>
 How about plotting this efficiently? We'll use the ``multiplot`` function from the great resource: <a href='http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/' target='_blank'>Cookbook for R</a>. This enables the stacking of multiple ``ggplots`` on the same page, just like ``par`` and ``mfrow`` does for regular R plots. For more information, please visit the above link.
 
@@ -398,10 +398,6 @@ p4 <- GetSummaryPlot(scaled_titanicDF_0, scaled_titanicDF_1, 'Title.Mr', plotit=
 
 ```r
 multiplot(p1,p2,p3,p4,cols=2)
-```
-
-```
-## Loading required package: grid
 ```
 
 ![plot of chunk unnamed-chunk-14](../img/posts/supervised-summarizer/unnamed-chunk-14.png) 
