@@ -239,7 +239,7 @@ p
 
 It is time to generalize all this so we don't have to tediously type each variable name every time we want to measure these relationships.
 <BR><BR>
-We'll create a function called ``GetSummaryAndPlots()``. It takes a scaled data set of each outcome, the ``predictorName`` variable, and whether we want it to be plotted. If we don't want it plotted, it will return the spread:
+We'll create a function called ``GetSummaryAndPlots()``. It takes a scaled data set of each outcome, the ``predictorName`` variable, and whether we want it to be plotted. If we don't want it plotted, it will return the spread value:
 
 
 ```r
