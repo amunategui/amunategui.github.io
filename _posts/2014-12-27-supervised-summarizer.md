@@ -27,7 +27,7 @@ image: supervised-summarizer/summarized-summary-plots.png
 <BR><BR>
 You're probably familiar within the <a href='https://stat.ethz.ch/R-manual/R-devel/library/base/html/summary.html' target='_blank'>summary()</a> function in R. It's an essential function, used all the time, that can reveal so much about your data. Yet, by extending it just a tad, we can quickly figure out top predictors, even on extremely large data sets.
 
-![plot of chunk two-predictors](../img/posts/supervised-summarizer/two-predictors.png.png) 
+![plot of chunk two-predictors](../img/posts/supervised-summarizer/two-predictors.png) 
 <BR><BR>
 
 The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize them then. Comparing the results from both sets will tell you how well you predictor behaves towards your outcome variable. The above plots shows the summary of two predictors the spreads between outcomes - clearly, this first plot is a powerful predictor, while the second one isn't.
