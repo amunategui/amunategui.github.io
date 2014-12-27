@@ -25,12 +25,12 @@ image: supervised-summarizer/summarized-summary-plots.png
 </ul>
 
 <BR><BR>
-You're probably familiar within the <a href='https://stat.ethz.ch/R-manual/R-devel/library/base/html/summary.html' target='_blank'>summary()</a> function in R. It's an essential function, used all the time, that can reveal so much about your data. Yet, by extending it just a tad, we can quickly figure out top predictors, even on extremely large data sets.
+You're probably familiar within the <a href='https://stat.ethz.ch/R-manual/R-devel/library/base/html/summary.html' target='_blank'>summary()</a> function in R. It's an essential function, used all the time, that can reveal so much about your data. Yet, by extending it just a tad, we can quickly highlight top predictors, even on extremely large data sets.
 
 ![plot of chunk two-predictors](../img/posts/supervised-summarizer/two-predictors.png) 
 <BR><BR>
 
-The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize them then. Comparing the results from both sets will tell you how well you predictor behaves towards your outcome variable. The above plots shows the summary of two predictors the spreads between outcomes - clearly, this first plot is a powerful predictor, while the second one isn't.
+The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize them then. Comparing the results from both sets will tell you how well you predictor behaves towards your outcome variable. The above plots shows the summary of two predictors and their individual spreads - clearly, this first plot is a powerful predictor as the spread between the green and red line is large, while the second one isn't.
 
 Let's first measure a single predictor to see how this works, then we'll quantify this technique to apply it to entire data sets.
 
@@ -53,15 +53,6 @@ titanicDF <- titanicDF[c('PClass', 'Age',    'Sex',   'Title', 'Survived')]
 
 # binarize all factors
 require(caret)
-```
-
-```
-## Loading required package: caret
-## Loading required package: lattice
-## Loading required package: ggplot2
-```
-
-```r
 titanicDummy <- dummyVars("~.",data=titanicDF, fullRank=F)
 titanicDF <- as.data.frame(predict(titanicDummy,titanicDF))
 ```
@@ -185,7 +176,7 @@ p <- ggplot(data=stats, aes(ind)) +
 p
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-7](../img/posts/supervised-summarizer/sex.female-predictor.png) 
 <BR><BR>
 Obviously, we're going to generalize this into a neat function, but, by doing it by hand for a single variable you should start seeing the power of looking at summary data is such manner. By using <a href='http://ggplot2.org/' target='_blank'>ggplot2</a>, it is easy to display the summary measures on the ``x`` axis. 
 <BR><BR>
