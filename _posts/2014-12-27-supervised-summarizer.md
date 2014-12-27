@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Quantifying the Spread: Measuring Strength and Direction of Predictors using the Summary Function and Generalizing this Technique for Large Data Sets
+title: "Quantifying the Spread: Measuring Strength and Direction of Predictors using the Summary Function"
 category: Machine Learning
 tags: exploring
 year: 2014
@@ -27,9 +27,9 @@ image: supervised-summarizer/summarized-summary-plots.png
 <BR><BR>
 You're probably famliar withn the <a href='https://stat.ethz.ch/R-manual/R-devel/library/base/html/summary.html' target='_blank'>summary()</a> function in R. It's an essential funciton, used all the time, that can reveal so much about your data. Yet, by extending it just a tad, we can quickly figure out top predictors, even on extremely large data sets.
 
-The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize them then. Comparing the results from both data sets will quickly tell you how well you preditor behaves towards your outcome. 
+The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize them then. Comparing the results from both sets will tell you how well you preditor behaves towards your outcome variable. 
 
-Let's first measure a single predictor to see how this works, then we'll quantify this techinque so that it can be easily applicable to entire data sets.
+Let's first measure a single predictor to see how this works, then we'll quantify this techinque to apply it to entire data sets.
 
 We’ll pull in the classic <b>Titanic</b> data set that I’ve already used in many of my walkthroughs. The code below will download the data from the <b>University of Colorado</b>, clean it up and yeild a numeric-only, modeling-ready data frame:
 
@@ -50,6 +50,12 @@ titanicDF <- titanicDF[c('PClass', 'Age',    'Sex',   'Title', 'Survived')]
 
 # binarize all factors
 require(caret)
+```
+
+```
+## Loading required package: caret
+## Loading required package: lattice
+## Loading required package: ggplot2
 ```
 
 ```r
@@ -435,4 +441,3 @@ axis(2, at=xx, labels=results$VariableName, tick=FALSE, las=2, line=-0.3, cex.ax
 **Conclusion**
 
 This approach only works when attempting to predict a binary outcome and won't work if predicting a continous variable. Also, it is a naive-based variable importance calcluator as it dosen't account for interactions between predictors. Yet, it is a fast way to size up a data set for supervised modeling and should handle very large dimensions. Happy explorations!
-
