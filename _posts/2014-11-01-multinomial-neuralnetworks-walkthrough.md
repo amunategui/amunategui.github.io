@@ -324,7 +324,7 @@ mean(totalAccuracy)
 
 ## [1] 0.9052
 ```
-The score using the <b>repeated cross validation</b> code is better than the original simple split of <b>0.9304</b> and we let each loop converge. The point of using the <b>repeated cross validation</b> code isn't that it will return a higher accuracy score (and it doesn't always) but that it will give you a much more accuracte score as it uses all of your data. 
+The score using the <b>repeated cross validation</b> code is better than the original simple split of <b>0.9304</b> and we let each loop converge. The point of using the <b>repeated cross validation</b> code isn't that it will return a higher accuracy score (and it doesn't always) but that it will give you a much more accurate score as it uses all of your data. 
 
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/MultinomWalkThru' target='_blank'>also on GitHub</a>)</a>:

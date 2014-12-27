@@ -94,7 +94,7 @@ print(names(titanicDF))
 ##  [9] "Title.Mrs"     "Title.Nothing" "Survived"
 ```
 <br><br>
-As you can see, each unique factor is now separated into its own column. Next, we need to understand the proportion of our outcome variable:
+As you can see, each unique factor is now separated into it's own column. Next, we need to understand the proportion of our outcome variable:
 
 ```r
 prop.table(table(titanicDF$Survived))
@@ -217,7 +217,7 @@ trainDF <- titanicDF[ splitIndex,]
 testDF  <- titanicDF[-splitIndex,]
 ```
 <br><br>
-**Caret** offers many tuning functions to help you get as much as possible out of your models; the <a href='http://www.inside-r.org/packages/cran/caret/docs/trainControl' target='_blank'>trainControl</a> function allows you to control the resampling of your data. This will split the training data set internally and do its own train/test runs to figure out the best settings for your model. In this case, we're going to cross-validate the data 3 times, therefore training it 3 times on different portions of the data before settling on the best tuning parameters (for **gbm** it is ``trees``, ``shrinkage``, and ``interaction depth``). You can also set these values yourself if you don't trust the function.
+**Caret** offers many tuning functions to help you get as much as possible out of your models; the <a href='http://www.inside-r.org/packages/cran/caret/docs/trainControl' target='_blank'>trainControl</a> function allows you to control the resampling of your data. This will split the training data set internally and do it's own train/test runs to figure out the best settings for your model. In this case, we're going to cross-validate the data 3 times, therefore training it 3 times on different portions of the data before settling on the best tuning parameters (for **gbm** it is ``trees``, ``shrinkage``, and ``interaction depth``). You can also set these values yourself if you don't trust the function.
 
 
 ```r
@@ -291,7 +291,7 @@ print(objModel)
 <BR><BR>
 **Evaluate gbm model**
 
-There are two types of evaluation we can do here, ``raw`` or ``prob``. **Raw** gives you a class prediction, in our case ``yes`` and ``nope``, while **prob** gives you the probability on how sure the model is about its choice. I always use **prob**, as I like to be in control of the threshold and also like to use <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>AUC</a> score  which requires probabilities, not classes. There are situations where having class values can come in handy, such as with multinomial models where you're predicting more than two values. 
+There are two types of evaluation we can do here, ``raw`` or ``prob``. **Raw** gives you a class prediction, in our case ``yes`` and ``nope``, while **prob** gives you the probability on how sure the model is about it's choice. I always use **prob**, as I like to be in control of the threshold and also like to use <a href='https://www.kaggle.com/wiki/AreaUnderCurve' target='_blank'>AUC</a> score  which requires probabilities, not classes. There are situations where having class values can come in handy, such as with multinomial models where you're predicting more than two values. 
 
 We now call the ``predict`` function and pass it our trained model and our testing data. Let's start by looking at class predictions and using the **caret** ``postResample`` function to get an accuracy score:
 
