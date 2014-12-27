@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "Quantifying the Spread: Measuring Strength and Direction of Predictors using the Summary Function"
+title: "Quantifying the Spread: Measuring Strength and Direction of Predictors with the Summary Function"
 category: Machine Learning
 tags: exploring
 year: 2014
 month: 12
 day: 27
 published: true
-summary: We split the data into two sets, one for each outcome, and summarize them individually. We then compare and plot those results to easily measure how a preditor behaves towards the outcome variable.
+summary: We split the data into two sets, one for each outcome, and summarize them individually. We then compare and plot those results to easily measure how a predictor behaves towards the outcome variable.
 image: supervised-summarizer/summarized-summary-plots.png
 ---
 **Resources**
@@ -406,7 +406,7 @@ multiplot(p1,p2,p3,p4,cols=2)
 
 ![plot of chunk unnamed-chunk-14](../img/posts/supervised-summarizer/unnamed-chunk-14.png) 
 <BR><BR>
-And now for the capper, let's plot everything on a bar graph so we can easily compare the strongest predictors and the direction they affect the model:
+And now for the final capper, let's plot everything on a bar graph so we can easily compare the strongest predictors and the direction they affect the model:
 
 
 ```r
@@ -435,7 +435,7 @@ axis(2, at=xx, labels=results$VariableName, tick=FALSE, las=2, line=-0.3, cex.ax
 
 **Conclusion**
 
-This approach only works when attempting to predict a binary outcome and won't work if predicting a continous variable. Also, it is a naive-based variable importance calcluator as it dosen't account for interactions between predictors. Yet, it is a fast way to size up a data set for supervised modeling and should handle very large dimensions. Happy explorations!
+This approach only works when attempting to predict a binary outcome and won't work for continuous outcomes (such as linear regression models). Also, it is a naive-based variable importance calculator as it doesn't account for interactions between predictors. Yet, it is a fast way to size up data for any supervised modeling and should handle extremely large dimensions. Happy explorations!
 
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/' target='_blank'>also on GitHub</a>)</a>:
