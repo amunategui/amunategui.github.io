@@ -30,7 +30,7 @@ You're probably familiar within the <a href='https://stat.ethz.ch/R-manual/R-dev
 ![plot of chunk two-predictors](../img/posts/supervised-summarizer/two-predictors.png) 
 <BR><BR>
 
-The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize them then. Comparing the results from both sets will tell you how well you predictor behaves towards your outcome variable. The above plots shows the summary of two predictors and their individual spreads - clearly, this first plot is a powerful predictor as the spread between the green and red line is large, while the second one isn't.
+The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize each. Comparing the results from both sets will tell you how well you predictor behaves towards your outcome variable. The above plots shows the summary of two predictors and their individual spreads - clearly, this first plot is a powerful predictor as the spread between the green and red line is large, while the second one isn't.
 
 Let's first measure a single predictor to see how this works, then we'll quantify this technique to it can be applied to entire data sets.
 
