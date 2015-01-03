@@ -7,12 +7,12 @@ year: 2014
 month: 12
 day: 27
 published: true
-summary: We split the data into two sets, one for each outcome, and summarize them individually. We then compare and plot these results to easily measure how a predictor behaves towards the outcome variable. Simple, easy, and fast!
+summary: Use the Summary() function to quickly and intuitively measure predictors. By splitting the data into two sets, one for each outcome, and summarizing them individually, we can plot and measure behaviors towards the outcome variable. Simple, easy, and fast!
 image: supervised-summarizer/summarized-summary-plots.png
 ---
 **Resources**
 <ul>
-<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=UBZ6I4dJpiE&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
 <BR>
