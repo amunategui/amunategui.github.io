@@ -30,8 +30,8 @@ image: yelp-cross-country-trip/cross-country-florist2.png
 <BR><BR>
 Just in time for <b>Valentine's Day</b>, if you happen to be planning a trip accross the United States and want to offer your companion a rose at every 1 degree of latitude traveled, then this walkthrough is for you! The title says it all, we’re going to use the <a href='http://www.yelp.com/' target='_blank'>Yelp</a> API to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. 
 <BR><BR>
-This walkthrough has two parts, the basics of Yelp and <a href='http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html' target='_blank'>httr</a>, and mapping script to hop from florist to florist across the country. The iternary will be plotted on <a href='http://cran.r-project.org/web/packages/ggmap/index.html' target='_blank'>ggmap</a>. <i>If all you need is to pull locations via Yelp, then the first part is all you need.</i>
-
+This walkthrough has two parts, first exploring the basics of Yelp and <a href='http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html' target='_blank'>httr</a>, and finally looking at a mapping script to hop from florist to florist across the country. The iternary will be plotted on <a href='http://cran.r-project.org/web/packages/ggmap/index.html' target='_blank'>ggmap</a>. <i>If all you need is to pull locations via Yelp, then the first part is all you need.</i>
+<BR><BR>
 **Part 1: Yelp and httr**
 
 We'll look at two different ways of using the <a href='http://www.yelp.com/developers/documentation/v2/search_api' target='_blank'>Yelp Search API</a>. For either of them, you will need to sign up for a free <a href='http://www.yelp.com/developers/' target='_blank'>Yelp account</a> and request <a href='http://www.yelp.com/developers/manage_api_keys' target='_blank'>API keys</a>.
