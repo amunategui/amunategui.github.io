@@ -22,13 +22,12 @@ image: yelp-cross-country-trip/cross-country-florist2.png
 **Packages Used in this Walkthrough**
 
 <ul>
-        <li type="square"><b>{caret}</b> - dummyVars function</li>
+        <li type="square"><b>{httr}</b> - dummyVars function</li>
+        <li type="square"><b>{jsonlite}</b> - dummyVars function</li>
         <li type="square"><b>{ggplot2}</b> - Graphics/Grammar of Graphics</li>
-        <li type="square"><b>{grid}</b> - Grid Graphics Package</li>
+        <li type="square"><b>{jsonlite}</b> - Grid Graphics Package</li>
 </ul>
-
 <BR><BR>
-
 Just in time for Valentine's day, if you are planning a trip accross the United States and want to offer your companion a rose every 1 degree latitude, then this code is for you! The title says it all, we’re going to use <a href='http://www.yelp.com/' target='_blank'>Yelp</a> to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. 
 <BR><BR>
 This walkthrough has two parts, the basics of Yelp and <a href='http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html' target='_blank'>httr</a>, and a traveling code to hop from florist to florist and cross the country. The iternary will be plotted on <a href='http://cran.r-project.org/web/packages/ggmap/index.html' target='_blank'>ggmap</a>. If all you need is to pull locations via Yelp, then the first part is all you need.
@@ -61,13 +60,6 @@ Load up the <b>httr</b> library and call the ``oauth_app`` function passing it a
 
 ```r
 require(httr)
-```
-
-```
-## Loading required package: httr
-```
-
-```r
 myApp <- oauth_app("YELP", key=consumerKey, secret=consumerSecret)
 mySignature <- sign_oauth1.0(myApp, token=token, token_secret=tokenSecret)
 ```
@@ -86,26 +78,6 @@ That's it, we entered the term <b>food</b> in <b>San Francisco</b> and asked to 
 
 ```r
 require(jsonlite)
-```
-
-```
-## Loading required package: jsonlite
-```
-
-```
-## Warning: package 'jsonlite' was built under R version 3.1.2
-```
-
-```
-## 
-## Attaching package: 'jsonlite'
-## 
-## The following object is masked from 'package:utils':
-## 
-##     View
-```
-
-```r
 locationDataContent = content(locationData)
 locationList=jsonlite::fromJSON(toJSON(locationDataContent))
 results <- data.frame(locationList)
@@ -205,30 +177,8 @@ This isn't a full-proof application (matter of fact it can only travel west to e
 
 ```r
 require(ggplot2)
-```
-
-```
-## Loading required package: ggplot2
-```
-
-```r
 require(ggmap)
-```
-
-```
-## Loading required package: ggmap
-```
-
-```r
 startingpoint <- geocode(c("Fishersman's Wharf, San Francisco, CA"))
-```
-
-```
-## Information from URL : http://maps.googleapis.com/maps/api/geocode/json?address=Fishersman's+Wharf,+San+Francisco,+CA&sensor=false
-## Google Maps API Terms of Service : http://developers.google.com/maps/terms
-```
-
-```r
 print(startingpoint)
 ```
 
@@ -239,14 +189,6 @@ print(startingpoint)
 
 ```r
 endingpoint <- geocode(c("Chelsea Piers, NY"))
-```
-
-```
-## Information from URL : http://maps.googleapis.com/maps/api/geocode/json?address=Chelsea+Piers,+NY&sensor=false
-## Google Maps API Terms of Service : http://developers.google.com/maps/terms
-```
-
-```r
 print(endingpoint)
 ```
 
@@ -272,16 +214,6 @@ objdf <- data.frame('latitude'=latitudes,
 # get a Google map
 map<-get_map(location='united states', zoom=4, maptype = "terrain",
              source='google',color='color')
-```
-
-```
-## Map from URL : http://maps.googleapis.com/maps/api/staticmap?center=united+states&zoom=4&size=%20640x640&scale=%202&maptype=terrain&sensor=false
-## Google Maps API Terms of Service : http://developers.google.com/maps/terms
-## Information from URL : http://maps.googleapis.com/maps/api/geocode/json?address=united+states&sensor=false
-## Google Maps API Terms of Service : http://developers.google.com/maps/terms
-```
-
-```r
 objMap <- NULL
 objMap <- ggmap(map) + geom_point(
         aes(x=longitude, y=latitude, size=size, 
@@ -291,7 +223,7 @@ objMap <- ggmap(map) + geom_point(
 objMap
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk startendpoint](../img/posts/yelp-cross-country-trip/startendpoint.png) 
 <BR><BR>
 I will keep the details short on the next few functions. ``MapIt`` takes geo-spatial coordinates, a size, and the ``ggmap`` object. The function will return the ``ggmap`` object and we need to always pass the same ``ggmap`` back if we want to update and track the journey's history. 
 
@@ -572,15 +504,14 @@ token_secret = "xxxxx"
 
 require(httr)
 require(jsonlite)
-library(rjson)
 
 # authorization
 myapp = oauth_app("Yelp", key=consumerKey, secret=consumerSecret)
 sig=sign_oauth1.0(myapp, token=token,token_secret=token_secret)
 
 ############################### Manual Code ###############################
-library(ggplot2)
-library(ggmap)
+require(ggplot2)
+require(ggmap)
 
 # Get our starting and ending points
 # Fisherman's Wharf, San Francisco, CA 94109
