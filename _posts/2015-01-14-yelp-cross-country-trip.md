@@ -434,7 +434,7 @@ So, I didn't quite deliver on my promise of being within 60 miles of a florist a
 
 
 <BR><BR>              
-<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/Walkthrough-of-the-dummyVars-Function' target='_blank'>also on GitHub</a>)</a>:
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/cross-country-trip-with-yelp' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
 
