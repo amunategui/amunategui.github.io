@@ -11,9 +11,6 @@ summary: Give <B>fscaret</B> an ensemble of models and some data, and it will ha
 image: FSCARET_Walkthrough/titanic.png
 ---
 
-![plot of chunk cyclingandsnowboarding](../img/posts/FSCARET_Walkthrough/titanic.png) 
-<BR><BR>
-
 **Resources**
 <ul>
 <li type="square"><a href="https://www.youtube.com/watch?v=dTRDZBltCTg&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
@@ -107,6 +104,10 @@ The input data needs to be formatted in a particular way: **MISO**. (Multiple In
 <BR><BR>
 As with anything **ensemble** related, if you're going to run 50 models in one shot, you better have the computing muscle to do so - there's no free lunch. Start with a single or small set of models. If you're going to run a large ensemble of models, fire it up before going to bed and see what you get the next day.
 <BR><BR>
+	
+![plot of chunk cyclingandsnowboarding](../img/posts/FSCARET_Walkthrough/titanic.png) 
+<BR><BR>
+
 For the demo, we'll use a Titanic dataset from the University of Colorado Denver. This is a classic data set often seen in online courses and walkthroughs. The outcome is passenger survivorship (i.e. can you predict who will survive based on various features). We drop the passenger names as they are all unique but keep the passenger titles. We also impute the missing 'Age' variables with the mean:
 
 ```r
