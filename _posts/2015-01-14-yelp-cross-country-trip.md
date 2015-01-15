@@ -430,7 +430,7 @@ This is the output you will see when you run the code. It will log each point tr
 
 **Conclusion**
 
-So, I didn't quite deliver on my promise of being within 60 miles of a florist at all times, it may or may not be possible (and certainly won't find out with the current state of my code). Yet, we managed to be within those parameters during most of the journey. You can try with with different terms, different locations, even upgrade the algorithm to do cooler things - just don't abuse the API or the party may end for all of us.
+So, I didn't quite deliver on my promise of being within 60 miles of a florist at all times, it may or may not be possible (and we certainly won't find out with the state of my current code). Yet, we managed to be within those parameters during most of the journey. You can try with with different terms, different locations, even upgrade the algorithm to do cooler things - just don't abuse the API as it may end the party for all of us.
 
 
 <BR><BR>              
