@@ -354,7 +354,7 @@ MakeAMove <- function(lat,lon,sizebox, searchTerm, lat_endPoint) {
 Let's finally look at the main logic. Here we set a search term 'florist', and a bounded square size unit, ``1`` degree in this case. ``madeIt`` is the boolean flag that keeps the while loop going until we make it close to our final destination (or if 100 tires went by). ``Sys.sleep(0.5)`` will pause the code between each loop, this is critical so you don't flood the Yelp server and get yourself banned.
 The rest should be self-explanatory.
 
-```
+```r
 ## [1] "Scanning new_top_area for florist ..."
 ## [1]   40.46699 -118.28123   39.46699 -117.28123
 ## [1] "Scanning new_bottom_area for florist ..."
