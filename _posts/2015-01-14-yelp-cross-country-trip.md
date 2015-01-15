@@ -272,10 +272,10 @@ GetBestYelpLocation <- function(boundedcoordinates, term) {
 }
 ```
 <BR><BR>
-``GetPossibleCoordinates`` takes the current position of our traveler and calculates its bounded box. The default bounded box unit is 1 degree (loosely around 60 miles), so we add 30 miles in all four directions from the current point to created the bounded square. 
+``GetPossibleCoordinates`` takes the current position of our traveler and calculates its bounded box. The default bounded box unit is 1 degree (equates loosely around 60 miles), so we add 30 miles in all four directions from the current point to created the bounded square (making it a 1x1 degree box, or 60x60 miles box). 
  
 ![plot of chunk newmove](../img/posts/yelp-cross-country-trip/nextmove.png) 
-
+<BR><BR>
 It returns the next two possible moves, both forward but one higher and one lower (see image below). 
 
 ```r
@@ -316,7 +316,7 @@ GetPossibleCoordinates<-function(lat, lon, area=1) {
 }
 ```
 <BR><BR>
-Finally, ``MakeAMove`` is the central relay that communicates with the other functions. It will get the next coordinates via ``GetPossibleCoordinates``, figure out if it should try up or down first depending on where it is in relation to the end point's latitude, and call on the Yelp API. If it finds a florist, it will report back the pertinent information such as the florist's name, state, and coordinates.
+Finally, ``MakeAMove`` is the central relay that communicates with the other functions. It will get the next coordinates via ``GetPossibleCoordinates``, figure out if it should try up or down first depending on where it is in relation to the end point's latitude, and call on the Yelp API. If it finds a florist, it will report back the pertinent information such as the florist's name, state, and coordinates. If it can't find one, it will report so by returning ``NULL``. 
 
 
 ```r
@@ -339,9 +339,9 @@ MakeAMove <- function(lat,lon,sizebox, searchTerm, lat_endPoint) {
 }
 ```
 
-Let's finally look at the main logic. Here we set a search term 'florist', and a bounded square size unit, ``1`` degree in this case. ``madeIt`` is the boolean flag that keeps the while loop going until we make it close to our final destination (or if 100 tires went by). ``Sys.sleep(0.5)`` will pause the code between each loop, this is critical so you don't flood the Yelp server and get yourself banned.
-The rest should be self-explanatory.
+Let's finally look at the main logic. Here we set a search term ``florist``, and a bounded square size unit, ``1`` degree in this case. ``madeIt`` is the boolean flag that keeps the while loop going until we make it close to our final destination (or if we fail after 100 tries). ``Sys.sleep(0.5)`` will pause the code between each loop, this is critical so you don't flood the Yelp server and get yourself banned.
 
+```r
 searchTerm <- 'florist'
 squareSize <- 1 # setting the bounded area to a square 
 
