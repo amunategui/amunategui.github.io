@@ -7,9 +7,13 @@ year: 2015
 month: 01
 day: 14
 published: true
-summary: The title says it all, we are going to use <b>Yelp</b> to cross the United States from San Francisco, CA to New York City, NY, and be within 60 miles from a florist at all times.
+summary: The title says it all, we are going to use <b>Yelp</b> to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times.
 image: yelp-cross-country-trip/cross-country-florist2.png
 ---
+
+![plot of chunk cross-country-florist](yelp-cross-country-trip/cross-country-florist.png) 
+<BR><BR>
+
 **Resources**
 <ul>
 <li type="square"><a href="https://www.youtube.com/watch?v=UBZ6I4dJpiE&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
