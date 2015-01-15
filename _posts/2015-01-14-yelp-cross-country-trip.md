@@ -156,9 +156,9 @@ The difference is syntactical, instead of building the URL with ``location``, we
 
 Let me tell you, this was a blast to design and build! I'll go over the pertinent parts but if you want to see this in action yourself, copy the code at the end of the walkthrough and replace the Yelp credentials with yours and you're good to go!
 
-Though not a full-proof application (matter of fact it can only travel west to east), it will take a departure and destination set of latitudes and longitudes, a search term and attempt to link both points with a path using your search term every 60 miles approximately. Here, we will go from San Francisco, CA to New York City, NY, florist by florist.
+Though not a full-proof application (matter of fact it can only travel west to east), it will take a departure and destination set of latitudes and longitudes, a search term and attempt to link both points with a path using your search term every 60 miles (approximately 1 geo-coordinate degree). Here, we will go from San Francisco, CA to New York City, NY, florist by florist.
 
-``ggmap`` has a handy function called ``geocode``. You can give it addresses, zip codes, famous monuments, and it will return that places latitude and longitude coordinates. 
+``ggmap`` has a handy function called ``geocode``. You can give it addresses, zip codes, even famous monuments, and it will return latitude and longitude coordinates. 
 
 
 ```r
@@ -183,9 +183,9 @@ print(endingpoint)
 ## 1 -74.01 40.75
 ```
 <BR><BR>
-Now we know our staring and ending points, let's start our first point manually then generalize tasks through functions. 
+Now that we know our starting and ending points, let's start our first point manually then generalize the tasks through functions. 
 
-We'll use ``ggmap`` to import a map of the United States from Google. ``ggplot2`` accepts a data frame, let's make one with our start and end points and see the journey that lies ahead. We'll assign an importance to each point - start and end are 10, 
+We'll use ``ggmap`` to import a map of the United States from Google. ``ggplot2`` accepts a data frame, let's make one with our start and end points and see the journey that lies ahead. We'll assign them large sizes to differentiate them from the traveling points:
 
 
 ```r
@@ -200,12 +200,13 @@ objdf <- data.frame('latitude'=latitudes,
 # get a Google map
 map<-get_map(location='united states', zoom=4, maptype = "terrain",
              source='google',color='color')
-objMap <- NULL
+
 objMap <- ggmap(map) + geom_point(
         aes(x=longitude, y=latitude, size=size, 
             show_guide = TRUE, colour = color), 
         data=objdf, alpha=.8, na.rm = T) 
 
+# call the objMap object to see the plot 
 objMap
 ```
 
@@ -231,7 +232,7 @@ MapIt <- function(latitude, longitude, size, objggmap) {
 }
 ```
 <BR><BR>
-``GetBestYelpLocation``, as its name implies, takes a vector of two sets of geo-spatial coordinates, the upper left point and the lower right one, along with the search term and sends it to Yelp. It returns a data frame with the ``name``, ``city``, ``rating``, ``state``, and geo-spatial coordinates of the top location using the search term.
+``GetBestYelpLocation``, as its name implies, takes a vector of two sets of geo-spatial coordinates, the upper left point and the lower right one, along with the search term and sends it to Yelp. It returns a data frame with the ``name``, ``city``, ``rating``, ``state``, ``latitude`` and ``longitude`` of the top location using the search term.
 
 
 ```r
@@ -273,7 +274,9 @@ GetBestYelpLocation <- function(boundedcoordinates, term) {
 <BR><BR>
 ``GetPossibleCoordinates`` takes the current position of our traveler, calculates its bounded box and returns the next two possible moves. One higher forward move and one lower forward move (see image below).
 
-The default bounded box unit is 1 degree (very loosely around 60 miles), so we add 30 miles in all four directions. 
+![plot of chunk newmove](../img/posts/yelp-cross-country-trip/nextmove.png) 
+
+The default bounded box unit is 1 degree (very loosely around 60 miles), so we add 30 miles in all four directions from the current point to created the bounded square. 
 
 
 ```r
