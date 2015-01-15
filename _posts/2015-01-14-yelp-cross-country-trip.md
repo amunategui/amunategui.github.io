@@ -44,7 +44,7 @@ Unfortunately, its a bit more complicated than simply dropping that in a browser
 
 This is a cleaver of way authenticating you without exposing your account or password. On a very high level, it is done with a two-step process, first we ask Yelp for a signature key through a GET command, then we use that returned temporary key to retrieve our locations. Check out <a href='http://www.yelp.com/developers/documentation/v2/authentication' target='_blank'>Yelp's authentication docs</a> for more details.
 
-This is a lot of work to do manually, but the handy <a href='http://cran.r-project.org/web/packages/httr/index.html' target='_blank'>httr package</a> from Hadley Wickham handles a lot of the authentication minutia details automatically. It’s a really cool package as it can 'shake hands' with many <b>HTTP</b> API's (Twitter, Facebook, Linkedin, Google, etc).
+This is a lot of work to do manually, but the handy <a href='http://cran.r-project.org/web/packages/httr/index.html' target='_blank'>httr package</a> from Hadley Wickham handles a lot of the authentication details automatically. It’s a really cool package as it can 'shake hands' with many <b>HTTP</b> API's (Twitter, Facebook, Linkedin, Google, etc).
 
 After you get your keys from <b>Yelp</b>, swap them for the x’s in the code below:
 
@@ -55,7 +55,7 @@ token = "xxxx"
 tokenSecret = "xxxx"
 ```
 <BR><BR>
-Load up the <b>httr</b> library and call the ``oauth_app`` function passing it a name tag (can be anything you want), and your ``consumer`` credentials. Next call up the ``sign_oauth1.0``, pass it the ``myapp`` object along with your ``token`` credentials.
+Load up the <b>httr</b> library and call the ``oauth_app`` function passing it a name tag (can be anything you want), and your ``consumer`` credentials. Next call up the ``sign_oauth1.0``, pass it the ``myapp`` object along with your ``token`` credentials:
 
 
 ```r
@@ -63,8 +63,9 @@ require(httr)
 myApp <- oauth_app("YELP", key=consumerKey, secret=consumerSecret)
 mySignature <- sign_oauth1.0(myApp, token=token, token_secret=tokenSecret)
 ```
-
+<BR><BR>
 ** Searching by Locations**
+
 Your signature is ready to be used on a <b>Yelp</b> search query:
 
 
@@ -73,7 +74,7 @@ yelpURL <- paste0("http://api.yelp.com/v2/search/?limit=3&term=food&location=San
 locationData <- GET(yelpURL, mySignature)
 ```
 <BR><BR>
-That's it, we entered the term <b>food</b> in <b>San Francisco</b> and asked to limit it to ``3`` result. Let's use the JSON parser, <a href='http://cran.r-project.org/web/packages/jsonlite/index.html' target='_blank'>jsonlite</a>, to access them:
+That is it! We entered the term <b>food</b> in <b>San Francisco</b> and asked to limit it to ``3`` result. Let's use the JSON parser, <a href='http://cran.r-project.org/web/packages/jsonlite/index.html' target='_blank'>jsonlite</a> to extract the results the results:
 
 
 ```r
@@ -95,7 +96,7 @@ results$businesses.name
 ## [1] "The Codmother Fish and Chips"
 ```
 <BR><BR>
-``results$businesses.name`` returned three business names as asked, but it offers up a lot more variables:
+``results$businesses.name`` returned 3 businesses, but offers a whole lot more:
 
 
 ```r
@@ -117,12 +118,12 @@ names(results)
 ## [23] "businesses.id"                   "businesses.is_closed"           
 ## [25] "businesses.location"
 ```
-
+<BR><BR>
 Obviously, the terms <b>food</b> and <b>San Francisco</b> are way too vague, but you get the idea. Next we'll search by geo-spatial coordinates.
-
+<BR><BR>
 ** Searching by Geo-Spatial Coordinates**
 
-This is very close to what we did above except we specify the location down to the latitude and longitude of the desired area. How about three bars by Montgomery and Market Streets in San Francisco:
+This is very close to what we did above except we specify the location down to the latitude and longitude of the desired area. How about 3 bars by Montgomery and Market Streets in San Francisco:
 
 ```r
 yelpURL <- paste0("http://api.yelp.com/v2/search/?limit=3&ll=37.788022,-122.399797&term=bar")
@@ -131,22 +132,6 @@ require(jsonlite)
 locationDataContent = content(locationData)
 locationList=jsonlite::fromJSON(toJSON(locationDataContent))
 results <- data.frame(locationList)
-names(results)
-```
-
-```
-##  [1] "region.span.latitude_delta"      "region.span.longitude_delta"    
-##  [3] "region.center.latitude"          "region.center.longitude"        
-##  [5] "total"                           "businesses.is_claimed"          
-##  [7] "businesses.distance"             "businesses.mobile_url"          
-##  [9] "businesses.rating_img_url"       "businesses.review_count"        
-## [11] "businesses.name"                 "businesses.snippet_image_url"   
-## [13] "businesses.rating"               "businesses.url"                 
-## [15] "businesses.location"             "businesses.phone"               
-## [17] "businesses.snippet_text"         "businesses.image_url"           
-## [19] "businesses.categories"           "businesses.display_phone"       
-## [21] "businesses.rating_img_url_large" "businesses.id"                  
-## [23] "businesses.is_closed"            "businesses.rating_img_url_small"
 ```
 
 ```r
@@ -164,15 +149,16 @@ results$businesses.name
 ## [1] "Rickhouse"
 ```
 <BR><BR>
-The difference is syntactical, instead of building the URL with ``location``, we do it with ``ll``. We'll use a thrid way of pulling locations in part 2 - geo-spatial bounded boxes. That's it for part 1.
+The difference is syntactical, instead of building the URL with ``location``, we do it with ``ll``. We'll use a third way of pulling locations in part 2 - geo-spatial bounded boxes. That's it for part 1.
+<BR><BR>
 
 **Part 2: Hoping from Florist to Florist Across the United States**
 
 Let me tell you, this was a blast to design and build! I'll go over the pertinent parts but if you want to see this in action yourself, copy the code at the end of the walkthrough and replace the Yelp credentials with yours and you're good to go!
 
-This isn't a full-proof application (matter of fact it can only travel west to east), but it will take a departure and destination set of latitudes and longitudes, a search term and attempt to link both points with a path using your search term every 60 miles approximately. Here, we will go from San Francisco, CA to New York City, NY, florist by florist.
+Though not a full-proof application (matter of fact it can only travel west to east), it will take a departure and destination set of latitudes and longitudes, a search term and attempt to link both points with a path using your search term every 60 miles approximately. Here, we will go from San Francisco, CA to New York City, NY, florist by florist.
 
-``ggmap`` has a handy function called `geocode``. You can give it addresses, zip codes, famous monuments, and it will return that places latitude and longitude coordinates. 
+``ggmap`` has a handy function called ``geocode``. You can give it addresses, zip codes, famous monuments, and it will return that places latitude and longitude coordinates. 
 
 
 ```r
