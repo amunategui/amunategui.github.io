@@ -10,6 +10,10 @@ published: true
 summary: Give <B>fscaret</B> an ensemble of models and some data, and it will have the ensemble vote on the importance of each feature to find the strongest ones. In this walkthrough, we use <b>R</b> and the classic Titanic data set to predict survivorship.
 image: FSCARET_Walkthrough/titanic.png
 ---
+
+![plot of chunk cyclingandsnowboarding](../img/posts/FSCARET_Walkthrough/titanic.png) 
+<BR><BR>
+
 **Resources**
 <ul>
 <li type="square"><a href="https://www.youtube.com/watch?v=dTRDZBltCTg&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
