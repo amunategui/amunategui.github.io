@@ -371,7 +371,7 @@ The rest should be self-explanatory.
 ## [1]  41.24341 -75.06065  40.24341 -74.06065
 ## [1] "Our new florist is Monday Morning Flower and Balloon Co. in Princeton NJ with a 4.5 start rating"
 ## [1] "We made it!! It took 41 hops..."
-
+```
 
 **Conclusion**
 So, I didn't quite deliver on my promise of being within 60 miles of a florist at all times, it may or may not be possible (and certainly won't find out with the current state of my code). Yet, we managed to be within those parameters during most of the journey. You can try with with different terms, different locations, even upgrade the algorithim to do cooler things - just don't abuse the API or the party may end for all of us.
