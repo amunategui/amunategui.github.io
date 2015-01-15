@@ -338,7 +338,7 @@ MakeAMove <- function(lat,lon,sizebox, searchTerm, lat_endPoint) {
         return (NULL)
 }
 ```
-
+<BR><BR>
 Let's finally look at the main logic. Here we set a search term ``florist``, and a bounded square size unit, ``1`` degree in this case. ``madeIt`` is the boolean flag that keeps the while loop going until we make it close to our final destination (or if we fail after 100 tries). ``Sys.sleep(0.5)`` will pause the code between each loop, this is critical so you don't flood the Yelp server and get yourself banned.
 
 ```r
@@ -403,8 +403,8 @@ while(madeIt == FALSE) {
         Sys.sleep(0.5)
 }
 ```
-
-This is the output you will see when you run the code. It will log each point traveled and print the name of the florist. In case it cannot find one in either the upper or lower forward areas, the system will increase the square size by a degree (making it a 2x2 box instead of a 1x1 box) until it can find a florist. This is why in the final map below you see some gaps in deserted or mountainous zones.
+<BR><BR>
+This is the output you will see when you run the code. It will log each point traveled and print the name of the florist. In case it cannot find one in either the upper or lower forward areas, the system will increase the square size by a degree (making it a 2x2 box instead of a 1x1 box) until it can find a florist. This is why in the final map below you will see gaps in deserted or mountainous zones.
 
 ```r
 ## [1] "Scanning new_top_area for florist ..."
