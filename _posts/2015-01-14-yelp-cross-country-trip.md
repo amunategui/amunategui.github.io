@@ -10,8 +10,7 @@ published: true
 summary: The title says it all, we are going to use <b>Yelp</b> to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times.
 image: yelp-cross-country-trip/cross-country-florist2.png
 ---
-
-![plot of chunk cross-country-florist](yelp-cross-country-trip/cross-country-florist.png) 
+![plot of chunk cross-country-florist](../img/posts/yelp-cross-country-trip/cross-country-florist.png) 
 <BR><BR>
 
 **Resources**
@@ -30,8 +29,6 @@ image: yelp-cross-country-trip/cross-country-florist2.png
 
 <BR><BR>
 
-
-==========================
 Just in time for Valentine's day, if you are planning a trip accross the United States and want to offer your companion a rose every 1 degree latitude, then this code is for you! The title says it all, we’re going to use <a href='http://www.yelp.com/' target='_blank'>Yelp</a> to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. 
 <BR><BR>
 This walkthrough has two parts, the basics of Yelp and <a href='http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html' target='_blank'>httr</a>, and a traveling code to hop from florist to florist and cross the country. The iternary will be plotted on <a href='http://cran.r-project.org/web/packages/ggmap/index.html' target='_blank'>ggmap</a>. If all you need is to pull locations via Yelp, then the first part is all you need.
