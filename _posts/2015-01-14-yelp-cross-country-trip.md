@@ -28,7 +28,7 @@ image: yelp-cross-country-trip/cross-country-florist2.png
         <li type="square"><b>{ggmap}</b> - Spatial visualization with Google Maps and OpenStreetMap</li>
 </ul>
 <BR><BR>
-Just in time for <b>Valentine's Day</b>, if you happen to be planning a trip accross the United States and want to offer your companion a rose at every 1 degree of latitude traveled, then this walkthrough is for you! The title says it all, we’re going to use the <a href='http://www.yelp.com/' target='_blank'>Yelp</a> API to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. 
+Just in time for <b>Valentine's Day</b>, if you happen to be planning a trip accross the United States and want to offer your companion a rose at every degree of latitude traveled, then this walkthrough is for you! The title says it all, we’re going to use the <a href='http://www.yelp.com/' target='_blank'>Yelp</a> API to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. 
 <BR><BR>
 This walkthrough has two parts, first exploring the basics of Yelp and <a href='http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html' target='_blank'>httr</a>, and finally looking at a mapping script to hop from florist to florist across the country. The iternary will be plotted on <a href='http://cran.r-project.org/web/packages/ggmap/index.html' target='_blank'>ggmap</a>. <i>If all you need is to pull locations via Yelp, then the first part is all you need.</i>
 <BR><BR>
@@ -38,7 +38,7 @@ We'll look at two different ways of using the <a href='http://www.yelp.com/devel
 
 The simplest and probably most common way of using the API, is to request a term for a specific city or address. This is what the URL would look like for the term ``food`` around ``San Franciso``:
 
-<quote>http://api.yelp.com/v2/search?term=food&location=San+Francisco</quote>
+<blockquote>http://api.yelp.com/v2/search?term=food&location=San+Francisco</blockquote>
  
 Unfortunatly, its a bit more complicated than simply dropping that in a browser. To authenticate (i.e. be recognized as a registered user), Yelp uses <a href='http://tools.ietf.org/html/rfc5849' target='_blank'>OAuth v1.0a protocol</a>. 
 
