@@ -272,12 +272,11 @@ GetBestYelpLocation <- function(boundedcoordinates, term) {
 }
 ```
 <BR><BR>
-``GetPossibleCoordinates`` takes the current position of our traveler, calculates its bounded box and returns the next two possible moves. One higher forward move and one lower forward move (see image below).
-
+``GetPossibleCoordinates`` takes the current position of our traveler and calculates its bounded box. The default bounded box unit is 1 degree (loosely around 60 miles), so we add 30 miles in all four directions from the current point to created the bounded square. 
+ 
 ![plot of chunk newmove](../img/posts/yelp-cross-country-trip/nextmove.png) 
 
-The default bounded box unit is 1 degree (very loosely around 60 miles), so we add 30 miles in all four directions from the current point to created the bounded square. 
-
+It returns the next two possible moves, both forward but one higher and one lower (see image below). 
 
 ```r
 GetPossibleCoordinates<-function(lat, lon, area=1) {
@@ -343,6 +342,70 @@ MakeAMove <- function(lat,lon,sizebox, searchTerm, lat_endPoint) {
 Let's finally look at the main logic. Here we set a search term 'florist', and a bounded square size unit, ``1`` degree in this case. ``madeIt`` is the boolean flag that keeps the while loop going until we make it close to our final destination (or if 100 tires went by). ``Sys.sleep(0.5)`` will pause the code between each loop, this is critical so you don't flood the Yelp server and get yourself banned.
 The rest should be self-explanatory.
 
+searchTerm <- 'florist'
+squareSize <- 1 # setting the bounded area to a square 
+
+# start trip info vectors - we need to remember where we've been!
+currentLatitude <- startingpoint$lat
+currentLongitude <- startingpoint$lon
+
+# let ggmap keep track of where we've been
+objMap <- MapIt(currentLatitude, currentLongitude, 1, objMap)
+
+madeIt=FALSE
+safetyCount <- 0
+foundCount <- 0
+while(madeIt == FALSE) {
+        safetyCount <- safetyCount + 1
+        foundLocation <- MakeAMove(lat=currentLatitude,
+                                   lon=currentLongitude,
+                                   sizebox=squareSize,
+                                   searchTerm=searchTerm,
+                                   endingpoint$lat)
+        
+        if (!is.null(foundLocation)) {
+                print (paste('Our new',searchTerm, 'is', foundLocation$name, 'in', 
+                             foundLocation$city, foundLocation$state,
+                             'with a', foundLocation$rating, 'start rating'))
+                currentLatitude <- foundLocation$latitude
+                currentLongitude <- foundLocation$longitude
+                
+                # reset temporary setting
+                squareSize <- 1
+                
+                # let ggmap keep track of where we've been
+                objMap <- MapIt(currentLatitude, currentLongitude, squareSize, objMap)
+                
+                # let's keep track how our successes!
+                foundCount <- foundCount + 1
+        } else {
+                # increase squareSize
+                print(paste("Can't find any", searchTerm,", enlarging square search area to",squareSize + 1))
+                
+                # temporary settings to get us out of desert
+                squareSize <- squareSize + 1
+        }  
+        
+        # have we arrived at our end point
+        if ((currentLongitude < (endingpoint$lon + squareSize)) 
+                & (currentLongitude > (endingpoint$lon - squareSize)))
+        {
+                print(paste('We made it!! It took',foundCount,'hops...'))
+                break
+        }
+        if (safetyCount > 100) 
+        {
+                print(paste('Giving up!! Failed after',foundCount,'hops'))
+                break
+        }
+                  
+        # be considerate with your Yelp requests
+        Sys.sleep(0.5)
+}
+```
+
+This is the output you will see when you run the code. It will log each point traveled and print the name of the florist. In case it cannot find one in either the upper or lower forward areas, the system will increase the square size by a degree (making it a 2x2 box instead of a 1x1 box) until it can find a florist. This is why in the final map below you see some gaps in deserted or mountainous zones.
+
 ```r
 ## [1] "Scanning new_top_area for florist ..."
 ## [1]   40.46699 -118.28123   39.46699 -117.28123
@@ -361,8 +424,12 @@ The rest should be self-explanatory.
 ## [1] "Our new florist is Monday Morning Flower and Balloon Co. in Princeton NJ with a 4.5 start rating"
 ## [1] "We made it!! It took 41 hops..."
 ```
+<BR><BR>
+![plot of chunk crosscountryplot](../img/posts/yelp-cross-country-trip/crosscountryplot.png) 
+<BR><BR>
 
 **Conclusion**
+
 So, I didn't quite deliver on my promise of being within 60 miles of a florist at all times, it may or may not be possible (and certainly won't find out with the current state of my code). Yet, we managed to be within those parameters during most of the journey. You can try with with different terms, different locations, even upgrade the algorithm to do cooler things - just don't abuse the API or the party may end for all of us.
 
 
