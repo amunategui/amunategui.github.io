@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Yelp, httr and a Romantic Trip Accross the United States, One Florist at a Time"
+title: "Yelp, httr and a Romantic Trip Across the United States, One Florist at a Time"
 category: Machine Learning
 tags: visualizing exploring
 year: 2015
@@ -28,9 +28,9 @@ image: yelp-cross-country-trip/cross-country-florist2.png
         <li type="square"><b>{ggmap}</b> - Spatial visualization with Google Maps and OpenStreetMap</li>
 </ul>
 <BR><BR>
-Just in time for <b>Valentine's Day</b>, if you happen to be planning a trip accross the United States and want to offer your companion a rose at every degree of latitude traveled, then this walkthrough is for you! The title says it all, we’re going to use the <a href='http://www.yelp.com/' target='_blank'>Yelp</a> API to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. 
+Just in time for <b>Valentine's Day</b>, if you happen to be planning a trip across the United States and want to offer your companion a rose at every degree of latitude traveled, then this walkthrough is for you! The title says it all, we’re going to use the <a href='http://www.yelp.com/' target='_blank'>Yelp</a> API to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. 
 <BR><BR>
-This walkthrough has two parts, first exploring the basics of Yelp and <a href='http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html' target='_blank'>httr</a>, and finally looking at a mapping script to hop from florist to florist across the country. The iternary will be plotted on <a href='http://cran.r-project.org/web/packages/ggmap/index.html' target='_blank'>ggmap</a>. <i>If all you need is to pull locations via Yelp, then the first part is all you need.</i>
+This walkthrough has two parts, first exploring the basics of Yelp and <a href='http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html' target='_blank'>httr</a>, and finally looking at a mapping script to hop from florist to florist across the country. The itinerary will be plotted on <a href='http://cran.r-project.org/web/packages/ggmap/index.html' target='_blank'>ggmap</a>. <i>If all you need is to pull locations via Yelp, then the first part is all you need.</i>
 <BR><BR>
 **Part 1: Yelp and httr**
 
@@ -40,9 +40,9 @@ The simplest and probably most common way of using the API, is to request a term
 
 <blockquote>http://api.yelp.com/v2/search?term=food&location=San+Francisco</blockquote>
  
-Unfortunatly, its a bit more complicated than simply dropping that in a browser. To authenticate (i.e. be recognized as a registered user), Yelp uses <a href='http://tools.ietf.org/html/rfc5849' target='_blank'>OAuth v1.0a protocol</a>. 
+Unfortunately, its a bit more complicated than simply dropping that in a browser. To authenticate (i.e. be recognized as a registered user), Yelp uses <a href='http://tools.ietf.org/html/rfc5849' target='_blank'>OAuth v1.0a protocol</a>. 
 
-This is a cleaver of way autehnicating you without exposing your account or password. On a very high level, it is done with a two-step process, first we ask Yelp for a signature key through a GET command, then we use that returned temporary key to retrieve our locations. Check out <a href='http://www.yelp.com/developers/documentation/v2/authentication' target='_blank'>Yelp's authentication docs</a> for more details.
+This is a cleaver of way authenticating you without exposing your account or password. On a very high level, it is done with a two-step process, first we ask Yelp for a signature key through a GET command, then we use that returned temporary key to retrieve our locations. Check out <a href='http://www.yelp.com/developers/documentation/v2/authentication' target='_blank'>Yelp's authentication docs</a> for more details.
 
 This is a lot of work to do manually, but the handy <a href='http://cran.r-project.org/web/packages/httr/index.html' target='_blank'>httr package</a> from Hadley Wickham handles a lot of the authentication minutia details automatically. It’s a really cool package as it can 'shake hands' with many <b>HTTP</b> API's (Twitter, Facebook, Linkedin, Google, etc).
 
@@ -164,13 +164,13 @@ results$businesses.name
 ## [1] "Rickhouse"
 ```
 <BR><BR>
-The difference is syntatical, instead of building the URL with ``location``, we do it with ``ll``. We'll use a thrid way of pulling locations in part 2 - geo-spatial bounded boxes. That's it for part 1.
+The difference is syntactical, instead of building the URL with ``location``, we do it with ``ll``. We'll use a thrid way of pulling locations in part 2 - geo-spatial bounded boxes. That's it for part 1.
 
-**Part 2: Hoping from Florist to Florist Accross the United States**
+**Part 2: Hoping from Florist to Florist Across the United States**
 
-Let me tell you, this was a blast to design and build! I'll go over the perinent parts but if you want to see this in action yourself, copy the code at the end of the walkthrough and replace the Yelp credentials with yours and you're good to go!
+Let me tell you, this was a blast to design and build! I'll go over the pertinent parts but if you want to see this in action yourself, copy the code at the end of the walkthrough and replace the Yelp credentials with yours and you're good to go!
 
-This isn't a full-proof application (matter of fact it can only travel west to east), but it will take a departure and destination set of latitudes and logitudes, a search term and attempt to link both points with a path using your search term every 60 miles approximately. Here, we will go from San Francisco, CA to New York City, NY, florist by florist.
+This isn't a full-proof application (matter of fact it can only travel west to east), but it will take a departure and destination set of latitudes and longitudes, a search term and attempt to link both points with a path using your search term every 60 miles approximately. Here, we will go from San Francisco, CA to New York City, NY, florist by florist.
 
 ``ggmap`` has a handy function called `geocode``. You can give it addresses, zip codes, famous monuments, and it will return that places latitude and longitude coordinates. 
 
@@ -285,9 +285,9 @@ GetBestYelpLocation <- function(boundedcoordinates, term) {
 }
 ```
 <BR><BR>
-``GetPossibleCoordinates`` takes the current position of our traveler, calculates its bounded box and returns the next two possible moves. One higher foward move and one lower forward move (see image below).
+``GetPossibleCoordinates`` takes the current position of our traveler, calculates its bounded box and returns the next two possible moves. One higher forward move and one lower forward move (see image below).
 
-The default bounded box unit is 1 degree (very loosly around 60 miles), so we add 30 miles in all four directions. 
+The default bounded box unit is 1 degree (very loosely around 60 miles), so we add 30 miles in all four directions. 
 
 
 ```r
@@ -328,7 +328,7 @@ GetPossibleCoordinates<-function(lat, lon, area=1) {
 }
 ```
 <BR><BR>
-Finally, ``MakeAMove`` is the central relay that communicates with the other functions. It will get the next coordinates via ``GetPossibleCoordinates``, figure out if it should try up or down first depending on where it is in relation to the end point's latitude, and call on the Yelp API. If it finds a florist, it will report back the pertinant information such as the florist's name, state, and coordinates.
+Finally, ``MakeAMove`` is the central relay that communicates with the other functions. It will get the next coordinates via ``GetPossibleCoordinates``, figure out if it should try up or down first depending on where it is in relation to the end point's latitude, and call on the Yelp API. If it finds a florist, it will report back the pertinent information such as the florist's name, state, and coordinates.
 
 
 ```r
@@ -374,7 +374,7 @@ The rest should be self-explanatory.
 ```
 
 **Conclusion**
-So, I didn't quite deliver on my promise of being within 60 miles of a florist at all times, it may or may not be possible (and certainly won't find out with the current state of my code). Yet, we managed to be within those parameters during most of the journey. You can try with with different terms, different locations, even upgrade the algorithim to do cooler things - just don't abuse the API or the party may end for all of us.
+So, I didn't quite deliver on my promise of being within 60 miles of a florist at all times, it may or may not be possible (and certainly won't find out with the current state of my code). Yet, we managed to be within those parameters during most of the journey. You can try with with different terms, different locations, even upgrade the algorithm to do cooler things - just don't abuse the API or the party may end for all of us.
 
 
 <BR><BR>              
