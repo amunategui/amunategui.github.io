@@ -28,9 +28,9 @@ image: yelp-cross-country-trip/cross-country-florist2.png
         <li type="square"><b>{ggmap}</b> - Spatial visualization with Google Maps and OpenStreetMap</li>
 </ul>
 <BR><BR>
-Just in time for Valentine's day, if you are planning a trip accross the United States and want to offer your companion a rose every 1 degree latitude, then this code is for you! The title says it all, we’re going to use <a href='http://www.yelp.com/' target='_blank'>Yelp</a> to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. 
+Just in time for <b>Valentine's Day</b>, if you happen to be planning a trip accross the United States and want to offer your companion a rose at every 1 degree of latitude traveled, then this walkthrough is for you! The title says it all, we’re going to use the <a href='http://www.yelp.com/' target='_blank'>Yelp</a> API to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. 
 <BR><BR>
-This walkthrough has two parts, the basics of Yelp and <a href='http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html' target='_blank'>httr</a>, and a traveling code to hop from florist to florist and cross the country. The iternary will be plotted on <a href='http://cran.r-project.org/web/packages/ggmap/index.html' target='_blank'>ggmap</a>. If all you need is to pull locations via Yelp, then the first part is all you need.
+This walkthrough has two parts, the basics of Yelp and <a href='http://cran.r-project.org/web/packages/httr/vignettes/quickstart.html' target='_blank'>httr</a>, and mapping script to hop from florist to florist across the country. The iternary will be plotted on <a href='http://cran.r-project.org/web/packages/ggmap/index.html' target='_blank'>ggmap</a>. <i>If all you need is to pull locations via Yelp, then the first part is all you need.</i>
 
 **Part 1: Yelp and httr**
 
