@@ -22,10 +22,10 @@ image: yelp-cross-country-trip/cross-country-florist2.png
 **Packages Used in this Walkthrough**
 
 <ul>
-        <li type="square"><b>{httr}</b> - dummyVars function</li>
-        <li type="square"><b>{jsonlite}</b> - dummyVars function</li>
-        <li type="square"><b>{ggplot2}</b> - Graphics/Grammar of Graphics</li>
-        <li type="square"><b>{jsonlite}</b> - Grid Graphics Package</li>
+        <li type="square"><b>{httr}</b> - Tools for Working with URLs and HTTP</li>
+        <li type="square"><b>{jsonlite}</b> - Robust, High Performance JSON Parser and Generator for R</li>
+        <li type="square"><b>{ggplot2}</b> - Implementation of the Grammar of Graphics</li>
+        <li type="square"><b>{ggmap}</b> - Spatial visualization with Google Maps and OpenStreetMap</li>
 </ul>
 <BR><BR>
 Just in time for Valentine's day, if you are planning a trip accross the United States and want to offer your companion a rose every 1 degree latitude, then this code is for you! The title says it all, we’re going to use <a href='http://www.yelp.com/' target='_blank'>Yelp</a> to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. 
