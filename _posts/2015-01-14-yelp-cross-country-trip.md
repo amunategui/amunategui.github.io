@@ -243,7 +243,7 @@ GetBestYelpLocation <- function(boundedcoordinates, term) {
                           boundedcoordinates[1],",",boundedcoordinates[2],
                           "|",boundedcoordinates[3],",",boundedcoordinates[4],"&term=",term)
          
-        locationdata=GET(YelpUrl, sig)
+        locationdata=GET(YelpUrl, mySignature)
         listMembersContent = content(locationdata)
         listMembers=jsonlite::fromJSON(toJSON(listMembersContent))
         
@@ -471,7 +471,7 @@ GetBestYelpLocation <- function(boundedcoordinates, term) {
                           boundedcoordinates[1],",",boundedcoordinates[2],
                           "|",boundedcoordinates[3],",",boundedcoordinates[4],"&term=",term)
          
-        locationdata=GET(YelpUrl, sig)
+        locationdata=GET(YelpUrl, mySignature)
         listMembersContent = content(locationdata)
         listMembers=jsonlite::fromJSON(toJSON(listMembersContent))
         
@@ -558,14 +558,14 @@ MakeAMove <- function(lat,lon,sizebox, searchTerm, lat_endPoint) {
 consumerKey = "xxxxx"
 consumerSecret = "xxxxx"
 token = "xxxxx"
-token_secret = "xxxxx"
+tokenSecret = "xxxxx"
 
 require(httr)
 require(jsonlite)
 
 # authorization
 myapp = oauth_app("Yelp", key=consumerKey, secret=consumerSecret)
-sig=sign_oauth1.0(myapp, token=token,token_secret=token_secret)
+mySignature=sign_oauth1.0(myapp, token=token,token_secret=tokenSecret)
 
 ############################### Manual Code ###############################
 require(ggplot2)
