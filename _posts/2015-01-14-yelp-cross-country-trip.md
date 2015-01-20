@@ -218,18 +218,17 @@ I will keep the details short on the next few functions. ``MapIt`` takes geo-spa
 ```r
 MapIt <- function(latitude, longitude, size, objggmap) {
         objdf <- data.frame('latitude'=latitude,
-               'longitude'=longitude,
-               'size'=size)
+                            'longitude'=longitude,
+                            'tsize'=size)
         
         # add new point to ggmap
         require("ggplot2")
         require("ggmap")
         objggmap <- objggmap + geom_point(
-                aes(x=longitude, y=latitude, size=size, 
-                    show_guide = TRUE, colour=size), 
+                aes(x=longitude, y=latitude, size=tsize, 
+                    show_guide = TRUE), 
                 data=objdf, alpha=.8, na.rm = T)  
         return (objggmap)
-}
 ```
 <BR><BR>
 ``GetBestYelpLocation``, as its name implies, takes a vector of two sets of geo-spatial coordinates, the upper left point and the lower right one, along with the search term and sends it to Yelp. It returns a data frame with the ``name``, ``city``, ``rating``, ``state``, ``latitude`` and ``longitude`` of the top location using the search term.
@@ -374,7 +373,7 @@ while(madeIt == FALSE) {
                 squareSize <- 1
                 
                 # let ggmap keep track of where we've been
-                objMap <- MapIt(currentLatitude, currentLongitude, squareSize, objMap)
+                objMap <- MapIt(currentLatitude, currentLongitude, squareSize+3, objMap)
                 
                 # let's keep track how our successes!
                 foundCount <- foundCount + 1
@@ -443,15 +442,15 @@ A special thanks to <b>Nathan Yau</b>; this walkthrough was loosely based but st
 ######################## functions ################################
 MapIt <- function(latitude, longitude, size, objggmap) {
         objdf <- data.frame('latitude'=latitude,
-               'longitude'=longitude,
-               'size'=size)
+                            'longitude'=longitude,
+                            'tsize'=size)
         
         # add new point to ggmap
         require("ggplot2")
         require("ggmap")
         objggmap <- objggmap + geom_point(
-                aes(x=longitude, y=latitude, size=size, 
-                    show_guide = TRUE, colour=size), 
+                aes(x=longitude, y=latitude, size=tsize, 
+                    show_guide = TRUE), 
                 data=objdf, alpha=.8, na.rm = T)  
         return (objggmap)
 }
@@ -634,7 +633,7 @@ while(madeIt == FALSE) {
                 squareSize <- 1
                 
                 # let ggmap keep track of where we've been
-                objMap <- MapIt(currentLatitude, currentLongitude, squareSize, objMap)
+                objMap <- MapIt(currentLatitude, currentLongitude, squareSize+3, objMap)
                 
                 # let's keep track how our successes!
                 foundCount <- foundCount + 1
