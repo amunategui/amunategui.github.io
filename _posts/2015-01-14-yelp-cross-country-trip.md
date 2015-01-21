@@ -185,7 +185,7 @@ print(endingpoint)
 <BR><BR>
 Now that we know our starting and ending points, let's start our first point manually then generalize the tasks through functions. 
 
-We'll use ``ggmap`` to import a map of the United States from Google. ``ggplot2`` accepts a data frame, let's make one with our start and end points and see the journey that lies ahead. We'll assign them large sizes to differentiate them from the traveling points:
+We'll use ``ggmap`` to import a map of the United States from Google (see <a href="http://amunategui.github.io/ggmap-example/" target='_blank'>Mapping The United States Census With {ggmap}</a> for more details on ``ggmap``). ``ggplot2`` accepts a data frame, let's make one with our start and end points and see the journey that lies ahead. We'll assign them large sizes to differentiate them from the traveling points:
 
 
 ```r
