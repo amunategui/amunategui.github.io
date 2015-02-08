@@ -375,7 +375,7 @@ We re-run some of the basic training and prediction functions with some slight c
 
 ```r
 objControl <- trainControl(method='cv', number=3, returnResamp='none')
-objModel <- train(trainDF[,predictorsNames], trainDF[,outcomeName], method='glmnet',  metric = "RMSE")
+objModel <- train(trainDF[,predictorsNames], trainDF[,outcomeName], method='glmnet',  metric = "RMSE", trControl=objControl)
 ```
 
 ```r
@@ -514,7 +514,7 @@ testDF  <- titanicDF[-splitIndex,]
 objControl <- trainControl(method='cv', number=3, returnResamp='none')
 
 # run model
-objModel <- train(trainDF[,predictorsNames], trainDF[,outcomeName], method='glmnet',  metric = "RMSE")
+objModel <- train(trainDF[,predictorsNames], trainDF[,outcomeName], method='glmnet',  metric = "RMSE", trControl=objControl))
 
 # get predictions on your testing data
 predictions <- predict(object=objModel, testDF[,predictorsNames])
