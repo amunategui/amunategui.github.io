@@ -7,7 +7,7 @@ year: 2015
 month: 02
 day: 21
 published: true
-summary: "Feature hashing is a clever way of modeling data sets containing large amounts of factor and character data by using less memory and little pre-processing than with conventional approaches. In this walkthrough, we model a large healthcare data set by first using <b>dummy variables</b> and then <b>feature hashing</b>."
+summary: "Feature hashing is a clever way of modeling data sets containing large amounts of factor and character data by using less memory and little pre-processing than conventional approaches. In this walkthrough, we model a large healthcare data set by first using <b>dummy variables</b> and then <b>feature hashing</b>."
 image: feature-hashing/factors.png
 ---
 ![plot of chunk cross-country-florist](../img/posts/feature-hashing/factors.png) 
@@ -28,7 +28,7 @@ image: feature-hashing/factors.png
 </ul>
 
 <BR><BR>
-<a href='http://en.wikipedia.org/wiki/Feature_hashing' target='_blank'>Feature hashing</a> is a clever way of modeling data sets containing large amounts of factor and character data by using less memory and little pre-processing than with conventional approaches. In this walkthrough, we model a large healthcare data set by first using <b>dummy variables</b> and then <b>feature hashing</b>.
+<a href='http://en.wikipedia.org/wiki/Feature_hashing' target='_blank'>Feature hashing</a> is a clever way of modeling data sets containing large amounts of factor and character data by using less memory and little pre-processing than conventional approaches. In this walkthrough, we model a large healthcare data set by first using <b>dummy variables</b> and then <b>feature hashing</b>.
 
 What's the big deal? Well, commonly, one has to <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>dummify</a> all factor, text, and unordered categorical data before modeling. This creates a new column for each unique value and tags a binary value whether or not an observation contains that particular value. For large data sets, this can drastically increase the dimensional space (adding many more columns). 
 
@@ -273,7 +273,7 @@ auc(objTest[,outcomeName], glmnetPredict)
 ```
 Practically the same score as prepping the data yourself but with half the work and a much smaller memory footprint.
 <BR><BR>
-<b>Note:</b> This subject and code was inspired by a Kaggle.com competition: <a href='https://www.kaggle.com/c/avazu-ctr-prediction' target='_blank'>Avazu - Click-Through Rate Prediction</a>. More precisely by the following <a href='https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173' target='_blank'>thread</a>. Thanks Kagglers!!
+<b>Note:</b> This subject and code was inspired by a Kaggle.com competition: <a href='https://www.kaggle.com/c/avazu-ctr-prediction' target='_blank'>Avazu - Click-Through Rate Prediction</a>. More precisely by the following <a href='https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173' target='_blank'>thread</a>. I have used feature hashing in <b>Python</b> via sklearn's ``preprocessing.OneHotEncoder`` and ``feature_extraction.FeatureHasher`` but these approaches aren't as common in <b>R</b>. I hope this is changing with the arrival of great packages such as Wu's. Many thanks to Wu and all Kagglers!!
 
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/feature-hashing-walkthrough/blob/master/feature-hasher-walkthrough.r' target='_blank'>also on GitHub</a>)</a>:
