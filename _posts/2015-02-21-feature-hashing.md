@@ -272,10 +272,9 @@ auc(objTest[,outcomeName], glmnetPredict)
 ```
 ## [1] 0.6475847
 ```
-<BR><BR>
 Practically the same score as prepping the data yourself but with half the work and a much smaller memory footprint.
-
-<b>Note:<b/> This subject and code was inspired by a Kaggle.com competition: <a href='https://www.kaggle.com/c/avazu-ctr-prediction' target='_blank'>Avazu - Click-Through Rate Prediction</a>. More precisely by the following <a href='https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173' target='_blank'>thread</a>. Thanks All!!
+<BR><BR>
+<b>Note:</b> This subject and code was inspired by a Kaggle.com competition: <a href='https://www.kaggle.com/c/avazu-ctr-prediction' target='_blank'>Avazu - Click-Through Rate Prediction</a>. More precisely by the following <a href='https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173' target='_blank'>thread</a>. Thanks Kagglers!!
 
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SMOTE-Oversample-Rare-Events' target='_blank'>also on GitHub</a>)</a>:
