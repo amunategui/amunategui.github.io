@@ -28,9 +28,9 @@ image: feature-hashing/factors.png
 </ul>
 
 <BR><BR>
-<a href='http://en.wikipedia.org/wiki/Feature_hashing' target='_blank'>Feature hashing</a> is a clever way of dealing with data sets containing large amounts of factors and character data. In this walkthrough we model a large healthcare data set first  using dummy variables and then <b>feature hashing</b>.
+<a href='http://en.wikipedia.org/wiki/Feature_hashing' target='_blank'>Feature hashing</a> is a clever way of dealing with data sets containing large amounts of factors and character data. In this walkthrough we model a large healthcare data set first  using <b>dummy variables</b> and then <b>feature hashing</b>.
 
-Working with a large data set containing factor variables with 1000's of levels, often requires making compromising in order to model it. Taking the the top x% most popular levels and neutralizing the rest, grouping levels thematically using <a href='http://amunategui.github.io/stringdist/' target='_blank'>string distance</a>, or ignoring large factors, are all forms of compromising in order to be able to hold that data in memory. 
+Working with a large data set containing factor variables with 1000's of levels, often requires making compromises in order to be able to model. For example, taking the the top x% most popular levels and neutralizing the rest, grouping levels by theme using <a href='http://amunategui.github.io/stringdist/' target='_blank'>string distance</a>, or simply ignoring large factors, are some of the ways to squeeze that data in a machine's memory. 
 
 Most commonly, one has to <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>dummify</a> all factor, text, and unordered categorical data before modeling. This creates a new column for each unique value and tags a binary value whether or not an observation contains that particular value. For large data sets, this can drastically increase the dimensional space. Using a <a href='http://amunategui.github.io/sparse-matrix-glmnet/' target='_blank'>sparse matrix</a> can mitigate the size of these dummied data sets by dropping zeros, but another way around this, especially when there are tens of thousands of unique values, is to use the ‘hashing trick’. 
 
