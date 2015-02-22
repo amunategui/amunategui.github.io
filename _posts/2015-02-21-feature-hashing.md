@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Feature Hashing (a.k.a. The Hashing Trick) - Pro Machine Learning with R" 
+title: "Feature Hashing (a.k.a. The Hashing Trick)" 
 category: Machine Learning
 tags: modeling
 year: 2015
