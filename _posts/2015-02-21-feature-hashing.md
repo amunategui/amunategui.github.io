@@ -127,7 +127,7 @@ str(diabetes)
 <BR><BR> 
 **101766 obs. of  50 variables**
 
-Of interest are 3 fields: ``diag_1``, ``diag_2``, ``diag_3``. These 3 features are numerical representations of patient diagnoses. Each patient can have up to 3 diagnoses recorded. If we look at the unique length of each, you quickly realize that there are a lot of them and they all need to be considered as factor levels, not numbers, as the distance between two diagnoses doesn't mean anything.
+Of interest are 3 fields: ``diag_1``, ``diag_2``, ``diag_3``. These 3 features are numerical representations of patient diagnoses. Each patient can have up to 3 diagnoses recorded. If we sum all the unique levels for all three sets, we end up with a lot of different levels. Remember, even though these are numerical representations of diagnoses, they are still diagnoses and cannot be model as numerical data as the distance between two diagnoses doesn't mean anything. These all need to be dummied into there own column. 
 
 ```r
 length(unique(diabetes$diag_1))
@@ -152,7 +152,7 @@ length(unique(diabetes$diag_3))
 ```
 ## [1] 790
 ```
-By summing the unique count of diagnoses we end up with 2256. This means we need to break out each diagnosis into its own column, thus, we're adding 2256 new columns to our original 50. 
+The sum of all unique diagnoses is 2256. This means, in order to break out each diagnosis into its own column, we need an additional 2256 new columns on top of our original 50. 
 
 Additionally, we're going to drop some features, replace interrogation marks with ``NA``s and fix the outcome variable to a binary value.
 
