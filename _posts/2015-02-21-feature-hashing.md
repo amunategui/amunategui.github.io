@@ -152,8 +152,7 @@ length(unique(diabetes$diag_3))
 ```
 By summing the unique count of diagnoses we end up with 2256. This means we need to break out each diagnosis into its own column, thus, we're adding 2256 new columns to our original 50. 
 
-<BR><BR>
-We're going to drop some features, replace interrogation marks with ``NA``s and fix the outcome variable to a binary value.
+Additionally, we're going to drop some features, replace interrogation marks with ``NA``s and fix the outcome variable to a binary value.
 
 ```r
 # drop useless variables
@@ -172,7 +171,7 @@ outcomeName <- 'readmitted'
 ```
 
 We're going to run to prepare the data two ways - a common approach using dummy variables for our factors, and another using <b>feature hashing</b> 
-
+<BR><BR>
 **Using Dummy Variables**
 
 Here we use caret's ``dummyVars`` function to make our dummy column (see my <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>walkthrough</a> for more details on this great function). Be <b>warned</b>, you will need at least 2 gigabytes of free live memory on your system for this to work!
@@ -222,7 +221,7 @@ glmnetModel <- cv.glmnet(sparse.model.matrix(~., data=objTrain[,predictorNames])
 glmnetPredict <- predict(glmnetModel,sparse.model.matrix(~., data=objTest[,predictorNames]), s="lambda.min")
 ```
 <BR><BR>
-Let's look at the AUC (Area under the curve) so we can compare this approach with the feature hashing one:
+Let's look at the AUC (Area under the curve) so we can compare this approach with the feature-hashed one:
 
 ```r
 auc(objTest[,outcomeName], glmnetPredict)
@@ -231,7 +230,7 @@ auc(objTest[,outcomeName], glmnetPredict)
 ```
 ## [1] 0.6480986
 ```
-
+<BR><BR>
 **Using Feature Hashing**
 
 Now for the fun part, remember that wide data set we just modeled? Well, by using feature hashing, we don't have to do any of that work; we just feed the data set with its factor and character features directly into the model. The code is based on both a <a href='https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173' target='_blank'>kaggle competition</a> and <a href='https://github.com/wush978/FeatureHashing/blob/master/README.Rmd' target='_blank'>Wush Wu's package readme</a> on GitHub.com.
