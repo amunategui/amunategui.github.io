@@ -154,7 +154,7 @@ length(unique(diabetes$diag_3))
 ```
 The sum of all unique diagnoses is 2256. This means, in order to break out each diagnosis into its own column, we need an additional 2256 new columns on top of our original 50. 
 
-Additionally, we're going to drop some features, replace interrogation marks with ``NA``s and fix the outcome variable to a binary value.
+OK, let's finish cleaning up the data. We're going to drop non-predictive features, replace interrogation marks with ``NA``s and fix the outcome variable to a binary value.
 
 ```r
 # drop useless variables
@@ -172,8 +172,9 @@ diabetes$readmitted <- ifelse(diabetes$readmitted == "<30",1,0)
 outcomeName <- 'readmitted'
 ```
 
-We're going to run to prepare the data two ways - a common approach using dummy variables for our factors, and another using <b>feature hashing</b> 
+Now, let's prepare the data two ways: a common approach using dummy variables for our factors, and another using <b>feature hashing</b> 
 <BR><BR>
+
 **Using Dummy Variables**
 
 Here we use caret's ``dummyVars`` function to make our dummy column (see my <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>walkthrough</a> for more details on this great function). Be <b>warned</b>, you will need at least 2 gigabytes of free live memory on your system for this to work!
