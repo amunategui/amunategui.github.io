@@ -34,13 +34,15 @@ What's the big deal? Well, commonly, one has to <a href='http://amunategui.githu
 
 Traditional ways around this when working with data sets containing factor variables with 1000's of levels, requires making compromises in order to be able to model them. For example, taking the the top x% most popular levels and neutralizing the rest, grouping levels by theme using <a href='http://amunategui.github.io/stringdist/' target='_blank'>string distance</a>, or simply ignoring large factors, are some of the ways to squeeze that data in a machine's memory. 
 
-Using a <a href='http://amunategui.github.io/sparse-matrix-glmnet/' target='_blank'>sparse matrix</a> can mitigate the size of these dummied data sets by dropping zeros, but a more complete solution, especially when there are tens of thousands of unique values, is the ‘hashing trick’. 
+Using a <a href='http://amunategui.github.io/sparse-matrix-glmnet/' target='_blank'>sparse matrix</a> can mitigate the size of these dummied data sets by dropping zeros, but a more complete solution, especially when there are tens of thousands of unique values, is the <b>‘hashing trick’</b>. 
 
 <b>Wush Wu</b> created the <a href='https://github.com/wush978/FeatureHashing' target='_blank'>FeatureHashing</a> package available on CRAN. According to the package’s introduction on CRAN:
 
 <blockquote>"Feature hashing, also called the hashing trick, is a method to transform features to vector. Without looking up the indices in an associative array, it applies a hash function to the features and uses their hash values as indices directly. The method of feature hashing in this package was proposed in Weinberger et. al. (2009). The hashing algorithm is the murmurhash3 from the digest package. Please see the <a href='http://cran.r-project.org/web/packages/FeatureHashing/' target='_blank'>README.md</a> for more information.” </blockquote>
 
-Feature hashing will create memory address locations for your data without processing any of it until its being accessed. So, the first feature found is really a column of data containing only one level (or value), when it encounters a different value, then its a feature with 2 levels, etc. This approach takes a lot less memory than a fully scanned and processed data set. Plenty of <a href='http://en.wikipedia.org/wiki/Feature_hashing' target='_blank'>theory</a> out there for those who want a deeper understanding. The only draw back I've seen so far is that it is slower than a fully pre-processed (i.e. dummied set) data set.
+Feature hashing has numerous advantages. It will create memory address locations for your data without processing any of it until its being accessed. So, the first feature found is really a column of data containing only one level (or value), when it encounters a different value, then its a feature with 2 levels, etc. It also requires no pre-processing of factor data; you just feed it your factor the way it is. This approach takes a lot less memory than a fully scanned and processed data set. Plenty of <a href='http://en.wikipedia.org/wiki/Feature_hashing' target='_blank'>theory</a> out there for those who want a deeper understanding. 
+
+Some of its disadvantages include causing models to run slower and a certain obfuscation of the data.
 
 **Let’s Code!**
 
