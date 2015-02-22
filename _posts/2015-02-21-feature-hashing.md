@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Feature Hashing (a.k.a. The Hashing Trick) in R" 
+title: "Feature Hashing (a.k.a. The Hashing Trick) With R" 
 category: Machine Learning
 tags: modeling
 year: 2015
@@ -21,10 +21,11 @@ image: feature-hashing/factors.png
 **Packages Used in this Walkthrough**
 
 <ul>
+		<li type="square"><b>{FeatureHashing}</b> - Creates a Model Matrix via Feature Hashing With a Formula Interface</li>
         <li type="square"><b>{RCurl}</b> - General network (HTTP/FTP/...) client interface for R</li>
         <li type="square"><b>{caret}</b> - Classification and Regression Training</li>
         <li type="square"><b>{glmnet}</b> - Lasso and elastic-net regularized generalized linear models</li>
-        <li type="square"><b>{FeatureHashing}</b> - Creates a Model Matrix via Feature Hashing With a Formula Interface</li>
+       
 </ul>
 
 <BR><BR>
