@@ -127,7 +127,7 @@ str(diabetes)
 <BR><BR> 
 **101766 obs. of  50 variables**
 
-Of interest are 3 fields: ``diag_1``, ``diag_2``, ``diag_3``. These 3 features are numerical representations of patient diagnoses. Each patient can have up to 3 diagnoses recorded. If we sum all the unique levels for all three sets, we end up with a lot of different levels. Remember, even though these are numerical representations of diagnoses, they are still diagnoses and cannot be model as numerical data as the distance between two diagnoses doesn't mean anything. These all need to be dummied into there own column. 
+Of interest are 3 fields: ``diag_1``, ``diag_2``, ``diag_3``. These 3 features are numerical representations of patient diagnoses. Each patient can have up to 3 diagnoses recorded. If we sum all the unique levels for all 3 sets, we end up with a lot of levels. Remember, even though these are numerical representations of diagnoses, they are still diagnoses and cannot be model as numerical data as the distance between two diagnoses doesn't mean anything. These all need to be dummied into there own column. 
 
 ```r
 length(unique(diabetes$diag_1))
@@ -275,6 +275,7 @@ auc(objTest[,outcomeName], glmnetPredict)
 <BR><BR>
 Practically the same score as prepping the data yourself but with half the work and a much smaller memory footprint.
 
+<b>Note:<b/> This subject and code was inspired by a Kaggle.com competition: <a href='https://www.kaggle.com/c/avazu-ctr-prediction' target='_blank'>Avazu - Click-Through Rate Prediction</a>. More precisely by the following <a href='https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173' target='_blank'>thread</a>. Thanks All!!
 
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SMOTE-Oversample-Rare-Events' target='_blank'>also on GitHub</a>)</a>:
