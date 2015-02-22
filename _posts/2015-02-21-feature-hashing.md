@@ -10,6 +10,8 @@ published: true
 summary: "Feature hashing is a clever way of modeling data sets containing large amounts of factors and character data using less memory and less pre-processing than with conventional approaches. In this walkthrough we model a large healthcare data set first  using dummy variables and then feature hashing."
 image: feature-hashing/factors.png
 ---
+![plot of chunk cross-country-florist](../img/posts/feature-hashing/factors.png) 
+<BR><BR>
 **Resources**
 <ul>
 <li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
