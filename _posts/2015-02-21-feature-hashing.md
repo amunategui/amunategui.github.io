@@ -172,12 +172,12 @@ diabetes$readmitted <- ifelse(diabetes$readmitted == "<30",1,0)
 outcomeName <- 'readmitted'
 ```
 
-Now, let's prepare the data two ways: a common approach using dummy variables for our factors, and another using <b>feature hashing</b> 
+Now, let's prepare the data two ways: a common approach using <b>dummy variables</b> for our factors, and another using <b>feature hashing</b>.
 <BR><BR>
 
 **Using Dummy Variables**
 
-Here we use caret's ``dummyVars`` function to make our dummy column (see my <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>walkthrough</a> for more details on this great function). Be <b>warned</b>, you will need at least 2 gigabytes of free live memory on your system for this to work!
+Here we use caret's ``dummyVars`` function to make our dummy column (see my <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>walkthrough</a> for more details on this great function). <b>Be warned</b>, you will need at least 2 gigabytes of free live memory on your system for this to work!
 
 
 ```r
@@ -241,8 +241,6 @@ Now for the fun part, remember that wide data set we just modeled? Well, by usin
 The ``hashed.model.matrix`` function takes a ``hash_size`` value. This is a critical piece. Depending on the size of your data you may need to adjust this value. I set it here to 2^12, but if you try a larger value, it will handle more variables (i.e. unique values). On the other hand, if you try a smaller value, you risk having memory collisions and loss of data. It is something you have to experiment with.
 
 ```r
-# feature hashed version -------------------------------------------------
- 
 diabetes_hash <- diabetes
 predictorNames <- setdiff(names(diabetes_hash),outcomeName)
 
@@ -278,7 +276,7 @@ Practically the same score as prepping the data yourself but with half the work 
 <b>Note:</b> This subject and code was inspired by a Kaggle.com competition: <a href='https://www.kaggle.com/c/avazu-ctr-prediction' target='_blank'>Avazu - Click-Through Rate Prediction</a>. More precisely by the following <a href='https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173' target='_blank'>thread</a>. Thanks Kagglers!!
 
 <BR><BR>        
-<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SMOTE-Oversample-Rare-Events' target='_blank'>also on GitHub</a>)</a>:
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/feature-hashing-walkthrough/blob/master/feature-hasher-walkthrough.r' target='_blank'>also on GitHub</a>)</a>:
 
 ```{r}
 # get data ----------------------------------------------------------------
