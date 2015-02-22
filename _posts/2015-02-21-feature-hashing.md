@@ -34,7 +34,7 @@ What's the big deal? Well, commonly, one has to <a href='http://amunategui.githu
 
 Traditional ways around this when working with data sets containing factor variables with 1000's of levels, requires making compromises in order to be able to model them. For example, taking the the top x% most popular levels and neutralizing the rest, grouping levels by theme using <a href='http://amunategui.github.io/stringdist/' target='_blank'>string distance</a>, or simply ignoring large factors, are some of the ways to squeeze that data in a machine's memory. 
 
-Using a <a href='http://amunategui.github.io/sparse-matrix-glmnet/' target='_blank'>sparse matrix</a> can mitigate the size of these dummied data sets by dropping zeros, but another way around this, especially when there are tens of thousands of unique values, is to use the ‘hashing trick’. 
+Using a <a href='http://amunategui.github.io/sparse-matrix-glmnet/' target='_blank'>sparse matrix</a> can mitigate the size of these dummied data sets by dropping zeros, but a more complete solution, especially when there are tens of thousands of unique values, is the ‘hashing trick’. 
 
 <b>Wush Wu</b> created the <a href='https://github.com/wush978/FeatureHashing' target='_blank'>FeatureHashing</a> package available on CRAN. According to the package’s introduction on CRAN:
 
@@ -123,7 +123,7 @@ str(diabetes)
 ```
 
 <BR><BR>
-We're going to drop some features, replace interrogation marks with ``NA``s and fix the outcome variable to be a binary value.
+We're going to drop some features, replace interrogation marks with ``NA``s and fix the outcome variable to a binary value.
 
 ```r
 # drop useless variables
@@ -141,9 +141,9 @@ diabetes$readmitted <- ifelse(diabetes$readmitted == "<30",1,0)
 outcomeName <- 'readmitted'
 ```
 <BR><BR> 
-101766 
+**101766 obs. of  50 variables**
 
-Of great interest are 3 fields: ``diag_1``, ``diag_2``, ``diag_3``. These 3 features are numerical representations of patient diagnoses. Each patient can have up to 3 recorded. If we look at the unique length of each, you will quickly realize that there are a lot of them and they all need to be considered as factors, not numbers as the distance between two diagnoses doesn't mean anything. 
+Of interest are 3 fields: ``diag_1``, ``diag_2``, ``diag_3``. These 3 features are numerical representations of patient diagnoses. Each patient can have up to 3 recorded. If we look at the unique length of each, you will quickly realize that there are a lot of them and they all need to be considered as factors, not numbers as the distance between two diagnoses doesn't mean anything. 
 
 ```r
 length(unique(diabetes$diag_1))
