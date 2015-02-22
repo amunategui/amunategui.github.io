@@ -356,6 +356,9 @@ glmnetModel <- cv.glmnet(sparse.model.matrix(~., data=objTrain[,predictorNames])
                          family = "binomial", type.measure = "auc")
 glmnetPredict <- predict(glmnetModel,sparse.model.matrix(~., data=objTest[,predictorNames]), s="lambda.min")
 
+# dummy version score:
+auc(objTest[,outcomeName], glmnetPredict)
+
 # feature hashed version -------------------------------------------------
 diabetes_hash <- diabetes
 predictorNames <- setdiff(names(diabetes_hash),outcomeName)
@@ -377,10 +380,7 @@ objTest_hashed = as(objTest_hashed, "dgCMatrix")
 library(glmnet)
 glmnetModel <- cv.glmnet(objTrain_hashed, objTrain[,outcomeName], 
                      family = "binomial", type.measure = "auc")
-```
-Let's see how this version scored:
-
-```r
+# hashed version score:
 glmnetPredict <- predict(glmnetModel, objTest_hashed, s="lambda.min")
 auc(objTest[,outcomeName], glmnetPredict)
 ```
