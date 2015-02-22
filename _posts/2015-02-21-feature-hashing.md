@@ -43,10 +43,10 @@ Using a <a href='http://amunategui.github.io/sparse-matrix-glmnet/' target='_bla
 Feature hashing has numerous advantages. It will create memory address locations for your data without processing any of it until its being accessed. So, the first feature found is really a column of data containing only one level (or value), when it encounters a different value, then its a feature with 2 levels, etc. It also requires no pre-processing of factor data; you just feed it your factor the way it is. This approach takes a lot less memory than a fully scanned and processed data set. Plenty of <a href='http://en.wikipedia.org/wiki/Feature_hashing' target='_blank'>theory</a> out there for those who want a deeper understanding. 
 
 Some of its disadvantages include causing models to run slower and a certain obfuscation of the data.
-
+<BR><BR>
 **Let’s Code!**
 
-We'll be using a great healthcare data set on historical readmissions of patients with diabetes - <a href='https://archive.ics.uci.edu/ml/machine-learning-databases/00296/' target='_blank'>Diabetes 130-US hospitals for years 1999-2008</a> Data Set. Readmissions is a big deal for hospitals in the US as Medicare/medicaid will scrutinize those bills and, in some cases, only reimburse a percentage of them. We’ll use code to automate the download and unzipping of the data directly from the UC Irvine Machine Learning Repository. 
+We'll be using a great healthcare data set on historical readmissions of patients with diabetes - <a href='https://archive.ics.uci.edu/ml/machine-learning-databases/00296/' target='_blank'>Diabetes 130-US hospitals for years 1999-2008</a> Data Set. Readmissions is a big deal for hospitals in the US as Medicare/medicaid will scrutinize those bills and, in some cases, only reimburse a percentage of them. We’ll use code to automate the download and unzipping of the data directly from the <a href='https://archive.ics.uci.edu/ml/index.html' target='_blank'>UC Irvine Machine Learning Repository</a>. 
 
 
 ```r
