@@ -30,11 +30,11 @@ image: feature-hashing/factors.png
 <BR><BR>
 <a href='http://en.wikipedia.org/wiki/Feature_hashing' target='_blank'>Feature hashing</a> is a clever way of dealing with data sets containing large amounts of factors and character data. IIn this walkthrough we model a large healthcare data set first  using dummy variables and then <b>feature hashing</b>.
 
-Working with a large set of data with factor variables containing 1000's of levels, often requires compromizing on the information in order to model it. Taking the the top x% most popular levels and neutralizing the rest, grouping levels thematically using <a href='http://amunategui.github.io/stringdist/' target='_blank'>string distance</a>, or ignoring large fators, are all forms of compromizing in order to be able to hold that data in memory. 
+Working with a large set of data with factor variables containing 1000's of levels, often requires compromising on the information in order to model it. Taking the the top x% most popular levels and neutralizing the rest, grouping levels thematically using <a href='http://amunategui.github.io/stringdist/' target='_blank'>string distance</a>, or ignoring large factors, are all forms of compromising in order to be able to hold that data in memory. 
 
 Most commonly, one has to <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>dummify</a> all factor, text, and unordered categorical data before modeling. This creates a new column for each unique value and tags a binary value whether or not an observation contains that particular value. For large data sets, this can drastically increase the dimensional space. Using a <a href='http://amunategui.github.io/sparse-matrix-glmnet/' target='_blank'>sparse matrix</a> can mitigate the size of these dummied data sets by dropping zeros, but another way around this, especially when there are tens of thousands of unique values, is to use the ‘hash trick’. 
 
-Wush Wu created the <a href='https://github.com/wush978/FeatureHashing' target='_blank'>FeatureHashing</a> package available on CRAN. According to the package’s introduction on CRAN:
+<b>Wush Wu</b> created the <a href='https://github.com/wush978/FeatureHashing' target='_blank'>FeatureHashing</a> package available on CRAN. According to the package’s introduction on CRAN:
 
 <blockquote>"Feature hashing, also called the hashing trick, is a method to transform features to vector. Without looking up the indices in an associative array, it applies a hash function to the features and uses their hash values as indices directly. The method of feature hashing in this package was proposed in Weinberger et. al. (2009). The hashing algorithm is the murmurhash3 from the digest package. Please see the <a href='http://cran.r-project.org/web/packages/FeatureHashing/' target='_blank'>README.md</a> for more information.” </blockquote>
 
@@ -46,9 +46,6 @@ We'll be using a great healthcare data set on historical readmissions of patient
 
 
 ```r
-# get data ----------------------------------------------------------------
-# UCI Diabetes 130-US hospitals for years 1999-2008 Data Set 
-# https://archive.ics.uci.edu/ml/machine-learning-databases/00296/
 require(RCurl)
 binData <- getBinaryURL("https://archive.ics.uci.edu/ml/machine-learning-databases/00296/dataset_diabetes.zip",
                     ssl.verifypeer=FALSE)
@@ -144,7 +141,7 @@ outcomeName <- 'readmitted'
 <BR><BR> 
 101766 
 
-Of great interst are 3 fields: ``diag_1``, ``diag_2``, ``diag_3``. These 3 features are numerical representations of patient diagnoses. Each patient can have up to 3 recorded. If we look at the unique lenght of each, you will quickly realize that there are a lot of them and they all need to be considred as factors, not numbers as the distance between two diagnoses doesn't mean anything. 
+Of great interest are 3 fields: ``diag_1``, ``diag_2``, ``diag_3``. These 3 features are numerical representations of patient diagnoses. Each patient can have up to 3 recorded. If we look at the unique length of each, you will quickly realize that there are a lot of them and they all need to be considered as factors, not numbers as the distance between two diagnoses doesn't mean anything. 
 
 ```r
 length(unique(diabetes$diag_1))
@@ -179,15 +176,8 @@ We're going to run to prepare the data two ways - a common approach using dummy 
 Here we use caret's ``dummyVars`` function to make our dummy column (see my <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>walkthrough</a> for more details on this great function). Be <b>warned</b>, you will need at least 2 gigabytes of free live memory on your system for this to work!
 
 
-
 ```r
-# dummy var version -------------------------------------------------------
 diabetes_dummy <- diabetes
-# alwasy a good excersize to see the length of data that will need to be transformed
-# charcolumns <- names(diabetes_dummy[sapply(diabetes_dummy, is.character)])
-# for (thecol in charcolumns) 
-#         print(paste(thecol,length(unique(diabetes_dummy[,thecol]))))
-
 # warning will need 2GB at least free memory
 require(caret)
 dmy <- dummyVars(" ~ .", data = diabetes_dummy)
@@ -280,7 +270,7 @@ auc(objTest[,outcomeName], glmnetPredict)
 ## [1] 0.6475847
 ```
 <BR><BR>
-Pratically the same score as prepping the data yourself but with half the work and a much smaller memory footprint.
+Practically the same score as prepping the data yourself but with half the work and a much smaller memory footprint.
 
 
 <BR><BR>        
@@ -362,5 +352,31 @@ glmnetModel <- cv.glmnet(sparse.model.matrix(~., data=objTrain[,predictorNames])
                          family = "binomial", type.measure = "auc")
 glmnetPredict <- predict(glmnetModel,sparse.model.matrix(~., data=objTest[,predictorNames]), s="lambda.min")
 
+# feature hashed version -------------------------------------------------
+diabetes_hash <- diabetes
+predictorNames <- setdiff(names(diabetes_hash),outcomeName)
 
+# change all NAs to 0
+diabetes_hash[is.na(diabetes_hash)] <- 0
+
+set.seed(1234)
+split <- sample(nrow(diabetes_hash), floor(0.5*nrow(diabetes_hash)))
+objTrain <-diabetes_hash[split,]
+objTest <- diabetes_hash[-split,]
+ 
+library(FeatureHashing)
+objTrain_hashed = hashed.model.matrix(~., data=objTrain[,predictorNames], hash_size=2^12, transpose=FALSE, keep.hashing_mapping=TRUE)
+objTrain_hashed = as(objTrain_hashed, "dgCMatrix")
+objTest_hashed = hashed.model.matrix(~., data=objTest[,predictorNames], hash_size=2^12, transpose=FALSE, keep.hashing_mapping=TRUE)
+objTest_hashed = as(objTest_hashed, "dgCMatrix")
+ 
+library(glmnet)
+glmnetModel <- cv.glmnet(objTrain_hashed, objTrain[,outcomeName], 
+                     family = "binomial", type.measure = "auc")
+```
+Let's see how this version scored:
+
+```r
+glmnetPredict <- predict(glmnetModel, objTest_hashed, s="lambda.min")
+auc(objTest[,outcomeName], glmnetPredict)
 ```
