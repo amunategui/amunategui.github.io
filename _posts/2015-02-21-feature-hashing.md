@@ -122,28 +122,10 @@ str(diabetes)
 ##  $ readmitted              : chr  "NO" ">30" "NO" "NO" ...
 ```
 
-<BR><BR>
-We're going to drop some features, replace interrogation marks with ``NA``s and fix the outcome variable to a binary value.
-
-```r
-# drop useless variables
-diabetes <- subset(diabetes,select=-c(encounter_id, patient_nbr))
-
-# transform all "?" to 0s
-diabetes[diabetes == "?"] <- NA
-
-# remove zero variance - ty James http://stackoverflow.com/questions/8805298/quickly-remove-zero-variance-variables-from-a-data-frame
-diabetes <- diabetes[sapply(diabetes, function(x) length(levels(factor(x,exclude=NULL)))>1)]
-
-# prep outcome variable to those readmitted under 30 days
-diabetes$readmitted <- ifelse(diabetes$readmitted == "<30",1,0)
-
-outcomeName <- 'readmitted'
-```
 <BR><BR> 
 **101766 obs. of  50 variables**
 
-Of interest are 3 fields: ``diag_1``, ``diag_2``, ``diag_3``. These 3 features are numerical representations of patient diagnoses. Each patient can have up to 3 recorded. If we look at the unique length of each, you will quickly realize that there are a lot of them and they all need to be considered as factors, not numbers as the distance between two diagnoses doesn't mean anything. 
+Of interest are 3 fields: ``diag_1``, ``diag_2``, ``diag_3``. These 3 features are numerical representations of patient diagnoses. Each patient can have up to 3 diagnoses recorded. If we look at the unique length of each, you quickly realize that there are a lot of them and they all need to be considered as factor levels, not numbers, as the distance between two diagnoses doesn't mean anything.
 
 ```r
 length(unique(diabetes$diag_1))
@@ -168,8 +150,26 @@ length(unique(diabetes$diag_3))
 ```
 ## [1] 790
 ```
-By summing the unique count of diagnoses we end up with 2256 new columns to add (717 + 749 + 790). 
+By summing the unique count of diagnoses we end up with 2256. This means we need to break out each diagnosis into its own column, thus, we're adding 2256 new columns to our original 50. 
 
+<BR><BR>
+We're going to drop some features, replace interrogation marks with ``NA``s and fix the outcome variable to a binary value.
+
+```r
+# drop useless variables
+diabetes <- subset(diabetes,select=-c(encounter_id, patient_nbr))
+
+# transform all "?" to 0s
+diabetes[diabetes == "?"] <- NA
+
+# remove zero variance - ty James http://stackoverflow.com/questions/8805298/quickly-remove-zero-variance-variables-from-a-data-frame
+diabetes <- diabetes[sapply(diabetes, function(x) length(levels(factor(x,exclude=NULL)))>1)]
+
+# prep outcome variable to those readmitted under 30 days
+diabetes$readmitted <- ifelse(diabetes$readmitted == "<30",1,0)
+
+outcomeName <- 'readmitted'
+```
 
 We're going to run to prepare the data two ways - a common approach using dummy variables for our factors, and another using <b>feature hashing</b> 
 
