@@ -235,19 +235,21 @@ Let's look at the AUC (Area under the curve) so we can compare this approach wit
 ```r
 auc(objTest[,outcomeName], glmnetPredict)
 ```
-# 0.6480986
- 
+
+```
+## [1] 0.6480986
+```
 
 **Using Feature Hashing**
 
 Now for the fun part, remember that wide data set we just modeled? Well, by using feature hashing, we don't have to do any of that work; we just feed the data set with its factor and character features directly into the model. The code is based on both a <a href='https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173' target='_blank'>kaggle competition</a> and <a href='https://github.com/wush978/FeatureHashing/blob/master/README.Rmd' target='_blank'>Wush Wu's package readme</a> on GitHub.com.
 
+The ``hashed.model.matrix`` function takes a ``hash_size`` value. This is a critical piece. Depending on the size of your data you may need to adjust this value. I set it here to 2^12, but if you try a larger value, it will handle more variables (i.e. unique values). On the other hand, if you try a smaller value, you risk having memory collisions and loss of data. It is something you have to experiment with.
 
 ```r
 # feature hashed version -------------------------------------------------
  
 diabetes_hash <- diabetes
-
 predictorNames <- setdiff(names(diabetes_hash),outcomeName)
 
 # change all NAs to 0
@@ -274,6 +276,12 @@ Let's see how this version scored:
 glmnetPredict <- predict(glmnetModel, objTest_hashed, s="lambda.min")
 auc(objTest[,outcomeName], glmnetPredict)
 ```
+```
+## [1] 0.6475847
+```
+<BR><BR>
+Pratically the same score as prepping the data yourself but with half the work and a much smaller memory footprint.
+
 
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SMOTE-Oversample-Rare-Events' target='_blank'>also on GitHub</a>)</a>:
