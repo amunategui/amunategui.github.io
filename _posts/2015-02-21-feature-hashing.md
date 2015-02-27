@@ -7,7 +7,7 @@ year: 2015
 month: 02
 day: 21
 published: true
-summary: "Feature hashing is a clever way of modeling data sets containing large amounts of factor and character data by using less memory and little pre-processing than conventional approaches. In this walkthrough, we model a large healthcare data set by first using <b>dummy variables</b> and then <b>feature hashing</b>."
+summary: "Feature hashing is a clever way of modeling data sets containing large amounts of factor and character data. It uses less memory and requires little pre-processing. In this walkthrough, we model a large healthcare data set by first using <b>dummy variables</b> and then <b>feature hashing</b>."
 image: feature-hashing/factors.png
 ---
 ![plot of chunk cross-country-florist](../img/posts/feature-hashing/factors.png) 
@@ -29,11 +29,11 @@ image: feature-hashing/factors.png
 </ul>
 
 <BR><BR>
-<a href='http://en.wikipedia.org/wiki/Feature_hashing' target='_blank'>Feature hashing</a> is a clever way of modeling data sets containing large amounts of factor and character data by using less memory and little pre-processing than conventional approaches. In this walkthrough, we model a large healthcare data set by first using <b>dummy variables</b> and then <b>feature hashing</b>.
+<a href='http://en.wikipedia.org/wiki/Feature_hashing' target='_blank'>Feature hashing</a> is a clever way of modeling data sets containing large amounts of factor and character data. It uses less memory and requires little pre-processing. In this walkthrough, we model a large healthcare data set by first using <b>dummy variables</b> and then <b>feature hashing</b>.
 
-What's the big deal? Well, commonly, one has to <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>dummify</a> all factor, text, and unordered categorical data before modeling. This creates a new column for each unique value and tags a binary value whether or not an observation contains that particular value. For large data sets, this can drastically increase the dimensional space (adding many more columns). 
+What's the big deal? Well, normally, one has to <a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>dummify</a> all factor, text, and unordered categorical data before modeling. This creates a new column for each unique value and tags a binary value whether or not an observation contains that particular value. For large data sets, this can drastically increase the dimensional space (adding many more columns). 
 
-Traditional ways around this when working with data sets containing factor variables with 1000's of levels, requires making compromises in order to be able to model them. For example, taking the the top x% most popular levels and neutralizing the rest, grouping levels by theme using <a href='http://amunategui.github.io/stringdist/' target='_blank'>string distance</a>, or simply ignoring large factors, are some of the ways to squeeze that data in a machine's memory. 
+One way to deal with data containing factor variables with 1000's of levels is to drop levels. For example, taking the the top x% most popular levels and neutralizing the rest, grouping levels by theme using <a href='http://amunategui.github.io/stringdist/' target='_blank'>string distance</a>, or simply ignoring large factors too large for a machine's memory. 
 
 Using a <a href='http://amunategui.github.io/sparse-matrix-glmnet/' target='_blank'>sparse matrix</a> can mitigate the size of these dummied data sets by dropping zeros, but a more complete solution, especially when there are tens of thousands of unique values, is the <b>‘hashing trick’</b>. 
 
