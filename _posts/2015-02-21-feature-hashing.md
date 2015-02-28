@@ -34,11 +34,11 @@ image: feature-hashing/factors.png
 What's the big deal? Well, normally, one would:
 
 <ul>
-<li type="square"><b><a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>Dummify</a> all factor, text, and unordered categorical data:</b>  This creates a new column for each unique value and tags a binary value whether or not an observation contains that particular value. For large data sets, this can drastically increase the dimensional space (adding many more columns). </li>
+<li type="square"><b><a href='http://amunategui.github.io/dummyVar-Walkthrough/' target='_blank'>Dummify</a> all factor, text, and unordered categorical data</b>: This creates a new column for each unique value and tags a binary value whether or not an observation contains that particular value. For large data sets, this can drastically increase the dimensional space (adding many more columns). </li>
 
-<li type="square"><b>Drop levels:</b>  is to drop levels: For example, taking the the top x% most popular levels and neutralizing the rest, grouping levels by theme using <a href='http://amunategui.github.io/stringdist/' target='_blank'>string distance</a>, or simply ignoring factors too large for a machine's memory. </li>
+<li type="square"><b>Drop levels</b>:For example, taking the the top x% most popular levels and neutralizing the rest, grouping levels by theme using <a href='http://amunategui.github.io/stringdist/' target='_blank'>string distance</a>, or simply ignoring factors too large for a machine's memory. </li>
 
-<li type="square"><b>Use a <a href='http://amunategui.github.io/sparse-matrix-glmnet/' target='_blank'>sparse matrix</a>:</b>  This can mitigate the size of these dummied data sets by dropping zeros.</li>
+<li type="square"><b>Use a <a href='http://amunategui.github.io/sparse-matrix-glmnet/' target='_blank'>sparse matrix</a></b>:  This can mitigate the size of these dummied data sets by dropping zeros.</li>
 </ul>
 But a more complete solution, especially when there are tens of thousands of unique values, is the <b>‘hashing trick’</b>. 
 
