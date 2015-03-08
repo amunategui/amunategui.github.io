@@ -10,10 +10,10 @@ published: true
 summary: "Bagging is the not-so-secret edge of the competitive modeler. By sampling and modeling a training data set hundreds of times and averaging its predictions, you may just get that accuracy boost that puts your above the fray."
 image: bagging-in-R/PotOfGold.png
 ---
-<BR><BR>
+<BR>
 **Resources**
 <ul>
-<li type="square"><a href="https://www.youtube.com/watch?v=oHSMZk3Ynzg&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
 <BR>
@@ -23,6 +23,8 @@ image: bagging-in-R/PotOfGold.png
         <li type="square"><a href='http://cran.r-project.org/web/packages/RCurl/index.html' targer='_blank'>{RCurl}</a> - General network (HTTP/FTP/...) client interface for R</li>
         <li type="square"><a href='http://cran.r-project.org/web/packages/pROC/index.html' targer='_blank'>{pROC}</a> - Display and analyze ROC curves</li>
         <li type="square"><a href='http://www.inside-r.org/r-doc/stats/lm' targer='_blank'>{stats} lm</a> - Fitting Linear Models</li>
+        <li type="square"><a href='http://cran.r-project.org/web/packages/foreach/index.html' targer='_blank'>{foreach}</a> - Foreach looping construct for R</li>
+        <li type="square"><a href='http://cran.r-project.org/web/packages/doParallel/index.html' targer='_blank'>{doParallel}</a> - Foreach parallel adaptor for the parallel package</li>
        
 </ul>
 
