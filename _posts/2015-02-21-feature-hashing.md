@@ -52,7 +52,7 @@ Some of its disadvantages include causing models to run slower and a certain obf
 <BR><BR>
 **Let’s Code!**
 
-We'll be using a great healthcare data set on historical readmissions of patients with diabetes - <a href='https://archive.ics.uci.edu/ml/machine-learning-databases/00296/' target='_blank'>Diabetes 130-US hospitals for years 1999-2008</a> Data Set. Readmissions is a big deal for hospitals in the US as Medicare/medicaid will scrutinize those bills and, in some cases, only reimburse a percentage of them. We’ll use code to automate the download and unzipping of the data directly from the <a href='https://archive.ics.uci.edu/ml/index.html' target='_blank'>UC Irvine Machine Learning Repository</a>. 
+We'll be using a great healthcare data set on historical readmissions of patients with diabetes - <a href='https://archive.ics.uci.edu/ml/machine-learning-databases/00296/' target='_blank'>Diabetes 130-US hospitals for years 1999-2008</a> Data Set. Readmissions is a big deal for hospitals in the US as Medicare/Medicaid will scrutinize those bills and, in some cases, only reimburse a percentage of them. We’ll use code to automate the download and unzipping of the data directly from the <a href='https://archive.ics.uci.edu/ml/index.html' target='_blank'>UC Irvine Machine Learning Repository</a>. 
 
 
 ```r

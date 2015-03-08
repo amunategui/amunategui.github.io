@@ -7,10 +7,9 @@ year: 2015
 month: 03
 day: 07
 published: true
-summary: "Bagging is the not-so-secret edge of the competitive modeler. By sampling and modeling a triaining data set hundreds of times and averaging its predictions, you may just get that accuracy boost that puts your above the fray."
+summary: "Bagging is the not-so-secret edge of the competitive modeler. By sampling and modeling a training data set hundreds of times and averaging its predictions, you may just get that accuracy boost that puts your above the fray."
 image: bagging-in-R/PotOfGold.png
 ---
-![plot of pot of gold](../img/posts/bagging-in-R/PotOfGold.png) 
 <BR><BR>
 **Resources**
 <ul>
@@ -33,12 +32,12 @@ In simple terms, bagging irons out variance from a data set. If, after splitting
 <BR><BR>
 **Stability and Accuracy**
 
-By saving each prediction set and averaging them together, you not only <a href='http://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff' targer='_blank'>lower variance without affecting bias</a>, but your accuracy may be improved! In essence, you are creating many slightly different models and ensembling them together; this avoids overfitting, stabilizes your predictions and increases your accuracy. Mind you, this assumes your data has variance, if it doesn't, bagging won't help.
+By saving each prediction set and averaging them together, you not only <a href='http://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff' targer='_blank'>lower variance without affecting bias</a>, but your accuracy may be improved! In essence, you are creating many slightly different models and ensembling them together; this avoids over-fitting, stabilizes your predictions and increases your accuracy. Mind you, this assumes your data has variance, if it doesn't, bagging won't help.
 
 <BR><BR>
 **Let’s Code!**
 
-We'll be using a great healthcare data set on historical readmissions of patients with diabetes - <a href='https://archive.ics.uci.edu/ml/machine-learning-databases/00296/' target='_blank'>Diabetes 130-US hospitals for years 1999-2008</a> Data Set. Readmissions is a big deal for hospitals in the US as Medicare/medicaid will scrutinize those bills and, in some cases, only reimburse a percentage of them. We’ll use code to automate the download and unzipping of the data directly from the <a href='https://archive.ics.uci.edu/ml/index.html' target='_blank'>UC Irvine Machine Learning Repository</a>. 
+We'll be using a great healthcare data set on historical readmissions of patients with diabetes - <a href='https://archive.ics.uci.edu/ml/machine-learning-databases/00296/' target='_blank'>Diabetes 130-US hospitals for years 1999-2008</a> Data Set. Readmissions is a big deal for hospitals in the US as Medicare/Medicaid will scrutinize those bills and, in some cases, only reimburse a percentage of them. We’ll use code to automate the download and unzipping of the data directly from the <a href='https://archive.ics.uci.edu/ml/index.html' target='_blank'>UC Irvine Machine Learning Repository</a>. 
 
 
 ```r
@@ -166,7 +165,7 @@ The ``AUC`` score (Area Under the Curve) of our simple ``lm`` model is <b>0.641<
 <BR><BR>
 **Let's Bag It!**
 
-Now we're going to bag this data using the same ``lm`` model. To make things go faster, we're going to parralelize the loop and spread the task to ``8`` processors; you'll need to tweak the ``makeCluster`` parameter for your hardware. The ``length_divisor`` parameter sets the size of how many rows to use in each sample, while ``m`` in the ``foreach`` loop sets how many times to run new samples. Note that the ``sample`` function doesn't use a ``seed``, this is important as we want each new sample to be made from the full set of rows available, regardless if a row was already previously used.
+Now we're going to bag this data using the same ``lm`` model. To make things go faster, we're going to parallelize the loop and spread the task to ``8`` processors; you'll need to tweak the ``makeCluster`` parameter for your hardware. The ``length_divisor`` parameter sets the size of how many rows to use in each sample, while ``m`` in the ``foreach`` loop sets how many times to run new samples. Note that the ``sample`` function doesn't use a ``seed``, this is important as we want each new sample to be made from the full set of rows available, regardless if a row was already previously used.
 
 ```r
 # parallel   ---------------------------------------------------------
@@ -203,7 +202,7 @@ So, an ``AUC`` of <b>0.6422938</b> is a little better than simple model is a lit
 <BR><BR>
 **Conclusion**
 
-Bagging is very common in competitions. I don’t think I have ever seen anybody win without some form of bagging. But, in order for this to work, your data must have variance, otherwise you’re just adding levels after levels of additional iterations with little benefit for those maininting your modelign pipeline in production.
+Bagging is very common in competitions. I don’t think I have ever seen anybody win without using some form of it. But, in order for this to work, your data must have variance, otherwise you’re just adding levels after levels of additional iterations with little benefit for those maintaining your modeling pipeline in production.
 
 This walkthrough was inspired by Vik Paruchuri and his blog entry: <a href="http://www.vikparuchuri.com/blog/build-your-own-bagging-function-in-r/" target="_blank">Improve Predictive Performance in R with Bagging</a>.
 
