@@ -161,20 +161,20 @@ print(auc(testdf[,outcomeName], preds$fit))
 ## Area under the curve: 0.6408224
 ```
 <BR><BR>
-The ``AUC`` score (Area Under the Curve) of our simple ``lm`` model is <b>0.641</b>. The score itself doesn't really matter as we're only intersted in it as a comparative benchmark.
+The ``AUC`` score (Area Under the Curve) of our simple ``lm`` model is <b>0.6408224</b>. The score itself doesn't really matter as we're only interested in it as a comparative benchmark.
 
   
 <BR><BR>
 **Let's Bag It!**
 
-Now we're going to bag this data using the same ``lm`` model. To make things go faster, we're going to parallelize the loop and spread the task to ``8`` processors; you'll need to tweak the ``makeCluster`` parameter for your hardware. The ``length_divisor`` parameter sets the size of how many rows to use in each sample, while ``m`` in the ``foreach`` loop sets how many times to run new samples. Note that the ``sample`` function doesn't use a ``seed``, this is important as we want each new sample to be made from the full set of rows available, regardless if a row was already previously used.
+Now we're going to bag this data using the same ``lm`` model. To make things go faster, we're going to parallelize the loop and spread the task to ``8`` processors; you'll need to tweak the ``makeCluster`` parameter for your hardware. The ``length_divisor`` parameter sets the size of how many rows to use in each sample, while ``m`` in the ``foreach`` loop sets how many times to run samples. Note that the ``sample`` function doesn't use a ``seed``, this is important as we want each new sample to be made from the full set of rows available, regardless if a row has already been used.
 
 ```r
 # parallel   ---------------------------------------------------------
 library(foreach)
 library(doParallel)
 
-#setup parallel backend to use 8 processors
+#setup parallel back end to use 8 processors
 cl<-makeCluster(8)
 registerDoParallel(cl)
 
@@ -280,7 +280,7 @@ print(auc(testdf[,outcomeName], preds$fit))
 library(foreach)
 library(doParallel)
 
-#setup parallel backend to use 8 processors
+#setup parallel back end to use 8 processors
 cl<-makeCluster(8)
 registerDoParallel(cl)
 
