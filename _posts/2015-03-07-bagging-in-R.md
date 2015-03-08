@@ -141,7 +141,7 @@ diabetes[is.na(diabetes)] <- 0
 <BR><BR>
 **A Simple Bag-Free Model for Comparison**
 
-We're going to use <b>base</b> <a href='http://www.inside-r.org/r-doc/stats/lm' targer='_blank'>lm (linear models)</a> to fit our train/test split:
+We're going to use the base function <a href='http://www.inside-r.org/r-doc/stats/lm' targer='_blank'>lm (linear models)</a> to model our training split:
 
 ```r
 # split data set into training and testing
