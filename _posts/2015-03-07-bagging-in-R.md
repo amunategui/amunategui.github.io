@@ -195,16 +195,12 @@ auc(testdf[,outcomeName], rowMeans(predictions))
 ## Area under the curve: 0.6422938
 ```
 <BR><BR>
-So, an ``AUC`` of <b>0.6422938</b> is a little better than simple model is a little better than the single model
-0.6422938 20/400
-
-
-
+So, an ``AUC`` of <b>0.6422938</b> is an improvement, although slight, over the simple model of 0.6408224.
 
 <BR><BR>
 **Conclusion**
 
-Bagging is very common in competitions. I don’t think I have ever seen anybody win without using some form of it. But, in order for this to work, your data must have variance, otherwise you’re just adding levels after levels of additional iterations with little benefit for those maintaining your modeling pipeline in production.
+Bagging is very common in competitions. I don’t think I have ever seen anybody win without using some form of it. But, in order for this to work, your data must have variance, otherwise you’re just adding levels after levels of additional iterations with little benefit to your score and to those maintaining your modeling pipeline in production. Even when it does improve things, you have to asked yourself if its worth all that extra work...
 
 This walkthrough was inspired by Vik Paruchuri and his blog entry: <a href="http://www.vikparuchuri.com/blog/build-your-own-bagging-function-in-r/" target="_blank">Improve Predictive Performance in R with Bagging</a>.
 
