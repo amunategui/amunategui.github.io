@@ -29,7 +29,7 @@ image: bagging-in-R/PotOfGold.png
 </ul>
 
 <BR><BR>
-In simple terms, bagging irons out variance from a data set. If, after splitting your data into multiple chunks and training all of them, you find that your predictions are different, your data has variance. Bagging can turn a bad thing into a competitive advantage. For more theory behind the magic, check out <a href='http://en.wikipedia.org/wiki/Bootstrap_aggregating' targer='_blank'>Bootstrap Aggregating</a> on Wikipedia.
+In simple terms, bagging irons out variance from a data set. If, after splitting your data into multiple chunks and training them, you find that your predictions are different, your data has variance. Bagging can turn a bad thing into a competitive advantage. For more theory behind the magic, check out <a href='http://en.wikipedia.org/wiki/Bootstrap_aggregating' targer='_blank'>Bootstrap Aggregating</a> on Wikipedia.
 
 <BR><BR>
 **Stability and Accuracy**
