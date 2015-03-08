@@ -62,7 +62,7 @@ binData <- getBinaryURL("https://archive.ics.uci.edu/ml/machine-learning-databas
 
 conObj <- file("dataset_diabetes.zip", open = "wb")
 writeBin(binData, conObj)
-# don't fortet to close it
+# don't forget to close it
 close(conObj)
 
 # open diabetes file
@@ -294,7 +294,7 @@ binData <- getBinaryURL("https://archive.ics.uci.edu/ml/machine-learning-databas
 
 conObj <- file("dataset_diabetes.zip", open = "wb")
 writeBin(binData, conObj)
-# don't fortet to close it
+# don't forget to close it
 close(conObj)
 
 # open diabetes file
