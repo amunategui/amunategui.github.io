@@ -195,7 +195,7 @@ auc(testdf[,outcomeName], rowMeans(predictions))
 ## Area under the curve: 0.6422938
 ```
 <BR><BR>
-Our final ``AUC`` score of <b>0.6422938</b> is an improvement, although slight, over the simple model of 0.6408224. This does require trial and error to find the right mix of sample size and number of runs. 
+Our final ``AUC`` score of <b>0.6422938</b> is a small improvement over the simple model's ``AUC`` of 0.6408224. Even though this may not feel like a huge improvement, its that kind of little push that will place you above other players in data science competitions. This does require trial and error to find the right mix of sample size and number of runs. 
 
 <BR><BR>
 **Conclusion**
