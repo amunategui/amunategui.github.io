@@ -7,7 +7,7 @@ year: 2015
 month: 03
 day: 07
 published: true
-summary: "Bagging is the not-so-secret edge of the competitive modeler. By sampling and modeling a training data set hundreds of times and averaging its predictions, you may just get that accuracy boost that puts your above the fray."
+summary: "Bagging is the not-so-secret edge of the competitive modeler. By sampling and modeling a training data set hundreds of times and averaging its predictions, you may just get that accuracy boost that puts you above the fray."
 image: bagging-in-R/PotOfGold.png
 ---
 <BR>
