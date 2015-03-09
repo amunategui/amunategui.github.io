@@ -29,7 +29,7 @@ image: bagging-in-R/PotOfGold.png
 </ul>
 
 <BR><BR>
-In simple terms, bagging irons out variance from a data set. If, after splitting your data into multiple chunks and training them, you find that your predictions are different, your data has variance. Bagging can turn a bad thing into a competitive advantage. For more theory behind the magic, check out <a href='http://en.wikipedia.org/wiki/Bootstrap_aggregating' targer='_blank'>Bootstrap Aggregating</a> on Wikipedia.
+In simple terms, bagging irons out variance from a data set. If, after splitting your data into multiple chunks and training them, you find that your predictions are different, your data has variance. Bagging can turn a bad thing into a competitive advantage. For more theory behind the magic, check out <a href='http://en.wikipedia.org/wiki/Bootstrap_aggregating' targer='_blank'>Bootstrap Aggregating</a> on Wikipedia. Bagging was invented by <a href='http://arxiv.org/pdf/1101.0923.pdf' target='_blank'>Leo Breiman</a> at the University of California. He is also one of the grandfathers of <a href="http://en.wikipedia.org/wiki/Boosting_%28machine_learning%29" targer="_blank">Boosting</a> and <a href='https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm' target='_blank'>Random Forests</a>.
 
 <BR><BR>
 **Stability and Accuracy**
