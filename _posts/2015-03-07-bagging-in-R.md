@@ -205,7 +205,7 @@ Bagging is very common in competitions. I don’t think I have ever seen anybody
 This walkthrough was inspired by Vik Paruchuri and his blog entry: <a href="http://www.vikparuchuri.com/blog/build-your-own-bagging-function-in-r/" target="_blank">Improve Predictive Performance in R with Bagging</a>.
 
 <BR><BR>        
-<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/feature-hashing-walkthrough/blob/master/feature-hasher-walkthrough.r' target='_blank'>also on GitHub</a>)</a>:
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/bagging-in-R' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
 require(RCurl)
