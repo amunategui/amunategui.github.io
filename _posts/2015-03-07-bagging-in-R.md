@@ -132,7 +132,7 @@ for (colname in charcolumns) {
 # remove all punctuation characters in column names after binarization that could trip R
 colnames(diabetes) <- gsub(x =colnames(diabetes), pattern="[[:punct:]]", replacement = "_" )
  
-# check for zero variance
+# check for zero variance - ty James http://stackoverflow.com/questions/8805298/quickly-remove-zero-variance-variables-from-a-data-frame
 diabetes <- diabetes[sapply(diabetes, function(x) length(levels(factor(x,exclude=NULL)))>1)]
 
 # transform all NAs into 0
@@ -253,7 +253,7 @@ for (colname in charcolumns) {
 # remove all punctuation characters in column names after binarization that could trip R
 colnames(diabetes) <- gsub(x =colnames(diabetes), pattern="[[:punct:]]", replacement = "_" )
  
-# check for zero variance
+# check for zero variance - ty James http://stackoverflow.com/questions/8805298/quickly-remove-zero-variance-variables-from-a-data-frame
 diabetes <- diabetes[sapply(diabetes, function(x) length(levels(factor(x,exclude=NULL)))>1)]
 
 # transform all NAs into 0
