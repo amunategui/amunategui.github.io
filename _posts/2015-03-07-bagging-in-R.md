@@ -179,7 +179,7 @@ cl<-makeCluster(8)
 registerDoParallel(cl)
 
 # divide row size by 20, sample data 400 times 
-ength_divisor <- 20
+length_divisor <- 20
 predictions<-foreach(m=1:400,.combine=cbind) %dopar% { 
         # using sample function without seed
      sampleRows <- sample(nrow(traindf), size=floor((nrow(traindf)/length_divisor)))
