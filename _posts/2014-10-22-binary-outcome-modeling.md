@@ -467,7 +467,7 @@ objModel <- train(trainDF[,predictorsNames], as.factor(trainDF[,outcomeName]),
                   trControl=objControl,  
                   metric = "ROC",
                   preProc = c("center", "scale"))
-)
+
 
 # find out variable importance
 summary(objModel)
@@ -476,7 +476,7 @@ summary(objModel)
 objModel
 
 #################################################
-# evalute mdoel
+# evalutate model
 #################################################
 # get predictions on your testing data
 
