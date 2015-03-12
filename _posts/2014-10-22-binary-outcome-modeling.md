@@ -485,11 +485,10 @@ predictions <- predict(object=objModel, testDF[,predictorsNames], type='raw')
 head(predictions)
 postResample(pred=predictions, obs=as.factor(testDF[,outcomeName]))
 
-# probabilites 
+# probabilities 
 predictions <- predict(object=objModel, testDF[,predictorsNames], type='prob')
 head(predictions)
-postResample(pred=predictions, obs=testDF[,outcomeName])
-
+postResample(pred=predictions[[2]], obs=ifelse(testDF[,outcomeName]=='yes',1,0))
 auc <- roc(ifelse(testDF[,outcomeName]=="yes",1,0), predictions[[2]])
 print(auc$auc)
 
