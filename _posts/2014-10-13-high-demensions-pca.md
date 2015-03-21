@@ -381,7 +381,7 @@ EvaluateAUC(dfEvaluate)
 
 <BR><BR>        
 <a id="sourcecode_gbm">GBM source code</a>:
-<BR>
+<BR><BR>
 ```r
 
 require(ROCR)
