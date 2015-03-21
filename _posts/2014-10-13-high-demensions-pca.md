@@ -376,12 +376,14 @@ dfEvaluate <- cbind(as.data.frame(dfComponents),
                     cluster=g_labels$V1)
 
 EvaluateAUC(dfEvaluate)
+
 ```
 
 <BR><BR>        
 <a id="sourcecode_gbm">GBM source code</a>:
 
 ```r
+
 require(ROCR)
 require(caret)
 require(ggplot2)
