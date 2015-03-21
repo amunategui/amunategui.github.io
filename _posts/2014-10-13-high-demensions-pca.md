@@ -378,59 +378,14 @@ dfEvaluate <- cbind(as.data.frame(dfComponents),
 EvaluateAUC(dfEvaluate)
 ```
 
-
 <BR><BR>        
-<a id="sourcecode_gbm">GBM source code</a>
+<a id="sourcecode_gbm">GBM source code</a>:
+
 ```r
 require(ROCR)
 require(caret)
 require(ggplot2)
-
-EvaluateAUC <- function(dfEvaluate, CV=5, trees=3, depth=2, shrink=0.1) {
-     require(caret)
-     require(Metrics)
-     CVs <- CV
-     cvDivider <- floor(nrow(dfEvaluate) / (CVs+1))
-     indexCount <- 1
-     outcomeName <- c('cluster')
-     predictors <- names(dfEvaluate)[!names(dfEvaluate) %in% outcomeName]
-     lsErr <- c()
-     lsAUC <- c()
-     for (cv in seq(1:CVs)) {
-          print(paste('cv',cv))
-          
-          dataTestIndex <- c((cv * cvDivider):(cv * cvDivider + cvDivider))
-          dataTest <- dfEvaluate[dataTestIndex,]
-          dataTrain <- dfEvaluate[-dataTestIndex,]
-          
-          
-          #dataTrain[,outcomeName] <- ifelse(dataTrain[,outcomeName]==1,'yes','nope')
-          
-          
-          # create caret trainControl object to control the number of cross-validations performed
-          objControl <- trainControl(method='cv', number=2, returnResamp='none') #, summaryFunction = twoClassSummary, classProbs = TRUE)
-          
-          # run model
-          bst <- train(dataTrain[,predictors],  dataTrain[,outcomeName], 
-                       method='glmnet', 
-                       trControl=objControl
-                       ##metric = "ROC",
-                      ## tuneGrid = expand.grid(n.trees = trees, interaction.depth = depth, shrinkage = shrink))
-          )
-          
-          predictions <- predict(object=bst, dataTest[,predictors])
-          auc <- auc(dataTest[,outcomeName], predictions)
-          err <- rmse(dataTest[,outcomeName], predictions)
-          
-          lsErr <- c(lsErr, err)
-         lsAUC <- c(lsAUC, auc)
-          gc()
-     }
-     print(paste('Mean Error:',mean(lsErr)))
-     print(paste('Mean AUC:',mean(lsAUC)))
-}
-
-
+  
 Evaluate_GBM_AUC <- function(dfEvaluate, CV=5, trees=3, depth=2, shrink=0.1) {
      require(caret)
      require(Metrics)
