@@ -472,9 +472,7 @@ dfEvaluateOrig <- cbind(as.data.frame(sapply(gisette_nzv, as.numeric)),
 
 Evaluate_GBM_AUC(dfEvaluateOrig, CV=5, trees=10, depth=2, shrink=1) 
 
-##########################################################################################
 # Run prcomp on the data set
-##########################################################################################
 
 pmatrix <- scale(gisette_nzv)
 princ <- prcomp(pmatrix)
@@ -484,7 +482,6 @@ nComp <- 20
 dfComponents <- predict(princ, newdata=pmatrix)[,1:nComp]
 dfEvaluatePCA <- cbind(as.data.frame(dfComponents),
                     cluster=g_labels$V1)
-
 Evaluate_GBM_AUC(dfEvaluatePCA,CV=5, trees=10, depth=2, shrink=1) 
 
 ```
