@@ -15,7 +15,7 @@ image: dimension-reduction/pca.png
 <ul>
 <li type="square"><a href="https://www.youtube.com/watch?v=qhvkVxuwvLk&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
-<li type="square"><a href="#sourcecode_gbm">Alternative GBM Source Code</a></li>
+<li type="square"><a href="#sourcecode_gbm">Alternative GBM Source Code <- for those that can't use xgboost!!!</a></li>
 </ul>
 <BR>
 **Packages Used in this Walkthrough**
