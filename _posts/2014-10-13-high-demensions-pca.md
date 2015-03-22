@@ -382,6 +382,7 @@ EvaluateAUC(dfEvaluate)
 <BR><BR>        
 <a id="sourcecode_gbm">GBM source code</a>:
 <BR><BR>
+
 ```r
 
 require(ROCR)
@@ -432,9 +433,7 @@ Evaluate_GBM_AUC <- function(dfEvaluate, CV=5, trees=3, depth=2, shrink=0.1) {
 }
 
 
-##########################################################################################
 ## Download data
-##########################################################################################
 
 # http://www.nipsfsc.ecs.soton.ac.uk/datasets/GISETTE.zip
 # http://stat.ethz.ch/R-manual/R-devel/library/stats/html/princomp.html
@@ -449,9 +448,7 @@ gisetteRaw <- read.table("GISETTE/gisette_train.data", sep=" ",skip=0, header=F)
 unzip(temp, "GISETTE/gisette_train.labels")
 g_labels <- read.table("GISETTE/gisette_train.labels", sep=" ",skip=0, header=F)
 
-##########################################################################################
-## Remove zero and close to zero variance
-##########################################################################################
+# Remove zero and close to zero variance
 
 nzv <- nearZeroVar(gisetteRaw, saveMetrics = TRUE)
 range(nzv$percentUnique)
@@ -468,9 +465,7 @@ dim(nzv[nzv$percentUnique > 0.1,])
 gisette_nzv <- gisetteRaw[c(rownames(nzv[nzv$percentUnique > 0.1,])) ]
 print(paste('Column count after cutoff:',ncol(gisette_nzv)))
 
-##########################################################################################
 # Run model on original data set
-##########################################################################################
 
 dfEvaluateOrig <- cbind(as.data.frame(sapply(gisette_nzv, as.numeric)),
                     cluster=g_labels$V1)
@@ -492,7 +487,7 @@ dfEvaluatePCA <- cbind(as.data.frame(dfComponents),
 
 Evaluate_GBM_AUC(dfEvaluatePCA,CV=5, trees=10, depth=2, shrink=1) 
 
-
+```
 
  
  
