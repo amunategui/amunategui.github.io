@@ -66,8 +66,6 @@ Only use the first 24 columns of the data for simplicities sake. Cast all variab
 
 ```r
 vehicles <- vehicles[names(vehicles)[1:24]]
-vehicles <- data.frame(lapply(vehicles, as.character), stringsAsFactors=FALSE)
-vehicles <- data.frame(lapply(vehicles, as.numeric))
 vehicles[is.na(vehicles)] <- 0
 names(vehicles)
 ```
@@ -347,8 +345,6 @@ vehicles <- read.csv(textConnection(x))
 
 # clean up the data and only use the first 24 columns
 vehicles <- vehicles[names(vehicles)[1:24]]
-vehicles <- data.frame(lapply(vehicles, as.character), stringsAsFactors=FALSE)
-vehicles <- data.frame(lapply(vehicles, as.numeric))
 vehicles[is.na(vehicles)] <- 0
 
 # use cyclinder column as outcome and cast to factor
@@ -380,10 +376,9 @@ preds2 <- predict(cylModel, type="class", newdata=vehiclesTest)
 
 # resample for accuracy - the mean squared error and R-squared are calculated of forfactors, the overall agreement rate and Kappa
 postResample(vehiclesTest$cylinders,preds2)[[1]]
-preds
 
 library(Metrics)
-classificationError <- ce(as.numeric(vehiclesTest$cylinders), as.numeric(preds))
+classificationError <- ce(as.numeric(vehiclesTest$cylinders), as.numeric(preds2))
 
 # repeat cross validate by iterating through all the data to give every variable a chance of being test and train portions
 totalError <- c()
