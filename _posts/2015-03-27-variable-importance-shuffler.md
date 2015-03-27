@@ -25,7 +25,7 @@ image: variable-importance-shuffler/shuffler.png
 </ul>
 
 <BR><BR>
-My colleague shared with me a nifty concept to easily calculate variable importance for any model. He did not invent it, actually many forms of it abound in the literature and on the Internet. <a href='http://www.plottingsuccess.com/3-predictive-model-accuracy-tests-0114/' target='_blank'>John Elder is one of the authors</a>. 
+My colleague showed me a nifty concept to easily calculate variable importance for any model. He did not invent it, actually many forms of it abound in the literature and on the Internet. <a href='http://www.plottingsuccess.com/3-predictive-model-accuracy-tests-0114/' target='_blank'>John Elder is one of the authors</a>. 
 
 ![plot of chunk variable-importance-shuffler](../img/posts/variable-importance-shuffler/shuffler.png) 
 
