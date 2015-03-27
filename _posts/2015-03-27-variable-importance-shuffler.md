@@ -7,7 +7,7 @@ year: 2015
 month: 03
 day: 27
 published: true
-summary: "You model and predict once to get your benchmark score, then predict hundreds of times for each variable in the model while randomizing that variable each time. If the variable being randomized hurts the model's benchmark score, then its an important variable. If nothing changes then its a useless variable. "
+summary: "You model and predict once to get a benchmark score, then predict hundreds of times for each variable while randomizing it each time. If the variable being randomized hurts the model's benchmark score, then its an important variable. If nothing changes then its a useless variable. "
 image: variable-importance-shuffler/shuffler.png
 ---
 
@@ -190,71 +190,61 @@ Now let's try this with a GLM model. You'll see that the code is similar except 
 
 
 ```r
-# run model
-objGLM <- train(trainDF[,predictorNames],  as.factor(trainDF[,outcomeName]),
+# change a few things for a linear model
+objControl <- trainControl(method='cv', number=2)
+trainDF[,outcomeName] <- ifelse(trainDF[,outcomeName]=='yes', 1, 0)
+ 
+# shuffling with GLM
+objGLM <- train(trainDF[,predictorNames],  trainDF[,outcomeName],
                 method='glm',
-                trControl=objControl, 
-                metric = "ROC",
+                trControl=objControl,
                 preProc = c("center", "scale"))
 
-predictions <- predict(object=objGLM, testDF[,predictorNames], type='prob')
-refAUC <- GetROC_AUC(predictions[[2]],testDF[,outcomeName])
-print(paste('AUC score:', refAUC))
-```
-
-```
-## [1] "Reference AUC: 0.855187406900439"
-```
-
-```r
-# Shuffle predictions for variable importance
-VariableImportanceShuffle <- NULL
+predictions <- predict(object=objGLM, testDF[,predictorNames])
 refRMSE=sqrt((sum((testDF[,outcomeName]-predictions[[2]])^2))/nrow(testDF))
 print(paste('Reference RMSE:',refRMSE))
 ```
 
 ```
-## [1] "Reference RMSE: 0.368559855818399"
+## [1] "Reference RMSE: 0.4803244"
 ```
 
 ```r
-shuffletimes <- 200
-featuresMeanAUCs <- c()
+# Shuffle predictions for variable importance
+VariableImportanceShuffle <- NULL
+shuffletimes <- 500
 featuresMeanRMSEs <- c()
 for (feature in predictorNames) {
-        featureAUCs <- c()
-        featureRMSEs <- c()
-        shuffledData <- testDF[,predictorNames]
-        for (iter in 1:shuffletimes) {
-                shuffledData[,feature] <- sample(shuffledData[,feature], length(shuffledData[,feature]))
-                predictions <- predict(object=objGLM, shuffledData[,predictorNames], type='prob')
-                featureAUCs <- c(featureAUCs,GetROC_AUC(predictions[[2]], testDF[,outcomeName]))
-                featureRMSEs <- c(featureRMSEs, sqrt((sum((testDF[,outcomeName]-predictions[[2]])^2))/nrow(testDF)))
-        }
-        featuresMeanAUCs <- c(featuresMeanAUCs, mean(featureAUCs < refAUC))
-        featuresMeanRMSEs <- c(featuresMeanRMSEs,  mean((featureRMSEs - refRMSE)/refRMSE))
-        
+     featureRMSEs <- c()
+     shuffledData <- testDF[,predictorNames]
+     for (iter in 1:shuffletimes) {
+          shuffledData[,feature] <- sample(shuffledData[,feature], length(shuffledData[,feature]))
+          predictions <- predict(object=objGLM, shuffledData[,predictorNames])
+          featureRMSEs <- c(featureRMSEs, sqrt((sum((testDF[,outcomeName]-predictions[[2]])^2))/nrow(testDF)))
+     }
+     print(refRMSE)
+     featuresMeanRMSEs <- c(featuresMeanRMSEs,  mean((featureRMSEs - refRMSE)/refRMSE))
 }
 ```
 
 ```r
-VariableImportanceShuffle <- data.frame('feature'=predictorNames, 'AUC_Importance'=featuresMeanAUCs, 'RMSE_Importance'=featuresMeanRMSEs)
-VariableImportanceShuffle <- VariableImportanceShuffle[order(VariableImportanceShuffle$AUC_Importance, decreasing=TRUE),]
+VariableImportanceShuffle <- data.frame('feature'=predictorNames, 'RMSE_Importance'=featuresMeanRMSEs)
+VariableImportanceShuffle <- VariableImportanceShuffle[order(VariableImportanceShuffle$RMSE_Importance),]
 print(VariableImportanceShuffle)
 ```
 
 ```
-##          feature AUC_Importance RMSE_Importance
-## 1     PClass.1st          1.000        0.228725
-## 2     PClass.2nd          1.000        0.076828
-## 4            Age          1.000        0.028916
-## 5     Sex.female          1.000        0.049387
-## 8       Title.Mr          1.000        0.141144
-## 9      Title.Mrs          0.970        0.014406
-## 7     Title.Miss          0.925        0.002671
-## 3     PClass.3rd          0.000        0.000000
-## 6       Sex.male          0.000        0.000000
-## 10 Title.Nothing          0.000        0.000000
+##          feature RMSE_Importance
+## 3     PClass.3rd    0.0000000000
+## 6       Sex.male    0.0000000000
+## 10 Title.Nothing    0.0000000000
+## 9      Title.Mrs    0.0008184745
+## 7     Title.Miss    0.0014539120
+## 4            Age    0.0083164435
+## 2     PClass.2nd    0.0176333192
+## 5     Sex.female    0.0261519020
+## 8       Title.Mr    0.0302928581
+## 1     PClass.1st    0.2334582971
 ```
 <BR><BR>
 The code is the same but the results are different which is to be expected when using two different models (tree based versus linear).
@@ -378,43 +368,42 @@ AUCShuffle <- AUCShuffle[order(AUCShuffle$importance, decreasing=TRUE),]
 print(AUCShuffle)
  
 # shuffling with GLM
-objGLM <- train(trainDF[,predictorNames],  as.factor(trainDF[,outcomeName]),
+# change a few things for a linear model
+objControl <- trainControl(method='cv', number=2)
+trainDF[,outcomeName] <- ifelse(trainDF[,outcomeName]=='yes', 1, 0)
+ 
+# GLM
+objGLM <- train(trainDF[,predictorNames],  trainDF[,outcomeName],
                 method='glm',
-                trControl=objControl, 
-                metric = "ROC",
+                trControl=objControl,
                 preProc = c("center", "scale"))
-
-predictions <- predict(object=objGLM, testDF[,predictorNames], type='prob')
-refAUC <- GetROC_AUC(predictions[[2]],testDF[,outcomeName])
-print(paste('AUC score:', refAUC))
-
-# Shuffle predictions for variable importance
-VariableImportanceShuffle <- NULL
+ 
+predictions <- predict(object=objGLM, testDF[,predictorNames])
 refRMSE=sqrt((sum((testDF[,outcomeName]-predictions[[2]])^2))/nrow(testDF))
+ 
+VariableImportanceShuffle <- NULL
+ 
 print(paste('Reference RMSE:',refRMSE))
-
-shuffletimes <- 200
-featuresMeanAUCs <- c()
+ 
+shuffletimes <- 500
 featuresMeanRMSEs <- c()
 for (feature in predictorNames) {
-        featureAUCs <- c()
-        featureRMSEs <- c()
-        shuffledData <- testDF[,predictorNames]
-        for (iter in 1:shuffletimes) {
-                shuffledData[,feature] <- sample(shuffledData[,feature], length(shuffledData[,feature]))
-                predictions <- predict(object=objGLM, shuffledData[,predictorNames], type='prob')
-                featureAUCs <- c(featureAUCs,GetROC_AUC(predictions[[2]], testDF[,outcomeName]))
-                featureRMSEs <- c(featureRMSEs, sqrt((sum((testDF[,outcomeName]-predictions[[2]])^2))/nrow(testDF)))
-        }
-        featuresMeanAUCs <- c(featuresMeanAUCs, mean(featureAUCs < refAUC))
-        featuresMeanRMSEs <- c(featuresMeanRMSEs,  mean((featureRMSEs - refRMSE)/refRMSE))
-        
+     featureRMSEs <- c()
+     shuffledData <- testDF[,predictorNames]
+     for (iter in 1:shuffletimes) {
+          shuffledData[,feature] <- sample(shuffledData[,feature], length(shuffledData[,feature]))
+          predictions <- predict(object=objGLM, shuffledData[,predictorNames])
+          featureRMSEs <- c(featureRMSEs, sqrt((sum((testDF[,outcomeName]-predictions[[2]])^2))/nrow(testDF)))
+     }
+     print(refRMSE)
+     featuresMeanRMSEs <- c(featuresMeanRMSEs,  mean((featureRMSEs - refRMSE)/refRMSE))
+     #featuresMeanRMSEs <- c(featuresMeanRMSEs,  mean(featureRMSEs))
 }
-
-VariableImportanceShuffle <- data.frame('feature'=predictorNames, 'AUC_Importance'=featuresMeanAUCs, 'RMSE_Importance'=featuresMeanRMSEs)
-VariableImportanceShuffle <- VariableImportanceShuffle[order(VariableImportanceShuffle$AUC_Importance, decreasing=TRUE),]
+VariableImportanceShuffle <- data.frame('feature'=predictorNames, 'RMSE_Importance'=featuresMeanRMSEs)
+VariableImportanceShuffle <- VariableImportanceShuffle[order(VariableImportanceShuffle$RMSE_Importance),]
 print(VariableImportanceShuffle)
- 
+
+
 # bonus - great package for fast variable importance
 library(mRMRe)
 ind <- sapply(titanicDF, is.integer)
