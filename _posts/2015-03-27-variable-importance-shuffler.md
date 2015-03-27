@@ -13,7 +13,7 @@ image: variable-importance-shuffler/shuffler.png
 
 **Resources**
 <ul>
-<li type="square"><a href="https://www.youtube.com/watch?v=dTRDZBltCTg&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
 <BR>
@@ -182,9 +182,11 @@ print(AUCShuffle)
 There you have it, by iterating through each variable and scrambling them 200 times, the following four variables proved most important:<b>PClass.3rd, Sex.female, Sex.male, Title.Mr</b>.
 
 Let's put this in words one more time; we started by modeling our Titanic data set once with a GBM model and used the saved model to predict a reference (or benchmark) AUC score. With the saved benchmark and model, we created a loop to cycle through every variable in the set and predict the test set 200 times while scrambling the values of that variable each time.  
+
+The above code can easily be used with any other tree-based classifiers such as random forests. 
  
 **Shuffling with GLM**
-Now let's try this with a GLM model. You'll see that the code is the same.
+Now let's try this with a GLM model. You'll see that the code is similar except we'll be using the Root Mean Square Error (RMSE) score instead of an AUC score.
 
 
 ```r
