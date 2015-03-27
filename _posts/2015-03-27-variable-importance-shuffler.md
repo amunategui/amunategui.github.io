@@ -278,7 +278,7 @@ print(bestVars)
 <BR><BR>
 Enjoy!!
 <BR><BR>        
-<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/feature-hashing-walkthrough/blob/master/feature-hasher-walkthrough.r' target='_blank'>also on GitHub</a>)</a>:
+<a id="sourcecode">Full source code (<a href=' https://github.com/amunategui/variable-importance-shuffling' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
 
