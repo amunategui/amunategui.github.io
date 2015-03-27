@@ -29,7 +29,7 @@ My colleague shared with me a nifty concept to easily calculate variable importa
 
 ![plot of chunk variable-importance-shuffler](../img/posts/variable-importance-shuffler/shuffler.png) 
 
-The idea is so simple, its brilliant; you model once, predict once to get your benchmark score, and finally predict hundreds of times for each variable in the model while randomizing that variable. If the variable being randomized hurts the model's benchmark score, then its an important variable. If, on the other hand, nothing changes, or it beats the benchmark, then its a useless variable. By running this hundreds of times for each variable, you can paint a clear picture of what variable is affecting the model and to what degree. The beauty of this approach is that it is model agnostic as everything happens after the modeling phase.
+The idea is so simple, its brilliant; you model once, predict once to get a benchmark score, and finally predict hundreds of times for each variable in the model while randomizing that variable. If the variable being randomized hurts the model's benchmark score, then its an important variable. If, on the other hand, nothing changes, or it beats the benchmark, then its a useless variable. By running this hundreds of times for each variable, you can paint a clear picture of what variable is affecting the model and to what degree. The beauty of this approach is that it is model agnostic as everything happens after the modeling phase.
 
 **Let’s code!**
 
@@ -246,7 +246,7 @@ print(VariableImportanceShuffle)
 ## 1     PClass.1st    0.2334582971
 ```
 <BR><BR>
-The code is the same but the results are different which is to be expected when using two different models (tree based versus linear).
+The code is almost the same (except for the scoring formula) but the results are different which is to be expected when using two different models (tree based versus linear).
 
 As a bonus, here is a great package for quick variable importance. I won't go into any details but I recommend it for its speed!
 
