@@ -7,7 +7,7 @@ year: 2015
 month: 03
 day: 27
 published: true
-summary: "An novel way of getting variable importance for any model in R - model it once and predict many times"
+summary: "You model and predict once to get your benchmark score, then predict hundreds of times for each variable in the model while randomizing that variable each time. If the variable being randomized hurts the model's benchmark score, then its an important variable. If nothing changes then its a useless variable. "
 image: variable-importance-shuffler/shuffler.png
 ---
 
@@ -29,7 +29,7 @@ My colleague shared with me a nifty concept to easily calculate variable importa
 
 ![plot of chunk variable-importance-shuffler](../img/posts/variable-importance-shuffler/shuffler.png) 
 
-The idea is so simple, its brilliant; you model once, predict once to get your benchmark score, and finally predict hundreds of times for each variable in the model while randomizing that variable. If the variable being randomized hurt the model's benchmark score, then its an important variable. If, on the other hand, nothing changes, or it beats the benchmark, then its a useless variable. By running this hundreds of times for each variable, you can paint a clear picture of what variable is affecting the model and to what degree. The beauty of this approach is that it is model agnostic as everything happens after the modeling phase.
+The idea is so simple, its brilliant; you model once, predict once to get your benchmark score, and finally predict hundreds of times for each variable in the model while randomizing that variable. If the variable being randomized hurts the model's benchmark score, then its an important variable. If, on the other hand, nothing changes, or it beats the benchmark, then its a useless variable. By running this hundreds of times for each variable, you can paint a clear picture of what variable is affecting the model and to what degree. The beauty of this approach is that it is model agnostic as everything happens after the modeling phase.
 
 **Let’s code!**
 
@@ -52,14 +52,6 @@ titanicDF <- titanicDF[c('PClass', 'Age',    'Sex',   'Title', 'Survived')]
  
 # binarize all factors
 library(caret)
-```
-
-```
-## Loading required package: lattice
-## Loading required package: ggplot2
-```
-
-```r
 titanicDummy <- dummyVars("~.",data=titanicDF, fullRank=F)
 titanicDF <- as.data.frame(predict(titanicDummy,titanicDF))
 ```
@@ -86,7 +78,7 @@ str(titanicDF)
 ##  $ Survived     : num  1 0 0 0 1 1 1 0 1 0 ...
 ```
 <BR><BR>
-We'll start by running a simple Gradient Boosted Machine (GBM) model on the data in order to get our benchmark area-under-the-curve (AUC) score. First we need to split the data into a training and testing portion, generalize our outcome and preditor names, and <a href='http://amunategui.github.io/binary-outcome-modeling/' target='_blank'>fix the outcome variable for classification</a>:
+We'll start by running a simple Gradient Boosted Machine (GBM) model on the data in order to get our benchmark area-under-the-curve (AUC) score. First we need to split the data into a training and testing portion, generalize our outcome and predictor names, and <a href='http://amunategui.github.io/binary-outcome-modeling/' target='_blank'>fix the outcome variable for classification</a>:
 
 
 ```r
@@ -106,15 +98,6 @@ trainDF[,outcomeName] <- ifelse(trainDF[,outcomeName]==1,'yes','nope')
 Now we're ready to run a simple GBM model:
 
 ```r
-library(caret)
-```
-
-```
-## Loading required package: lattice
-## Loading required package: ggplot2
-```
-
-```r
 # create caret trainControl object to control the number of cross-validations performed
 objControl <- trainControl(method='cv', number=2, returnResamp='none', summaryFunction = twoClassSummary, classProbs = TRUE)
  
@@ -124,56 +107,7 @@ objGBM <- train(trainDF[,predictorNames],  as.factor(trainDF[,outcomeName]),
                 metric = "ROC",
                 tuneGrid = expand.grid(n.trees = 5, interaction.depth = 3, shrinkage = 0.1)
 )
-```
 
-```
-## Loading required package: gbm
-## Loading required package: survival
-## Loading required package: splines
-## 
-## Attaching package: 'survival'
-## 
-## The following object is masked from 'package:caret':
-## 
-##     cluster
-## 
-## Loading required package: parallel
-## Loaded gbm 2.1
-## Loading required package: plyr
-## Loading required package: pROC
-## Type 'citation("pROC")' for a citation.
-## 
-## Attaching package: 'pROC'
-## 
-## The following objects are masked from 'package:stats':
-## 
-##     cov, smooth, var
-```
-
-```
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.1786             nan     0.1000    0.0366
-##      2        1.1218             nan     0.1000    0.0247
-##      3        1.0774             nan     0.1000    0.0221
-##      4        1.0409             nan     0.1000    0.0181
-##      5        1.0090             nan     0.1000    0.0170
-## 
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.1805             nan     0.1000    0.0343
-##      2        1.1229             nan     0.1000    0.0177
-##      3        1.0732             nan     0.1000    0.0216
-##      4        1.0353             nan     0.1000    0.0176
-##      5        1.0019             nan     0.1000    0.0153
-## 
-## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
-##      1        1.1920             nan     0.1000    0.0328
-##      2        1.1332             nan     0.1000    0.0318
-##      3        1.0913             nan     0.1000    0.0200
-##      4        1.0533             nan     0.1000    0.0176
-##      5        1.0210             nan     0.1000    0.0153
-```
-
-```r
 predictions <- predict(object=objGBM, testDF[,predictorNames], type='prob')
 ```
 <BR><BR>
@@ -245,7 +179,7 @@ print(AUCShuffle)
 ## 10 Title.Nothing      0.000
 ```
 
-There you have it, by iterating through each variable and scambling them 200 times, the following four variables proved most important:<b>PClass.3rd, Sex.female, Sex.male, Title.Mr</b>.
+There you have it, by iterating through each variable and scrambling them 200 times, the following four variables proved most important:<b>PClass.3rd, Sex.female, Sex.male, Title.Mr</b>.
 
 Let's put this in words one more time; we started by modeling our Titanic data set once with a GBM model and used the saved model to predict a reference (or benchmark) AUC score. With the saved benchmark and model, we created a loop to cycle through every variable in the set and predict the test set 200 times while scrambling the values of that variable each time.  
  
@@ -260,16 +194,7 @@ objGLM <- train(trainDF[,predictorNames],  as.factor(trainDF[,outcomeName]),
                 trControl=objControl, 
                 metric = "ROC",
                 preProc = c("center", "scale"))
-```
 
-```
-## Warning: prediction from a rank-deficient fit may be misleading
-## Warning: prediction from a rank-deficient fit may be misleading
-## Warning: prediction from a rank-deficient fit may be misleading
-## Warning: prediction from a rank-deficient fit may be misleading
-```
-
-```r
 predictions <- predict(object=objGLM, testDF[,predictorNames], type='prob')
 refAUC <- GetROC_AUC(predictions[[2]],testDF[,outcomeName])
 print(paste('AUC score:', refAUC))
@@ -332,7 +257,7 @@ print(VariableImportanceShuffle)
 <BR><BR>
 The code is the same but the results are different which is to be expected when using two different models (tree based versus linear).
 
-As a bonus, here is a great package for quick varialbe importance. I won't go into any details but I recommend it for its speed!
+As a bonus, here is a great package for quick variable importance. I won't go into any details but I recommend it for its speed!
 
 
 ```r
@@ -365,6 +290,137 @@ Enjoy!!
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/feature-hashing-walkthrough/blob/master/feature-hasher-walkthrough.r' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
+
+# using dataset from the UCI Machine Learning Repository (http://archive.ics.uci.edu/ml/)
+titanicDF <- read.csv('http://math.ucdenver.edu/RTutorial/titanic.txt',sep='\t')
+
+# creating new title feature
+titanicDF$Title <- ifelse(grepl('Mr ',titanicDF$Name),'Mr',ifelse(grepl('Mrs ',titanicDF$Name),'Mrs',ifelse(grepl('Miss',titanicDF$Name),'Miss','Nothing')))
+titanicDF$Title <- as.factor(titanicDF$Title)
+ 
+# impute age to remove NAs
+titanicDF$Age[is.na(titanicDF$Age)] <- median(titanicDF$Age, na.rm=T)
+ 
+# reorder data set so target is last column
+titanicDF <- titanicDF[c('PClass', 'Age',    'Sex',   'Title', 'Survived')]
+ 
+# binarize all factors
+library(caret)
+titanicDummy <- dummyVars("~.",data=titanicDF, fullRank=F)
+titanicDF <- as.data.frame(predict(titanicDummy,titanicDF))
+
+# Let's take a peek at our data:
+str(titanicDF)
+ 
+# split data set into train and test portion
+set.seed(1234)
+splitIndex <- sample(nrow(titanicDF), floor(0.5*nrow(titanicDF)))
+trainDF <- titanicDF[ splitIndex,]
+testDF  <- titanicDF[-splitIndex,]
+ 
+outcomeName <- 'Survived'
+predictorNames <- setdiff(names(trainDF),outcomeName)
+ 
+# transform outcome variable to text as this is required in caret for classification 
+trainDF[,outcomeName] <- ifelse(trainDF[,outcomeName]==1,'yes','nope')
+ 
+# create caret trainControl object to control the number of cross-validations performed
+objControl <- trainControl(method='cv', number=2, returnResamp='none', summaryFunction = twoClassSummary, classProbs = TRUE)
+ 
+# shuffling with GBM
+objGBM <- train(trainDF[,predictorNames],  as.factor(trainDF[,outcomeName]),
+                method='gbm',
+                trControl=objControl,
+                metric = "ROC",
+                tuneGrid = expand.grid(n.trees = 5, interaction.depth = 3, shrinkage = 0.1)
+)
+
+predictions <- predict(object=objGBM, testDF[,predictorNames], type='prob')
+
+GetROC_AUC = function(probs, true_Y){
+        # AUC approximation
+        # http://stackoverflow.com/questions/4903092/calculate-auc-in-r
+        # ty AGS
+        probsSort = sort(probs, decreasing = TRUE, index.return = TRUE)
+        val = unlist(probsSort$x)
+        idx = unlist(probsSort$ix) 
+        
+        roc_y = true_Y[idx];
+        stack_x = cumsum(roc_y == 0)/sum(roc_y == 0)
+        stack_y = cumsum(roc_y == 1)/sum(roc_y == 1)   
+        
+        auc = sum((stack_x[2:length(roc_y)]-stack_x[1:length(roc_y)-1])*stack_y[2:length(roc_y)])
+        return(auc)
+}
+ 
+refAUC <- GetROC_AUC(predictions[[2]],testDF[,outcomeName])
+print(paste('AUC score:', refAUC))
+  
+# Shuffle predictions for variable importance
+AUCShuffle <- NULL
+shuffletimes <- 200
+ 
+featuresMeanAUCs <- c()
+for (feature in predictorNames) {
+        featureAUCs <- c()
+        shuffledData <- testDF[,predictorNames]
+        for (iter in 1:shuffletimes) {
+                shuffledData[,feature] <- sample(shuffledData[,feature], length(shuffledData[,feature]))
+                predictions <- predict(object=objGBM, shuffledData[,predictorNames], type='prob')
+               featureAUCs <- c(featureAUCs,GetROC_AUC(predictions[[2]], testDF[,outcomeName]))
+        }
+        featuresMeanAUCs <- c(featuresMeanAUCs, mean(featureAUCs < refAUC))
+}
+AUCShuffle <- data.frame('feature'=predictorNames, 'importance'=featuresMeanAUCs)
+AUCShuffle <- AUCShuffle[order(AUCShuffle$importance, decreasing=TRUE),]
+print(AUCShuffle)
+ 
+# shuffling with GLM
+objGLM <- train(trainDF[,predictorNames],  as.factor(trainDF[,outcomeName]),
+                method='glm',
+                trControl=objControl, 
+                metric = "ROC",
+                preProc = c("center", "scale"))
+
+predictions <- predict(object=objGLM, testDF[,predictorNames], type='prob')
+refAUC <- GetROC_AUC(predictions[[2]],testDF[,outcomeName])
+print(paste('AUC score:', refAUC))
+
+# Shuffle predictions for variable importance
+VariableImportanceShuffle <- NULL
+refRMSE=sqrt((sum((testDF[,outcomeName]-predictions[[2]])^2))/nrow(testDF))
+print(paste('Reference RMSE:',refRMSE))
+
+shuffletimes <- 200
+featuresMeanAUCs <- c()
+featuresMeanRMSEs <- c()
+for (feature in predictorNames) {
+        featureAUCs <- c()
+        featureRMSEs <- c()
+        shuffledData <- testDF[,predictorNames]
+        for (iter in 1:shuffletimes) {
+                shuffledData[,feature] <- sample(shuffledData[,feature], length(shuffledData[,feature]))
+                predictions <- predict(object=objGLM, shuffledData[,predictorNames], type='prob')
+                featureAUCs <- c(featureAUCs,GetROC_AUC(predictions[[2]], testDF[,outcomeName]))
+                featureRMSEs <- c(featureRMSEs, sqrt((sum((testDF[,outcomeName]-predictions[[2]])^2))/nrow(testDF)))
+        }
+        featuresMeanAUCs <- c(featuresMeanAUCs, mean(featureAUCs < refAUC))
+        featuresMeanRMSEs <- c(featuresMeanRMSEs,  mean((featureRMSEs - refRMSE)/refRMSE))
+        
+}
+
+VariableImportanceShuffle <- data.frame('feature'=predictorNames, 'AUC_Importance'=featuresMeanAUCs, 'RMSE_Importance'=featuresMeanRMSEs)
+VariableImportanceShuffle <- VariableImportanceShuffle[order(VariableImportanceShuffle$AUC_Importance, decreasing=TRUE),]
+print(VariableImportanceShuffle)
+ 
+# bonus - great package for fast variable importance
+library(mRMRe)
+ind <- sapply(titanicDF, is.integer)
+titanicDF[ind] <- lapply(titanicDF[ind], as.numeric)
+dd <- mRMR.data(data = titanicDF)
+feats <- mRMR.classic(data = dd, target_indices = c(ncol(titanicDF)), feature_count = 10)
+bestVars <-data.frame('features'=names(titanicDF)[solutions(feats)[[1]]], 'scores'= scores(feats)[[1]])
+print(bestVars)
 
 ```
 
