@@ -147,7 +147,7 @@ Now we have a benchmark AUC score of ``0.85``. We will use this score during eve
 ```r
 # Shuffle predictions for variable importance
 AUCShuffle <- NULL
-shuffletimes <- 200
+shuffletimes <- 500
  
 featuresMeanAUCs <- c()
 for (feature in predictorNames) {
@@ -169,13 +169,13 @@ print(AUCShuffle)
 ##          feature importance
 ## 3     PClass.3rd      1.000
 ## 5     Sex.female      1.000
-## 6       Sex.male      1.000
 ## 8       Title.Mr      1.000
-## 1     PClass.1st      0.970
-## 4            Age      0.945
+## 1     PClass.1st      0.924
+## 4            Age      0.866
+## 9      Title.Mrs      0.218
 ## 2     PClass.2nd      0.000
+## 6       Sex.male      0.000
 ## 7     Title.Miss      0.000
-## 9      Title.Mrs      0.000
 ## 10 Title.Nothing      0.000
 ```
 
@@ -222,7 +222,6 @@ for (feature in predictorNames) {
           predictions <- predict(object=objGLM, shuffledData[,predictorNames])
           featureRMSEs <- c(featureRMSEs, sqrt((sum((testDF[,outcomeName]-predictions[[2]])^2))/nrow(testDF)))
      }
-     print(refRMSE)
      featuresMeanRMSEs <- c(featuresMeanRMSEs,  mean((featureRMSEs - refRMSE)/refRMSE))
 }
 ```
@@ -350,7 +349,7 @@ print(paste('AUC score:', refAUC))
   
 # Shuffle predictions for variable importance
 AUCShuffle <- NULL
-shuffletimes <- 200
+shuffletimes <- 500
  
 featuresMeanAUCs <- c()
 for (feature in predictorNames) {
@@ -395,9 +394,7 @@ for (feature in predictorNames) {
           predictions <- predict(object=objGLM, shuffledData[,predictorNames])
           featureRMSEs <- c(featureRMSEs, sqrt((sum((testDF[,outcomeName]-predictions[[2]])^2))/nrow(testDF)))
      }
-     print(refRMSE)
      featuresMeanRMSEs <- c(featuresMeanRMSEs,  mean((featureRMSEs - refRMSE)/refRMSE))
-     #featuresMeanRMSEs <- c(featuresMeanRMSEs,  mean(featureRMSEs))
 }
 VariableImportanceShuffle <- data.frame('feature'=predictorNames, 'RMSE_Importance'=featuresMeanRMSEs)
 VariableImportanceShuffle <- VariableImportanceShuffle[order(VariableImportanceShuffle$RMSE_Importance),]
