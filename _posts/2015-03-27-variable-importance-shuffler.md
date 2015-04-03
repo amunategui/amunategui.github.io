@@ -229,22 +229,22 @@ for (feature in predictorNames) {
 
 ```r
 VariableImportanceShuffle <- data.frame('feature'=predictorNames, 'RMSE_Importance'=featuresMeanRMSEs)
-VariableImportanceShuffle <- VariableImportanceShuffle[order(VariableImportanceShuffle$RMSE_Importance),]
+VariableImportanceShuffle <- VariableImportanceShuffle[order(VariableImportanceShuffle$RMSE_Importance,decreasing=TRUE),]
 print(VariableImportanceShuffle)
 ```
 
 ```
 ##          feature RMSE_Importance
+## 1     PClass.1st    0.2334582971
+## 8       Title.Mr    0.0338742797
+## 5     Sex.female    0.0301143113
+## 2     PClass.2nd    0.0161501428
+## 4            Age    0.0080605542
+## 7     Title.Miss    0.0017299712
+## 9      Title.Mrs    0.0007030486
 ## 3     PClass.3rd    0.0000000000
 ## 6       Sex.male    0.0000000000
 ## 10 Title.Nothing    0.0000000000
-## 9      Title.Mrs    0.0008184745
-## 7     Title.Miss    0.0014539120
-## 4            Age    0.0083164435
-## 2     PClass.2nd    0.0176333192
-## 5     Sex.female    0.0261519020
-## 8       Title.Mr    0.0302928581
-## 1     PClass.1st    0.2334582971
 ```
 <BR><BR>
 The code is almost the same (except for the scoring formula) but the results are different which is to be expected when using two different models (tree based versus linear).
@@ -398,7 +398,8 @@ for (feature in predictorNames) {
      featuresMeanRMSEs <- c(featuresMeanRMSEs,  mean((featureRMSEs - refRMSE)/refRMSE))
 }
 VariableImportanceShuffle <- data.frame('feature'=predictorNames, 'RMSE_Importance'=featuresMeanRMSEs)
-VariableImportanceShuffle <- VariableImportanceShuffle[order(VariableImportanceShuffle$RMSE_Importance),]
+VariableImportanceShuffle <- 
+        VariableImportanceShuffle[order(VariableImportanceShuffle$RMSE_Importance,decreasing=TRUE),]
 print(VariableImportanceShuffle)
 
 
