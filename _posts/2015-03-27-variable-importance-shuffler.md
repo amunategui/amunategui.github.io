@@ -259,22 +259,26 @@ ind <- sapply(titanicDF, is.integer)
 titanicDF[ind] <- lapply(titanicDF[ind], as.numeric)
 dd <- mRMR.data(data = titanicDF)
 feats <- mRMR.classic(data = dd, target_indices = c(ncol(titanicDF)), feature_count = 10)
-bestVars <-data.frame('features'=names(titanicDF)[solutions(feats)[[1]]], 'scores'= scores(feats)[[1]])
-print(bestVars)
+variableImportance <-data.frame('importance'=feats@mi_matrix[nrow(feats@mi_matrix),])
+variableImportance$feature <- rownames(variableImportance)
+row.names(variableImportance) <- NULL
+variableImportance <- na.omit(variableImportance)
+variableImportance <- variableImportance[order(variableImportance$importance, decreasing=TRUE),]
+print(variableImportance)
 ```
 
 ```
-##         features     scores
-## 1       Sex.male  0.1457778
-## 2     PClass.3rd  0.0540301
-## 3  Title.Nothing -0.0009211
-## 4      Title.Mrs -0.0068498
-## 5     PClass.1st -0.0152483
-## 6            Age -0.0268120
-## 7       Title.Mr -0.0121603
-## 8     PClass.2nd -0.0309136
-## 9     Title.Miss -0.0315590
-## 10    Sex.female       -Inf
+##     importance       feature
+## 5   0.50289113    Sex.female
+## 9   0.35928727     Title.Mrs
+## 1   0.30824025    PClass.1st
+## 7   0.24287839    Title.Miss
+## 2   0.09024881    PClass.2nd
+## 10  0.05892875 Title.Nothing
+## 4  -0.02888115           Age
+## 3  -0.34033536    PClass.3rd
+## 8  -0.48448426      Title.Mr
+## 6  -0.50289113      Sex.male
 ```
 <BR><BR>
 Enjoy!!
@@ -409,8 +413,11 @@ ind <- sapply(titanicDF, is.integer)
 titanicDF[ind] <- lapply(titanicDF[ind], as.numeric)
 dd <- mRMR.data(data = titanicDF)
 feats <- mRMR.classic(data = dd, target_indices = c(ncol(titanicDF)), feature_count = 10)
-bestVars <-data.frame('features'=names(titanicDF)[solutions(feats)[[1]]], 'scores'= scores(feats)[[1]])
-print(bestVars)
-
+variableImportance <-data.frame('importance'=feats@mi_matrix[nrow(feats@mi_matrix),])
+variableImportance$feature <- rownames(variableImportance)
+row.names(variableImportance) <- NULL
+variableImportance <- na.omit(variableImportance)
+variableImportance <- variableImportance[order(variableImportance$importance, decreasing=TRUE),]
+print(variableImportance)
 ```
 
