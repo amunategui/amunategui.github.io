@@ -25,7 +25,7 @@ image: pubmed-query/pubmed.png
 </ul>
 
 <BR><BR>
-<a href="http://www.ncbi.nlm.nih.gov/pubmed" target="_blank">PubMed</a> is a phenomenal source of medical literature. For anybody working in **Natural Language Processing (NLP)** project and are looking for topic-based medical text, PubMed is a great resource.
+<a href="http://www.ncbi.nlm.nih.gov/pubmed" target="_blank">PubMed</a> is a phenomenal source of medical literature. For anybody working in a **Natural Language Processing (NLP)** project and is looking for topic-based medical text, PubMed is your resource!
 
 <blockquote>"PubMed comprises more than 24 million citations for biomedical literature from MEDLINE, life science journals, and online books. Citations may include links to full-text content from PubMed Central and publisher web sites. (Wikipedia.com)"</blockquote>
 
