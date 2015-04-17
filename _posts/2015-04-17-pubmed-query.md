@@ -25,9 +25,13 @@ image: pubmed-query/pubmed.png
 </ul>
 
 <BR><BR>
-<a href="http://www.ncbi.nlm.nih.gov/pubmed" target="_blank">PubMed</a> is a phenomenal source of medical literature. For anybody working in a **Natural Language Processing (NLP)** project and is looking for topic-based medical text, PubMed is your resource!
+<a href="http://www.ncbi.nlm.nih.gov/pubmed" target="_blank">PubMed</a> is a phenomenal source of medical literature. 
 
-<blockquote>"PubMed comprises more than 24 million citations for biomedical literature from MEDLINE, life science journals, and online books. Citations may include links to full-text content from PubMed Central and publisher web sites. (Wikipedia.com)"</blockquote>
+<blockquote>"PubMed is a free search engine accessing primarily the MEDLINE database of references and abstracts on life sciences and biomedical topics". (<a href="http://en.wikipedia.org/wiki/PubMed" target=_"blank">Wikipedia.com</a>)</blockquote>
+
+For anybody working in a **Natural Language Processing (NLP)** project and is looking for topic-based medical text, PubMed is your resource! MEDLINE database
+
+<blockquote>"PubMed comprises more than 24 million citations for biomedical literature from MEDLINE, life science journals, and online books. Citations may include links to full-text content from PubMed Central and publisher web sites". (<a href="http://www.ncbi.nlm.nih.gov/pubmed" target=_"blank">PubMed</a>)</blockquote>
 
 There are lots of stand-alone tools and many programming library extensions to help query and extract PubMed data. The information available ranges from topics, titles, citations, abstracts, articles, etc. Researchers use them to see what is trending in the medical community, what subjects are covered, who’s writing what and when, and so on.
 
