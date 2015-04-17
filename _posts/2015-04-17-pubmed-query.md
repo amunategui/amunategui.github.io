@@ -133,6 +133,14 @@ pubmed_data$Abstract <- as.character(pubmed_data$Abstract)
 pubmed_data$Abstract <- gsub(",", " ", pubmed_data$Abstract, fixed = TRUE)
 ```
 
+See what we have:
+```r
+str(pubmed_data)
+## 'data.frame':	100 obs. of  2 variables:
+##  $ Title   : Factor w/ 100 levels "[Advances in pulmonology in year 2012].",..: 24 47 63 69 76 18 92 98 37 1 ...
+##  $ Abstract: chr  "Burn injuries secondary to home oxygen therapy (HOT) have become increasingly common in recent years  yet several guidelines fo"| __truncated__ "BACKGROUND: High-intensity (high-pressure and high backup rate) noninvasive ventilation has recently been advocated for the man"| __truncated__ "" "Oxygen is necessary for all aerobic life  and nothing is more important in respiratory care than its proper understanding  asse"| __truncated__ ...
+ ```
+
 <b>Note:</b> There are many other packages to pull PubMed data in R - google them if this one doesn't satisfy all your needs.
 
 <BR><BR>        
@@ -159,6 +167,9 @@ head(pubmed_data,1)
 
 pubmed_data$Abstract <- as.character(pubmed_data$Abstract)
 pubmed_data$Abstract <- gsub(",", " ", pubmed_data$Abstract, fixed = TRUE)
+
+# see what we have
+str(pubmed_data)
 
 ```
  
