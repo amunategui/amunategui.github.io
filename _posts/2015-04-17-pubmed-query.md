@@ -133,7 +133,7 @@ pubmed_data$Abstract <- as.character(pubmed_data$Abstract)
 pubmed_data$Abstract <- gsub(",", " ", pubmed_data$Abstract, fixed = TRUE)
 ```
 
-See what we have
+See what we have:
 
 ```r
 str(pubmed_data)
