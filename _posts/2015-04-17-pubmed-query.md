@@ -29,14 +29,14 @@ image: pubmed-query/pubmed.png
 
 <blockquote>"PubMed is a free search engine accessing primarily the MEDLINE database of references and abstracts on life sciences and biomedical topics". (<a href="http://en.wikipedia.org/wiki/PubMed" target=_"blank">Wikipedia.com</a>)</blockquote>
 
-For anybody working in a **Natural Language Processing (NLP)** project and is looking for topic-based medical text, PubMed is your resource! MEDLINE database
+For anybody working in a **Natural Language Processing (NLP)** project and is looking for topic-based medical text, **PubMed** is a great resource!
 
 <blockquote>"PubMed comprises more than 24 million citations for biomedical literature from MEDLINE, life science journals, and online books. Citations may include links to full-text content from PubMed Central and publisher web sites". (<a href="http://www.ncbi.nlm.nih.gov/pubmed" target=_"blank">PubMed</a>)</blockquote>
 
-There are lots of stand-alone tools and many programming library extensions to help query and extract PubMed data. The information available ranges from topics, titles, citations, abstracts, articles, etc. Researchers use them to see what is trending in the medical community, what subjects are covered, who’s writing what and when, and so on.
+There are lots of stand-alone tools and many programming library extensions to help query and extract **PubMed** data. The information available ranges from topics, titles, citations, abstracts, articles, etc. Researchers use them to see what is trending in the medical community, what subjects are covered, who’s writing what and when, and so on.
 
 On my end, I needed a large swath of unstructured medical data for very specific topics and the package <a href="http://cran.r-project.org/web/packages/RISmed/index.html" target="_blank">RISmed</a> allowed me to get to that data in a straightforward way. 
-
+<BR><BR>
 **Let’s Code!**
 
 If you haven't done so, install the **RISmed** package. We call the library and assign a variable for our search topic: **Chronic obstructive pulmonary disease (COPD)**.
@@ -48,7 +48,7 @@ library(RISmed)
 search_topic <- 'copd'
 ```
 
-The ``EUtilsSummary`` function helps narrow a search query and will indicate how much datais available under the q uerying criteria. This is an important steps as it allows your to do some exploratory work with downloading the actual data. Here we ask for 100 articles regarding our search topic published in 2012
+The ``EUtilsSummary`` function helps narrow a search query and will indicate how much data is available under the querying criteria. This is an important steps as it allows your to do some exploratory work with downloading the actual data. Here we ask for 100 articles regarding our search topic published in 2012:
 
 
 ```r
