@@ -144,9 +144,8 @@ str(pubmed_data)
 ##  $ Title   : Factor w/ 100 levels "[Advances in pulmonology in year 2012].",..: 24 47 63 69 76 18 92 98 37 1 ...
 ##  $ Abstract: chr  "Burn injuries secondary to home oxygen therapy (HOT) have become increasingly common in recent years  yet several guidelines fo"| __truncated__ "BACKGROUND: High-intensity (high-pressure and high backup rate) noninvasive ventilation has recently been advocated for the man"| __truncated__ "" "Oxygen is necessary for all aerobic life  and nothing is more important in respiratory care than its proper understanding  asse"| __truncated__ ...
 ```
-
+<BR><BR> 
 <b>Note:</b> There are many other packages to pull PubMed data in R - google them if this one doesn't satisfy all your needs.
-
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/feature-hashing-walkthrough/blob/master/feature-hasher-walkthrough.r' target='_blank'>also on GitHub</a>)</a>:
 
