@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Getting PubMed Medical Text with R and Package { RISmed }'
+title: 'Getting PubMed Medical Text with R and Package {RISmed}'
 category: Exploring Data
 tags: exploring
 year: 2015
