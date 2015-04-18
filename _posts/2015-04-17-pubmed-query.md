@@ -113,6 +113,7 @@ class(records)
 ```r
 # str(records)
 ```
+<BR><BR>
 To see the contents of records you can call function ``str`` but it returns so much information that I won't do it here. The best way to extract your data out of the returned ``EUtilsGet`` object is to only use the tags of interest. You can get a full list of the available tags off the <a href="http://www.nlm.nih.gov/bsd/licensee/elements_descriptions.html" target="_blank">PubMed Help</a> document.
 
 Here we will use the tags ``ArticleTitle`` and ``AbstractText`` on the ``records`` object and stuff those fields into a data frame:
@@ -131,15 +132,15 @@ head(pubmed_data,1)
 ```
 <BR><BR>
 There are many additional tags that can be called on such as: ``Year, Month, Day, Author, ISSN, Language, PublicationStatus, ArticleId, CopyrightInformation, Country, GrantID``.
-
+<BR><BR>
 There are two more important steps to make our data fully usable in ``R``. I tend to save my data sets in comma delimited data sets (CSV) so I need to make sure the data is comma-free. If commas are important to you, then I'd recommend saving the data set with a ``write.table`` instead of ``write.csv`` and come up with your own delimiter. 
 
 ```r
 pubmed_data$Abstract <- as.character(pubmed_data$Abstract)
 pubmed_data$Abstract <- gsub(",", " ", pubmed_data$Abstract, fixed = TRUE)
 ```
-
-See what we have:
+<BR><BR>
+Let's see what we have:
 
 ```r
 str(pubmed_data)
