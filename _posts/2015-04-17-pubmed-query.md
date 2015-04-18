@@ -7,7 +7,7 @@ year: 2015
 month: 4
 day: 17
 published: true
-summary: "PubMed is a great source of medical literature. If you are working on a Natural Language Processing (NLP) project and need topic-based medical text, the RISmed package can simplify and automate that process."
+summary: "PubMed is a great source of medical literature. If you are working on a Natural Language Processing (NLP) project and need 100's or 1000's of topic-based medical text, the RISmed package can simplify and automate that process."
 image: pubmed-query/pubmed.png
 ---
 ![plot of pubmed logo](../img/posts/pubmed-query/pubmed.png) 
