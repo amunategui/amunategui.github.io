@@ -29,7 +29,7 @@ image: pubmed-query/pubmed.png
 
 <blockquote>"PubMed is a free search engine accessing primarily the MEDLINE database of references and abstracts on life sciences and biomedical topics". (<a href="http://en.wikipedia.org/wiki/PubMed" target=_"blank">Wikipedia.com</a>)</blockquote>
 
-For anybody working in a **Natural Language Processing (NLP)** project and is looking for topic-based medical text, **PubMed** is a great resource!
+For anybody working in a **Natural Language Processing (NLP)** project and is looking for topic-based medical text, **PubMed** is the go-to resource!
 
 <blockquote>"PubMed comprises more than 24 million citations for biomedical literature from MEDLINE, life science journals, and online books. Citations may include links to full-text content from PubMed Central and publisher web sites". (<a href="http://www.ncbi.nlm.nih.gov/pubmed" target=_"blank">PubMed</a>)</blockquote>
 
@@ -135,7 +135,7 @@ There are many additional tags that can be called: ``Year, Month, Day, Author, I
 <BR><BR>
 There are two more important steps to make our data fully usable in ``R``. I tend to save my data sets in comma delimited data sets (CSV) so I need to make sure the data is comma-free. If commas are important to you, then I'd recommend saving the data set with a ``write.table`` instead of ``write.csv`` and come up with your own delimiter. 
 
-```r
+```recommend
 pubmed_data$Abstract <- as.character(pubmed_data$Abstract)
 pubmed_data$Abstract <- gsub(",", " ", pubmed_data$Abstract, fixed = TRUE)
 ```
