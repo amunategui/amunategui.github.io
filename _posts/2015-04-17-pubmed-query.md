@@ -33,7 +33,7 @@ For anybody working in a **Natural Language Processing (NLP)** project and is lo
 
 <blockquote>"PubMed comprises more than 24 million citations for biomedical literature from MEDLINE, life science journals, and online books. Citations may include links to full-text content from PubMed Central and publisher web sites". (<a href="http://www.ncbi.nlm.nih.gov/pubmed" target=_"blank">PubMed</a>)</blockquote>
 
-There are lots of stand-alone tools and many programming library extensions to help query and extract **PubMed** data. The information available ranges from topics, titles, citations, abstracts, articles, etc. Researchers use them to see what is trending in the medical community, what subjects are covered, who’s writing what and when, and so on.
+There are lots of stand-alone tools and many programming library extensions to help query and extract **PubMed** data. The information available ranges from topics, titles, citations, abstracts, articles, etc. Researchers use them to see what is trending in the medical community, what subjects are covered, who is writing what and when, and so on.
 
 On my end, I needed a large swath of unstructured medical data for very specific topics and the package <a href="http://cran.r-project.org/web/packages/RISmed/index.html" target="_blank">RISmed</a> allowed me to get to that data in a straightforward way. 
 <BR><BR>
@@ -47,14 +47,14 @@ If you haven't done so, install the **RISmed** package. We call the library and 
 library(RISmed)
 search_topic <- 'copd'
 ```
-
+<BR><BR>
 The ``EUtilsSummary`` function helps narrow a search query and will indicate how much data is available under the querying criteria. This is an important steps as it allows your to do some exploratory work with downloading the actual data. Here we ask for 100 articles regarding our search topic published in 2012:
 
 
 ```r
 search_query <- EUtilsSummary(search_topic, retmax=100, mindate=2012, maxdate=2012)
 ```
-
+<BR><BR>
 We can call the ``summary`` function and see what the ``search_query`` holds:
 
 ```r
@@ -67,10 +67,10 @@ summary(search_query)
 
 ## Result count:  3550
 ```
-
+<BR><BR>
 We read from the summary that PubMed contains 3550 documents on **COPD** published in 2012. It also displays how it queried our search term and confirming that it correctly understood the **COPD** acronym. Checking this is an important step as it is hard to manually check the theme of thousands of articles.
 
-We can also see the 100 document IDs we asked for:
+We can also see the Article IDs of the 100 document queried:
 
 ```r
 # see the ids of our returned query
@@ -96,7 +96,7 @@ QueryId(search_query)
 ##  [91] "23255616" "23255540" "23254770" "23253873" "23253549" "23253321"
 ##  [97] "23252578" "23252355" "23252287" "23251993"
 ```
-
+<BR><BR>
 Once happy with the search terms, we fetch for the actual data by calling function ``EUtilsGet``:
 
 ```r
@@ -115,7 +115,7 @@ class(records)
 ```
 To see the contents of records you can call function ``str`` but it returns so much information that I won't do it here. The best way to extract your data out of the returned ``EUtilsGet`` object is to only use the tags of interest. You can get a full list of the available tags off the <a href="http://www.nlm.nih.gov/bsd/licensee/elements_descriptions.html" target="_blank">PubMed Help</a> document.
 
-Here we will use the tags ``ArticleTitle`` and ``AbstractText`` on the ``records`` object and stuff it into a data frame:
+Here we will use the tags ``ArticleTitle`` and ``AbstractText`` on the ``records`` object and stuff those fields into a data frame:
 
 
 ```r
@@ -129,6 +129,8 @@ head(pubmed_data,1)
 ##                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Abstract
 ## 1 Burn injuries secondary to home oxygen therapy (HOT) have become increasingly common in recent years, yet several guidelines for HOT and chronic obstructive pulmonary disease (COPD) neglect to stress the dangers of open flames. This retrospective review of burn injury admissions secondary to HOT to our burn centre from 2007 to 2012 aimed to establish the extent of this problem and to discuss the current literature and a selection of national guidelines. Out of six patients (five female, one male) with a median age of 72 (range 58-79), four were related to smoking, and two due to lighting candles. The mean total body surface area (TBSA) affected was 17% (range 2-60%). Five patients sustained facial burns, two suffered from inhalation injury (33.3%), and five required surgery (83.3%). Mean total length of stay was 20 days (range 8 to 33), and one patient died. Although mentioned in the majority, some guidelines fail to address the issue of smoking in light of the associated risk for injury, which in turn might have future implications in litigation related to iatrogenic injuries. Improved HOT guidelines will empower physicians to discourage smoking, and fully consider the risks versus benefits of home oxygen before prescription. With a view on impeding a rising trend of burns secondary to HOT, we suggest revision to national guidelines, where appropriate.
 ```
+<BR><BR>
+There are many additional tags that can be called on such as: ``Year, Month, Day, Author, ISSN, Language, PublicationStatus, ArticleId, CopyrightInformation, Country, GrantID``.
 
 There are two more important steps to make our data fully usable in ``R``. I tend to save my data sets in comma delimited data sets (CSV) so I need to make sure the data is comma-free. If commas are important to you, then I'd recommend saving the data set with a ``write.table`` instead of ``write.csv`` and come up with your own delimiter. 
 
