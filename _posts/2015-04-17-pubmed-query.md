@@ -154,7 +154,7 @@ str(pubmed_data)
 <BR><BR> 
 <b>Note:</b> There are many other packages to pull PubMed data in R - google them if this one doesn't satisfy all your needs.
 <BR><BR>        
-<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/feature-hashing-walkthrough/blob/master/feature-hasher-walkthrough.r' target='_blank'>also on GitHub</a>)</a>:
+<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/pubmed-query' target='_blank'>also on GitHub</a>)</a>:
 
 ```r
 #install.packages("RISmed")
