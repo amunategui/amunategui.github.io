@@ -50,15 +50,15 @@ To get started, we need a data set with a lot of columns. We're going to borrow 
 
 
 ```r
-temporaryFile <- tempfile()
-download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data",destfile=temporaryFile, method="curl")
-gisetteRaw <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
-
-temporaryFile <- tempfile()
-download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels",destfile=temporaryFile, method="curl")
-g_labels <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
-
-
+library(RCurl) # download https data
+urlfile <- 'https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data'
+x <- getURL(urlfile, ssl.verifypeer = FALSE)
+gisetteRaw <- read.table(textConnection(x), sep = '', header = FALSE, stringsAsFactors = FALSE)
+  
+urlfile <- "https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels"
+x <- getURL(urlfile, ssl.verifypeer = FALSE)
+g_labels <- read.table(textConnection(x), sep = '', header = FALSE, stringsAsFactors = FALSE)
+ 
 print(dim(gisetteRaw))
 ```
 
@@ -315,14 +315,15 @@ EvaluateAUC <- function(dfEvaluate) {
 # http://stat.ethz.ch/R-manual/R-devel/library/stats/html/princomp.html
 
 # word of warning, this is 20mb - slow
-temporaryFile <- tempfile()
-download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data",destfile=temporaryFile, method="curl")
-gisetteRaw <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
-
-temporaryFile <- tempfile()
-download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels",destfile=temporaryFile, method="curl")
-g_labels <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
-
+library(RCurl) # download https data
+urlfile <- 'https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data'
+x <- getURL(urlfile, ssl.verifypeer = FALSE)
+gisetteRaw <- read.table(textConnection(x), sep = '', header = FALSE, stringsAsFactors = FALSE)
+  
+urlfile <- "https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels"
+x <- getURL(urlfile, ssl.verifypeer = FALSE)
+g_labels <- read.table(textConnection(x), sep = '', header = FALSE, stringsAsFactors = FALSE)
+ 
 ##########################################################################################
 ## Remove zero and close to zero variance
 ##########################################################################################
@@ -433,19 +434,19 @@ Evaluate_GBM_AUC <- function(dfEvaluate, CV=5, trees=3, depth=2, shrink=0.1) {
      print(paste('Mean AUC:',mean(lsAUC)))
 }
 
-
 # https://archive.ics.uci.edu/ml/datasets/Gisette
 # http://stat.ethz.ch/R-manual/R-devel/library/stats/html/princomp.html
 
 # word of warning, this is 20mb - slow
-temporaryFile <- tempfile()
-download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data",destfile=temporaryFile, method="curl")
-gisetteRaw <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
-
-temporaryFile <- tempfile()
-download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels",destfile=temporaryFile, method="curl")
-g_labels <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
-
+library(RCurl) # download https data
+urlfile <- 'https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data'
+x <- getURL(urlfile, ssl.verifypeer = FALSE)
+gisetteRaw <- read.table(textConnection(x), sep = '', header = FALSE, stringsAsFactors = FALSE)
+  
+urlfile <- "https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels"
+x <- getURL(urlfile, ssl.verifypeer = FALSE)
+g_labels <- read.table(textConnection(x), sep = '', header = FALSE, stringsAsFactors = FALSE)
+ 
 # Remove zero and close to zero variance
 
 nzv <- nearZeroVar(gisetteRaw, saveMetrics = TRUE)
