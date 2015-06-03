@@ -50,12 +50,14 @@ To get started, we need a data set with a lot of columns. We're going to borrow 
 
 
 ```r
-temp <- tempfile()
-download.file("http://www.nipsfsc.ecs.soton.ac.uk/datasets/GISETTE.zip",temp, mode="wb")
-unzip(temp, "GISETTE/gisette_train.data")
-gisetteRaw <- read.table("GISETTE/gisette_train.data", sep=" ",skip=0, header=F)
-unzip(temp, "GISETTE/gisette_train.labels")
-g_labels <- read.table("GISETTE/gisette_train.labels", sep=" ",skip=0, header=F)
+temporaryFile <- tempfile()
+download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data",destfile=temporaryFile, method="curl")
+gisetteRaw <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
+
+temporaryFile <- tempfile()
+download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels",destfile=temporaryFile, method="curl")
+g_labels <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
+
 
 print(dim(gisetteRaw))
 ```
