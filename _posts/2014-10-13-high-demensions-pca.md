@@ -313,7 +313,6 @@ EvaluateAUC <- function(dfEvaluate) {
 
 # https://archive.ics.uci.edu/ml/datasets/Gisette
 # http://stat.ethz.ch/R-manual/R-devel/library/stats/html/princomp.html
-temp <- tempfile()
 
 # word of warning, this is 20mb - slow
 temporaryFile <- tempfile()
@@ -435,20 +434,17 @@ Evaluate_GBM_AUC <- function(dfEvaluate, CV=5, trees=3, depth=2, shrink=0.1) {
 }
 
 
-## Download data
-
-# http://www.nipsfsc.ecs.soton.ac.uk/datasets/GISETTE.zip
+# https://archive.ics.uci.edu/ml/datasets/Gisette
 # http://stat.ethz.ch/R-manual/R-devel/library/stats/html/princomp.html
-temp <- tempfile()
 
 # word of warning, this is 20mb - slow
-download.file("http://www.nipsfsc.ecs.soton.ac.uk/datasets/GISETTE.zip",temp, mode="wb")
-dir(tempdir())
+temporaryFile <- tempfile()
+download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data",destfile=temporaryFile, method="curl")
+gisetteRaw <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
 
-unzip(temp, "GISETTE/gisette_train.data")
-gisetteRaw <- read.table("GISETTE/gisette_train.data", sep=" ",skip=0, header=F)
-unzip(temp, "GISETTE/gisette_train.labels")
-g_labels <- read.table("GISETTE/gisette_train.labels", sep=" ",skip=0, header=F)
+temporaryFile <- tempfile()
+download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels",destfile=temporaryFile, method="curl")
+g_labels <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
 
 # Remove zero and close to zero variance
 
