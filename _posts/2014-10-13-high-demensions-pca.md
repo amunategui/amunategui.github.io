@@ -46,7 +46,7 @@ You’ll find reams of explanations on the web, but, in a nutshell, **PCA** look
 <BR><BR>
 **Let's code!**
 
-To get started, we need a data set with a lot of columns. We're going to borrow a data set from <a href='http://www.nipsfsc.ecs.soton.ac.uk/' target='_blank'>NIPS (Neural Information Processing Systems)</a> from a completed, 2013 competition where the data is still available. The meaning of the data is immaterial for our needs. We download the <a href='http://www.nipsfsc.ecs.soton.ac.uk/datasets/' target='_blank'>GISETTE and associated labels</a> data sets (**warning:** this is a large file):
+To get started, we need a data set with a lot of columns. We're going to borrow a data set from <a href='http://www.nipsfsc.ecs.soton.ac.uk/' target='_blank'>NIPS (Neural Information Processing Systems)</a> from a completed, 2013 competition. The meaning of the data is immaterial for our needs. We download <a href='https://archive.ics.uci.edu/ml/datasets/Gisette' target='_blank'>UC Irvine Machine Learning Repository</a> data sets (**warning:** this is a large file):
 
 
 ```r
@@ -311,18 +311,18 @@ EvaluateAUC <- function(dfEvaluate) {
 ## Download data
 ##########################################################################################
 
-# http://www.nipsfsc.ecs.soton.ac.uk/datasets/GISETTE.zip
+# https://archive.ics.uci.edu/ml/datasets/Gisette
 # http://stat.ethz.ch/R-manual/R-devel/library/stats/html/princomp.html
 temp <- tempfile()
 
 # word of warning, this is 20mb - slow
-download.file("http://www.nipsfsc.ecs.soton.ac.uk/datasets/GISETTE.zip",temp, mode="wb")
-dir(tempdir())
+temporaryFile <- tempfile()
+download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data",destfile=temporaryFile, method="curl")
+gisetteRaw <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
 
-unzip(temp, "GISETTE/gisette_train.data")
-gisetteRaw <- read.table("GISETTE/gisette_train.data", sep=" ",skip=0, header=F)
-unzip(temp, "GISETTE/gisette_train.labels")
-g_labels <- read.table("GISETTE/gisette_train.labels", sep=" ",skip=0, header=F)
+temporaryFile <- tempfile()
+download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels",destfile=temporaryFile, method="curl")
+g_labels <- read.table(temporaryFile, sep = '', header = FALSE, stringsAsFactors = FALSE)
 
 ##########################################################################################
 ## Remove zero and close to zero variance
