@@ -2,7 +2,7 @@
 layout: post
 title: 'From the Idea to the Pitch: Hosting your Python Program with Flask and Amazon Web Services'
 category: Machine Learning
-tags: modeling python
+tags: modeling
 year: 2015
 month: 06
 day: 12
