@@ -102,7 +102,38 @@ Go with defaults and click ``Next: Configure Instance Details``
 <BR><BR>
 ![plot of ubuntu_defaults](../img/posts/idea-to-pitch/ubuntu_defaults.png)
 <BR><BR><BR>
+Under ``Step 3``, make sure to enable ‘Auto-assign IP’ and leave the rest as is.
+<BR><BR>
+![plot of enable_public_ip](../img/posts/idea-to-pitch/enable_public_ip.png)
+<BR><BR><BR>
+And in ``Step 7`` add a new rule to the security group. Click ``Add Rule`` and choose ``HTTP`` on port 80, this will allow for Internet traffic:
+<BR><BR>
+![plot of step2_ec2](../img/posts/idea-to-pitch/step2_ec2.png)
+<BR><BR><BR>
+It should look like the following:
+<BR><BR>
+![plot of http_ec2](../img/posts/idea-to-pitch/http_ec2.png)
+<BR><BR><BR>
+Once added, select ``Review and Launch``. We have one more step before reaching the instance - we need create a new ``key pair``. This is a security file that will live on your machine and is required to ‘SSH’ into the instance. I tend to create them and leave them in my downloads. What ever you decided to do, make sure you know where it is as you’ll need to pass a path to it every time you want to connect to it. 
+<BR><BR>
+![plot of key_pair](../img/posts/idea-to-pitch/key_pair.png)
+<BR><BR><BR>
+Name it whatever you like and hit the ``Download Key Pair``. Finally select ``Launch Instance`` and we’re ready to go! Keep in mind that whenever you instance is running, you may be charged by Amazon - read the documentation to make sure you’re OK with it. Also, stop the instance when you don’t need to slow down the charges, and terminate it when you don’t need it anymore (i.e. delete it) to stop all charges.
+
+Once the instance is initialized and running, you should see a green light by it:
+<BR><BR>
+![plot of running_ec2](../img/posts/idea-to-pitch/running_ec2.png)
+<BR><BR><BR>
+Select the left check-box to access the settings of that specific instance.
+<BR><BR>
+![plot of instance_ec2](../img/posts/idea-to-pitch/instance_ec2.png)
+<BR><BR><BR>
+
+**Connecting to the EC2 Instance**
+
+Select the top ``Connect`` button to get the SSH connection string that enables connections. Follow the instructions if you want to use the Java terminal to connect to the instance. Here, I will be using the terminal on my Mac.
+<BR><BR>
+![plot of connection_instructions_ec2](../img/posts/idea-to-pitch/connection_instructions_ec2.png)
+<BR><BR><BR>
 
 
-
- 
