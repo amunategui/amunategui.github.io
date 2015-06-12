@@ -11,9 +11,7 @@ summary: "The idea behind this walkthrough is to demonstrate how easy it is to t
 image: idea-to-pitch/flask.png
 ---
 
-The idea behind this walkthrough is to demonstrate how easy it is to transform an idea into a web application. This is for those that want to quickly pitch their application to the world without getting bogged down by technical details. This is for the weekend warrior. If the application is a success, people with real skills will be brought in to do the job right, in the meantime we want it fast, cheap and easy. We'll use Python, Flask, and Amazon Cloud Services EC2.
-
-I will present a project idea, use <b>Python</b> to execute it, create an <b>AWS EC2</b> instance with <a href='http://flask.pocoo.org' target='_blank'>Flask</a> to host it. Even though everything here is relatively simple, there is a lot of steps and you don’t want to miss any of them - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities!
+In this project, I will take a project idea, use <b>Python</b> to execute it, create an <b>AWS EC2</b> instance and use <b><a href='http://flask.pocoo.org' target='_blank'>Flask</a></b> to host it. Even though everything here is relatively simple, there is a lot of steps and you don’t want to miss any of them - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities!
 
 <BR><BR>
 **Pagiarism Defender - A Python Application**
@@ -63,14 +61,36 @@ This may not scale too well as Bing would quickly get upset, but for our purpose
 Now that we have our web application ready to go, we need the tools to serve it out to the world. We’ll start with our <a href='http://aws.amazon.com/' target='_blank'>Amazon Web Service EC2 instance</a>. You will need an AWS account to access the site. Even though this is all very simple, there are many of these simple steps; if you miss one, it will not work....
 
 First, log into the AWS console:
-
+<BR>
 ![plot of logging_on_AWS](../img/posts/idea-to-pitch/logging_on_AWS.png) 
-
+<BR>
 We're going to move fast here, so hold on tight!
-
+<BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/choosing_vpc.png)
+<BR>
+There are many ways to proceed. A virtual private connection (VPC) will determine who and what gets to access our site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
 
-There are many ways to proceed. A virtual private connection (VPC) will determine who and what gets to access our site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from failover and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
+Start the wizard:
+<BR>
+![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard.png)
+<BR>
+Start the wizard and select ‘VPC with a Single Public Subnet':
+<BR>
+![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard_2.png)
+<BR>
+Most of the defaults are fine except add a name under ``VPC name`` and select ``Public subnet`` under ``Add endpoints for S3 to you subnets``:
+<BR>
+![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard_3.png)
+<BR>
+
+
+
+
+
+
+
+
+
 
 
  
