@@ -14,7 +14,7 @@ image: idea-to-pitch/flask.png
 In this project, I will take a project idea, use <b>Python</b> to execute it, create an <b>AWS EC2</b> instance and use <b><a href='http://flask.pocoo.org' target='_blank'>Flask</a></b> to host it. Even though everything here is relatively simple, there is a lot of steps and you don’t want to miss any of them - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities!
 
 <BR><BR>
-<h1>Pagiarism Defender - A Python Application</h1>
+<h2>Pagiarism Defender - A Python Application</h2>
 <BR><BR>
 OK, so I have a Python project that I want to push out on the web. Let's start by analyzing and running it locally.
 
@@ -56,19 +56,21 @@ This application is very simple, it takes as impout some text (``text_to_filter`
 This may not scale too well as Bing would quickly get upset, but for our purposes it is fine. Let's push this out onto the web and get some exposure.
 
 <BR><BR>
-**Amazon Web Services - Home Away from Home**
+<h2>Amazon Web Services - Home Away from Home</h2>
 <BR><BR>
 Now that we have our web application ready to go, we need the tools to serve it out to the world. We’ll start with our <a href='http://aws.amazon.com/' target='_blank'>Amazon Web Service EC2 instance</a>. You will need an AWS account to access the site. Even though this is all very simple, there are many of these simple steps; if you miss one, it will not work....
 
+**AWS Console**<br>
 First, log into the AWS console:
 <BR>
 ![plot of logging_on_AWS](../img/posts/idea-to-pitch/logging_on_AWS.png) 
 <BR><BR>
-We're going to move fast here, so hold on tight!
+**VPC**<br>
+Select VPC:
 <BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/choosing_vpc.png)
 <BR><BR>
-There are many ways to proceed. A virtual private connection (VPC) will determine who and what gets to access our site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
+A virtual private connection (VPC) will determine who and what gets to access our site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
 
 Start the wizard:
 <BR>
@@ -84,7 +86,12 @@ Most of the defaults are fine except add a name under ``VPC name`` and select ``
 <BR><BR>
 
 
+**EC2**<BR>
+VPC is done, let’s create our EC2 instance - this is going to be our new machine. 
 
+<BR>
+![plot of EC2](../img/posts/idea-to-pitch/EC2.png)
+<BR><BR>
 
 
 
