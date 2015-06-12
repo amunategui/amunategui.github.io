@@ -19,7 +19,8 @@ I will present a project idea, use <b>Python</b> to execute it, create an <b>AWS
 
 <BR>
 **Pagiarism Defender - A Python Application**
-Ok, so I have a Python project that I want to push out on the web. Let's start by analyzing and running it locally.
+<BR>
+OK, so I have a Python project that I want to push out on the web. Let's start by analyzing and running it locally.
 
 ```r
 # sudo apt-get install python-lxml
@@ -60,6 +61,7 @@ This may not scale too well as Bing would quickly get upset, but for our purpose
 
 
 **Amazon Web Services - Home Away from Home**
+<BR>
 Now that we have our web application ready to go, we need the tools to serve it out to the world. We’ll start with our <a href='http://aws.amazon.com/' target='_blank'>Amazon Web Service EC2 instance</a>. You will need an AWS account to access the site. 
 
 First, log into the AWS console:
