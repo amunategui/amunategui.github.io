@@ -14,7 +14,7 @@ image: idea-to-pitch/flask.png
 In this project, I will take a project idea, use <b>Python</b> to execute it, create an <b>AWS EC2</b> instance and use <b><a href='http://flask.pocoo.org' target='_blank'>Flask</a></b> to host it. Even though everything here is relatively simple, there is a lot of steps and you don’t want to miss any of them - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities!
 
 <BR><BR>
-**Pagiarism Defender - A Python Application**
+***Pagiarism Defender - A Python Application***
 <BR><BR>
 OK, so I have a Python project that I want to push out on the web. Let's start by analyzing and running it locally.
 
@@ -63,25 +63,25 @@ Now that we have our web application ready to go, we need the tools to serve it 
 First, log into the AWS console:
 <BR>
 ![plot of logging_on_AWS](../img/posts/idea-to-pitch/logging_on_AWS.png) 
-<BR>
+<BR><BR>
 We're going to move fast here, so hold on tight!
 <BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/choosing_vpc.png)
-<BR>
+<BR><BR>
 There are many ways to proceed. A virtual private connection (VPC) will determine who and what gets to access our site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
 
 Start the wizard:
 <BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard.png)
-<BR>
+<BR><BR>
 Start the wizard and select ‘VPC with a Single Public Subnet':
 <BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard_2.png)
-<BR>
+<BR><BR>
 Most of the defaults are fine except add a name under ``VPC name`` and select ``Public subnet`` under ``Add endpoints for S3 to you subnets``:
 <BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard_3.png)
-<BR>
+<BR><BR>
 
 
 
