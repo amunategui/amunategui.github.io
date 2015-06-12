@@ -50,7 +50,8 @@ print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sente
 It correctly determined that the text passed to the function is indeed plagiarized:
 
 ```r
-``Probability of plagiarism: 100%``
+In [151]: print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sentences)) * 100) + '%')
+Probability of plagiarism: 200%
 ```
 
 This application is very simple, it takes as impout some text (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and finally sends each to the Bing search engine for matches. It surrounds each sentence with quotes to find exact matches, if a match is found, then that sentence is deemed plagiarzied. It does so for all sentences and returns the mean as a plagiarizm score. 
