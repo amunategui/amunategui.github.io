@@ -16,7 +16,7 @@ In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b>
 <BR><BR>
 <h2>Pagiarism Defender - A Python Application</h2>
 <BR><BR>
-OK, so I have a Python project that I want to push out on the web. Let's start by analyzing and running it locally. It should be straightforward; it takes some text as input (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and sends it to the Bing search engine for matches. It surrounds each sentence with quotes to <b>only</b> find exact matches. If a match is found, then that sentence is deemed plagiarized and a counter is incremented. It does so for all sentences and returns the mean of the counter as a plagiarism score. 
+OK, so I have a Python project that I want to push out on the web. Let's first take a look at it. It should be straightforward; it takes some text as input (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and sends it to the Bing search engine for matches. It surrounds each sentence with quotes to <b>only</b> find exact matches. If a match is found, then that sentence is deemed plagiarized and a counter is incremented. It does so for all sentences and returns the mean of the counter as a plagiarism score. 
 
 ```r
 # sudo apt-get install python-lxml
@@ -135,5 +135,16 @@ Select the top ``Connect`` button to get the SSH connection string that enables 
 <BR><BR>
 ![plot of connection_instructions_ec2](../img/posts/idea-to-pitch/connection_instructions_ec2.png)
 <BR><BR><BR>
+The last line states your connection string: ``ssh -i demo.pem ubuntu@52.25.53.41``. To use it on the Mac, open your terminal and navigate to your ``Downloads`` folder (or wherever you moved your <b>pem</b> key-pair file).
+<BR><BR>
+![plot of ssh](../img/posts/idea-to-pitch/ssh.png)
+<BR><BR><BR>
+That is all you need to access the instance. If you are having issues with it, follow Amazon’s advice and set the correct permissions for you <b>pem</b> file by calling ``chmod 400 demo.pem``. Also, keep in mind, anytime you reboot your instance, your connection IP will be different.
 
-
+Once you get in, you should see something along these lines:
+<BR><BR>
+![plot of ssh_successful_connection](../img/posts/idea-to-pitch/ssh_successful_connection.png)
+<BR><BR><BR>
+<BR><BR>
+<h2>Installing Flask on EC2</h2>
+<BR><BR>
