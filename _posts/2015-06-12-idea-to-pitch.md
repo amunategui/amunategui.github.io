@@ -11,12 +11,12 @@ summary: "The idea behind this walkthrough is to demonstrate how easy it is to t
 image: idea-to-pitch/flask.png
 ---
 
-In this project, I will take a project idea, use <b>Python</b> to execute it, create an <b>AWS EC2</b> instance and use <b><a href='http://flask.pocoo.org' target='_blank'>Flask</a></b> to host it. Even though everything here is relatively simple, there is a lot of steps and you don’t want to miss any of them - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities!
+In this project, I will take an idea, use <b>Python</b> to execute it, create an <b>AWS EC2</b> instance and use <b><a href='http://flask.pocoo.org' target='_blank'>Flask</a></b> to host it. Even though everything here is relatively simple, there are a lot of steps and you don’t want to miss any - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities!
 
 <BR><BR>
 <h2>Pagiarism Defender - A Python Application</h2>
 <BR><BR>
-OK, so I have a Python project that I want to push out on the web. Let's start by analyzing and running it locally.
+OK, so I have a Python project that I want to push out on the web. Let's start by analyzing and running it locally. It should be straightforward; it takes some text as input (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and sends it to the Bing search engine for matches. It surrounds each sentence with quotes to <b>only</b> find exact matches. If a match is found, then that sentence is deemed plagiarized and a counter is incremented. It does so for all sentences and returns the mean of the counter as a plagiarism score. 
 
 ```r
 # sudo apt-get install python-lxml
@@ -44,14 +44,12 @@ for a_sentence in sentences:
 print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sentences)) * 100) + '%')
 
 ```
-It correctly determined that the text passed to the function is indeed plagiarized:
+It correctly determined that the Moby Dick text passed to the function is plagiarized:
 
 ```r
 In [151]: print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sentences)) * 100) + '%')
 Probability of plagiarism: 100%
 ```
-
-This application is very simple, it takes as impout some text (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and finally sends each to the Bing search engine for matches. It surrounds each sentence with quotes to find exact matches, if a match is found, then that sentence is deemed plagiarzied. It does so for all sentences and returns the mean as a plagiarizm score. 
 
 This may not scale too well as Bing would quickly get upset, but for our purposes it is fine. Let's push this out onto the web and get some exposure.
 
@@ -62,26 +60,26 @@ Now that we have our web application ready to go, we need the tools to serve it 
 
 **AWS Console**<br>
 First, log into the AWS console:
-<BR>
+<BR><BR>
 ![plot of logging_on_AWS](../img/posts/idea-to-pitch/logging_on_AWS.png) 
 <BR><BR>
 **VPC**<br>
 Select VPC:
-<BR>
+<BR><BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/choosing_vpc.png)
 <BR><BR>
 A virtual private connection (VPC) will determine who and what gets to access our site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
 
 Start the wizard:
-<BR>
+<BR><BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard.png)
 <BR><BR>
 Start the wizard and select ‘VPC with a Single Public Subnet':
-<BR>
+<BR><BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard_2.png)
 <BR><BR>
 Most of the defaults are fine except add a name under ``VPC name`` and select ``Public subnet`` under ``Add endpoints for S3 to you subnets``:
-<BR>
+<BR><BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard_3.png)
 <BR><BR>
 
@@ -89,7 +87,7 @@ Most of the defaults are fine except add a name under ``VPC name`` and select ``
 **EC2**<BR>
 VPC is done, let’s now create our EC2 instance - this is going to be our new machine. Click on the orange cube in the upper left corner of the page. From the ensuing menu, choose the first option, ``EC2``
 
-<BR>
+<BR><BR>
 ![plot of EC2](../img/posts/idea-to-pitch/EC2.png)
 <BR><BR>
 Then ``Create Instance``...
