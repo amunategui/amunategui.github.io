@@ -8,7 +8,7 @@ month: 06
 day: 12
 published: true
 summary: "The idea behind this walkthrough is to demonstrate how easy it is to transform an idea into a web application. This is for those that want to quickly pitch their application to the world without getting bogged down by technical details. This is for the weekend warrior. If the application is a success, people with real skills will be brought in to do the job right, in the meantime we want it fast, cheap and easy. We'll use Python, Flask, and Amazon Cloud Services EC2"
-image: idea-to-picth/flask.png
+image: idea-to-pitch/flask.png
 ---
 
 <BR><BR>
@@ -42,6 +42,7 @@ for a_sentence in sentences:
         probability_of_plagiarism += 1
 
 print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sentences)) * 100) + '%')
+
 ```
 
 This application is very simple, it takes as impout some text (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and finally sends each to the Bing search engine for matches. It surrounds each sentence with quotes to find exact matches, if a match is found, then that sentence is deemed plagiarzied. It does so for all sentences and returns the mean as a plagiarizm score. 
@@ -58,5 +59,7 @@ Now that we have our web application ready to go, we need the tools to serve it 
 
 First, log into the AWS console:
 
-![plot of logging_on_AWS](../img/posts/logging_on_AWS.png) 
+![plot of logging_on_AWS](../img/posts/idea-to-pitch/logging_on_AWS.png) 
+
+
  
