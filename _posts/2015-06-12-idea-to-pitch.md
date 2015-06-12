@@ -11,7 +11,7 @@ summary: "The idea behind this walkthrough is to demonstrate how easy it is to t
 image: idea-to-pitch/flask.png
 ---
 
-In this project, I will take an idea, use <b>Python</b> to execute it, create an <b>AWS EC2</b> instance and use <b><a href='http://flask.pocoo.org' target='_blank'>Flask</a></b> to host it. Even though everything here is relatively simple, there are a lot of steps and you don’t want to miss any - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities!
+In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b> instance, and use <b><a href='http://flask.pocoo.org' target='_blank'>Flask</a></b> to share it with the world. Even though everything here is relatively simple, there are a lot of steps and you don’t want to miss any - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities for your own work!
 
 <BR><BR>
 <h2>Pagiarism Defender - A Python Application</h2>
@@ -73,15 +73,15 @@ A virtual private connection (VPC) will determine who and what gets to access ou
 Start the wizard:
 <BR><BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard.png)
-<BR><BR>
+<BR><BR><BR>
 Start the wizard and select ‘VPC with a Single Public Subnet':
 <BR><BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard_2.png)
-<BR><BR>
+<BR><BR><BR>
 Most of the defaults are fine except add a name under ``VPC name`` and select ``Public subnet`` under ``Add endpoints for S3 to you subnets``:
 <BR><BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard_3.png)
-<BR><BR>
+<BR><BR><BR>
 
 
 **EC2**<BR>
@@ -89,13 +89,19 @@ VPC is done, let’s now create our EC2 instance - this is going to be our new m
 
 <BR><BR>
 ![plot of EC2](../img/posts/idea-to-pitch/EC2.png)
-<BR><BR>
+<BR><BR><BR>
 Then ``Create Instance``...
 <BR><BR>
 ![plot of EC2](../img/posts/idea-to-pitch/EC2_create_instance.png)
 <BR><BR><BR>
-
-
+We’ll select the free eligible tier <a href='http://www.ubuntu.com/' target='_blank'>Ubuntu</a> box (may not always be free, check if it applies to you). 
+<BR><BR>
+![plot of ec2_ubuntu](../img/posts/idea-to-pitch/ec2_ubuntu.png)
+<BR><BR><BR>
+Go with defaults and click ``Next: Configure Instance Details``
+<BR><BR>
+![plot of ubuntu_defaults](../img/posts/idea-to-pitch/ubuntu_defaults.png)
+<BR><BR><BR>
 
 
 
