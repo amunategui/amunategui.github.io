@@ -14,7 +14,7 @@ image: idea-to-pitch/flask.png
 In this project, I will take a project idea, use <b>Python</b> to execute it, create an <b>AWS EC2</b> instance and use <b><a href='http://flask.pocoo.org' target='_blank'>Flask</a></b> to host it. Even though everything here is relatively simple, there is a lot of steps and you don’t want to miss any of them - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities!
 
 <BR><BR>
-***Pagiarism Defender - A Python Application***
+<h1>Pagiarism Defender - A Python Application</h1>
 <BR><BR>
 OK, so I have a Python project that I want to push out on the web. Let's start by analyzing and running it locally.
 
