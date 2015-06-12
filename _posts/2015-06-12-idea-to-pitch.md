@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "From the Idea to the Pitch: Hosting your Python Program with Flask and Amazon Web Services"
+title: "From the Idea to the Pitch: Hosting your Python Application with Flask and Amazon Web Services"
 category: Machine Learning
 tags: modeling python
 year: 2015
@@ -28,28 +28,32 @@ import requests, time
 # sudo pip install -U nltk
 from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters 
 
+# Try it out on the first lines of Moby Dick:
+text_to_check = "Call me Ishmael. Some years ago - never mind how long precisely - having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world."
+
 punkt_param = PunktParameters()
 sentence_splitter = PunktSentenceTokenizer(punkt_param)
-sentences = sentence_splitter.tokenize(text_to_filter)
+sentences = sentence_splitter.tokenize(text_to_check)
 probability_of_plagiarism = 0
 
 for a_sentence in sentences:
-    print (a_sentence)
+    print(a_sentence)
     time.sleep(0.3)
     the_term = urllib2.quote('+' + '"' + a_sentence + '"')
     page = requests.get('https://www.bing.com/search?q='+the_term)
     if (not "No results found for" in page.text):
-        probability_of_plagiarism += 1
+        probability_of_plagiarism += 1;
 
 print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sentences)) * 100) + '%')
 
 ```
+It correctly determined that the text passed to the function is indeed plagiarized:
+
+```r
+``Probability of plagiarism: 100%``
+```
 
 This application is very simple, it takes as impout some text (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and finally sends each to the Bing search engine for matches. It surrounds each sentence with quotes to find exact matches, if a match is found, then that sentence is deemed plagiarzied. It does so for all sentences and returns the mean as a plagiarizm score. 
-
-Try it out on the first line of Moby Dick:
-
-<quote>"Call me Ishmael. Some years ago - never mind how long precisely - having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world."</quote>
 
 This may not scale too well as Bing would quickly get upset, but for our purposes it is fine. Let's push this out onto the web and get some exposure.
 
