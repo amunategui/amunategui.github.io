@@ -87,14 +87,15 @@ Most of the defaults are fine except add a name under ``VPC name`` and select ``
 
 
 **EC2**<BR>
-VPC is done, let’s create our EC2 instance - this is going to be our new machine. 
+VPC is done, let’s now create our EC2 instance - this is going to be our new machine. Click on the orange cube in the upper left corner of the page. From the ensuing menu, choose the first option, ``EC2``
 
 <BR>
 ![plot of EC2](../img/posts/idea-to-pitch/EC2.png)
 <BR><BR>
-
-
-
+Then ``Create Instance``...
+<BR><BR>
+![plot of EC2](../img/posts/idea-to-pitch/EC2_create_instance.png)
+<BR><BR><BR>
 
 
 
