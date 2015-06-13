@@ -465,9 +465,9 @@ And the final prognostic is:
 
 This is undoubtedly the most amazing part of this whole walkthrough, by just adding a few lines of code, you have a professional looking site! 
 
-<a href='http://getbootstrap.com/' target='_blank'>GetBoostrap.com</a> is a big menu where you can pick and choose how you want your site to look. We're going to go with the <a href='http://getbootstrap.com/getting-started/#starter-template' target=''>Starter template</a>, it is simple but leaps ahead of what we had before.
+<a href='http://getbootstrap.com/' target='_blank'>GetBoostrap.com</a> is a big menu where you can pick and choose how you want your site to look. We're going to go with the <a href='http://getbootstrap.com/getting-started/#starter-template' target=''>Starter template</a>, it is simple but leaps ahead of what we had before. You can click on any samples shown, do a ``view source`` and pick whatever part of the code you like.
 
-Lets update our ``plagiarizer-submit.html`` page:
+Lets update our ``plagiarizer-submit.html`` page with a few bootstrap goodies:
 
 ```r
 sudo nano /var/www/FlaskApps/PlagiarismDefenderApp/templates/plagiarizer-submit.html
