@@ -65,19 +65,19 @@ for a_sentence in sentences:
 print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sentences)) * 100) + '%')
 ```
 
-It correctly determined that the Moby Dick text is plagiarized!
+It correctly flags the Moby Dick text as plagiarized!
 
 ```r
 In [151]: print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sentences)) * 100) + '%')
 Probability of plagiarism: 100%
 ```
 
-This may not scale well as Bing would probably get upset from excessive calls, but it will do fine for the demonstration. Let's push this out onto the web and get some exposure.
+This may not scale well as Bing would probably get upset from excessive automated calls, but will do fine for this demonstration. Let's push this out onto the web and get some exposure.
 
 <BR>
 <h2><a id="amazon-web-services">Amazon Web Services - Home Away from Home</a></h2>
 <BR>
-Now that we have our web application ready to go, we need the tools to serve it out to the world. We’ll start with our <a href='http://aws.amazon.com/' target='_blank'>Amazon Web Service EC2 instance</a>. You will need an AWS account to access the site. Even though this is all very simple, there are many of these simple steps; if you miss one, it will not work....
+Now that we have our application ready to go, we need the tools to serve it out to the world. We’ll start with our <a href='http://aws.amazon.com/' target='_blank'>Amazon Web Service EC2 instance</a>. You will need an AWS account to access the site. 
 <BR><BR>
 **AWS Console**
 <br>
@@ -463,7 +463,7 @@ And the final prognostic is:
 
 <h2><a id="twitter-bootsrap">Beautifying with Twitter’s Bootstrap</a></h2>
 
-This is undoubtedly the most amazing part of this whole walkthrough, by just adding a few lines of code, you have a professional looking site! 
+This is undoubtedly the most amazing part of this whole walkthrough, by just adding a few lines of code, you can magically give you site a professional look! 
 
 <a href='http://getbootstrap.com/' target='_blank'>GetBoostrap.com</a> is a big menu where you can pick and choose how you want your site to look. We're going to go with the <a href='http://getbootstrap.com/getting-started/#starter-template' target=''>Starter template</a>, it is simple but leaps ahead of what we had before. You can click on any samples shown, do a ``view source`` and pick whatever part of the code you like.
 
