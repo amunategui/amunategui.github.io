@@ -20,15 +20,15 @@ In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b>
     <ul>
         <li type="square"><a href="#vpc">VPC</a></li>
         <li type="square"><a href="#ec2">EC2</a></li>
-        <li type="square"><a href="#connecting-ec2">EC2 Connection</a></li>
+        <li type="square"><a href="#connecting-ec2">Connecting to EC2</a></li>
     </ul>
     <li type="square"><a href="#flask">Installing Flask</a></li>
-    <li type="square"><a href="configuring-flask">Configuring the Flask Site</a></li>
+    <li type="square"><a href="configuring-flask">Building the Flask Site</a></li>
 </ul>
 
 <BR><BR>
 <h2><a id="python-application">Plagiarism Defender - A Python Application</a></h2>
-<BR><BR>
+<BR>
 OK, so I have a Python project that I want to push out to the web. Let's first take a look at it. It should be straightforward; it takes some text as input (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and sends it to the Bing search engine for matches. It surrounds each sentence with quotes to <b>only</b> find exact matches. If a match is found, then that sentence is deemed plagiarized and a counter is incremented. It does so for all sentences and returns the mean of the counter as a plagiarism score. 
 
 ```r
@@ -68,7 +68,7 @@ This may not scale too well as Bing would quickly get upset, but for our purpose
 
 <BR><BR>
 <h2><a id="amazon-web-services">Amazon Web Services - Home Away from Home</a></h2>
-<BR><BR>
+<BR>
 Now that we have our web application ready to go, we need the tools to serve it out to the world. We’ll start with our <a href='http://aws.amazon.com/' target='_blank'>Amazon Web Service EC2 instance</a>. You will need an AWS account to access the site. Even though this is all very simple, there are many of these simple steps; if you miss one, it will not work....
 
 **AWS Console**
@@ -77,7 +77,7 @@ First, log into the AWS console:
 <BR><BR>
 ![plot of logging_on_AWS](../img/posts/idea-to-pitch/logging_on_AWS.png) 
 <BR><BR>
-**<a id="vpc">VPC</a>**<br>
+<h2><a id="vpc">VPC</a></h2>
 Select VPC:
 <BR><BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/choosing_vpc.png)
@@ -98,7 +98,7 @@ Most of the defaults are fine except add a name under ``VPC name`` and select ``
 <BR><BR><BR>
 
 
-**<a id="vpc">EC2</a>**
+<h2><a id="vpc">EC2</a></h2>
 <BR>
 VPC is done, let’s now create our EC2 instance - this is going to be our new machine. Click on the orange cube in the upper left corner of the page. From the ensuing menu, choose the first option, ``EC2``
 
@@ -144,7 +144,7 @@ Select the left check-box to access the settings of that specific instance.
 ![plot of instance_ec2](../img/posts/idea-to-pitch/instance_ec2.png)
 <BR><BR><BR>
 
-**<a id="connecting-ec2">Connecting to the EC2 Instance</a>**
+<h2><a id="connecting-ec2">Connecting to the EC2 Instance</a></h2>
 
 Select the top ``Connect`` button to get the SSH connection string that enables connections. Follow the instructions if you want to use the Java terminal to connect to the instance. Here, I will be using the terminal on my Mac.
 <BR><BR>
@@ -191,9 +191,10 @@ We now have our web serving software installed. To verify that things are progre
 <BR><BR><BR>
 <BR><BR>
 <h2><a id="configuring-flask">Configuring the Flask Site</a></h2>
-<BR><BR>
+<BR>
 
 Now, lets create our file structure:
+
 ```r
 
 cd /var/www
@@ -216,6 +217,7 @@ Let’s start with a simple page to confirm that Flask can serve dynamic pages. 
 ```r
 
 sudo nano home.py
+
 ```
 
 and enter the following code:
