@@ -25,6 +25,11 @@ In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b>
     <li type="square"><a href="#flask">Installing Flask</a></li>
     <li type="square"><a href="configuring-flask">Building the Flask Site</a></li>
     <li type="square"><a href="running-plagiarism-defender">Running Plagiarism Defender on the Web</a></li>
+    <ul>
+        <li type="web-serving-file"><a href="#vpc">Main Web-Serving File</a></li>
+        <li type="template-files"><a href="#vpc">Template HTML Files</a></li>
+    </ul>
+     <li type="square"><a href="twitters-boostrap">Beautifying with Twitter’s Bootstrap</a></li>
 </ul>
 
 <BR><BR>
@@ -85,7 +90,7 @@ Select VPC:
 <p style="text-align:center">
 <img src="../img/posts/idea-to-pitch/choosing_vpc.png" alt="choosing_vpc" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
-A virtual private connection (VPC) will determine who and what gets to access our site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
+A virtual private connection (VPC) will determine who and what gets to access the site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
 
 Start the wizard:
 <BR><BR>
@@ -97,7 +102,7 @@ Start the wizard and select ‘VPC with a Single Public Subnet':
 <p style="text-align:center">
 <img src="../img/posts/idea-to-pitch/vpc_wizard_2.png" alt="vpc_wizard_2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
-Most of the defaults are fine except add a name under ``VPC name`` and select ``Public subnet`` under ``Add endpoints for S3 to you subnets``:
+Most of the defaults are fine except you should add a name under ``VPC name`` and under ``Add endpoints for S3 to you subnets`` select ``Public subnet``:
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/vpc_wizard_3.png" alt="vpc_wizard_3" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
@@ -167,24 +172,20 @@ Once you get in, you should see something along these lines:
 <BR><BR><BR>
 <BR><BR>
 <h2><a id="installing-flask">Installing Flask on EC2</a></h2>
-<BR><BR>
+<BR>
 To keep things simple, we won’t use GIT or a virtual environment - fast and cheap, remember? But in the long run, you will benefit from using those tools.
 
 Now, to get to Flask, we first need to install Apache:
 
-Install Apache:
-
 ```r
-
 sudo apt-get install apache2
 sudo apt-2 update
 sudo apt-get install libapache2-mod-wsgi
 ```
 
-Install Flask:
+and Flask:
 
 ```r
-
 sudo apt-get install python-flask
 sudo apt-get upgrade
 ```
@@ -228,7 +229,7 @@ app=Flask(__name__)
 
 @app.route('/')
 def home():
-    return  “This is from Flask!!"
+    return  "This is from Flask!!!"
 
 if __name__ == "__main__":
     app.run()
@@ -240,7 +241,7 @@ Save and exit (ctrl-X). Now edit the ``config`` file to point to our new Flask s
 sudo nano /etc/apache2/sites-available/FlaskApp.conf
 ```
 
-and enter the following except replace my IP address with yours:
+and paste the following except for the ``ServerName`` IP address that you replace with yours:
 
 ```r
 <VirtualHost *:80>
@@ -315,6 +316,144 @@ sudo nano /var/log/apache2/error.log
 
 <h2><a id="running-plagiarism-defender">Plagiarism Defender on the Web!</a></h2>
 
-Things are looking good, lets get our application running on Flask and EC2 instance.
+Things are looking good, lets get the <b>real</b> application running on Flask and EC2 instance. 
+
+Lets start installing some libraries on your instance:
+
+```r
+# install lxml
+sudo apt-get install python-lxml
+sudo apt-get install python3-lxml
+sudo apt-get install libxml2-dev libxslt-dev python-dev
+
+# install nltk
+sudo pip install -U nltk
+```
+
+<h2><a id="web-serving-file">Main Web-Serving File</a></h2>
+
+Let's build our main web-serving file:
+
+```r
+sudo nano /var/www/FlaskApps/FlaskApp/home.py
+```
+
+```r
+sudo nano home.py
+from flask import Flask, render_template, request, url_for
+import urllib2
+# sudo apt-get install python3-lxml
+# sudo apt-get install python-lxml
+# apt-get install python-dev libxml2 libxml2-dev libxslt-dev
+from lxml import html
+import requests
+import string
+import time
+#sudo pip install -U nltk
+from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
+
+
+# Initialize the Flask application
+app = Flask(__name__)
+
+# Define a route for the default URL, which loads the form
+@app.route('/')
+def form():
+    return render_template('plagiarizer-submit.html')
+
+
+@app.route('/IsItPlagiarized/', methods=['POST'])
+def IsItPlagiarized():
+        text_to_filter=request.form['text_to_check']
+        if (text_to_filter.lstrip().rstrip() == ''):
+                return render_template('plagiarizer-submit.html')
+        punkt_param = PunktParameters()
+        sentence_splitter = PunktSentenceTokenizer(punkt_param)
+        sentences = sentence_splitter.tokenize(text_to_filter)
+        probability_of_plagiarism = 0
+        for a_sentence in sentences:
+                time.sleep(0.3)
+                content = filter(lambda x: x in string.printable, a_sentence)
+                the_term = urllib2.quote('+' + '"' + content + '"')
+                page = requests.get('https://www.bing.com/search?q='+the_term)
+                if (not "No results found for" in page.text):
+                        probability_of_plagiarism += 1;
+        is_it_plagiarized = str((probability_of_plagiarism / len(sentences)) * 100) + '%'
+        return render_template('plagiarizer-results.html', text_to_filter=text_to_filter, is_it_plagiarized=is_it_plagiarized)
+
+
+if __name__ == "__main__":
+    app.run()
+```
+
+
+<h2><a id="template-files">Template HTML Files</a></h2>
+Let's build our two template html files:
+
+```r
+cd /var/www/FlaskApps/FlaskApp/templates/
+sudo nano plagiarizer-submit.html
+```
+
+and enter the following for ``plagiarizer-submit.html``:
+
+```r
+<html>
+    <head>
+        <title>Plagiarism Defender</title>
+         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div id="container">
+            <div class="title">
+                <h1>Check Your Text for Plagiarism</h1>
+            </div>
+            <div id="content">
+                <form method="post" action="{{ url_for('IsItPlagiarized') }}">
+                  <label for="text_to_check">Enter text to check for plagiarism:</label>
+                  <BR><textarea cols="100" rows="20" name="text_to_check"></textarea>
+                  <BR><input type="submit" />
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
+```
+
+```r
+cd  /var/www/FlaskApps/FlaskApp/templates
+sudo nano plagiarizer-results.html
+```
+
+and enter the following for ``plagiarizer-results.html``:
+
+```r
+ <html>
+    <head>
+        <title>Plagiarism Defender</title>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div id="container">
+            <div class="title">
+                <h1>Plagiarism Defender Results</h1>
+            </div>
+            <div id="content">
+                In our best opinion, the text you entered is <strong>{{is_it_plagiarized}}</strong> plagiarized!
+            </div>
+            <div id="content">
+                Text Entered: <strong>{{text_to_filter}}</strong>
+            </div>
+        </div>
+    </body>
+</html>
+```
+
+Try it out, this is what our submit and result files should look like:
+
+
+<h2><a id="twitters-boostrap">Beautifying with Twitter’s Bootstrap</a></h2>
+
+
 
 
