@@ -451,11 +451,10 @@ and enter the following for ``plagiarizer-results.html``:
 </html>
 ```
 
-Try it out, enter some text and hit the ``submit`` button:
-
-<BR><BR>
+Try it out - enter some text and hit the ``submit`` button:
+<BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/defender-in-action.png" alt="defender-in-action" style='padding:1px; border:1px solid #021a40;'></p>
-<BR><BR><BR>
+<BR><BR>
 
 And the final prognostic is:
 <BR><BR>
@@ -464,6 +463,63 @@ And the final prognostic is:
 
 
 <h2><a id="twitter-bootsrap">Beautifying with Twitter’s Bootstrap</a></h2>
+
+This is undoubtedly the best part, with just a few lines of code and you have a professional looking site! 
+
+You can get the latest bootstrap link at the <a href='http://getbootstrap.com/getting-started/' target='_blank'>GetBoostrap.com</a>
+
+The site is a big menu where you can pick and choose what you want. We're going to go with the <a href='http://getbootstrap.com/getting-started/#starter-template' target=''>Starter template</a>.
+
+Lets update our ``plagiarizer-submit.html`` page:
+
+```r
+sudo nano /var/www/FlaskApps/PlagiarizerApp/templates/plagiarizer-submit.html
+```
+And replace it with the following code:
+
+```r
+
+<html>
+    <head>
+        <title>Plagiarism Defender</title>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+    </head>
+    <body style = "background-color: lightgrey; padding-top: 70px; ">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Plagiarism Defender</a>
+        </div>
+      </div>
+    </nav>
+
+     <div class="container">
+      <div class="starter-template">
+          <form method="post" action="{{ url_for('IsItPlagiarized') }}">
+            <label for="text_to_check">Enter text to check for plagiarism:</label>
+            <BR><textarea cols="100" rows="20" name="text_to_check"></textarea>
+            <BR><input type="submit" />
+          </form>
+        </div>
+      </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>
+```
+The most important change is on the fourth line where we added a live link to the bootstrap CSS file. We also added the ``navbar`` class which adds a fancy title on a header. Explore the <a href='http://getbootstrap.com/getting-started/' target='_blank'>GetBoostrap.com</a> to see what else it offers and how you may apply it to your projects.
+
+Here is a peek at our beautifully metamorphosed page:
+<BR><BR>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/defender-beautified.png" alt="defender-beautified" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR><BR>
 
 
 
