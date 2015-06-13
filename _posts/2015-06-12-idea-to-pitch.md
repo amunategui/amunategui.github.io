@@ -121,7 +121,7 @@ In ``Create Instance``, select ``Launch Instance``:
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/EC2_create_instance.png" alt="EC2_create_instance" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
-We’ll select the free eligible tier <a href='http://www.ubuntu.com/' target='_blank'>Ubuntu</a> box (may not always be free, check if it applies to you). 
+``Select`` the free eligible tier <a href='http://www.ubuntu.com/' target='_blank'>Ubuntu</a> box (may not always be free, check if it applies to you):
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/ec2_ubuntu.png" alt="ec2_ubuntu" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
@@ -465,7 +465,7 @@ And the final prognostic is:
 
 This is undoubtedly the most amazing part of this whole walkthrough, by just adding a few lines of code, you can magically give you site a professional look! 
 
-<a href='http://getbootstrap.com/' target='_blank'>GetBoostrap.com</a> is a big menu where you can pick and choose how you want your site to look. We're going to go with the <a href='http://getbootstrap.com/getting-started/#starter-template' target=''>Starter template</a>, it is simple but leaps ahead of what we had before. You can click on any samples shown, do a ``view source`` and pick whatever part of the code you like.
+<a href='http://getbootstrap.com/' target='_blank'>GetBootstrap.com</a> is a big menu where you can pick and choose how you want your site to look. We're going to go with the <a href='http://getbootstrap.com/getting-started/#starter-template' target=''>Starter template</a>, it is simple but leaps ahead of what we had before. You can click on any samples shown, do a ``view source`` and pick whatever part of the code you like.
 
 Lets update our ``plagiarizer-submit.html`` page with a few bootstrap goodies:
 
