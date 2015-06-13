@@ -2,7 +2,7 @@
 layout: post
 title: "Going from an Idea to a Pitch: Hosting your Python Application using Flask and Amazon Web Services (AWS)"
 category: Machine Learning
-tags: modeling python
+tags: python
 year: 2015
 month: 06
 day: 12
@@ -315,7 +315,7 @@ NOTE: If you have any errors, check the error log (scroll to the bottom of the l
 ```r
 sudo nano /var/log/apache2/error.log
 ```
-
+<BR><BR>
 <h2><a id="running-plagiarism-defender">Plagiarism Defender on the Web!</a></h2>
 
 Things are looking good, lets get the <b>real</b> application running on Flask and EC2 instance. 
@@ -331,7 +331,7 @@ sudo apt-get install libxml2-dev libxslt-dev python-dev
 # install nltk
 sudo pip install -U nltk
 ```
-
+<BR><BR>
 <h2><a id="web-serving-file">Main Web-Serving File</a></h2>
 
 Let's build our main web-serving file:
@@ -387,7 +387,7 @@ if __name__ == "__main__":
     app.run()
 ```
 
-
+<BR><BR>
 <h2><a id="template-files">Template HTML Files</a></h2>
 Let's build our two template html files:
 
