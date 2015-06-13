@@ -117,7 +117,7 @@ VPC is done, let’s now create our EC2 instance - this is going to be our new m
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/EC2.png" alt="EC2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
-Then ``Create Instance``...
+In ``Create Instance``, select ``Launch Instance``:
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/EC2_create_instance.png" alt="EC2_create_instance" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
