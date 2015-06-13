@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Going from an Idea to a Pitch: Hosting your Python Application with Flask and Amazon Web Services"
+title: "Going from an Idea to a Pitch: Hosting your Python Application using Flask and Amazon Web Services (AWS)"
 category: Machine Learning
 tags: modeling python
 year: 2015
@@ -16,14 +16,20 @@ In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b>
 <BR>
 <ul>
     <li type="square"><a href="#python-application">Plagiarism Defender - A Python Application</a></li>
-    <li type="square"><a href="#sourcecode_gbm">Amazon Web Services</a></li>
-    <li type="square"><a href="#sourcecode_gbm">Installing Flask</a></li>
+    <li type="square"><a href="#amazon-web-services">Amazon Web Services (AWS)</a></li>
+    <ul>
+        <li type="square"><a href="#vpc">VPC</a></li>
+        <li type="square"><a href="#ec2">EC2</a></li>
+        <li type="square"><a href="#connecting-ec2">EC2 Connection</a></li>
+    </ul>
+    <li type="square"><a href="#flask">Installing Flask</a></li>
+    <li type="square"><a href="configuring-flask">Configuring the Flask Site</a></li>
 </ul>
 
 <BR><BR>
 <h2><a id="python-application">Plagiarism Defender - A Python Application</a></h2>
 <BR><BR>
-OK, so I have a Python project that I want to push out on the web. Let's first take a look at it. It should be straightforward; it takes some text as input (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and sends it to the Bing search engine for matches. It surrounds each sentence with quotes to <b>only</b> find exact matches. If a match is found, then that sentence is deemed plagiarized and a counter is incremented. It does so for all sentences and returns the mean of the counter as a plagiarism score. 
+OK, so I have a Python project that I want to push out to the web. Let's first take a look at it. It should be straightforward; it takes some text as input (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and sends it to the Bing search engine for matches. It surrounds each sentence with quotes to <b>only</b> find exact matches. If a match is found, then that sentence is deemed plagiarized and a counter is incremented. It does so for all sentences and returns the mean of the counter as a plagiarism score. 
 
 ```r
 # sudo apt-get install python-lxml
@@ -61,16 +67,17 @@ Probability of plagiarism: 100%
 This may not scale too well as Bing would quickly get upset, but for our purposes it is fine. Let's push this out onto the web and get some exposure.
 
 <BR><BR>
-<h2>Amazon Web Services - Home Away from Home</h2>
+<h2><a id="amazon-web-services">Amazon Web Services - Home Away from Home</a></h2>
 <BR><BR>
 Now that we have our web application ready to go, we need the tools to serve it out to the world. We’ll start with our <a href='http://aws.amazon.com/' target='_blank'>Amazon Web Service EC2 instance</a>. You will need an AWS account to access the site. Even though this is all very simple, there are many of these simple steps; if you miss one, it will not work....
 
-**AWS Console**<br>
+**AWS Console**
+<br>
 First, log into the AWS console:
 <BR><BR>
 ![plot of logging_on_AWS](../img/posts/idea-to-pitch/logging_on_AWS.png) 
 <BR><BR>
-**VPC**<br>
+**<a id="vpc">VPC</a>**<br>
 Select VPC:
 <BR><BR>
 ![plot of choosing_vpc](../img/posts/idea-to-pitch/choosing_vpc.png)
@@ -91,7 +98,8 @@ Most of the defaults are fine except add a name under ``VPC name`` and select ``
 <BR><BR><BR>
 
 
-**EC2**<BR>
+**<a id="vpc">EC2</a>**
+<BR>
 VPC is done, let’s now create our EC2 instance - this is going to be our new machine. Click on the orange cube in the upper left corner of the page. From the ensuing menu, choose the first option, ``EC2``
 
 <BR><BR>
@@ -136,7 +144,7 @@ Select the left check-box to access the settings of that specific instance.
 ![plot of instance_ec2](../img/posts/idea-to-pitch/instance_ec2.png)
 <BR><BR><BR>
 
-**Connecting to the EC2 Instance**
+**<a id="connecting-ec2">Connecting to the EC2 Instance</a>**
 
 Select the top ``Connect`` button to get the SSH connection string that enables connections. Follow the instructions if you want to use the Java terminal to connect to the instance. Here, I will be using the terminal on my Mac.
 <BR><BR>
@@ -153,11 +161,11 @@ Once you get in, you should see something along these lines:
 ![plot of ssh_successful_connection](../img/posts/idea-to-pitch/ssh_successful_connection.png)
 <BR><BR><BR>
 <BR><BR>
-<h2>Installing Flask on EC2</h2>
+<h2><a id="installing-flask">Installing Flask on EC2</a></h2>
 <BR><BR>
 To keep things simple, we won’t use GIT or a virtual environment - fast and cheap, remember? But in the long run, you will benefit from using those tools.
 
-Now, for the laundry list of things to install (install these one at a time):
+Now, to get to Flask, we first need to install Apache:
 
 Install Apache:
 ```r
@@ -176,10 +184,21 @@ sudo apt-get upgrade
 
 ```
 
-We now have our web serving software installed. To verify that things are progressing properly, enter your I.P. address in the browser. This is what you should be seeing, the static Apache2 page:
+We now have our web serving software installed. To verify that things are progressing properly, enter your I.P. address in the browser. This is what you should be seeing, the static Apache2 homepage:
 
 <BR><BR>
 ![plot of ubunutu_homepage](../img/posts/idea-to-pitch/ubunutu_homepage.png)
 <BR><BR><BR>
+<BR><BR>
+<h2><a id="configuring-flask">Configuring the Flask Site</a></h2>
+<BR><BR>
+
+Now, lets create our file structure:
+```r
+
+cd /var/www
+sudo mkdir FlaskApps
+cd FlaskApps/
+```
 
 
