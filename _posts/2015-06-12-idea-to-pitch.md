@@ -24,6 +24,7 @@ In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b>
     </ul>
     <li type="square"><a href="#flask">Installing Flask</a></li>
     <li type="square"><a href="configuring-flask">Building the Flask Site</a></li>
+    <li type="square"><a href="running-plagiarism-defender">Running Plagiarism Defender on the Web</a></li>
 </ul>
 
 <BR><BR>
@@ -196,7 +197,6 @@ We now have our web serving software installed. To verify that things are progre
 Now, lets create our file structure:
 
 ```r
-
 cd /var/www
 sudo mkdir FlaskApps
 cd FlaskApps
@@ -208,21 +208,17 @@ sudo mkdir FlaskApp
 cd FlaskApp
 sudo mkdir static
 sudo mkdir templates
-
 ```
 
 Let’s start with a simple page to confirm that Flask can serve dynamic pages. We’ll call up ‘nano’, a very simple text editor. 
 
 ```r
-
 sudo nano home.py
-
 ```
 
 and enter the following code:
 
 ```r
-
 from flask import Flask
 app=Flask(__name__)
 
@@ -234,39 +230,34 @@ if __name__ == "__main__":
     app.run()
 ```
 
-
-We now edit the ``config`` file to point to our new Flask site:
+Save and exit (ctrl-X). Now edit the ``config`` file to point to our new Flask site:
 
 ```r
-
 sudo nano /etc/apache2/sites-available/FlaskApp.conf
-
 ```
 
-and enter the following:
+and enter the following except replace my IP address with yours:
 
 ```r
-
 <VirtualHost *:80>
-ServerName 52.11.197.21 # update this every time your IP changes
-ServerAdmin admin@mywebsite.com # don't worry about this
-WSGIScriptAlias / /var/www/FlaskApps/FlaskApps.wsgi
-<Directory /var/www/FlaskApps/FlaskApp/>
-Order allow,deny
-Allow from all
-</Directory>
-Alias /static /var/www/FlaskApps/FlaskApp/static
-<Directory /var/www/FlaskApps/FlaskApp/static/>
-Order allow,deny
-Allow from all
-</Directory>
-ErrorLog ${APACHE_LOG_DIR}/error.log
-LogLevel warn
-CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ServerName 52.11.197.21 # update this every time your IP changes
+    ServerAdmin admin@mywebsite.com # don't worry about this
+    WSGIScriptAlias / /var/www/FlaskApps/FlaskApps.wsgi
+    <Directory /var/www/FlaskApps/FlaskApp/>
+        Order allow,deny
+        Allow from all
+    </Directory>
+    Alias /static /var/www/FlaskApps/FlaskApp/static
+    <Directory /var/www/FlaskApps/FlaskApp/static/>
+        Order allow,deny
+        Allow from all
+    </Directory>
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
-
 ```
-Save and exit (ctrl-x). Add our new site and restart apache:
+Save and exit (ctrl-X). Add our new site and restart apache:
 
 ```r
 
@@ -280,6 +271,46 @@ sudo /etc/init.d/apache2 reload
 
 ```
 
+Create a WSGI file to tell Apache how to run Flask - it’s the link and entry point for our web application:
 
+```r
+sudo nano FlaskApps.wsgi
+```
+
+and enter the following code:
+
+```r
+#! /usr/bin/python
+import sys
+import logging
+logging.basicConfig(stream=sys.stderr)
+sys.path.insert(0,"/var/www/FlaskApps/FlaskApp/")
+
+from home import app as application
+application.secret_key = “somesecretsessionkey"
+```
+
+Save and exit (ctrl-X). Restart Apache:
+
+```r
+sudo service apache2 restart
+/etc/init.d/apache2 reload 
+```
+
+Try running this again in the browser - hopefully you should see something like:
+
+<BR><BR>
+![plot of live-web-app](../img/posts/idea-to-pitch/live-web-app.png)
+<BR><BR><BR>
+
+NOTE: If you have any errors, check the error log (scroll to the bottom of the list to see latest messages):
+
+```r
+sudo nano /var/log/apache2/error.log
+```
+
+<h2><a id="running-plagiarism-defender">Plagiarism Defender on the Web!</a></h2>
+
+Things are looking good, let’s get our application running on Flask and EC2 instance.
 
 
