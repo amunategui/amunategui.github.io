@@ -81,21 +81,21 @@ First, log into the AWS console:
 <h2><a id="vpc">VPC</a></h2>
 Select VPC:
 <BR><BR>
-![plot of choosing_vpc](../img/posts/idea-to-pitch/choosing_vpc.png)
+<img src="../img/posts/idea-to-pitch/choosing_vpc.png" alt="choosing_vpc" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR>
 A virtual private connection (VPC) will determine who and what gets to access our site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
 
 Start the wizard:
 <BR><BR>
-![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard.png)
+<img src="../img/posts/idea-to-pitch/vpc_wizard.png" alt="vpc_wizard" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 Start the wizard and select ‘VPC with a Single Public Subnet':
 <BR><BR>
-![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard_2.png)
+<img src="../img/posts/idea-to-pitch/vpc_wizard_2.png" alt="vpc_wizard_2" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 Most of the defaults are fine except add a name under ``VPC name`` and select ``Public subnet`` under ``Add endpoints for S3 to you subnets``:
 <BR><BR>
-![plot of choosing_vpc](../img/posts/idea-to-pitch/vpc_wizard_3.png)
+<img src="../img/posts/idea-to-pitch/vpc_wizard_3.png" alt="vpc_wizard_3" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 
 
@@ -104,62 +104,62 @@ Most of the defaults are fine except add a name under ``VPC name`` and select ``
 VPC is done, let’s now create our EC2 instance - this is going to be our new machine. Click on the orange cube in the upper left corner of the page. From the ensuing menu, choose the first option, ``EC2``
 
 <BR><BR>
-![plot of EC2](../img/posts/idea-to-pitch/EC2.png)
+<img src="../img/posts/idea-to-pitch/EC2.png" alt="EC2" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 Then ``Create Instance``...
 <BR><BR>
-![plot of EC2](../img/posts/idea-to-pitch/EC2_create_instance.png)
+<img src="../img/posts/idea-to-pitch/EC2_create_instance.png" alt="EC2_create_instance" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 We’ll select the free eligible tier <a href='http://www.ubuntu.com/' target='_blank'>Ubuntu</a> box (may not always be free, check if it applies to you). 
 <BR><BR>
-![plot of ec2_ubuntu](../img/posts/idea-to-pitch/ec2_ubuntu.png)
+<img src="../img/posts/idea-to-pitch/ec2_ubuntu.png" alt="ec2_ubuntu" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 Go with defaults and click ``Next: Configure Instance Details``
 <BR><BR>
-![plot of ubuntu_defaults](../img/posts/idea-to-pitch/ubuntu_defaults.png)
+<img src="../img/posts/idea-to-pitch/ubuntu_defaults.png" alt="ubuntu_defaults" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 Under ``Step 3``, make sure to enable ‘Auto-assign IP’ and leave the rest as is.
 <BR><BR>
-![plot of enable_public_ip](../img/posts/idea-to-pitch/enable_public_ip.png)
+<img src="../img/posts/idea-to-pitch/enable_public_ip.png" alt="enable_public_ip" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 And in ``Step 7`` add a new rule to the security group. Click ``Add Rule`` and choose ``HTTP`` on port 80, this will allow for Internet traffic:
 <BR><BR>
-![plot of step2_ec2](../img/posts/idea-to-pitch/step2_ec2.png)
+<img src="../img/posts/idea-to-pitch/step2_ec2.png" alt="step2_ec2" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 It should look like the following:
 <BR><BR>
-![plot of http_ec2](../img/posts/idea-to-pitch/http_ec2.png)
+<img src="../img/posts/idea-to-pitch/http_ec2.png" alt="http_ec2" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 Once added, select ``Review and Launch``. We have one more step before reaching the instance - we need create a new ``key pair``. This is a security file that will live on your machine and is required to ‘SSH’ into the instance. I tend to create them and leave them in my downloads. What ever you decided to do, make sure you know where it is as you’ll need to pass a path to it every time you want to connect to it. 
 <BR><BR>
-![plot of key_pair](../img/posts/idea-to-pitch/key_pair.png)
+<img src="../img/posts/idea-to-pitch/key_pair.png" alt="key_pair" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 Name it whatever you like and hit the ``Download Key Pair``. Finally select ``Launch Instance`` and we’re ready to go! Keep in mind that whenever you instance is running, you may be charged by Amazon - read the documentation to make sure you’re OK with it. Also, stop the instance when you don’t need to slow down the charges, and terminate it when you don’t need it anymore (i.e. delete it) to stop all charges.
 
 Once the instance is initialized and running, you should see a green light by it:
 <BR><BR>
-![plot of running_ec2](../img/posts/idea-to-pitch/running_ec2.png)
+<img src="../img/posts/idea-to-pitch/running_ec2.png" alt="running_ec2" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 Select the left check-box to access the settings of that specific instance.
 <BR><BR>
-![plot of instance_ec2](../img/posts/idea-to-pitch/instance_ec2.png)
+<img src="../img/posts/idea-to-pitch/instance_ec2.png" alt="instance_ec2" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 
 <h2><a id="connecting-ec2">Connecting to the EC2 Instance</a></h2>
 
 Select the top ``Connect`` button to get the SSH connection string that enables connections. Follow the instructions if you want to use the Java terminal to connect to the instance. Here, I will be using the terminal on my Mac.
 <BR><BR>
-![plot of connection_instructions_ec2](../img/posts/idea-to-pitch/connection_instructions_ec2.png)
+<img src="../img/posts/idea-to-pitch/connection_instructions_ec2.png" alt="connection_instructions_ec2" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 The last line states your connection string: ``ssh -i demo.pem ubuntu@52.25.53.41``. To use it on the Mac, open your terminal and navigate to your ``Downloads`` folder (or wherever you moved your <b>pem</b> key-pair file).
 <BR><BR>
-![plot of ssh](../img/posts/idea-to-pitch/ssh.png)
+<img src="../img/posts/idea-to-pitch/ssh.png" alt="ssh" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 That is all you need to access the instance. If you are having issues with it, follow Amazon’s advice and set the correct permissions for you <b>pem</b> file by calling ``chmod 400 demo.pem``. Also, keep in mind, anytime you reboot your instance, your connection IP will be different.
 
 Once you get in, you should see something along these lines:
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/ssh_successful_connection.png" alt="ssh_successful_connection" border="1">
+<img src="../img/posts/idea-to-pitch/ssh_successful_connection.png" alt="ssh_successful_connection"  style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 <BR><BR>
 <h2><a id="installing-flask">Installing Flask on EC2</a></h2>
@@ -188,7 +188,7 @@ sudo apt-get upgrade
 We now have our web serving software installed. To verify that things are progressing properly, enter your I.P. address in the browser. This is what you should be seeing, the static Apache homepage:
 
 <BR><BR>
-![plot of ubunutu_homepage](../img/posts/idea-to-pitch/ubunutu_homepage.png)
+<img src="../img/posts/idea-to-pitch/ubunutu_homepage.png" alt="ubunutu_homepage" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 <BR><BR>
 <h2><a id="configuring-flask">Configuring the Flask Site</a></h2>
@@ -300,7 +300,7 @@ sudo service apache2 restart
 Try running this again in the browser - hopefully you should see something like:
 
 <BR><BR>
-![plot of live-web-app](../img/posts/idea-to-pitch/live-web-app.png)
+<img src="../img/posts/idea-to-pitch/live-web-app.png" alt="live-web-app" style='padding:1px; border:1px solid #021a40;'>
 <BR><BR><BR>
 
 NOTE: If you have any errors, check the error log (scroll to the bottom of the list to see latest messages):
