@@ -511,9 +511,9 @@ And replace it with the following code:
   </body>
 </html>
 ```
-The most important change is on the fourth line where we added a live link to the bootstrap CSS file. We also added the ``navbar`` class which adds a fancy title on a header. Explore the <a href='http://getbootstrap.com/getting-started/' target='_blank'>GetBoostrap.com</a> to see what else it offers and how you may apply it to your projects.
+The most important change is on the fourth line where we added a live link to the bootstrap CSS file. We also added the ``navbar`` class which adds a fancy title on a header. Explore the <a href='http://getbootstrap.com/getting-started/' target='_blank'>GetBootstrap.com</a> to see what else it offers and how you may apply it to your projects.
 
-You can get the latest bootstrap link at the <a href='http://getbootstrap.com/getting-started/' target='_blank'>GetBoostrap.com</a>
+You can get the latest bootstrap link at the <a href='http://getbootstrap.com/getting-started/' target='_blank'>GetBootstrap.com</a>
 
 Here is a peek at our beautifully metamorphosed page:
 <BR><BR>
