@@ -168,20 +168,20 @@ To keep things simple, we won’t use GIT or a virtual environment - fast and ch
 Now, to get to Flask, we first need to install Apache:
 
 Install Apache:
+
 ```r
 
 sudo apt-get install apache2
 sudo apt-2 update
 sudo apt-get install libapache2-mod-wsgi
-
 ```
 
 Install Flask:
+
 ```r
 
 sudo apt-get install python-flask
 sudo apt-get upgrade
-
 ```
 
 We now have our web serving software installed. To verify that things are progressing properly, enter your I.P. address in the browser. This is what you should be seeing, the static Apache homepage:
@@ -200,11 +200,10 @@ Now, lets create our file structure:
 cd /var/www
 sudo mkdir FlaskApps
 cd FlaskApps
-
 ```
 and more:
-```r
 
+```r
 sudo mkdir FlaskApp
 cd FlaskApp
 sudo mkdir static
@@ -233,7 +232,6 @@ def home():
 
 if __name__ == "__main__":
     app.run()
-
 ```
 
 
