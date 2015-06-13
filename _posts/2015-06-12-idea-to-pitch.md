@@ -198,7 +198,38 @@ Now, lets create our file structure:
 
 cd /var/www
 sudo mkdir FlaskApps
-cd FlaskApps/
+cd FlaskApps
+
+```
+and more:
+```r
+
+sudo mkdir FlaskApp
+cd FlaskApp
+sudo mkdir static
+sudo mkdir templates
+
 ```
 
+Let’s start with a simple page to confirm that Flask can serve dynamic pages. We’ll call up ‘nano’, a very simple text editor. 
 
+```r
+
+sudo nano home.py
+```
+
+and enter the following code:
+
+```r
+
+from flask import Flask
+app=Flask(__name__)
+
+@app.route('/')
+def home():
+    return  “This is from Flask!!"
+
+if __name__ == "__main__":
+    app.run()
+
+```
