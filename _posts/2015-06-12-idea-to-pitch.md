@@ -76,7 +76,8 @@ Now that we have our web application ready to go, we need the tools to serve it 
 <br>
 First, log into the AWS console:
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/logging_on_AWS.png" alt="logging_on_AWS" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center">
+<img src="../img/posts/idea-to-pitch/logging_on_AWS.png" alt="logging_on_AWS" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
 <h2><a id="vpc">VPC</a></h2>
 Select VPC:
