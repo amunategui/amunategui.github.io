@@ -14,7 +14,14 @@ image: idea-to-pitch/flask.png
 In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b> instance, and use <b><a href='http://flask.pocoo.org' target='_blank'>Flask</a></b> to share it with the world. Even though everything here is relatively simple, there are a lot of steps and you don’t want to miss any - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities for your own work!
 
 <BR><BR>
-<h2>Pagiarism Defender - A Python Application</h2>
+<ul>
+    <li type="square"><a href="#sourcecode_gbm">Plagiarism Defender - A Python Application</a></li>
+    <li type="square"><a href="#sourcecode_gbm">Amazon Web Services</a></li>
+    <li type="square"><a href="#sourcecode_gbm">Installing Flask</a></li>
+</ul>
+
+<BR><BR>
+<h2>Plagiarism Defender - A Python Application</h2>
 <BR><BR>
 OK, so I have a Python project that I want to push out on the web. Let's first take a look at it. It should be straightforward; it takes some text as input (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and sends it to the Bing search engine for matches. It surrounds each sentence with quotes to <b>only</b> find exact matches. If a match is found, then that sentence is deemed plagiarized and a counter is incremented. It does so for all sentences and returns the mean of the counter as a plagiarism score. 
 
@@ -148,3 +155,23 @@ Once you get in, you should see something along these lines:
 <BR><BR>
 <h2>Installing Flask on EC2</h2>
 <BR><BR>
+To keep things simple, we won’t use GIT or a virtual environment - fast and cheap, remember? But in the long run, you will benefit from using those tools.
+
+Now, for the laundry list of things to install (install these one at a time):
+
+Load Apache:
+
+```r
+sudo apt-get install apache2
+sudo apt-2 update
+sudo apt-get install libapache2-mod-wsgi
+
+```
+
+We now have our web serving software installed. To verify that things are progressing properly, enter your I.P. address in the browser. This is what you should be seeing, the static Apache2 page:
+
+<BR><BR>
+![plot of ubunutu_homepage](../img/posts/idea-to-pitch/ubunutu_homepage.png)
+<BR><BR><BR>
+
+
