@@ -22,7 +22,7 @@ In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b>
         <li type="square"><a href="#ec2">EC2</a></li>
         <li type="square"><a href="#connecting-ec2">Connecting to EC2</a></li>
     </ul>
-    <li type="square"><a href="#flask">Installing Flask</a></li>
+    <li type="square"><a href="#installing-flask">Installing Flask</a></li>
     <li type="square"><a href="#configuring-flask">Building the Flask Site</a></li>
     <li type="square"><a href="#running-plagiarism-defender">Running Plagiarism Defender on the Web</a></li>
     <ul>
