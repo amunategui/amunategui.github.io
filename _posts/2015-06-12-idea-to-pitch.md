@@ -220,7 +220,7 @@ sudo mkdir templates
 Let’s start with a simple page to confirm that Flask can serve dynamic pages. We’ll call up ‘nano’, a very simple text editor. 
 
 ```r
-sudo nano home.py
+sudo nano /var/www/FlaskApps/PlagiarismDefenderApp/home.py
 ```
 
 and enter the following code:
@@ -281,7 +281,7 @@ sudo /etc/init.d/apache2 reload
 Create a WSGI file to tell Apache how to run Flask - it’s the link and entry point for our web application:
 
 ```r
-sudo nano FlaskApps.wsgi
+sudo nano /var/www/FlaskApps/FlaskApps.wsgi
 ```
 
 and enter the following code:
@@ -341,7 +341,6 @@ sudo nano /var/www/FlaskApps/PlagiarismDefenderApp/home.py
 ```
 
 ```r
-sudo nano home.py
 from flask import Flask, render_template, request, url_for
 import urllib2
 # sudo apt-get install python3-lxml
@@ -393,7 +392,7 @@ if __name__ == "__main__":
 Let's build our two template html files:
 
 ```r
-cd /var/www/FlaskApps/FlaskApp/templates/
+cd /var/www/FlaskApps/PlagiarismDefenderApp/templates/
 sudo nano plagiarizer-submit.html
 ```
 
@@ -423,7 +422,7 @@ and enter the following for ``plagiarizer-submit.html``:
 ```
 
 ```r
-cd  /var/www/FlaskApps/FlaskApp/templates
+cd  /var/www/FlaskApps/PlagiarismDefenderApp/templates
 sudo nano plagiarizer-results.html
 ```
 
@@ -464,16 +463,14 @@ And the final prognostic is:
 
 <h2><a id="twitter-bootsrap">Beautifying with Twitter’s Bootstrap</a></h2>
 
-This is undoubtedly the best part, with just a few lines of code and you have a professional looking site! 
+This is undoubtedly the most amazing part of this whole walkthrough, by just adding a few lines of code, you have a professional looking site! 
 
-You can get the latest bootstrap link at the <a href='http://getbootstrap.com/getting-started/' target='_blank'>GetBoostrap.com</a>
-
-The site is a big menu where you can pick and choose what you want. We're going to go with the <a href='http://getbootstrap.com/getting-started/#starter-template' target=''>Starter template</a>.
+<a href='http://getbootstrap.com/' target='_blank'>GetBoostrap.com</a> is a big menu where you can pick and choose how you want your site to look. We're going to go with the <a href='http://getbootstrap.com/getting-started/#starter-template' target=''>Starter template</a>, it is simple but leaps ahead of what we had before.
 
 Lets update our ``plagiarizer-submit.html`` page:
 
 ```r
-sudo nano /var/www/FlaskApps/PlagiarizerApp/templates/plagiarizer-submit.html
+sudo nano /var/www/FlaskApps/PlagiarismDefenderApp/templates/plagiarizer-submit.html
 ```
 And replace it with the following code:
 
@@ -515,6 +512,8 @@ And replace it with the following code:
 </html>
 ```
 The most important change is on the fourth line where we added a live link to the bootstrap CSS file. We also added the ``navbar`` class which adds a fancy title on a header. Explore the <a href='http://getbootstrap.com/getting-started/' target='_blank'>GetBoostrap.com</a> to see what else it offers and how you may apply it to your projects.
+
+You can get the latest bootstrap link at the <a href='http://getbootstrap.com/getting-started/' target='_blank'>GetBoostrap.com</a>
 
 Here is a peek at our beautifully metamorphosed page:
 <BR><BR>
