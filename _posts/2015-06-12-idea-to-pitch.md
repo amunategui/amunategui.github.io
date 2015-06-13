@@ -56,27 +56,27 @@ for a_sentence in sentences:
         probability_of_plagiarism += 1;
 
 print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sentences)) * 100) + '%')
-
 ```
-It correctly determined that the Moby Dick text passed to the function is plagiarized:
+
+It correctly determined that the Moby Dick text is plagiarized:
 
 ```r
 In [151]: print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sentences)) * 100) + '%')
 Probability of plagiarism: 100%
 ```
 
-This may not scale too well as Bing would quickly get upset, but for our purposes it is fine. Let's push this out onto the web and get some exposure.
+This may not scale well as Bing would quickly get upset with excessive calls, but for our purpose,  it is fine. Let's push this out onto the web and get some exposure.
 
-<BR><BR>
+<BR>
 <h2><a id="amazon-web-services">Amazon Web Services - Home Away from Home</a></h2>
 <BR>
 Now that we have our web application ready to go, we need the tools to serve it out to the world. We’ll start with our <a href='http://aws.amazon.com/' target='_blank'>Amazon Web Service EC2 instance</a>. You will need an AWS account to access the site. Even though this is all very simple, there are many of these simple steps; if you miss one, it will not work....
-
+<BR>
 **AWS Console**
 <br>
 First, log into the AWS console:
 <BR><BR>
-![plot of logging_on_AWS](../img/posts/idea-to-pitch/logging_on_AWS.png) 
+<img src="../img/posts/idea-to-pitch/logging_on_AWS.png" alt="logging_on_AWS" border="1">
 <BR><BR>
 <h2><a id="vpc">VPC</a></h2>
 Select VPC:
@@ -99,7 +99,7 @@ Most of the defaults are fine except add a name under ``VPC name`` and select ``
 <BR><BR><BR>
 
 
-<h2><a id="vpc">EC2</a></h2>
+<h2><a id="ec2">EC2</a></h2>
 <BR>
 VPC is done, let’s now create our EC2 instance - this is going to be our new machine. Click on the orange cube in the upper left corner of the page. From the ensuing menu, choose the first option, ``EC2``
 
@@ -159,7 +159,7 @@ That is all you need to access the instance. If you are having issues with it, f
 
 Once you get in, you should see something along these lines:
 <BR><BR>
-![plot of ssh_successful_connection](../img/posts/idea-to-pitch/ssh_successful_connection.png)
+<img src="../img/posts/idea-to-pitch/ssh_successful_connection.png" alt="ssh_successful_connection" border="1">
 <BR><BR><BR>
 <BR><BR>
 <h2><a id="installing-flask">Installing Flask on EC2</a></h2>
