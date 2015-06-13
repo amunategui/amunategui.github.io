@@ -184,7 +184,7 @@ sudo apt-get upgrade
 
 ```
 
-We now have our web serving software installed. To verify that things are progressing properly, enter your I.P. address in the browser. This is what you should be seeing, the static Apache2 homepage:
+We now have our web serving software installed. To verify that things are progressing properly, enter your I.P. address in the browser. This is what you should be seeing, the static Apache homepage:
 
 <BR><BR>
 ![plot of ubunutu_homepage](../img/posts/idea-to-pitch/ubunutu_homepage.png)
