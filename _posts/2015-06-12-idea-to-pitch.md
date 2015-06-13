@@ -71,7 +71,7 @@ This may not scale well as Bing would quickly get upset with excessive calls, bu
 <h2><a id="amazon-web-services">Amazon Web Services - Home Away from Home</a></h2>
 <BR>
 Now that we have our web application ready to go, we need the tools to serve it out to the world. We’ll start with our <a href='http://aws.amazon.com/' target='_blank'>Amazon Web Service EC2 instance</a>. You will need an AWS account to access the site. Even though this is all very simple, there are many of these simple steps; if you miss one, it will not work....
-<BR>
+<BR><BR>
 **AWS Console**
 <br>
 First, log into the AWS console:
@@ -82,21 +82,24 @@ First, log into the AWS console:
 <h2><a id="vpc">VPC</a></h2>
 Select VPC:
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/choosing_vpc.png" alt="choosing_vpc" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center">
+<img src="../img/posts/idea-to-pitch/choosing_vpc.png" alt="choosing_vpc" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
 A virtual private connection (VPC) will determine who and what gets to access our site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
 
 Start the wizard:
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/vpc_wizard.png" alt="vpc_wizard" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center">
+<img src="../img/posts/idea-to-pitch/vpc_wizard.png" alt="vpc_wizard" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 Start the wizard and select ‘VPC with a Single Public Subnet':
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/vpc_wizard_2.png" alt="vpc_wizard_2" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center">
+<img src="../img/posts/idea-to-pitch/vpc_wizard_2.png" alt="vpc_wizard_2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 Most of the defaults are fine except add a name under ``VPC name`` and select ``Public subnet`` under ``Add endpoints for S3 to you subnets``:
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/vpc_wizard_3.png" alt="vpc_wizard_3" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/vpc_wizard_3.png" alt="vpc_wizard_3" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 
 
@@ -105,62 +108,62 @@ Most of the defaults are fine except add a name under ``VPC name`` and select ``
 VPC is done, let’s now create our EC2 instance - this is going to be our new machine. Click on the orange cube in the upper left corner of the page. From the ensuing menu, choose the first option, ``EC2``
 
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/EC2.png" alt="EC2" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/EC2.png" alt="EC2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 Then ``Create Instance``...
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/EC2_create_instance.png" alt="EC2_create_instance" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/EC2_create_instance.png" alt="EC2_create_instance" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 We’ll select the free eligible tier <a href='http://www.ubuntu.com/' target='_blank'>Ubuntu</a> box (may not always be free, check if it applies to you). 
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/ec2_ubuntu.png" alt="ec2_ubuntu" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/ec2_ubuntu.png" alt="ec2_ubuntu" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 Go with defaults and click ``Next: Configure Instance Details``
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/ubuntu_defaults.png" alt="ubuntu_defaults" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/ubuntu_defaults.png" alt="ubuntu_defaults" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 Under ``Step 3``, make sure to enable ‘Auto-assign IP’ and leave the rest as is.
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/enable_public_ip.png" alt="enable_public_ip" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/enable_public_ip.png" alt="enable_public_ip" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 And in ``Step 7`` add a new rule to the security group. Click ``Add Rule`` and choose ``HTTP`` on port 80, this will allow for Internet traffic:
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/step2_ec2.png" alt="step2_ec2" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/step2_ec2.png" alt="step2_ec2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 It should look like the following:
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/http_ec2.png" alt="http_ec2" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/http_ec2.png" alt="http_ec2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 Once added, select ``Review and Launch``. We have one more step before reaching the instance - we need create a new ``key pair``. This is a security file that will live on your machine and is required to ‘SSH’ into the instance. I tend to create them and leave them in my downloads. What ever you decided to do, make sure you know where it is as you’ll need to pass a path to it every time you want to connect to it. 
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/key_pair.png" alt="key_pair" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/key_pair.png" alt="key_pair" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 Name it whatever you like and hit the ``Download Key Pair``. Finally select ``Launch Instance`` and we’re ready to go! Keep in mind that whenever you instance is running, you may be charged by Amazon - read the documentation to make sure you’re OK with it. Also, stop the instance when you don’t need to slow down the charges, and terminate it when you don’t need it anymore (i.e. delete it) to stop all charges.
 
 Once the instance is initialized and running, you should see a green light by it:
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/running_ec2.png" alt="running_ec2" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/running_ec2.png" alt="running_ec2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 Select the left check-box to access the settings of that specific instance.
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/instance_ec2.png" alt="instance_ec2" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/instance_ec2.png" alt="instance_ec2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 
 <h2><a id="connecting-ec2">Connecting to the EC2 Instance</a></h2>
 
 Select the top ``Connect`` button to get the SSH connection string that enables connections. Follow the instructions if you want to use the Java terminal to connect to the instance. Here, I will be using the terminal on my Mac.
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/connection_instructions_ec2.png" alt="connection_instructions_ec2" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/connection_instructions_ec2.png" alt="connection_instructions_ec2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 The last line states your connection string: ``ssh -i demo.pem ubuntu@52.25.53.41``. To use it on the Mac, open your terminal and navigate to your ``Downloads`` folder (or wherever you moved your <b>pem</b> key-pair file).
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/ssh.png" alt="ssh" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/ssh.png" alt="ssh" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 That is all you need to access the instance. If you are having issues with it, follow Amazon’s advice and set the correct permissions for you <b>pem</b> file by calling ``chmod 400 demo.pem``. Also, keep in mind, anytime you reboot your instance, your connection IP will be different.
 
 Once you get in, you should see something along these lines:
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/ssh_successful_connection.png" alt="ssh_successful_connection"  style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/ssh_successful_connection.png" alt="ssh_successful_connection"  style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 <BR><BR>
 <h2><a id="installing-flask">Installing Flask on EC2</a></h2>
@@ -189,7 +192,7 @@ sudo apt-get upgrade
 We now have our web serving software installed. To verify that things are progressing properly, enter your I.P. address in the browser. This is what you should be seeing, the static Apache homepage:
 
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/ubunutu_homepage.png" alt="ubunutu_homepage" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/ubunutu_homepage.png" alt="ubunutu_homepage" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 <BR><BR>
 <h2><a id="configuring-flask">Configuring the Flask Site</a></h2>
@@ -301,7 +304,7 @@ sudo service apache2 restart
 Try running this again in the browser - hopefully you should see something like:
 
 <BR><BR>
-<img src="../img/posts/idea-to-pitch/live-web-app.png" alt="live-web-app" style='padding:1px; border:1px solid #021a40;'>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/live-web-app.png" alt="live-web-app" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 
 NOTE: If you have any errors, check the error log (scroll to the bottom of the list to see latest messages):
@@ -312,6 +315,6 @@ sudo nano /var/log/apache2/error.log
 
 <h2><a id="running-plagiarism-defender">Plagiarism Defender on the Web!</a></h2>
 
-Things are looking good, let’s get our application running on Flask and EC2 instance.
+Things are looking good, lets get our application running on Flask and EC2 instance.
 
 
