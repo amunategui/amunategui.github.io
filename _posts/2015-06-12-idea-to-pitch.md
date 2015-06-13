@@ -235,3 +235,53 @@ if __name__ == "__main__":
     app.run()
 
 ```
+
+
+We now edit the ``config`` file to point to our new Flask site:
+
+```r
+
+sudo nano /etc/apache2/sites-available/FlaskApp.conf
+
+```
+
+and enter the following:
+
+```r
+
+<VirtualHost *:80>
+ServerName 52.11.197.21 # update this every time your IP changes
+ServerAdmin admin@mywebsite.com # don't worry about this
+WSGIScriptAlias / /var/www/FlaskApps/FlaskApps.wsgi
+<Directory /var/www/FlaskApps/FlaskApp/>
+Order allow,deny
+Allow from all
+</Directory>
+Alias /static /var/www/FlaskApps/FlaskApp/static
+<Directory /var/www/FlaskApps/FlaskApp/static/>
+Order allow,deny
+Allow from all
+</Directory>
+ErrorLog ${APACHE_LOG_DIR}/error.log
+LogLevel warn
+CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+```
+Save and exit (ctrl-x). Add our new site and restart apache:
+
+```r
+
+sudo apachectl restart
+sudo a2ensite FlaskApp
+
+# that's a lot of reloading but it does the trick
+service apache2 reload
+/etc/init.d/apache2 reload
+sudo /etc/init.d/apache2 reload
+
+```
+
+
+
+
