@@ -7,7 +7,7 @@ year: 2015
 month: 06
 day: 12
 published: true
-summary: "The idea behind this walkthrough is to demonstrate how easy it is to transform an idea into a web application. This is for those that want to quickly pitch their application to the world without getting bogged down by technical details. This is for the weekend warrior. If the application is a success, people with real skills will be brought in to do the job right, in the meantime we want it fast, cheap and easy. We'll use Python, Flask, and Amazon Cloud Services EC2"
+summary: "The idea behind this walkthrough is to demonstrate how easy it is to transform an idea into a web application. This is for those that want to quickly pitch their application to the world without getting bogged down by technical details. This is for the weekend warrior. If the application is a success, people with real skills will be brought in to do the job right, in the meantime we want it fast, cheap and easy. We'll use Python, Flask, and Amazon Web Services' EC2"
 image: idea-to-pitch/flask.png
 ---
 
@@ -29,13 +29,15 @@ In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b>
         <li type="web-serving-file"><a href="#vpc">Main Web-Serving File</a></li>
         <li type="template-files"><a href="#vpc">Template HTML Files</a></li>
     </ul>
-     <li type="square"><a href="twitters-boostrap">Beautifying with Twitter’s Bootstrap</a></li>
+     <li type="square"><a href="#twitter-bootsrap">Beautifying with Twitter’s Bootstrap</a></li>
 </ul>
 
 <BR><BR>
 <h2><a id="python-application">Plagiarism Defender - A Python Application</a></h2>
 <BR>
-OK, so I have a Python project that I want to push out to the web. Let's first take a look at it. It should be straightforward; it takes some text as input (``text_to_filter``), splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and sends it to the Bing search engine for matches. It surrounds each sentence with quotes to <b>only</b> find exact matches. If a match is found, then that sentence is deemed plagiarized and a counter is incremented. It does so for all sentences and returns the mean of the counter as a plagiarism score. 
+OK, so I have a Python project that I want to push out to the web. This app takes text as input, splits it into sentences using <a = href='http://www.nltk.org/' target='_blank'>Natural Language Toolkit (NLTK)</a>, and sends it to the Bing search engine for matches. 
+
+It surrounds each sentence with quotes to <b>only</b> find exact matches. If a match is found, then that sentence is deemed plagiarized and the counter is incremented. It does so for all sentences and returns the mean counter value as a plagiarism score.
 
 ```r
 # sudo apt-get install python-lxml
@@ -63,14 +65,14 @@ for a_sentence in sentences:
 print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sentences)) * 100) + '%')
 ```
 
-It correctly determined that the Moby Dick text is plagiarized:
+It correctly determined that the Moby Dick text is plagiarized!
 
 ```r
 In [151]: print('Probability of plagiarism: ' + str((probability_of_plagiarism / len(sentences)) * 100) + '%')
 Probability of plagiarism: 100%
 ```
 
-This may not scale well as Bing would quickly get upset with excessive calls, but for our purpose,  it is fine. Let's push this out onto the web and get some exposure.
+This may not scale well as Bing would probably get upset from excessive calls, but it will do fine for the demonstration. Let's push this out onto the web and get some exposure.
 
 <BR>
 <h2><a id="amazon-web-services">Amazon Web Services - Home Away from Home</a></h2>
@@ -199,19 +201,19 @@ We now have our web serving software installed. To verify that things are progre
 <h2><a id="configuring-flask">Configuring the Flask Site</a></h2>
 <BR>
 
-Now, lets create our file structure:
+Now, lets create our file structure. We start with a ``FlaskApps`` master directory off of the ``www`` folder:
 
 ```r
 cd /var/www
 sudo mkdir FlaskApps
 cd FlaskApps
 ```
-and more:
+
+We create our ``PlagiarismDefenderApp`` directory and a ``template`` subdirectory:
 
 ```r
-sudo mkdir FlaskApp
-cd FlaskApp
-sudo mkdir static
+sudo mkdir PlagiarismDefenderApp
+cd PlagiarismDefenderApp
 sudo mkdir templates
 ```
 
@@ -238,7 +240,7 @@ if __name__ == "__main__":
 Save and exit (ctrl-X). Now edit the ``config`` file to point to our new Flask site:
 
 ```r
-sudo nano /etc/apache2/sites-available/FlaskApp.conf
+sudo nano /etc/apache2/sites-available/PlagiarismDefenderApp.conf
 ```
 
 and paste the following except for the ``ServerName`` IP address that you replace with yours:
@@ -248,12 +250,12 @@ and paste the following except for the ``ServerName`` IP address that you replac
     ServerName 52.11.197.21 # update this every time your IP changes
     ServerAdmin admin@mywebsite.com # don't worry about this
     WSGIScriptAlias / /var/www/FlaskApps/FlaskApps.wsgi
-    <Directory /var/www/FlaskApps/FlaskApp/>
+    <Directory /var/www/FlaskApps/PlagiarismDefenderApp/>
         Order allow,deny
         Allow from all
     </Directory>
-    Alias /static /var/www/FlaskApps/FlaskApp/static
-    <Directory /var/www/FlaskApps/FlaskApp/static/>
+    Alias /static /var/www/FlaskApps/PlagiarismDefenderApp/static
+    <Directory /var/www/FlaskApps/PlagiarismDefenderApp/static/>
         Order allow,deny
         Allow from all
     </Directory>
@@ -267,7 +269,7 @@ Save and exit (ctrl-X). Add our new site and restart apache:
 ```r
 
 sudo apachectl restart
-sudo a2ensite FlaskApp
+sudo a2ensite PlagiarismDefenderApp
 
 # that's a lot of reloading but it does the trick
 service apache2 reload
@@ -289,7 +291,7 @@ and enter the following code:
 import sys
 import logging
 logging.basicConfig(stream=sys.stderr)
-sys.path.insert(0,"/var/www/FlaskApps/FlaskApp/")
+sys.path.insert(0,"/var/www/FlaskApps/PlagiarismDefenderApp/")
 
 from home import app as application
 application.secret_key = “somesecretsessionkey"
@@ -335,7 +337,7 @@ sudo pip install -U nltk
 Let's build our main web-serving file:
 
 ```r
-sudo nano /var/www/FlaskApps/FlaskApp/home.py
+sudo nano /var/www/FlaskApps/PlagiarismDefenderApp/home.py
 ```
 
 ```r
@@ -449,10 +451,19 @@ and enter the following for ``plagiarizer-results.html``:
 </html>
 ```
 
-Try it out, this is what our submit and result files should look like:
+Try it out, enter some text and hit the ``submit`` button:
+
+<BR><BR>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/defender-in-action.png" alt="defender-in-action" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR><BR>
+
+And the final prognostic is:
+<BR><BR>
+<p style="text-align:center"><img src="../img/posts/idea-to-pitch/defender-results.png" alt="defender-results" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR><BR>
 
 
-<h2><a id="twitters-boostrap">Beautifying with Twitter’s Bootstrap</a></h2>
+<h2><a id="twitter-bootsrap">Beautifying with Twitter’s Bootstrap</a></h2>
 
 
 
