@@ -45,6 +45,7 @@ from lxml import html
 import requests, time
 # sudo pip install -U nltk
 from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters 
+import urllib2
 
 # Try it out on the first lines of Moby Dick:
 text_to_check = "Call me Ishmael. Some years ago - never mind how long precisely - having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world."
@@ -129,11 +130,11 @@ Go with defaults and click ``Next: Configure Instance Details``
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/ubuntu_defaults.png" alt="ubuntu_defaults" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
-Under ``Step 3``, make sure to enable ‘Auto-assign IP’ and leave the rest as is.
+Under ``Step 3``, make sure to enable ‘Auto-assign IP’ and leave the rest as is. Click ``Review and Launch``
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/enable_public_ip.png" alt="enable_public_ip" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
-And in ``Step 7`` add a new rule to the security group. Click ``Add Rule`` and choose ``HTTP`` on port 80, this will allow for Internet traffic:
+And in ``Step 7`` add a new rule to the security group. Click ``Edit security groups`` and click ``Add Rule`` and choose ``HTTP`` on port 80, this will allow for Internet traffic:
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/step2_ec2.png" alt="step2_ec2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
@@ -141,17 +142,17 @@ It should look like the following:
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/http_ec2.png" alt="http_ec2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
-Once added, select ``Review and Launch``. We have one more step before reaching the instance - we need create a new ``key pair``. This is a security file that will live on your machine and is required to ‘SSH’ into the instance. I tend to create them and leave them in my downloads. What ever you decided to do, make sure you know where it is as you’ll need to pass a path to it every time you want to connect to it. 
+Once added, select ``Review and Launch``. We have one more step before reaching the instance - we need create a new ``key pair``. Click ``Launch`` to get there. Key-pair is a security file that will live on your machine and is required to ‘SSH’ into the instance. I tend to create them and leave them in my downloads. What ever you decided to do, make sure you know where it is as you’ll need to pass a path to it every time you want to connect to it. 
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/key_pair.png" alt="key_pair" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
-Name it whatever you like and hit the ``Download Key Pair``. Finally select ``Launch Instance`` and we’re ready to go! Keep in mind that whenever you instance is running, you may be charged by Amazon - read the documentation to make sure you’re OK with it. Also, stop the instance when you don’t need to slow down the charges, and terminate it when you don’t need it anymore (i.e. delete it) to stop all charges.
+Name it whatever you like and hit the ``Download Key Pair``. Finally select ``Launch Instances`` or ``View Instances`` and we’re ready to go! Keep in mind that whenever you instance is running, you may be charged by Amazon - read the documentation to make sure you’re OK with it. Also, stop the instance when you don’t need to slow down the charges, and terminate it when you don’t need it anymore (i.e. delete it) to stop all charges.
 
 Once the instance is initialized and running, you should see a green light by it:
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/running_ec2.png" alt="running_ec2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
-Select the left check-box to access the settings of that specific instance.
+Select the left check-box on your instance line to access the settings for that instance. It should look something like this:
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/instance_ec2.png" alt="instance_ec2" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
@@ -181,7 +182,7 @@ Now, to get to Flask, we first need to install Apache:
 
 ```r
 sudo apt-get install apache2
-sudo apt-2 update
+sudo apt-get update
 sudo apt-get install libapache2-mod-wsgi
 ```
 
@@ -243,18 +244,17 @@ Save and exit (ctrl-X). Now edit the ``config`` file to point to our new Flask s
 sudo nano /etc/apache2/sites-available/PlagiarismDefenderApp.conf
 ```
 
-and paste the following except for the ``ServerName`` IP address that you replace with yours:
+and paste the following with your OWN ``ServerName`` IP address (i.e. replace 52.25.54.241 with your own EC2 assigned IP):
 
 ```r
 <VirtualHost *:80>
-    ServerName 52.11.197.21 # update this every time your IP changes
-    ServerAdmin admin@mywebsite.com # don't worry about this
+    ServerName 52.25.54.241
+    ServerAdmin admin@mywebsite.com 
     WSGIScriptAlias / /var/www/FlaskApps/FlaskApps.wsgi
     <Directory /var/www/FlaskApps/PlagiarismDefenderApp/>
         Order allow,deny
         Allow from all
     </Directory>
-    Alias /static /var/www/FlaskApps/PlagiarismDefenderApp/static
     <Directory /var/www/FlaskApps/PlagiarismDefenderApp/static/>
         Order allow,deny
         Allow from all
@@ -293,8 +293,9 @@ import logging
 logging.basicConfig(stream=sys.stderr)
 sys.path.insert(0,"/var/www/FlaskApps/PlagiarismDefenderApp/")
 
+# home points to the home.py file
 from home import app as application
-application.secret_key = “somesecretsessionkey"
+application.secret_key = "somesecretsessionkey"
 ```
 
 Save and exit (ctrl-X). Restart Apache:
@@ -327,6 +328,9 @@ Lets start installing some libraries on your instance:
 sudo apt-get install python-lxml
 sudo apt-get install python3-lxml
 sudo apt-get install libxml2-dev libxslt-dev python-dev
+
+# install pip
+sudo apt-get install python-pip
 
 # install nltk
 sudo pip install -U nltk
@@ -402,7 +406,6 @@ and enter the following for ``plagiarizer-submit.html``:
 <html>
     <head>
         <title>Plagiarism Defender</title>
-         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
         <div id="container">
@@ -432,7 +435,6 @@ and enter the following for ``plagiarizer-results.html``:
  <html>
     <head>
         <title>Plagiarism Defender</title>
-        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
         <div id="container">
