@@ -444,6 +444,7 @@ and enter the following for ``plagiarizer-results.html``:
             <div id="content">
                 In our best opinion, the text you entered is <strong>{% raw %}{{is_it_plagiarized}}{% endraw %}</strong> plagiarized!
             </div>
+            <BR><BR>
             <div id="content">
                 Text Entered: <strong>{% raw %}{{text_to_filter}}{% endraw %}</strong>
             </div>
