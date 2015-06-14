@@ -345,17 +345,17 @@ sudo nano /var/www/FlaskApps/PlagiarismDefenderApp/home.py
 ```
 
 ```r
-from flask import Flask, render_template, request, url_for
-import urllib2
+from flask import Flask, render_template, request, url_for;
+import urllib2;
 # sudo apt-get install python3-lxml
 # sudo apt-get install python-lxml
 # apt-get install python-dev libxml2 libxml2-dev libxslt-dev
-from lxml import html
-import requests
-import string
-import time
+from lxml import html;
+import requests;
+import string;
+import time;
 #sudo pip install -U nltk
-from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
+from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters;
 
 
 # Initialize the Flask application
@@ -402,7 +402,7 @@ sudo nano plagiarizer-submit.html
 
 and enter the following for ``plagiarizer-submit.html``:
 
-```r
+```
 <html>
     <head>
         <title>Plagiarism Defender</title>
