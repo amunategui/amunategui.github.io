@@ -402,8 +402,7 @@ sudo nano plagiarizer-submit.html
 
 and enter the following for ``plagiarizer-submit.html``:
 
-<code>
-<html>
+&lt;html&gt;
     <head>
         <title>Plagiarism Defender</title>
     </head>
