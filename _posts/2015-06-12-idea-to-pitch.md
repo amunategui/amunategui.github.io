@@ -402,7 +402,7 @@ sudo nano plagiarizer-submit.html
 
 and enter the following for ``plagiarizer-submit.html``:
 
-```
+<code>
 <html>
     <head>
         <title>Plagiarism Defender</title>
@@ -422,7 +422,7 @@ and enter the following for ``plagiarizer-submit.html``:
         </div>
     </body>
 </html>
-```
+</code>
 
 ```r
 cd  /var/www/FlaskApps/PlagiarismDefenderApp/templates
