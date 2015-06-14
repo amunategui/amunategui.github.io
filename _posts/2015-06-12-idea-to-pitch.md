@@ -443,10 +443,10 @@ and enter the following for ``plagiarizer-results.html``:
                 <h1>Plagiarism Defender Results</h1>
             </div>
             <div id="content">
-                In our best opinion, the text you entered is <strong>{{is_it_plagiarized}}</strong> plagiarized!
+                In our best opinion, the text you entered is <strong>{% raw %}{{is_it_plagiarized}}{% endraw %}</strong> plagiarized!
             </div>
             <div id="content">
-                Text Entered: <strong>{{text_to_filter}}</strong>
+                Text Entered: <strong>{% raw %}{{text_to_filter}}{% endraw %}</strong>
             </div>
         </div>
     </body>
@@ -496,7 +496,7 @@ And replace it with the following code:
 
      <div class="container">
       <div class="starter-template">
-          <form method="post" action="{{ url_for('IsItPlagiarized') }}">
+          <form method="post" action="{% raw %}{{ url_for('IsItPlagiarized') }}{% endraw %}">
             <label for="text_to_check">Enter text to check for plagiarism:</label>
             <BR><textarea cols="100" rows="20" name="text_to_check"></textarea>
             <BR><input type="submit" />
@@ -514,6 +514,7 @@ And replace it with the following code:
   </body>
 </html>
 ```
+
 The most important change is on the fourth line where we added a live link to the bootstrap CSS file. We also added the ``navbar`` class which adds a fancy title on a header. Explore the <a href='http://getbootstrap.com/getting-started/' target='_blank'>GetBootstrap.com</a> to see what else it offers and how you may apply it to your projects.
 
 You can get the latest bootstrap link at the <a href='http://getbootstrap.com/getting-started/' target='_blank'>GetBootstrap.com</a>
