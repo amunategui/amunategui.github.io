@@ -401,27 +401,27 @@ sudo nano plagiarizer-submit.html
 ```
 
 and enter the following for ``plagiarizer-submit.html``:
-
+/
 &lt;html&gt;
-    <head>
-        <title>Plagiarism Defender</title>
-    </head>
-    <body>
-        <div id="container">
-            <div class="title">
-                <h1>Check Your Text for Plagiarism</h1>
-            </div>
-            <div id="content">
-                <form method="post" action="{{ url_for('IsItPlagiarized') }}">
-                  <label for="text_to_check">Enter text to check for plagiarism:</label>
-                  <BR><textarea cols="100" rows="20" name="text_to_check"></textarea>
-                  <BR><input type="submit" />
-                </form>
-            </div>
-        </div>
-    </body>
-</html>
-</code>
+    &lt;head>
+        &lt;title&gt;Plagiarism Defender&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div id="container"&gt;
+            &lt;div class="title"&gt;
+                &lt;h1&gt;Check Your Text for Plagiarism&lt;/h1&gt;
+            &lt;/div&gt;
+            &lt;div id="content"&gt;
+                &lt;form method="post" action="{{ url_for('IsItPlagiarized') }}"&gt;
+                  &lt;label for="text_to_check"&gt;Enter text to check for plagiarism:&lt;/label&gt;
+                  &lt;BR&gt;&lt;textarea cols="100" rows="20" name="text_to_check"&gt;&lt;/textarea&gt;
+                  &lt;BR&gt;&lt;input type="submit" /&gt;
+                &lt;/form&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+
 
 ```r
 cd  /var/www/FlaskApps/PlagiarismDefenderApp/templates
