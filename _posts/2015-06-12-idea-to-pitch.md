@@ -422,7 +422,6 @@ and enter the following for ``plagiarizer-submit.html``:
         </div>
     </body>
 </html>
-</code>
 ```
 
 ```r
