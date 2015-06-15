@@ -453,6 +453,13 @@ and enter the following for ``plagiarizer-results.html``:
 </html>
 ```
 
+Save and exit (ctrl-X). Restart Apache:
+
+```r
+sudo service apache2 restart
+/etc/init.d/apache2 reload 
+```
+
 Try it out - enter some text and hit the ``submit`` button:
 <BR>
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/defender-in-action.png" alt="defender-in-action" style='padding:1px; border:1px solid #021a40;'></p>
