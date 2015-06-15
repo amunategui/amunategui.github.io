@@ -7,9 +7,15 @@ year: 2015
 month: 06
 day: 12
 published: true
-summary: "This walk-through is about demonstrating how easy it is to transform an idea into a web application. This is for those that want to quickly pitch their application to the world without getting bogged down by technical details. This is for the weekend warrior. If the application is a success, people with real skills will be brought in to do the job right, in the meantime we want it fast, cheap and easy. We'll use Python, Flask, and Amazon Web Services' EC2"
+summary: "This walk-through is about demonstrating how easy it is to transform an idea into a web application. This is for those that want to quickly pitch their application to the world without getting bogged down by technical details. This is for the weekend warrior. If the application is a success, people with real skills will be brought in to do the job right, in the meantime we want it fast, cheap and easy. We'll use Python, Flask, and EC2 Amazon Web Services."
 image: idea-to-pitch/flask.png
 ---
+**Resources**
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=3HuYr6G2Z28&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target='_blank'>YouTube Companion Video</a></li>
+</ul>
+<BR>
+
 
 In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b> instance, and use <b><a href='http://flask.pocoo.org' target='_blank'>Flask</a></b> to share it with the world. Even though everything here is relatively simple, there are a lot of steps and you don’t want to miss any - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities for your own work!
 
