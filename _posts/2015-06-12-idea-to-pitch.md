@@ -22,7 +22,7 @@ In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b>
         <li type="square"><a href="#ec2">EC2</a></li>
         <li type="square"><a href="#connecting-ec2">Connecting to EC2</a></li>
     </ul>
-    <li type="square"><a href="#installing-flask">Installing Flask</a></li>
+    <li type="square"><a href="#installing-flask">Installing Apache & Flask</a></li>
     <li type="square"><a href="#configuring-flask">Building the Flask Site</a></li>
     <li type="square"><a href="#running-plagiarism-defender">Running Plagiarism Defender on the Web</a></li>
     <ul>
@@ -174,7 +174,7 @@ Once you get in, you should see something along these lines:
 <p style="text-align:center"><img src="../img/posts/idea-to-pitch/ssh_successful_connection.png" alt="ssh_successful_connection"  style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR><BR>
 <BR><BR>
-<h2><a id="installing-flask">Installing Flask on EC2</a></h2>
+<h2><a id="installing-flask">Installing Apache & Flask on EC2</a></h2>
 <BR>
 To keep things simple, we won’t use GIT or a virtual environment - fast and cheap, remember? But in the long run, you will benefit from using those tools.
 
