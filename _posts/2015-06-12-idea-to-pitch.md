@@ -93,7 +93,7 @@ Select VPC:
 <p style="text-align:center">
 <img src="../img/posts/idea-to-pitch/choosing_vpc.png" alt="choosing_vpc" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
-A virtual private connection (VPC) will determine who and what gets to access the site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
+A virtual private cloud (VPC) will determine who and what gets to access the site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!
 
 Start the wizard:
 <BR><BR>
