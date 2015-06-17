@@ -2,7 +2,7 @@
 layout: post
 title: Modeling Ensembles with R and {caret}
 category: Machine Learning
-tags: modeling
+tags: modeling r
 year: 2014
 month: 10
 day: 18

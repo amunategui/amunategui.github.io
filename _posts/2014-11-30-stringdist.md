@@ -2,7 +2,7 @@
 layout: post
 title: "Using String Distance {stringdist} To Handle Large Text Factors, Cluster Them Into Supersets" 
 category: Machine Learning
-tags: exploring visualizing
+tags: exploring visualizing r
 year: 2014
 month: 11
 day: 30

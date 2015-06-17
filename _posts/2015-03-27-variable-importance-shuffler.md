@@ -2,7 +2,7 @@
 layout: post
 title: "Find Variable Importance for any Model - Prediction Shuffling with R" 
 category: Machine Learning
-tags: modeling
+tags: modeling r
 year: 2015
 month: 03
 day: 27

@@ -2,7 +2,7 @@
 layout: post
 title: Brief Walkthrough Of The dummyVars Function From {caret}
 category: Machine Learning
-tags: exploring
+tags: exploring r
 year: 2014
 month: 10
 day: 2

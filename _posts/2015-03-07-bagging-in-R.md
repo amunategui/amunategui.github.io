@@ -2,7 +2,7 @@
 layout: post
 title: "Bagging  / Bootstrap Aggregation with R" 
 category: Machine Learning
-tags: modeling
+tags: modeling r
 year: 2015
 month: 03
 day: 07

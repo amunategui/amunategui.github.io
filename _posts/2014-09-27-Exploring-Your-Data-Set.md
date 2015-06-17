@@ -2,7 +2,7 @@
 layout: post
 title: Using Correlations To Understand Your Data
 category: Machine Learning
-tags: exploring visualizing
+tags: exploring visualizing r
 year: 2014
 month: 9
 day: 27

@@ -2,7 +2,7 @@
 layout: post
 title: Mapping The United States Census With {ggmap}
 category: Visualization
-tags: visualizing
+tags: visualizing r
 year: 2014
 month: 9
 day: 29

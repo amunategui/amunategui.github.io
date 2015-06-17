@@ -2,7 +2,7 @@
 layout: post
 title: "Quantifying the Spread: Measuring Strength and Direction of Predictors with the Summary Function"
 category: Machine Learning
-tags: modeling
+tags: modeling r
 year: 2014
 month: 12
 day: 27

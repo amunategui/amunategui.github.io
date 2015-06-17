@@ -2,7 +2,7 @@
 layout: post
 title: "Feature Hashing (a.k.a. The Hashing Trick) With R" 
 category: Machine Learning
-tags: modeling
+tags: modeling r
 year: 2015
 month: 02
 day: 21

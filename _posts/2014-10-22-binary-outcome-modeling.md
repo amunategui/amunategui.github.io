@@ -2,7 +2,7 @@
 layout: post
 title: Modeling 101 - Predicting Binary Outcomes with R, gbm, glmnet, and {caret}
 category: Machine Learning
-tags: visualizing modeling
+tags: visualizing modeling r
 year: 2014
 month: 10
 day: 22

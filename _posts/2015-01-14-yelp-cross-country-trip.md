@@ -2,7 +2,7 @@
 layout: post
 title: "Yelp, httr and a Romantic Trip Across the United States, One Florist at a Time"
 category: Machine Learning
-tags: visualizing exploring
+tags: visualizing exploring r
 year: 2015
 month: 01
 day: 14

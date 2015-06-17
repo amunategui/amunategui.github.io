@@ -2,7 +2,7 @@
 layout: post
 title: Let's Get Rich! See how {quantmod} And R Can Enrich Your Knowledge Of The Financial Markets!
 category: Machine Learning
-tags: exploring modeling visualizing
+tags: exploring modeling visualizing r
 year: 2014
 month: 11
 day: 10

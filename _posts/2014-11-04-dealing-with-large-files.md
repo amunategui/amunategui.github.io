@@ -2,7 +2,7 @@
 layout: post
 title: "How To Work With Files Too Large For A Computer’s RAM? Using R To Process Large Data In Chunks"
 category: Machine Learning
-tags: exploring
+tags: exploring r
 year: 2014
 month: 11
 day: 4
