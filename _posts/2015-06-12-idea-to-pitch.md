@@ -7,7 +7,7 @@ year: 2015
 month: 06
 day: 12
 published: true
-summary: "This walk-through is about demonstrating how easy it is to transform an idea into a web application. This is for those who want to quickly pitch their application to the world without getting bogged down by technical details. This is for the weekend warrior. If the application is a success, people with real skills will be brought in to do the job right, in the meantime we want it fast, cheap and easy. We'll use Python, Flask, and EC2 Amazon Web Services."
+summary: "This walk-through is about demonstrating how easy it is to transform an idea into a web application. This is for those who want to quickly pitch their application to the world without getting bogged down by technical details. This is for the weekend warrior. If the application is a success, people with real skills will be brought in to do the job right, in the meantime we want it fast, cheap and easy. We'll use Python, Flask, and EC2 Amazon Web Services to migrate an program into a web application."
 image: idea-to-pitch/flask.png
 ---
 **Resources**
