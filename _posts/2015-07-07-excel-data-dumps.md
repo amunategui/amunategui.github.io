@@ -145,8 +145,16 @@ This isn't really <b>R</b> related but it has come in handy for a recent project
 <BR><BR>
 Let's start a new spreadsheet. Here will add a drop down column for each row, every-other-row background formatting, and a hidden column for our IDs.
 <BR><BR>
-Add the following headers to your sheet: ``ID``, ``First Name``, ``Last Name``, ``Income``,  ``Phone``, ``Called``:
+First, let's format the sheet in a visually appealing way. Highlight an area of 6 columns by 10 or 20 rows. Select ``Tables -> Table Styles`` and choose a color scheme you like.
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/ccase2-style.png" alt="case 2 style" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR>
+Unselect ``Tables -> Table Options -> Header Rows``:
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/case2-remove-headers.png" alt="case 2 headers" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR>
+In its place add the following headers to your sheet: ``ID``, ``First Name``, ``Last Name``, ``Income``,  ``Phone``, ``Called``. Also highlight the first row and format it like we did in ``Case 1``.
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/case2-headers.png" alt="case 2 headers" style='padding:1px; border:1px solid #021a40;'></p>
+
+
 
 
 <BR><BR>
