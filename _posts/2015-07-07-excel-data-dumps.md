@@ -82,6 +82,7 @@ head(income_data)
 ```
 <BR><BR>
 This create a basic income table:
+
 ```r
 ##	  FirstName LastName Income
 ##	1       Joe    Smith 100000
@@ -96,6 +97,7 @@ library(XLConnect)
 wb <- loadWorkbook('sample.xlsx')
 xldf = readWorksheet(wb, sheet = getSheets(wb)[1])
 ```
+
 <BR><BR>
 All we did above is load ``XLConnect``, call our saved ``sample.xlsx`` and loaded the first sheet of the spreadsheet (this implies you can load and write to many sheets on a spreadsheet - cool!). ``xldf`` is an actual data frame object that only contains our headers:
 
@@ -106,6 +108,7 @@ head(xldf)
 ##	[1] First.Name  X.Last.Name Income     
 ##	<0 rows> (or 0-length row.names)
 ```
+
 <BR><BR>
 Don't worry about the weird header format, it won't show on our final output. Here comes the interesting part, we're going to cycle through each cell of interest and update it with our ``income_data``:
 
@@ -118,8 +121,10 @@ for (id in 1:nrow(income_data)) {
 	}
 }
 ```
+
 <BR><BR>
 We can customize the sheet name with ``Salaries``, write the sheet, and finally save it as ``income_data.xlsx``:
+
 
 ```r
 sheet_name <- "Salaries"
@@ -127,6 +132,7 @@ renameSheet(wb, sheet = getSheets(wb)[1], newName = sheet_name)
 writeWorksheet(wb,xldf,sheet=getSheets(wb)[1],startRow=2,header=F)
 saveWorkbook(wb,'income_data.xlsx')
 ```
+
 <BR><BR>
 And this what the final spreadsheet looks like:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/case1-final-sheet.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
@@ -134,7 +140,8 @@ And this what the final spreadsheet looks like:
 
 <BR><BR>
 ***Case 2: Hidden fields and drop down cells***
-This isn't really <b>R</b> related but it has come in handy for a recent project. We created call sheets for operators to use with a name and number per row along with a drop-down list indicating how the call went. We also wanted to have a user id so we could easily tie the person back to our master list and did that through a hidden column. This was so easy to do...
+
+This isn't really <b>R</b> related but it has come in handy for a recent project. We created call sheets for operators to use containing an ID, name and number on each row along with a drop-down list indicating how the call went. We also wanted to have the user ID on the sheet but not visible to the operator. And this is what we came up with...
 <BR><BR>
 Let's start a new spreadsheet. Here will add a drop down column for each row, every-other-row background formatting, and a hidden column for our IDs.
 <BR><BR>
