@@ -53,20 +53,15 @@ On the <b>Mac</b>, in the 'New Formatting Rule' box, select ``Classic``:
 
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/conditional1.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/conditional2.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR>
 
-On <b>Windows</b>, in the 'New Formatting Rule' box, select ``Use a formula to determine which cells to format on Windows``:
-<p style="text-align:center"><img src="../img/posts/excel-data-dumps/windows-formatting-rule.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
+On <b>Windows</b>, in the 'New Formatting Rule' box, select ``Use a formula to determine which cells to format on Windows`` and enter ``$C2>50000``:
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/windows1-formatting-rule.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 
- 
-
-In Windows:
-
-windows-format-rule.png
-
-Finally, make the rule apply to the entire row by adding in the Applies to section Sheet1!$2:$200
-
-manage-rule.png
-
+<BR><BR>
+Finally, make the rule applies to the entire row by adding in the Applies to section ``Sheet1!$2:$200`` along with a format color:
+ <p style="text-align:center"><img src="../img/posts/excel-data-dumps/windows2-formatting-rule.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR>
 Don’t sweat the details as this isn’t a walkthrough about Excel, we’re just setting up our base file.
 
 Save the file as ‘sample.xlsx’ and close the file.
