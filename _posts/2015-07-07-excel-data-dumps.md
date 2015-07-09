@@ -8,7 +8,7 @@ month: 07
 day: 07
 published: true
 summary: "When it comes to exporting data, one has many formats to choose from \. But if you wantyou're looking for something a little more sophisticated than a comma-delimited file but not quite a content-management system or web server, the Excel format can go a long way into making exports more digestible."
-image: excel-data-dumps/RandExcel.png
+image: "excel-data-dumps/RandExcel.png"
 ---
  
 **Resources**
