@@ -37,9 +37,12 @@ Make the top bar frozen. Go to Layout: ``tab —> Window —> Freeze Top Row`` (
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/freeze-top-row.png" alt="free-top-row" style='padding:1px; border:1px solid #021a40;'></p>
 To emphasis the difference between a straight ``.csv`` file, let's bold the entire top row, and change the font and background colors:
-``Home tab --> Font box``. Select a dark background color and light font color.
+``Home tab —> Font`` box. Select a dark background color and light font color. 
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/font.png" alt="free-top-row" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR>
+Finally, add the following headers: ''
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/case1_look.png" alt="headers" style='padding:1px; border:1px solid #021a40;'></p>
 
 Now, let’s add some conditional formatting. Go to Home tab —> Format —> Conditional Formatting and select New Rule:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/free-top-row.png" alt="free-top-row" style='padding:1px; border:1px solid #021a40;'></p>
