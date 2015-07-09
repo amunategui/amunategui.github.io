@@ -44,17 +44,18 @@ To emphasis the difference between a straight ``.csv`` file, let's bold the enti
 Finally, add the following headers, ``First Name``, ``Last Name``, ``Income``:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/case1_look.png" alt="headers" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
-Now, let’s add some conditional formatting. Go to ``Home —> Format —> Conditional Formatting`` and select New Rule:
+Now, let’s add some conditional formatting. Go to ``Home —> Format —> Conditional Formatting`` and select ``New Rule``:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/new-rule.png" alt="new formatting rule" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
+On the <b>Mac</b>, in the 'New Formatting Rule' box, select ``Classic``:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/new-formatting-rule.png" alt="new formatting rule" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
-Select ‘Classic’ and the following options on the Mac, or Use a formula to determine which cells to format on Windows:
+
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/conditional1.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/conditional2.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 
-
-<p style="text-align:center"><img src="../img/posts/excel-data-dumps/conditional1.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
+On <b>Windows</b>, in the 'New Formatting Rule' box, select ``Use a formula to determine which cells to format on Windows``:
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/windows-formatting-rule.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 
  
 
