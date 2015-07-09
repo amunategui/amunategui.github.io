@@ -137,6 +137,9 @@ And this what the final spreadsheet looks like:
 This isn't really <b>R</b> related but it has come in handy for a recent project. We created call sheets for operators to use with a name and number per row along with a drop-down list indicating how the call went. We also wanted to have a user id so we could easily tie the person back to our master list and did that through a hidden column. This was so easy to do...
 <BR><BR>
 Let's start a new spreadsheet. Here will add a drop down column for each row, every-other-row background formatting, and a hidden column for our IDs.
+<BR><BR>
+Add the following headers to your sheet: ``ID``, ``First Name``, ``Last Name``, ``Income``,  ``Phone``, ``Called``:
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/case2-headers.png" alt="case 2 headers" style='padding:1px; border:1px solid #021a40;'></p>
 
 
 <BR><BR>
