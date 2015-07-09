@@ -78,6 +78,7 @@ Let’s create some data:
 income_data <- data.frame('FirstName'=c('Joe','Mike','Liv'), 'LastName'=c('Smith','Steel','Storm'), 'Income'=c(100000,20000,80000))
 income_data$FirstName <- as.character(income_data$FirstName)
 income_data$LastName <- as.character(income_data$LastName)
+head(income_data)
 ```
 <BR><BR>
 This create a basic income table:
@@ -93,15 +94,15 @@ And let's grab our <b>Excel</b> spreadsheet we just created:
 ```r
 library(XLConnect)
 wb <- loadWorkbook('sample.xlsx')
-lst = readWorksheet(wb, sheet = getSheets(wb)[1])
+xldf = readWorksheet(wb, sheet = getSheets(wb)[1])
 ```
 <BR><BR>
-All we did above is load ``XLConnect``, call our saved ``sample.xlsx`` and loaded the first sheet of the spreadsheet (this implies you can load and write to many sheets on a spreadsheet - cool!). ``lst`` is an actual data frame object that only contains our headers:
+All we did above is load ``XLConnect``, call our saved ``sample.xlsx`` and loaded the first sheet of the spreadsheet (this implies you can load and write to many sheets on a spreadsheet - cool!). ``xldf`` is an actual data frame object that only contains our headers:
 
 ```r
-class(lst)
+class(xldf)
 ##	[1] "data.frame"
-head(lst)
+head(xldf)
 ##	[1] First.Name  X.Last.Name Income     
 ##	<0 rows> (or 0-length row.names)
 ```
@@ -111,8 +112,8 @@ Don't worry about the weird header format, it won't show on our final output. He
 ```r
 for (id in 1:nrow(income_data)) {
 	colcount <- 1
-	for (nm in names(lst)[1:3]){
-		lst[id,nm] <- income_data[id,colcount]
+	for (nm in names(xldf)[1:3]){
+		xldf[id,nm] <- income_data[id,colcount]
 		colcount <- colcount + 1
 	}
 }
@@ -123,7 +124,7 @@ We can customize the sheet name with ``Salaries``, write the sheet, and finally 
 ```r
 sheet_name <- "Salaries"
 renameSheet(wb, sheet = getSheets(wb)[1], newName = sheet_name)
-writeWorksheet(wb,lst,sheet=getSheets(wb)[1],startRow=2,header=F)
+writeWorksheet(wb,xldf,sheet=getSheets(wb)[1],startRow=2,header=F)
 saveWorkbook(wb,'income_data.xlsx')
 ```
 <BR><BR>
@@ -135,18 +136,60 @@ And this what the final spreadsheet looks like:
 ***Case 2: Hidden fields and drop down cells***
 This isn't really <b>R</b> related but it has come in handy for a recent project. We created call sheets for operators to use with a name and number per row along with a drop-down list indicating how the call went. We also wanted to have a user id so we could easily tie the person back to our master list and did that through a hidden column. This was so easy to do...
 <BR><BR>
-Let's add phone numbers to our income dataset:
+Let's start a new spreadsheet. Here will add a drop down column for each row, every-other-row background formatting, and a hidden column for our IDs.
+
+
+<BR><BR>
+Let's add IDs and phone numbers to our income data set:
 
 ```r
-income_data <- data.frame('FirstName'=c('Joe','Mike','Liv'), 'LastName'=c('Smith','Steel','Storm'), 'Income'=c(100000,20000,80000), 'PhoneNumber'=c('888-888-1111','888-888-2222','888-888-3333'))
+income_data <- data.frame('ID'=c(1,2,3), 'FirstName'=c('Joe','Mike','Liv'), 'LastName'=c('Smith','Steel','Storm'), 'Income'=c(100000,20000,80000), 'PhoneNumber'=c('888-888-1111','888-888-2222','888-888-3333'))
+head(income_data)
+```
+
+```r
+##	  ID FirstName LastName Income  PhoneNumber
+##	1  1       Joe    Smith 100000 888-888-1111
+##	2  2      Mike    Steel  20000 888-888-2222
+##	3  3       Liv    Storm  80000 888-888-3333
 ```
 
 <BR><BR>        
-<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SMOTE-Oversample-Rare-Events' target='_blank'>also on GitHub</a>)</a>:
+<a id="sourcecode">Full source code</a>:
  
-
 ```r
- 
+# Case 1
+income_data <- data.frame('FirstName'=c('Joe','Mike','Liv'), 'LastName'=c('Smith','Steel','Storm'), 'Income'=c(100000,20000,80000))
+income_data$FirstName <- as.character(income_data$FirstName)
+income_data$LastName <- as.character(income_data$LastName)
+head(income_data)
+
+# load XLConnect and grab a copy of sample.xlsx
+library(XLConnect)
+wb <- loadWorkbook('sample.xlsx')
+xldf = readWorksheet(wb, sheet = getSheets(wb)[1])
+class(xldf)
+head(xldf)
+
+# replace XL cells with new content
+for (id in 1:nrow(income_data)) {
+	colcount <- 1
+	for (nm in names(xldf)[1:3]){
+		xldf[id,nm] <- income_data[id,colcount]
+		colcount <- colcount + 1
+	}
+}
+
+# save XL sheet and file
+sheet_name <- "Salaries"
+renameSheet(wb, sheet = getSheets(wb)[1], newName = sheet_name)
+writeWorksheet(wb,xldf,sheet=getSheets(wb)[1],startRow=2,header=F)
+saveWorkbook(wb,'income_data.xlsx')
+
+# Case 2
+
+
+
 ```
 
  
