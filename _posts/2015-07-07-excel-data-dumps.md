@@ -7,7 +7,7 @@ year: 2015
 month: 07
 day: 09
 published: true
-summary: "When it comes to exporting data, one has many formats to choose from. But if you want you're looking for something more sophisticated than a comma-delimited file but aren't ready for an off-the-shelf content-management system, then Excel may be what you need in presenting your content in a more digestible format."
+summary: "When it comes to exporting data, one has many formats to choose from. But if you're looking for something more sophisticated than a comma-delimited file but aren't ready for an off-the-shelf content-management system, then Excel may be what you need in presenting content in a more digestible format."
 image: "excel-data-dumps/RandExcel.png"
 ---
  
