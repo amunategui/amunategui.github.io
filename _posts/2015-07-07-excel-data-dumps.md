@@ -123,7 +123,7 @@ for (id in 1:nrow(income_data)) {
 ```
 
 <BR><BR>
-We can customize the sheet name with ``Salaries``, write the sheet, and finally save it as ``income_data.xlsx``:
+We can customize the sheet name with ``Salaries``, write the sheet, and finally save it as ``income_data.xlsx`` (note ``startRow=2``):
 
 
 ```r
@@ -148,16 +148,13 @@ Let's start a new spreadsheet. Here will add a drop down column for each row, ev
 First, let's format the sheet in a visually appealing way. Highlight an area of 6 columns by 10 or 20 rows. Select ``Tables -> Table Styles`` and choose a color scheme you like.
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/case2-style.png" alt="case 2 style" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
-Un-select ``Tables -> Table Options -> Header Rows`` :
-<p style="text-align:center"><img src="../img/posts/excel-data-dumps/case2-remove-headers.png" alt="case 2 headers" style='padding:1px; border:1px solid #021a40;'></p>
-<BR><BR>
-In its place add the following headers to your sheet: ``ID``, ``First Name``, ``Last Name``, ``Income``,  ``Phone``, ``Called``. Also highlight the first row and format it like we did in ``Case 1``.
-<p style="text-align:center"><img src="../img/posts/excel-data-dumps/case2-headers.png" alt="case 2 headers" style='padding:1px; border:1px solid #021a40;'></p>
+Swap the generic header text with the following headers: ``ID``, ``First Name``, ``Last Name``, ``Income``,  ``Phone``, ``Called``. Also highlight the first row and format it like we did in ``Case 1``.
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/case2-new-headers.png" alt="case 2 headers" style='padding:1px; border:1px solid #021a40;'></p>
 To hide a row, simply resize it to nothing on the tool bar... that simple. To add a drop down, select the cell you want it in (F2) and navigate to ``Data -> Data Validation -> Data Validation``. In ``Allow:`` select ``List`` and in ``Source`` enter ``Yes, No`` (separate both words with a comma):
-<p style="text-align:center"><img src="../img/posts/excel-data-dumps/case2-drop-down.png" alt="drop-down" style='padding:1px; border:1px solid #021a40;'></p>
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/drop-down-setup.png" alt="drop-down" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
-Copy the F2 cell with our drop down to all other cells in the F or ``Called?`` column. You table should like something like this:
-<p style="text-align:center"><img src="../img/posts/excel-data-dumps/case2-final-look.png" alt="case2" style='padding:1px; border:1px solid #021a40;'></p>
+Copy the F2 cell with our drop down to all other cells in that column. You table should like something like this:
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/drop-down-action.png" alt="case2" style='padding:1px; border:1px solid #021a40;'></p>
 Save your spreadsheet as ``sample2.xlsx`` and close it.
 <BR><BR>
 
@@ -184,7 +181,7 @@ head(income_data)
 ```r
 library(XLConnect)
 wb <- loadWorkbook('sample2.xlsx')
-xldf = readWorksheet(wb, sheet = getSheets(wb)[1])
+xldf = readWorksheet(wb, sheet = getSheets(wb)[1])[1:5]
 for (id in 1:nrow(income_data)) {
 	colcount <- 1
 	for (nm in names(xldf)[1:5]){
@@ -238,6 +235,29 @@ saveWorkbook(wb,'income_data.xlsx')
 
 # Case 2
 
+
+income_data <- data.frame('ID'=c(1,2,3), 'FirstName'=c('Joe','Mike','Liv'), 'LastName'=c('Smith','Steel','Storm'), 'Income'=c(100000,20000,80000), 'PhoneNumber'=c('888-888-1111','888-888-2222','888-888-3333'))
+income_data$FirstName <- as.character(income_data$FirstName)
+income_data$LastName <- as.character(income_data$LastName)
+income_data$PhoneNumber <- as.character(income_data$PhoneNumber)
+head(income_data)
+
+library(XLConnect)
+wb <- loadWorkbook('sample2.xlsx')
+xldf = readWorksheet(wb, sheet = getSheets(wb)[1]) 
+for (id in 1:nrow(income_data)) {
+	colcount <- 1
+	for (nm in names(xldf)[1:5]){
+		xldf[id,nm] <- income_data[id,colcount]
+		colcount <- colcount + 1
+	}
+}
+
+# save XL sheet and file
+sheet_name <- "Salaries"
+renameSheet(wb, sheet = getSheets(wb)[1], newName = sheet_name)
+writeWorksheet(wb,xldf,sheet=getSheets(wb)[1],startRow=2,header=F)
+saveWorkbook(wb,'income_data.xlsx')
 
 
 ```
