@@ -19,20 +19,19 @@ image: "excel-data-dumps/r-plus-excel.png"
 <BR>
 **Packages Used in this Walkthrough**
 <ul>
-        <li type="square"><a href='http://cran.r-project.org/web/packages/XLConnect/index.html' targer='_blank'>{XLConnect}</a>Excel Connector for R</li>
+        <li type="square"><a href='http://cran.r-project.org/web/packages/XLConnect/index.html' targer='_blank'>{XLConnect}</a> Excel Connector for R</li>
 </ul>
 <BR>
 <BR>
-When it comes to sharing data, results, probabilities, one has many choices in terms of delivering tool. On one end of the spectrum you have raw text files, and on the other, you have reporting engines and content management systems.  
+When it comes to sharing data, results, probabilities, one has many choices in terms of deliverable media. On one end of the spectrum you have raw text files, and on the other, numerous reporting engines,  content management systems and web solutions. 
 
 As a data scientist, I get away with working and sharing comma delimited files (.csv) everyday, but there are times when customers need more. Excel is a great tool as everybody in analytics is familiar with it and it can do some pretty cool things inexpensively. 
 
-Instead of saving your data as a ``.csv`` or ``.tab`` file, you can leverage the ``.xlsx`` (native Excel format) just as easily and make a huge leap towards fantastic looking reports. 
-
-Here I’ll show how to get a good looking data sheet exported into Excel.
+Instead of saving your data as a ``.csv`` or ``.tab`` file, you can leverage the ``.xlsx`` (native Excel format) just as easily and make a huge leap towards better looking reports. 
 
 ***Case 1: Conditional formatting***
-The key here is to prepare the Excel file in advance and use it as a base from R. So go to your Excel application and open a new document. Make the top bar frozen. Go to Layout tab —> Window —> Freeze Top Row (may be different depending on your application version and operating system):
+
+The key here is to prepare an Excel file in advance and use it as a base form to be called, duplicated, and populated from <b>R</b>. So go to your Excel application and open a new document. Make the top bar frozen. Go to Layout tab —> Window —> Freeze Top Row (may be different depending on your application version and operating system):
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/freeze-top-row.png" alt="free-top-row" style='padding:1px; border:1px solid #021a40;'></p>
 To emphasis the difference between a straight ``.csv`` write, in the Home tab, and Font box, bold all the top row, select a dark background color and white font.
@@ -61,11 +60,12 @@ Save the file as ‘sample.xlsx’ and close the file.
 **Jump into R**
 
 Let’s create some data:
+
 ```r
 income_data <- data.frame('FirstName'=c('Joe','Mike','Liv'), 'LastName'=c('Smith','Steel','Storm'), 'Income'=c(100000,20000,80000))
 ```
 
-Here is the Excel part:
+Here is the <b>Excel</b> part:
 
 ```r
 library(XLConnect)
