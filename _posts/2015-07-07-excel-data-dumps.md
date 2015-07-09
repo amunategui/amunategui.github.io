@@ -45,6 +45,8 @@ Finally, add the following headers, ``First Name``, ``Last Name``, ``Income``:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/case1_look.png" alt="headers" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
 Now, let’s add some conditional formatting. Go to ``Home —> Format —> Conditional Formatting`` and select New Rule:
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/new-rule.png" alt="new formatting rule" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR>
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/new-formatting-rule.png" alt="new formatting rule" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
 Select ‘Classic’ and the following options on the Mac, or Use a formula to determine which cells to format on Windows:
