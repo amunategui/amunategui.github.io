@@ -150,6 +150,7 @@ First, let's format the sheet in a visually appealing way. Highlight an area of 
 <BR><BR>
 Swap the generic header text with the following headers: ``ID``, ``First Name``, ``Last Name``, ``Income``,  ``Phone``, ``Called``. Also highlight the first row and format it like we did in ``Case 1``.
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/case2-new-headers.png" alt="case 2 headers" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR>
 To hide a row, simply resize it to nothing on the tool bar... that simple. To add a drop down, select the cell you want it in (F2) and navigate to ``Data -> Data Validation -> Data Validation``. In ``Allow:`` select ``List`` and in ``Source`` enter ``Yes, No`` (separate both words with a comma):
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/drop-down-setup.png" alt="drop-down" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
@@ -202,9 +203,10 @@ renameSheet(wb, sheet = getSheets(wb)[1], newName = sheet_name)
 writeWorksheet(wb,xldf,sheet=getSheets(wb)[1],startRow=2,header=F)
 saveWorkbook(wb,'income_data2.xlsx')
 ```
-<p style="text-align:center"><img src="../img/posts/excel-data-dumps/final-call-sheet.png" alt="final look" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
-
+Here is a look at our final spreadsheet. It is ready do be distributed with the drop downs all functional and the ID column hidden:
+<BR><BR>
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/final-call-sheet.png" alt="final look" style='padding:1px; border:1px solid #021a40;'></p>
 
 <BR><BR>        
 <a id="sourcecode">Full source code</a>:
@@ -239,8 +241,6 @@ writeWorksheet(wb,xldf,sheet=getSheets(wb)[1],startRow=2,header=F)
 saveWorkbook(wb,'income_data.xlsx')
 
 # Case 2
-
-
 income_data <- data.frame('ID'=c(1,2,3), 'FirstName'=c('Joe','Mike','Liv'), 'LastName'=c('Smith','Steel','Storm'), 'Income'=c(100000,20000,80000), 'PhoneNumber'=c('888-888-1111','888-888-2222','888-888-3333'))
 income_data$FirstName <- as.character(income_data$FirstName)
 income_data$LastName <- as.character(income_data$LastName)
