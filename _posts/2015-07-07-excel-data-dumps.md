@@ -13,7 +13,7 @@ image: "excel-data-dumps/r-plus-excel.png"
  
 **Resources**
 <ul>
-<li type="square"><a href="" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Source Code</a></li>
 </ul>
 <BR>
@@ -119,23 +119,20 @@ writeWorksheet(wb,lst,sheet=getSheets(wb)[1],startRow=2,header=F)
 saveWorkbook(wb,'income_data.xlsx')
 ```
 <BR><BR>
-And this what the final spread sheet should look like:
+And this what the final spreadsheet looks like:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/case1-final-sheet.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
-
-
-
+ 
 
 <BR><BR>
 ***Case 2: Hidden fields and drop down cells***
-
+This isn't really <b>R</b> related but it has come in handy for a recent project. We created call sheets for operators to use with a name and number per row along with a drop-down list indicating how the call went. We also wanted to have a user id so we could easily tie the person back to our master list and did that through a hidden column. This was so easy to do...
 
 
 
 
 <BR><BR>        
 <a id="sourcecode">Full source code (<a href='https://github.com/amunategui/SMOTE-Oversample-Rare-Events' target='_blank'>also on GitHub</a>)</a>:
-
-
+ 
 
 ```r
  
