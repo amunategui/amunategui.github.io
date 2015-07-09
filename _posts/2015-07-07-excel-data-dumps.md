@@ -31,7 +31,9 @@ Instead of saving your data as a ``.csv`` or ``.tab`` file, you can leverage the
 
 ***Case 1: Conditional formatting***
 
-The key here is to prepare an Excel file in advance and use it as a base form to be called, duplicated, and populated from <b>R</b>. So go to your Excel application and open a new document. Make the top bar frozen. Go to Layout tab —> Window —> Freeze Top Row (may be different depending on your application version and operating system):
+The key here is to prepare an Excel file in advance and use it as a base form to be called, duplicated, and populated from <b>R</b>. So go to your Excel application and open a new document. 
+<BR>
+Make the top bar frozen. Go to Layout ``tab —> Window —> Freeze Top Row`` (may be different depending on your application version and operating system):
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/freeze-top-row.png" alt="free-top-row" style='padding:1px; border:1px solid #021a40;'></p>
 To emphasis the difference between a straight ``.csv`` write, in the Home tab, and Font box, bold all the top row, select a dark background color and white font.
