@@ -155,6 +155,7 @@ To hide a row, simply resize it to nothing on the tool bar... that simple. To ad
 <BR><BR>
 Copy the F2 cell with our drop down to all other cells in that column. You table should like something like this:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/drop-down-action.png" alt="case2" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR>
 Save your spreadsheet as ``sample2.xlsx`` and close it.
 <BR><BR>
 
@@ -184,7 +185,8 @@ wb <- loadWorkbook('sample2.xlsx')
 xldf = readWorksheet(wb, sheet = getSheets(wb)[1])[1:5]
 for (id in 1:nrow(income_data)) {
 	colcount <- 1
-	for (nm in names(xldf)[1:5]){
+	for (nm in names(xldf)[1:5]) # only headers 1 through 5, 6 is the Called? field
+	{
 		xldf[id,nm] <- income_data[id,colcount]
 		colcount <- colcount + 1
 	}
@@ -200,6 +202,9 @@ renameSheet(wb, sheet = getSheets(wb)[1], newName = sheet_name)
 writeWorksheet(wb,xldf,sheet=getSheets(wb)[1],startRow=2,header=F)
 saveWorkbook(wb,'income_data2.xlsx')
 ```
+<p style="text-align:center"><img src="../img/posts/excel-data-dumps/final-call-sheet.png" alt="final look" style='padding:1px; border:1px solid #021a40;'></p>
+<BR><BR>
+
 
 <BR><BR>        
 <a id="sourcecode">Full source code</a>:
