@@ -5,9 +5,9 @@ category: Machine Learning
 tags: exploring r
 year: 2015
 month: 07
-day: 07
+day: 09
 published: true
-summary: "When it comes to exporting data, one has many formats to choose from \. But if you wantyou're looking for something a little more sophisticated than a comma-delimited file but not quite a content-management system or web server, the Excel format can go a long way into making exports more digestible."
+summary: "When it comes to exporting data, one has many formats to choose from. But if you want you're looking for something more sophisticated than a comma-delimited file but aren't ready for an off-the-shelf content-management system, then Excel may be what you need in presenting your content in a more digestible format."
 image: "excel-data-dumps/RandExcel.png"
 ---
  
