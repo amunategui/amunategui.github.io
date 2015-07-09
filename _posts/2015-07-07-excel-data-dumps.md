@@ -28,7 +28,8 @@ When it comes to sharing data, results, probabilities, one has many choices in t
 As a data scientist, I get away with working and sharing comma delimited files (.csv) everyday, but there are times when customers need more. Excel is a great tool as everybody in analytics is familiar with it and it can do some pretty cool things inexpensively. 
 
 Instead of saving your data as a ``.csv`` or ``.tab`` file, you can leverage the ``.xlsx`` (native Excel format) just as easily and make a huge leap towards better looking reports. 
-
+<BR>
+<BR>
 ***Case 1: Conditional formatting***
 
 The key here is to prepare an Excel file in advance and use it as a base form to be called, duplicated, and populated from <b>R</b>. So go to your Excel application and open a new document. 
@@ -36,6 +37,8 @@ The key here is to prepare an Excel file in advance and use it as a base form to
 Make the top bar frozen. Go to Layout: ``tab —> Window —> Freeze Top Row`` (may be different depending on your application version and operating system):
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/freeze-top-row.png" alt="free-top-row" style='padding:1px; border:1px solid #021a40;'></p>
+<BR>
+<BR>
 To emphasis the difference between a straight ``.csv`` file, let's bold the entire top row, and change the font and background colors:
 ``Home tab —> Font`` box. Select a dark background color and light font color. 
 <BR><BR>
@@ -50,8 +53,9 @@ Now, let’s add some conditional formatting. Go to ``Home —> Format —> Cond
 On the <b>Mac</b>, in the 'New Formatting Rule' box, select ``Classic``:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/new-formatting-rule.png" alt="new formatting rule" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
-
+Make it look like below with the following formula ``$C2>50000``, this will trigger anytime ``C`` column has a higher value than 50000:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/conditional1.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
+After you ``OK``, fill in the ``Applies to`` section with ``Sheet1!$2:$200``, this will apply the background color on rows 2-200 when the condition is met:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/conditional2.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
 
@@ -59,14 +63,14 @@ On <b>Windows</b>, in the 'New Formatting Rule' box, select ``Use a formula to d
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/windows1-formatting-rule.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 
 <BR><BR>
-Finally, make the rule applies to the entire row by adding in the Applies to section ``Sheet1!$2:$200`` along with a format color:
+Finally, make the rule applies to the entire row by adding in the ``Applies to`` section ``=$2:$200``, along with a color selection in the ``Format`` section:
  <p style="text-align:center"><img src="../img/posts/excel-data-dumps/windows2-formatting-rule.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
 Don’t sweat the details as this isn’t a walkthrough about Excel, we’re just setting up our base file.
-
-Save the file as ‘sample.xlsx’ and close the file.
+<BR><BR>
+Save the file as ``sample.xlsx`` and close the file.
  
-**Jump into R**
+**Jumpint into R**
 
 Let’s create some data:
 
@@ -74,7 +78,7 @@ Let’s create some data:
 income_data <- data.frame('FirstName'=c('Joe','Mike','Liv'), 'LastName'=c('Smith','Steel','Storm'), 'Income'=c(100000,20000,80000))
 ```
 
-Here is the <b>Excel</b> part:
+And let's grab our <b>Excel</b> spreadsheet we just created:
 
 ```r
 library(XLConnect)
@@ -93,6 +97,8 @@ renameSheet(wb, sheet = getSheets(wb)[1], newName = sheet_name)
 writeWorksheet(wb,lst,sheet=getSheets(wb)[1],startRow=2,header=F)
 saveWorkbook(wb,'income_data.xlsx')
 ```
+
+<BR><BR>
 ***Case 2: Hidden fields and drop down cells***
 
 
