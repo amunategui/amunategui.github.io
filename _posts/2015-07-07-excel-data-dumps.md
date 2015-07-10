@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "R and Excel: Making Your Data Dumps Pretty with library XLConnect" 
+title: "R and Excel: Making Your Data Dumps Pretty with XLConnect" 
 category: Machine Learning
 tags: exploring r
 year: 2015
