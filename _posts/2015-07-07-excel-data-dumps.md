@@ -63,7 +63,7 @@ On <b>Windows</b>, in the ``Home -> Conditional Formatting -> New Rule``, select
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/windows1-formatting-rule.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 
 <BR><BR>
-Finally, make the rule apply to the entire row by adding in the ``Applies to`` section ``=$2:$200``, along with a color selection in the ``Format`` section:
+Finally, make the rule apply to the entire row by adding in the ``Applies to`` section ``=$2:$200``, along with a color selection in the ``Format`` box:
  <p style="text-align:center"><img src="../img/posts/excel-data-dumps/windows2-formatting-rule.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
 Don’t sweat the details as this isn’t a walkthrough about Excel, we’re just setting up our base file.
@@ -141,7 +141,7 @@ And this what the final spreadsheet looks like:
 <BR><BR>
 ***Case 2: Hidden fields and drop down cells***
 
-This isn't really <b>R</b> related but it has come in handy for a recent project. We created call sheets for operators to use containing an ID, name and number on each row along with a drop-down list indicating how the call went. We also wanted to have the user ID on the sheet but not visible to the operator. And this is what we came up with...
+This isn't really <b>R</b> related but it has come in handy for a recent project. We created call sheets for operators to use containing an ID, name and phone number on each row along with a drop-down list indicating how the call went. We also wanted to have the user ID on the sheet but not visible to the operator. And this is what we came up with...
 <BR><BR>
 Let's start a new spreadsheet. Here will add a drop down column for each row, every-other-row background formatting, and a hidden column for our IDs.
 <BR><BR>
