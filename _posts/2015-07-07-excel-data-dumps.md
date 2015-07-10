@@ -55,7 +55,7 @@ On the <b>Mac</b>, in the 'New Formatting Rule' box, select ``Classic``:
 <BR><BR>
 Make it look like below with the following formula ``$C2>50000``, this will trigger anytime ``C`` column has a higher value than 50000:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/conditional1.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
-After you ``OK``, fill in the ``Applies to`` section with ``Sheet1!$2:$200``, this will apply the background color on rows 2-200 when the condition is met:
+After you ``OK``, fill in the ``Applies to`` section with ``Sheet1!$2:$200``, this will apply the pink background color on rows 2-200 when the condition is met:
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/conditional2.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
 
@@ -63,7 +63,7 @@ On <b>Windows</b>, in the ``Home -> Conditional Formatting -> New Rule``, select
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/windows1-formatting-rule.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 
 <BR><BR>
-Finally, make the rule applies to the entire row by adding in the ``Applies to`` section ``=$2:$200``, along with a color selection in the ``Format`` section:
+Finally, make the rule apply to the entire row by adding in the ``Applies to`` section ``=$2:$200``, along with a color selection in the ``Format`` section:
  <p style="text-align:center"><img src="../img/posts/excel-data-dumps/windows2-formatting-rule.png" alt="conditional menu" style='padding:1px; border:1px solid #021a40;'></p>
 <BR><BR>
 Don’t sweat the details as this isn’t a walkthrough about Excel, we’re just setting up our base file.
