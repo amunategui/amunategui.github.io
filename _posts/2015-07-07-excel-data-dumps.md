@@ -34,12 +34,12 @@ Instead of saving your data as a ``.csv`` or ``.tab`` file, you can leverage the
 
 The key is to prepare an Excel file in advance and use it as a base form to be called, duplicated, and populated from within <b>R</b>. So fire up your <b>Excel</b> application and open a new document. 
 <BR><BR>
-Make the top bar frozen. Go to: ``Layout —> Window —> Freeze Top Row`` on the <b>Mac</b> and ``View -> Freeze Panes -> Freeze Top Row`` on <b>Windows</b> (may be different depending on your application version and operating system):
+Make the top row frozen. Go to: ``Layout —> Window —> Freeze Top Row`` on the <b>Mac</b> and ``View -> Freeze Panes -> Freeze Top Row`` on <b>Windows</b> (and this may still be different depending on your application version and operating system):
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/freeze-top-row.png" alt="free-top-row" style='padding:1px; border:1px solid #021a40;'></p>
 <BR>
 <BR>
-To emphasis the difference between a straight ``.csv`` file, let's bold the entire top row, and change the font and background colors:
+To emphasize the difference between a straight ``.csv`` file, let's bold the entire top row, and change the font and background colors:
 ``Home —> Font`` box. Select a dark background color and light font color. 
 <BR><BR>
 <p style="text-align:center"><img src="../img/posts/excel-data-dumps/font.png" alt="free-top-row" style='padding:1px; border:1px solid #021a40;'></p>
