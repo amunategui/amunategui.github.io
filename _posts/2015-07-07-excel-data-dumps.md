@@ -10,7 +10,9 @@ published: true
 summary: "When it comes to exporting data, one has many formats to choose from. But if you're looking for something more sophisticated than a comma-delimited file but aren't ready for an off-the-shelf content-management system, then Excel may be what you need in presenting content in a more digestible format."
 image: "excel-data-dumps/r-and-excel.png"
 ---
- 
+ ![plot of pubmed logo](../img/posts/excel-data-dumps/r-and-excel.png) 
+<BR><BR>
+
 **Resources**
 <ul>
 <li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
