@@ -275,6 +275,7 @@ Save and exit (ctrl-X). Add our new site and restart apache:
 
 ```r
 
+sudo a2enmod wsgi
 sudo apachectl restart
 sudo a2ensite PlagiarismDefenderApp
 
