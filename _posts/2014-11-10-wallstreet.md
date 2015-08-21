@@ -10,12 +10,12 @@ published: true
 summary: See how easy it is display great looking current stock charts in 2 lines of code and then stock market data and use it all to build a complex market model.
 image: wallstreet/unnamed-chunk-11.png
 ---
-**Resources**
+
 <BR>
 Check out my new class on <b>quantatative and technical analysis with quantmod and financial data</b>:<BR>
 <a href='https://www.udemy.com/practical-data-science-analyzing-stock-market-data-with-r/?couponCode=1008' target='_blank'><B>$10 coupon to my new Udemy course - Practical Data Science: Analyzing Stock Market Data with R</B></a> 
 <BR><BR>
-
+**Resources**
 <ul>
 <li type="square"><a href="https://www.youtube.com/watch?v=lDgvaJFpybU&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
