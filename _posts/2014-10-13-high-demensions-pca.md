@@ -46,7 +46,7 @@ You’ll find reams of explanations on the web, but, in a nutshell, **PCA** look
 <BR><BR>
 **Let's code!**
 
-To get started, we need a data set with a lot of columns. We're going to borrow a data set from <a href='http://www.nipsfsc.ecs.soton.ac.uk/' target='_blank'>NIPS (Neural Information Processing Systems)</a> from a completed, 2013 competition. The meaning of the data is immaterial for our needs. We download <a href='https://archive.ics.uci.edu/ml/datasets/Gisette' target='_blank'>UC Irvine Machine Learning Repository</a> data sets (**warning:** this is a large file):
+To get started, we need a data set with a lot of columns. We're going to borrow a data set from <a href='http://www.nipsfsc.ecs.soton.ac.uk/' target='_blank'>NIPS (Neural Information Processing Systems)</a> from a completed, 2013 competition. The meaning of the data is immaterial for our needs. Let's download our data from the <a href='https://archive.ics.uci.edu/ml/datasets/Gisette' target='_blank'>UC Irvine Machine Learning Repository</a> (**warning:** this is a large file):
 
 
 ```r
