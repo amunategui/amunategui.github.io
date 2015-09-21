@@ -47,6 +47,7 @@ OK, so I have a Python project that I want to push out to the web. This app take
 It surrounds each sentence with quotes to <b>only</b> find exact matches. If a match is found, then that sentence is deemed plagiarized and the counter is incremented. It does so for all sentences and returns the mean counter value as a plagiarism score.
 
 ```r
+from __future__ import division
 # sudo apt-get install python-lxml
 from lxml import html
 import requests, time
@@ -353,6 +354,7 @@ sudo nano /var/www/FlaskApps/PlagiarismDefenderApp/home.py
 ```
 
 ```r
+from __future__ import division
 from flask import Flask, render_template, request, url_for;
 import urllib2;
 # sudo apt-get install python3-lxml
