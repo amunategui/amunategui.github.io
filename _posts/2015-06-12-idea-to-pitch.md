@@ -354,7 +354,6 @@ sudo nano /var/www/FlaskApps/PlagiarismDefenderApp/home.py
 ```
 
 ```r
-from __future__ import division
 from flask import Flask, render_template, request, url_for;
 import urllib2;
 # sudo apt-get install python3-lxml
