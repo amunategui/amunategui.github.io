@@ -48,8 +48,6 @@ It surrounds each sentence with quotes to <b>only</b> find exact matches. If a m
 
 ```r
 from __future__ import division
-# sudo apt-get install python-lxml
-from lxml import html
 import requests, time
 # sudo pip install -U nltk
 from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters 
@@ -287,7 +285,7 @@ sudo /etc/init.d/apache2 reload
 
 ```
 
-Create a WSGI file to tell Apache how to run Flask - it’s the link and entry point for our web application:
+Create a Web Server Gateway Interface (WSGI) file to tell Apache how to run Flask - it’s the link and entry point for our web application:
 
 ```r
 sudo nano /var/www/FlaskApps/FlaskApps.wsgi
