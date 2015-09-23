@@ -280,7 +280,6 @@ sudo a2ensite PlagiarismDefenderApp
 
 # that's a lot of reloading but it does the trick
 service apache2 reload
-/etc/init.d/apache2 reload
 sudo /etc/init.d/apache2 reload
 
 ```
