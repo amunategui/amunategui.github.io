@@ -322,6 +322,9 @@ NOTE: If you have any errors, check the error log (scroll to the bottom of the l
 ```r
 sudo nano /var/log/apache2/error.log
 ```
+
+NOTE 2: For more details on setting Appache/WSGI/Flask see: <a href='http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/' target='_blank'>mod_wsgi (Apache)</a>
+
 <BR><BR>
 <h2><a id="running-plagiarism-defender">Plagiarism Defender on the Web!</a></h2>
 
