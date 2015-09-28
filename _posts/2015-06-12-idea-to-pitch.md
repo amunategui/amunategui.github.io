@@ -13,7 +13,7 @@ image: idea-to-pitch/flask.png
 **Resources**
 <ul>
 <li type="square"><a href="https://www.youtube.com/watch?v=3HuYr6G2Z28&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target='_blank'>YouTube Companion Video</a></li>
-<li type="square"><a href="http://morninganalytics.com/plagiarism-defender.html" target='_blank'>Live Example of Plagiarism Defender</a></li>
+
 </ul>
 <BR>
 
