@@ -2,7 +2,7 @@
 layout: post
 title: "Going from an Idea to a Pitch: Hosting your Python Application using Flask and Amazon Web Services (AWS)"
 category: Machine Learning
-tags: python
+tags: python ec2 aws
 year: 2015
 month: 06
 day: 12
