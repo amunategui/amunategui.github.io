@@ -309,7 +309,7 @@ bst <- xgboost(data = as.matrix(train[,predictorNames]),
                subsample = 8.6,
                objective="binary:logistic")
  
-predictions <- predict(bst, as.matrix(test[,predictorNames]), outputmargin=TRUE)
+predictions <- predict(bst, as.matrix(test[,predictorNames]), missing = NaN, outputmargin=TRUE)
  
 library(pROC)
 auc <- roc(test$outcome, predictions)
@@ -442,7 +442,7 @@ bst <- xgboost(data = as.matrix(train[,predictorNames]),
                subsample = 8.6,
                objective="binary:logistic")
  
-predictions <- predict(bst, as.matrix(test[,predictorNames]), outputmargin=TRUE)
+predictions <- predict(bst, as.matrix(test[,predictorNames]), missing = NaN, outputmargin=TRUE)
  
 library(pROC)
 auc <- roc(test$outcome, predictions)
