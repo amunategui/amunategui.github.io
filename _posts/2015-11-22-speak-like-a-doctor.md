@@ -7,7 +7,7 @@ year: 2015
 month: 11
 day: 22
 published: true
-summary: "Using natural language processing (NLP), a medical corpus, and a Shiny application, we use n-grams to predict what a doctor will say next."
+summary: "Using natural language processing (NLP), a medical corpus, and a Shiny application, we predict what a doctor will say next."
 image: speak-like-a-doctor/binary_doctor.png
 ---
 <p style="text-align:center">
