@@ -12,7 +12,7 @@ image: speak-like-a-doctor/binary-doctor.png
 ---
 
 <p style="text-align:center">
-<img src="../img/posts/speak-like-a-doctor/binary-doctor.png" alt="Binary Doctor" style='padding:0px; border:0px solid #021a40;'></p>
+<img src="../img/posts/speak-like-a-doctor/predictor.png" alt="Binary Doctor" style='padding:0px; border:0px solid #021a40;'></p>
 
 <BR>
 **Resources**
