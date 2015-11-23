@@ -391,8 +391,8 @@ Get_PubMed_Data <- function(topic, start_date, end_date, return_count) {
         return (pubmed_data)
 }
 
-# collect 3000 abstracts published between 2013 and 2015 on the topic of cardiology
-medical_corpus <- GetPubMedData('cardiology', 2013, 2015, 3000)
+# collect 1500 abstracts published between 2013 and 2015 on the topic of cardiology
+medical_corpus <- GetPubMedData('cardiology', 2013, 2015, 1500)
   
 Text_To_Clean_Sentences <- function(text_blob) {
         # swap all sentence ends with code 'ootoo'
