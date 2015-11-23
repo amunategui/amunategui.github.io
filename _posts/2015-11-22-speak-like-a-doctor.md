@@ -7,7 +7,7 @@ year: 2015
 month: 11
 day: 22
 published: true
-summary: "Using natural language processing (NLP), a medical corpus, and a Shiny application, we build an application to predict what a doctor will say next."
+summary: "Using natural language processing (NLP), a medical corpus, and a Shiny application, we build an interactive tool to predict what a doctor will say next."
 image: speak-like-a-doctor/binary-doctor.png
 ---
 
@@ -365,8 +365,8 @@ runApp("/shiny-example", display.mode = "showcase")
 
 To see a screenshot example of our Shiny application in action, scroll back to the top of this walk-through.
         
-
-
+<BR><BR>        
+I would like to thank Lucas A. for the artwork - thanks pal!
 <BR><BR>        
 <a id="sourcecode">Full source code</a>:
 
