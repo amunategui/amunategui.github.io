@@ -8,10 +8,11 @@ month: 11
 day: 22
 published: true
 summary: "Using natural language processing (NLP), a medical corpus, and a Shiny application, we predict what a doctor will say next."
-image: speak-like-a-doctor/binary_doctor.png
+image: speak-like-a-doctor/binary-doctor.png
 ---
+
 <p style="text-align:center">
-<img src="../img/posts/speak-like-a-doctor/binary_doctor.png" alt="Binary Doctor" style='padding:0px; border:0px solid #021a40;'></p>
+<img src="../img/posts/speak-like-a-doctor/binary-doctor.png" alt="Binary Doctor" style='padding:0px; border:0px solid #021a40;'></p>
 
 <BR>
 **Resources**
