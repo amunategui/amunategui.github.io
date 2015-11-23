@@ -7,7 +7,7 @@ year: 2015
 month: 11
 day: 22
 published: true
-summary: "Using natural language processing (NLP), a medical corpus, and a Shiny application, we predict what a doctor will say next."
+summary: "Using natural language processing (NLP), a medical corpus, and a Shiny application, we build an application to predict what a doctor will say next."
 image: speak-like-a-doctor/binary-doctor.png
 ---
 
@@ -66,7 +66,7 @@ Get_PubMed_Data <- function(topic, start_date, end_date, return_count) {
 ```
 <BR>
 
-Using the above function, we'll request **3000** medical abstracts from the 2013 to 2015 on the subject of **cardiology**. This will endow us with highly specialized medical lingo in the form of thousands of sentences on the subject of cardiology (you can switch the topic to other subjects, even use a different non-medical corpus): 
+Using the above function, we'll request **1500** medical abstracts from the 2013 to 2015 on the subject of **cardiology**. This will endow us with highly specialized medical lingo in the form of thousands of sentences on the subject of cardiology (you can switch the topic to other subjects, even use a different non-medical corpus): 
 
 
 ```r
@@ -82,7 +82,7 @@ dim(medical_corpus)
 <BR>
 **N-grams**
 
-``N-grams`` are text patterns of ``n`` length pulled out of a corpus. Let's look at an example. Imagine the following sentence:
+``N-grams`` are text patterns of ``n`` length that we pull out of a corpus. Let's look at an example. Imagine the following sentence:
 
 <blockquote>This is my brother</blockquote>
 
@@ -93,9 +93,9 @@ An ``n-gram`` of size ``2`` of the above sentence would comprise every word comb
 - my brother
 <BR><BR>
 
-These ``n-grams`` will help us anticipate the best next word in a sentence. Imagine that our partial word is ``my``, then, according to the above n-gram, the best next word is ``brother``. Her we won't limit ourselves with n-grams of size 2, but will also use n-grams of size 3,4,5,6,7. The larger the n-gram with matching contiguous words the higher the probability that we know the next word.
+These ``n-grams`` will help us anticipate the best next word in a sentence. Imagine that our partial word is ``my``, then, according to the above n-gram, the best next word is ``brother``. Here we won't limit ourselves with n-grams of size 2, but will also use n-grams of size 3,4,5,6,7. The larger the n-gram with matching contiguous words the higher the probability that we know the next word.
 
-First, as with any ``NLP`` project, we need to clean up our corpus. There are many different ways to proceed but here we will only use alphabetic characters. So we need to remove anything that isn't one of the 26 words of the alphabet but not before we mark common sentence endings. We replace the following characters ``!``, ``?``, ``.``, ``;`` with an alphabet-based code: ``ootoo``. Then we clean out all punctuation, numbers, special characters, and force everything to lower case using the following function:
+First, as with any ``NLP`` project, we need to clean up our corpus. There are many different ways to proceed but here we will only use alphabetic characters. So we need to remove anything that isn't one of the 26 words of the alphabet but not before we mark common sentence endings. We replace the following characters ``!``, ``?``, ``.``, ``;`` with an alphabet-based code: ``ootoo``. Then we clean out all punctuation, numbers, special characters, and force everything to lower case using the below function. The last set of commands split each sentence using the ``ootoo`` code:
 
 
 ```r
@@ -257,7 +257,7 @@ print(best_matched_sentence)
 ```
 <BR>
         
-This shows the longest match for our sentence. Now we need to extract the next word after our sentence, in this case it is the word **treated**
+This shows the longest match for our sentence. Now we need to extract the next word after our sentence, in this case it is the word **treated**:
 
 
 ```r
@@ -277,9 +277,9 @@ print(best_match)
 <BR><BR>
 ***Building a Shiny Application***
 
-Shiny Application is a web application framework for R. This allows you to pair your R code with a web interface for real-time interaction. This is a perfect tool for our needs. We'll create a **text box** with a **submit button** so we can build our sentence without having to run any R code manually (if you want to learn more about this great tool, here are two short tutorials that I used here: <a href='http://rstudio.github.io/shiny/tutorial/#hello-shiny' target='_blank'>hello-shiny</a> and <a href='http://shiny.rstudio.com/gallery/text-input.html' target='_blank'>text-input</a>)
+Shiny offers a web application framework for R. This allows you to pair your R code with a web interface for real-time interaction. This is a perfect tool for our needs. We'll create a **text box** with a **submit button** so we can build our sentence without having to run any R code manually (if you want to learn more about this great tool, here are two short tutorials that I used here: <a href='http://rstudio.github.io/shiny/tutorial/#hello-shiny' target='_blank'>hello-shiny</a> and <a href='http://shiny.rstudio.com/gallery/text-input.html' target='_blank'>text-input</a>)
 
-Without going into too much details about Shiny, we need to create two R files: ``ui.r`` and ``server.r``. The **UI** controls the front end like an HTML page would and the **server** gets requests and generates responses. In our case, the UI layer is very light so the code is light. On the other had, the server code is more invovled as it contains all the code we just covered above.
+Without going into too much details about Shiny, we need to create two R files: ``ui.r`` and ``server.r``. The **UI** controls the front end like an HTML page would and the **server** gets requests and generates responses. In our case, the UI layer is very light so the code is light. On the other hand, the server code is more invovled as it contains all the code we just covered above.
 
 Here are the two snippets:
         
@@ -363,7 +363,7 @@ To run the Shiny application, simply enter the following line in the R command w
 runApp("/shiny-example", display.mode = "showcase")
 ```
 
-This is a screenshot of the application in action:
+To see a screenshot example of our Shiny application in action, scroll back to the top of this walk-through.
         
 
 
