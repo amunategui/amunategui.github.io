@@ -316,7 +316,7 @@ shinyServer(function(input, output) {
         
         # Return the requested dataset
         datasetInput <- reactive({
-                find_next_word(input$current_sentence)
+                find_next_word(tolower(input$current_sentence))
         })
         
         # You can access the value of the widget with input$text, e.g.
