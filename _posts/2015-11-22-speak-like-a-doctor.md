@@ -18,7 +18,7 @@ image: speak-like-a-doctor/binary-doctor.png
 **Resources**
 
 <ul>
-<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=0le0ijNVP5M&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
         
