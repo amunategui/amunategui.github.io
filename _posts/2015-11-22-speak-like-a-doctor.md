@@ -110,7 +110,7 @@ Text_To_Clean_Sentences <- function(text_blob) {
         text_blob <- tolower(text_blob)
         
         # remove any small words {size} or {min,max}
-        text_blob <- gsub(pattern="\\W*\\b\\w{1}\\b", x=text_blob, replacement=' ')
+        text_blob <- gsub(pattern="\\W*\\b\\w{1,2}\\b", x=text_blob, replacement=' ')
         
         # remove contiguous spaces
         text_blob <- gsub(pattern="\\s+", x=text_blob, replacement=' ')
@@ -405,7 +405,7 @@ Text_To_Clean_Sentences <- function(text_blob) {
         text_blob <- tolower(text_blob)
         
         # remove any small words {size} or {min,max}
-        text_blob <- gsub(pattern="\\W*\\b\\w{1}\\b", x=text_blob, replacement=' ')
+        text_blob <- gsub(pattern="\\W*\\b\\w{1,2}\\b", x=text_blob, replacement=' ')
         
         # remove contiguous spaces
         text_blob <- gsub(pattern="\\s+", x=text_blob, replacement=' ')
