@@ -93,7 +93,7 @@ An ``n-gram`` of size ``2`` of the above sentence would comprise every word comb
 - my brother
 <BR><BR>
 
-These ``n-grams`` will help us anticipate the best next word in a sentence. Imagine that our partial word is ``my``, then, according to the above n-gram, the best next word is ``brother``. Here we won't limit ourselves with n-grams of size 2, but will also use n-grams of size 3,4,5,6,7. The larger the n-gram with matching contiguous words the higher the probability that we know the next word.
+These ``n-grams`` will help us anticipate the best next word in a sentence. Imagine that our partial word is ``my``, then, according to the above n-gram, the best next word is ``brother``. Here we won't limit ourselves with n-grams of size 2, but will also use n-grams of size 3,4,5. The larger the n-gram with matching contiguous words the higher the probability that we know the next word.
 
 First, as with any ``NLP`` project, we need to clean up our corpus. There are many different ways to proceed but here we will only use alphabetic characters. So we need to remove anything that isn't one of the 26 words of the alphabet but not before we mark common sentence endings. We replace the following characters ``!``, ``?``, ``.``, ``;`` with an alphabet-based code: ``ootoo``. Then we clean out all punctuation, numbers, special characters, and force everything to lower case using the below function. The last set of commands split each sentence using the ``ootoo`` code:
 
