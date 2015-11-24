@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "Speak Like a Doctor - Use Natural Language Processing to Predict Medical Words"
+title: "Speak Like a Doctor - Use Natural Language Processing to Predict Medical Words in R"
 category: Machine Learning
 tags: nlp r
 year: 2015
 month: 11
 day: 22
 published: true
-summary: "Using natural language processing (NLP), a medical corpus, and a Shiny application, we build an interactive tool to predict what a doctor will say next."
+summary: "Using R, natural language processing (NLP), a medical corpus, and a Shiny application, we build an interactive tool to predict what a doctor will say next."
 image: speak-like-a-doctor/binary-doctor.png
 ---
 
@@ -360,7 +360,10 @@ To run the Shiny application, simply enter the following line in the R command w
 
 
 ```r
+
+library(shiny)
 runApp("/shiny-example", display.mode = "showcase")
+
 ```
 
 To see a screenshot example of our Shiny application in action, scroll back to the top of this walk-through.
