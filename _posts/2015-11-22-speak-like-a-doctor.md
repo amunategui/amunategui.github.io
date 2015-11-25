@@ -336,6 +336,10 @@ shinyServer(function(input, output) {
                                 matches <- c(matches, sentence)
                         }
                 }
+
+                # didn't find a match so return nothing
+                if (is.null(matches))
+                        return ('')
                 
                 # find highest probability word
                 precision_match <- c()
