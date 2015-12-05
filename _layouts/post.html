@@ -1,12 +1,15 @@
 ---
 layout: default
 ---
-
-<div class="content">    
-	{% include post_header.html %}
-    {{ content }}		
-</div>
-<div class="span4 columns">					
-					 {% include aboutme.html %}							
+ 	
+<div class="content">	  
+			<div class="row">			   				
+				<div class="span7 columns">		
+				{% include post_header.html %}				
+					{{ content }} 					
 				</div>	
-    
+				<div class="span4 columns">					
+					 {% include aboutme.html %}							
+				</div>				
+			</div>						
+		</div>		
