@@ -38,13 +38,12 @@ Click on 'Plain Text UTF-8' and the entire book should be readable in plain text
 Now, let's see how we can do this programmatically, copy the link in the URL address bar (http://www.gutenberg.org/cache/epub/1112/pg1112.txt). There are different ways of downloading this data, a simple way is to you the read.table that can handle URL paths and split each line on the newline character. In essence, it is a single column data frame broken down by sentences. 
  
 ```r
-
 romeo_juliet <- readLines("http://www.gutenberg.org/cache/epub/1112/pg1112.txt") 
 class(romeo_juliet)
 length(romeo_juliet)
 
 ```
-
+<BR><BR>  
 We've successfully imported ``4853`` lines of text. But we need to cut off some editorial data surrounding the actual play. The easiest way to tackle this is to ``print`` the first 100 lines of text:
 
 ```r
