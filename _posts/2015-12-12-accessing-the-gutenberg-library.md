@@ -200,7 +200,7 @@ romeo_juliet_sentences <- gsub(pattern="\\s+", x=romeo_juliet_sentences, replace
 # split sentences by split code
 romeo_juliet_sentences <- unlist(strsplit(x=romeo_juliet_sentences, split='ootoo',fixed = TRUE))
 
-# remove empty elements (when there are multple points or question marks)
+# remove empty elements (when there are multiple points or question marks)
 romeo_juliet_sentences <- romeo_juliet_sentences[romeo_juliet_sentences != ""]
 
 ```
