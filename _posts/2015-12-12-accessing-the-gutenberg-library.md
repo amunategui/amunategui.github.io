@@ -217,7 +217,7 @@ length(romeo_juliet_sentences)
 ```
 
 <BR><BR>       
-<i>A special thank Lucas A. for the Shakespeare portrait!</i>
+<i>A special thanks to Lucas A. for the Shakespeare portrait!</i>
 <BR>        
 <a id="sourcecode">Full source code</a>:
 
