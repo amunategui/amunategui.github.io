@@ -185,7 +185,7 @@ romeo_juliet_sentences <- unlist(strsplit(x=romeo_juliet_sentences, split='ootoo
 romeo_juliet_sentences <- romeo_juliet_sentences[romeo_juliet_sentences != ""]
 
 ```
-<BR><BR>
+<BR>
 How many sentences are in ``The Tragedy of Romeo and Juliet``?
 
 ```r
@@ -193,9 +193,9 @@ length(romeo_juliet_sentences)
 
 ```
 
-<BR>     
-I would like to thank Lucas A. for the artwork - thanks pal!
-<BR><BR>        
+<BR><BR>       
+<i>A special thank Lucas A. for the Shakespeare portrait!</i>
+<BR>        
 <a id="sourcecode">Full source code</a>:
 
 ```r
