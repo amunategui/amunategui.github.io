@@ -36,7 +36,7 @@ First go to the main page and enter 'Shakespeare' in the top right search box. I
 <p style="text-align:center">
 <img src="../img/posts/project-gutenberg/front_page.png" alt="Project Gutenberg" style='padding:0px; border:0px solid #021a40;'></p>
 
-Many file types available and if you have a preference for a particular tab, go ahead. I keep things simple and rely on the plain text format. 
+There are many file types available and if you have a preference for a particular tab, go ahead. I keep things simple and rely on the plain text format. 
 
 Click on 'Plain Text UTF-8' and the entire book should be readable in plain text format in your browser. 
 
@@ -45,9 +45,13 @@ Now, let's see how we can do this programmatically, copy the link in the URL add
 ```r
 romeo_juliet <- readLines("http://www.gutenberg.org/cache/epub/1112/pg1112.txt") 
 class(romeo_juliet)
+## [1] "character"
+
 length(romeo_juliet)
+## [1] 4853
 
 ```
+
 <BR>
 
 We've successfully imported ``4853`` lines of text. But we need to cut off some editorial data surrounding the actual play. The easiest way to tackle this is to ``print`` the first 100 lines of text:
@@ -75,7 +79,8 @@ So, the play really starts at line ``64`` therefore we need to remove everything
  
 ```r
 grep( "THE END", romeo_juliet)
- 
+## [1] 4484
+
 ```
 
 Let's prune out download to only contains data from line ``64`` to line ``4484``:
@@ -86,7 +91,7 @@ romeo_juliet <- romeo_juliet[64:4484]
 ```
 
 <BR><BR>
-And that's how you find and download books - first search from the book on the **Project Gutenberg** page, get to the text link, copy it into a ``readLines`` function in R, download it, and finally trim the editorial elements. After that... the sky is the limit.
+And that's how you find and download books - first search for the book on the <a href='https://www.gutenberg.org/' target='_blank'>Project Gutenberg</a> page, get to the text link, copy it into a ``readLines`` function in R, download it, and finally trim the editorial elements. After that... the sky is the limit.
 
 For example:
 <ul>
@@ -117,9 +122,16 @@ How many times was the word Romeo and Juliet used?
 
 ```r
 print('Romeo')
+## [1] "Romeo"
+
 sum(grepl(romeo_juliet_words[[1]], pattern='romeo', ignore.case = TRUE))
+## [1] 156
+
 print('Juliet')
+## [1] "Juliet"
+
 sum(grepl(romeo_juliet_words[[1]], pattern='juliet', ignore.case = TRUE))
+## [1] 66
 
 ```
 Interesting, right? ``Romeo`` was mentioned over 2 times more than ``Juliet``...
@@ -128,6 +140,7 @@ How many times was the word ``man`` used?
 
 ```r
 sum(grepl(romeo_juliet_words[[1]], pattern='man', ignore.case = TRUE))
+## [1] 176
 
 ```
 <BR>
@@ -135,6 +148,7 @@ And ``woman``?
 
 ```r
 sum(grepl(romeo_juliet_words[[1]], pattern='woman', ignore.case = TRUE))
+## [1] 9
 
 ```
 Really? ``Man`` was mentioned 20 times more than ``woman``?
@@ -144,14 +158,16 @@ But that isn't fair, the ```grepl``` function looks for **man** on its own but a
 
 ```r
 sum(grepl(romeo_juliet_words[[1]], pattern='\\<man\\>', ignore.case = TRUE))
+## [1] 77
 
 ```
 <BR>
-Just like we can find words synonumous to **woman**:
+Just like we can find words synonymous to **woman** by adding multiple patterns in the ``grepl`` and using the ``|`` symbol to separate them:
 <BR>
 
 ```r
 sum(grepl(romeo_juliet_words[[1]], pattern='woman|women|lady', ignore.case = TRUE))
+## [1] 94
 
 ```
 The point here is that it's trivially easy to run some anaysis of litterature using Project Gutenberg.
@@ -193,6 +209,7 @@ How many sentences are in ``The Tragedy of Romeo and Juliet``?
 
 ```r
 length(romeo_juliet_sentences)
+## [1] 3751
 
 ```
 
