@@ -7,7 +7,7 @@ year: 2015
 month: 12
 day: 13
 published: true
-summary: "Project Gutenberg offers and easy way to download classic works of literature from around the world in digital format using the R language."
+summary: "Project Gutenberg offers and easy way to download over 50,000 classic works of literature from around the world in digital format using the R language."
 image: project-gutenberg/shakespeare.jpg
 ---
 <p style="text-align:center">
