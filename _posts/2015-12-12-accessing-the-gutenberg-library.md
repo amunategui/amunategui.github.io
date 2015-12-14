@@ -24,7 +24,7 @@ image: project-gutenberg/shakespeare.jpg
 
 <blockquote>Project Gutenberg offers over 50,000 free ebooks: choose among free epub books, free kindle books, download them or read them online.</blockquote>
 
-Beyond enjoying all the great classics, it's an enormous boon to those working in <a href='https://en.wikipedia.org/wiki/Natural_language_processing' target='_blank'>Natural Language Processing (NLP)</a>. It can be used to compare writing through the ages, gender involvement, writing styles, etc... 
+Beyond enjoying all the great classics, it's an enormous boon to those working in <a href='https://en.wikipedia.org/wiki/Natural_language_processing' target='_blank'>Natural Language Processing (NLP)</a>. It can be used to compare writing styles through the ages, vocabulary choices, gender balance, punctuation usage, etc... 
 <BR><BR>
 
 **The Tragedy of Romeo and Juliet**
