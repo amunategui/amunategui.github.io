@@ -37,8 +37,7 @@ Click on 'Plain Text UTF-8' and the entire book should be readable in plain text
 
 Now, let's see how we can do this programmatically, copy the link in the URL address bar (http://www.gutenberg.org/cache/epub/1112/pg1112.txt). There are different ways of downloading this data, a simple way is to you the read.table that can handle URL paths and split each line on the newline character. In essence, it is a single column data frame broken down by sentences. 
  
-
-```{r cache=TRUE}
+```r
 
 romeo_juliet <- readLines("http://www.gutenberg.org/cache/epub/1112/pg1112.txt") 
 class(romeo_juliet)
@@ -48,14 +47,15 @@ length(romeo_juliet)
 
 We've successfully imported ``4853`` lines of text. But we need to cut off some editorial data surrounding the actual play. The easiest way to tackle this is to ``print`` the first 100 lines of text:
 
-```{r eval=FALSE}
+```r
+
 # not showing all lines to save space
 # head(romeo_juliet,100)
 
 print(romeo_juliet[63:69])
 ```
 
-```{r eval=FALSE}
+```r
 
 ## [63] ""                                                                       
 ## [64] "1595"                                                                   
@@ -69,7 +69,7 @@ print(romeo_juliet[63:69])
 
 So, the play really starts at line ``64`` therefore we need to remove everything before that. At the tail end, the story ends with ``THE END`` (this may be different for different books and requires manually inspection)
  
-```{r}
+```r
 
 grep( "THE END", romeo_juliet)
  
@@ -77,7 +77,7 @@ grep( "THE END", romeo_juliet)
 
 Let's prune out download to only contains data from line ``64`` to line ``4484``:
 
-```{r}
+```r
 
 romeo_juliet <- romeo_juliet[64:4484]
 
@@ -96,7 +96,7 @@ Note: The site will track usage and may limit access if it goes beyond their acc
 <BR><BR>
 Let's bring all our data into one big blob of text:
 
-```{r}
+```r
 
 romeo_juliet_blob <- paste(romeo_juliet, sep="",collapse=" ")
 
@@ -104,7 +104,7 @@ romeo_juliet_blob <- paste(romeo_juliet, sep="",collapse=" ")
 
 Let's remove all punctuation and create a vector of words:
 
-```{r}
+```r
 
 romeo_juliet_words <- gsub(x=romeo_juliet_blob,pattern= "[[:punct:]]", replacement = ' ')   
 romeo_juliet_words <- strsplit(romeo_juliet_words, ' ')
@@ -115,7 +115,7 @@ romeo_juliet_words <- strsplit(romeo_juliet_words, ' ')
 
 How many times was the word Romeo and Juliet used:
 
-```{r}
+```r
 
 print('Romeo')
 sum(grepl(romeo_juliet_words[[1]], pattern='romeo', ignore.case = TRUE))
@@ -127,7 +127,7 @@ Interesting, right? ``Romeo`` was mentioned over 2 times more than ``Juliet``...
 
 How many times was the word ``man`` used?
 
-```{r}
+```r
 
 sum(grepl(romeo_juliet_words[[1]], pattern='man', ignore.case = TRUE))
 
@@ -135,7 +135,7 @@ sum(grepl(romeo_juliet_words[[1]], pattern='man', ignore.case = TRUE))
 <BR>
 And ``woman``?
 
-```{r}
+```r
 
 sum(grepl(romeo_juliet_words[[1]], pattern='woman', ignore.case = TRUE))
 
@@ -145,7 +145,7 @@ Really? ``Man`` was mentioned 20 times more than ``woman``?
 <BR>
 But that isn't fair, the ```grepl``` function looks for **man** on its own but also within words, including <i>wo</i>man. Thankfully we can force the ``grepl`` function to only look for the word **man**:
 
-```{r}
+```r
 
 sum(grepl(romeo_juliet_words[[1]], pattern='\\<man\\>', ignore.case = TRUE))
 
@@ -153,7 +153,8 @@ sum(grepl(romeo_juliet_words[[1]], pattern='\\<man\\>', ignore.case = TRUE))
 <BR>
 Just like we can find words synonumous to **woman**:
 <BR>
-```{r}
+
+```r
 
 sum(grepl(romeo_juliet_words[[1]], pattern='woman|women|lady', ignore.case = TRUE))
 
@@ -175,7 +176,7 @@ The **R** language has some great NLP packages that can help us build a <a href=
 Instead, we're going to cheat and use a simple trick to break our data into sentences that I used in a previous blog entry. This won't be as precise as a real sentence tokenizer but is package-free and fast. We replace the following characters ``!``, ``?``, ``.``, ``;`` with an alphabet-based code: ``ootoo``. Then we remove all punctuation and finally split our data using the ``ootoo`` code:
 
 
-```{r}
+```r
 
 # create a blob of text like we did earlier
 romeo_juliet_sentences <- paste(romeo_juliet, sep="",collapse=" ")
@@ -195,15 +196,19 @@ romeo_juliet_sentences <- romeo_juliet_sentences[romeo_juliet_sentences != ""]
 ```
 <BR><BR>
 How many sentences are in ``The Tragedy of Romeo and Juliet``?
-```{r}
+
+```r
+
 length(romeo_juliet_sentences)
+
 ```
 
 <BR><BR>        
 I would like to thank Lucas A. for the artwork - thanks pal!
 <BR><BR>        
 <a id="sourcecode">Full source code</a>:
-```{r eval=FALSE}
+
+```r
 
 romeo_juliet <- readLines("http://www.gutenberg.org/cache/epub/1112/pg1112.txt") 
 class(romeo_juliet)
