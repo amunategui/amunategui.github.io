@@ -95,8 +95,8 @@ And that's how you find and download books - first search for the book on the <a
 
 For example:
 <ul>
-  <li>how many sentences are there?</li>
-  <li>Which name is mentioned most, Romeo or Juliet?</li>
+     <li>Which name is mentioned most, Romeo or Juliet?</li>
+     <li>how many sentences are there?</li>
 </ul>
 
 Note: The site will track usage and may limit access if it goes beyond their accepted usage settings.
@@ -154,7 +154,7 @@ sum(grepl(romeo_juliet_words[[1]], pattern='woman', ignore.case = TRUE))
 Really? ``Man`` was mentioned 20 times more than ``woman``?
 
 <BR>
-But that isn't fair, the ```grepl``` function looks for **man** on its own but also within words, including <i>wo</i>man. Thankfully we can force the ``grepl`` function to only look for the word **man**:
+But that isn't fair, the ```grepl``` function looks for **man** on its own but also within words, including **wo**<i>man</i>. Thankfully we can force the ``grepl`` function to only look for the word **man**:
 
 ```r
 sum(grepl(romeo_juliet_words[[1]], pattern='\\<man\\>', ignore.case = TRUE))
@@ -170,7 +170,7 @@ sum(grepl(romeo_juliet_words[[1]], pattern='woman|women|lady', ignore.case = TRU
 ## [1] 94
 
 ```
-The point here is that it's trivially easy to run some anaysis of litterature using Project Gutenberg.
+The point here is that it's trivially easy to run some analysis of literature using Project Gutenberg.
 
 <BR>
 
