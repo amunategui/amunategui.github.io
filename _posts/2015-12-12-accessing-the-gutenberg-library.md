@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Access Classics of Litterature from Around the World with Project Gutenberg and R"
+title: "Analyze Classic Works of Literature from Around the World with Project Gutenberg and R"
 category: Machine Learning
 tags: nlp r
 year: 2015
