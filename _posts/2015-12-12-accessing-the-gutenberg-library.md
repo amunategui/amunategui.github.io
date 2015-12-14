@@ -10,7 +10,8 @@ published: true
 summary: "Project Gutenberg offers and easy way to download classic works of literature from around the world in digital format using the R language."
 image: project-gutenberg/shakespeare.jpg
 ---
-
+<p style="text-align:center">
+<img src="../img/posts/project-gutenberg/shakespeare.jpg" alt="Spark Logo" style='padding:0px; border:0px solid #021a40;'></p>
 **Resources**
 <BR>
 <ul>
@@ -152,7 +153,7 @@ sum(grepl(romeo_juliet_words[[1]], pattern='woman|women|lady', ignore.case = TRU
 ```
 The point here is that it's trivially easy to run some anaysis of litterature using Project Gutenberg.
 
-<BR><BR>
+<BR>
 
 **How many sentences are in The Tragedy of Romeo and Juliet?** 
 
@@ -163,9 +164,9 @@ The **R** language has some great NLP packages that can help us build a <a href=
   <li><a href='https://cran.r-project.org/web/packages/NLP/index.html' target='_blank'>NLP: Natural Language Processing Infrastructure</a></li>
   <li><a href='https://cran.r-project.org/web/packages/tm/index.html' target='_blank'>tm: Text Mining Package</a></li>
 </ul>
+<BR>
 
 Instead, we're going to cheat and use a simple trick to break our data into sentences that I used in a previous blog entry. This won't be as precise as a real sentence tokenizer but is package-free and fast. We replace the following characters ``!``, ``?``, ``.``, ``;`` with an alphabet-based code: ``ootoo``. Then we remove all punctuation and finally split our data using the ``ootoo`` code:
-
 
 ```r
 # create a blob of text like we did earlier
@@ -192,7 +193,7 @@ length(romeo_juliet_sentences)
 
 ```
 
-<BR><BR>        
+<BR>     
 I would like to thank Lucas A. for the artwork - thanks pal!
 <BR><BR>        
 <a id="sourcecode">Full source code</a>:
