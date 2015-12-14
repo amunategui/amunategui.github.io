@@ -11,7 +11,7 @@ summary: "Project Gutenberg offers and easy way to download classic works of lit
 image: project-gutenberg/shakespeare.jpg
 ---
 <p style="text-align:center">
-<img src="../img/posts/project-gutenberg/shakespeare.jpg" alt="Spark Logo" style='padding:0px; border:0px solid #021a40;'></p>
+<img src="../img/posts/project-gutenberg/shakespeare.jpg" alt="shakespeare" style='padding:0px; border:0px solid #021a40;'></p>
 **Resources**
 <BR>
 <ul>
@@ -32,6 +32,9 @@ Beyond enjoying all the great classics, it's an enormous boon to those working i
 Let's see how it works by downloading 'The Tragedy of Romeo and Juliet'
 
 First go to the main page and enter 'Shakespeare' in the top right search box. It will return many books by and on Shakespeare. Click on ```The Tragedy of Romeo and Juliet```
+
+<p style="text-align:center">
+<img src="../img/posts/project-gutenberg/front_page.png" alt="Project Gutenberg" style='padding:0px; border:0px solid #021a40;'></p>
 
 Many file types available and if you have a preference for a particular tab, go ahead. I keep things simple and rely on the plain text format. 
 
