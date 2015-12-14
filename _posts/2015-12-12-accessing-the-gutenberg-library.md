@@ -40,6 +40,9 @@ There are many file types available and if you have a preference for a particula
 
 Click on 'Plain Text UTF-8' and the entire book should be readable in plain text format in your browser. 
 
+<p style="text-align:center">
+<img src="../img/posts/project-gutenberg/romeo_juliet.png" alt="Project Gutenberg" style='padding:0px; border:0px solid #021a40;'></p>
+
 Now, let's see how we can do this programmatically, copy the link in the URL address bar (http://www.gutenberg.org/cache/epub/1112/pg1112.txt). There are different ways of downloading this data, a simple way is to you the ``readLines`` that can handle URL paths and split each line on the newline character. 
  
 ```r
