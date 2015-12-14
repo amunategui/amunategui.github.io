@@ -68,7 +68,7 @@ print(romeo_juliet[63:69])
 
 ```
 <BR>
-So, the play really starts at line ``64`` therefore we need to remove everything before that. At the tail end, the story ends with ``THE END`` (this may be different for different books and requires manually inspection)
+So, the play really starts at line ``64`` therefore we need to remove everything before that. At the tail end, the story ends with ``THE END`` (this may be different for different books and requires manual inspection)
  
 ```r
 grep( "THE END", romeo_juliet)
