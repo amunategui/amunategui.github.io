@@ -12,12 +12,12 @@ image: project-gutenberg/shakespeare.jpg
 ---
 
 **Resources**
-
+<BR>
 <ul>
 <li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
-<BR><BR>
+<BR>
  
 <a href='http://www.gutenberg.org/' target='_blank'>Project Gutenberg</a> is an incredible resource for anybody interested in accessing classic works of literature from around the world in digital format. It is free and powered by thousands of volunteers (if you find it useful, there is a donation button on their landing page). From the site:
 
@@ -25,6 +25,7 @@ image: project-gutenberg/shakespeare.jpg
 
 Beyond enjoying all the great classics, it's an enormous boon to those working in <a href='https://en.wikipedia.org/wiki/Natural_language_processing' target='_blank'>Natural Language Processing (NLP)</a>. It can be used to compare writing through the ages, gender involvement, writing styles, etc... 
 <BR><BR>
+
 **The Tragedy of Romeo and Juliet**
 
 Let's see how it works by downloading 'The Tragedy of Romeo and Juliet'
@@ -43,7 +44,8 @@ class(romeo_juliet)
 length(romeo_juliet)
 
 ```
-<BR><BR>  
+<BR>
+
 We've successfully imported ``4853`` lines of text. But we need to cut off some editorial data surrounding the actual play. The easiest way to tackle this is to ``print`` the first 100 lines of text:
 
 ```r
@@ -51,6 +53,7 @@ We've successfully imported ``4853`` lines of text. But we need to cut off some 
 # head(romeo_juliet,100)
 
 print(romeo_juliet[63:69])
+
 ```
 
 ```r
@@ -63,7 +66,7 @@ print(romeo_juliet[63:69])
 ## [69] ""    
 
 ```
-
+<BR>
 So, the play really starts at line ``64`` therefore we need to remove everything before that. At the tail end, the story ends with ``THE END`` (this may be different for different books and requires manually inspection)
  
 ```r
@@ -106,7 +109,7 @@ romeo_juliet_words <- strsplit(romeo_juliet_words, ' ')
 <BR><BR>
 **Flyby Analysis**
 
-How many times was the word Romeo and Juliet used:
+How many times was the word Romeo and Juliet used?
 
 ```r
 print('Romeo')
