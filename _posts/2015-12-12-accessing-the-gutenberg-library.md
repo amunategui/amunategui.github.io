@@ -15,7 +15,7 @@ image: project-gutenberg/shakespeare.jpg
 **Resources**
 <BR>
 <ul>
-<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=_86xB93Jen4" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
 <BR>
