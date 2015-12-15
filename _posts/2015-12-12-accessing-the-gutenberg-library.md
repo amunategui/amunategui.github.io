@@ -196,7 +196,10 @@ romeo_juliet_sentences <- paste(romeo_juliet, sep="",collapse=" ")
 
 # swap all sentence ends with code 'ootoo'
 romeo_juliet_sentences <- gsub(pattern=';|\\.|!|\\?', x=romeo_juliet_sentences, replacement='ootoo')
- 
+
+# remove all punctuation
+romeo_juliet_sentences <- gsub(x=romeo_juliet_sentences,pattern= "[[:punct:]]", replacement = ' ')  
+
 # remove contiguous spaces
 romeo_juliet_sentences <- gsub(pattern="\\s+", x=romeo_juliet_sentences, replacement=' ')
 
@@ -262,6 +265,9 @@ romeo_juliet_sentences <- paste(romeo_juliet, sep="",collapse=" ")
 # swap all sentence ends with code 'ootoo'
 romeo_juliet_sentences <- gsub(pattern=';|\\.|!|\\?', x=romeo_juliet_sentences, replacement='ootoo')
  
+# remove all punctuation
+romeo_juliet_sentences <- gsub(x=romeo_juliet_sentences,pattern= "[[:punct:]]", replacement = ' ')  
+
 # remove contiguous spaces
 romeo_juliet_sentences <- gsub(pattern="\\s+", x=romeo_juliet_sentences, replacement=' ')
 
