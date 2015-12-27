@@ -2,7 +2,7 @@
 layout: post
 title: Brief Guide On Running RStudio Server On Amazon Web Services
 category: Machine Learning
-tags: rstudioserver r ec2
+tags: rstudioserver r ec2 spark
 year: 2014
 month: 5
 day: 15
