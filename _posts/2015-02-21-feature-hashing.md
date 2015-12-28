@@ -244,7 +244,7 @@ auc(objTest[,outcomeName], glmnetPredict)
 
 Now for the fun part, remember that wide data set we just modeled? Well, by using feature hashing, we don't have to do any of that work; we just feed the data set with its factor and character features directly into the model. The code is based on both a <a href='https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173' target='_blank'>kaggle competition</a> and <a href='https://github.com/wush978/FeatureHashing/blob/master/README.Rmd' target='_blank'>Wush Wu's package readme</a> on GitHub.com.
 
-The ``hashed.model.matrix`` function takes a ``hash_size`` value. This is a critical piece. Depending on the size of your data you may need to adjust this value. I set it here to 2^12, but if you try a larger value, it will handle more variables (i.e. unique values). On the other hand, if you try a smaller value, you risk having memory collisions and loss of data. It is something you have to experiment with.
+The ``hashed.model.matrix`` function takes a ``hash.size`` value. This is a critical piece. Depending on the size of your data you may need to adjust this value. I set it here to 2^12, but if you try a larger value, it will handle more variables (i.e. unique values). On the other hand, if you try a smaller value, you risk having memory collisions and loss of data. It is something you have to experiment with.
 
 ```r
 diabetes_hash <- diabetes
@@ -259,9 +259,9 @@ objTrain <-diabetes_hash[split,]
 objTest <- diabetes_hash[-split,]
  
 library(FeatureHashing)
-objTrain_hashed = hashed.model.matrix(~., data=objTrain[,predictorNames], hash_size=2^12, transpose=FALSE, keep.hashing_mapping=TRUE)
+objTrain_hashed = hashed.model.matrix(~., data=objTrain[,predictorNames], hash.size=2^12, transpose=FALSE)
 objTrain_hashed = as(objTrain_hashed, "dgCMatrix")
-objTest_hashed = hashed.model.matrix(~., data=objTest[,predictorNames], hash_size=2^12, transpose=FALSE, keep.hashing_mapping=TRUE)
+objTest_hashed = hashed.model.matrix(~., data=objTest[,predictorNames], hash.size=2^12, transpose=FALSE)
 objTest_hashed = as(objTest_hashed, "dgCMatrix")
  
 library(glmnet)
@@ -282,7 +282,7 @@ Practically the same score as prepping the data yourself but with half the work 
 <b>Note:</b> This subject and code was inspired by a Kaggle.com competition: <a href='https://www.kaggle.com/c/avazu-ctr-prediction' target='_blank'>Avazu - Click-Through Rate Prediction</a>. More precisely by the following <a href='https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173' target='_blank'>thread</a>. I have used feature hashing in <b>Python</b> via sklearn's ``preprocessing.OneHotEncoder`` and ``feature_extraction.FeatureHasher`` but these approaches aren't as common in <b>R</b>. I hope this is changing with the arrival of great packages such as Wu's. Many thanks to Wu and all Kagglers!!
 
 <BR><BR>        
-<a id="sourcecode">Full source code (<a href='https://github.com/amunategui/feature-hashing-walkthrough/blob/master/feature-hasher-walkthrough.r' target='_blank'>also on GitHub</a>)</a>:
+<a id="sourcecode">Full source code</a>:
 
 ```{r}
 # get data ----------------------------------------------------------------
@@ -376,9 +376,9 @@ objTrain <-diabetes_hash[split,]
 objTest <- diabetes_hash[-split,]
  
 library(FeatureHashing)
-objTrain_hashed = hashed.model.matrix(~., data=objTrain[,predictorNames], hash_size=2^12, transpose=FALSE, keep.hashing_mapping=TRUE)
+objTrain_hashed = hashed.model.matrix(~., data=objTrain[,predictorNames], hash.size=2^12, transpose=FALSE)
 objTrain_hashed = as(objTrain_hashed, "dgCMatrix")
-objTest_hashed = hashed.model.matrix(~., data=objTest[,predictorNames], hash_size=2^12, transpose=FALSE, keep.hashing_mapping=TRUE)
+objTest_hashed = hashed.model.matrix(~., data=objTest[,predictorNames], hash.size=2^12, transpose=FALSE)
 objTest_hashed = as(objTest_hashed, "dgCMatrix")
  
 library(glmnet)
