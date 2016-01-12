@@ -137,9 +137,8 @@ rf_model <- randomForest(x=train_df[,feature_names],
 
 validate_predictions <- predict(rf_model, newdata=validate_df[,feature_names], type="prob")
 ```
-
-Let's use the ``pROC`` library to calculate our AUC score (remember, an AUC of 0.5 is random and 1 is perfect) and plot a chart:
 <BR><BR>
+Let's use the ``pROC`` library to calculate our AUC score (remember, an AUC of 0.5 is random and 1 is perfect) and plot a chart:
 
 ```{r}
 install.packages('pROC')
@@ -158,7 +157,7 @@ abline(h=0,col='green')
 We get an AUC of **0.757** with our current data split.
 
 <h3><a id="autoencoder">Autoencoder</a></h3>
-Let's see how an unsupervised **autoencoder** can assist us here. Start by initializing an h2o instance and create an H2O frame from the prostate data set
+Let's see how an unsupervised **autoencoder** can assist us here. Start by initializing an h2o instance and create an H2O frame from the prostate data set:
 
 ```{r}
 library(h2o)
@@ -169,7 +168,7 @@ prostate.hex<-as.h2o(train_df, destination_frame="train.hex")
 <BR><BR>
 Getting down to the heart of our business, let's call the deeplearning function with parameter ``autoencoder`` set to TRUE:
 
-```{r eval=FALSE}
+```{r}
 prostate.dl = h2o.deeplearning(x = feature_names, training_frame = prostate.hex,
                                autoencoder = TRUE,
                                reproducible = T,
@@ -179,7 +178,7 @@ prostate.dl = h2o.deeplearning(x = feature_names, training_frame = prostate.hex,
 <BR><BR>
 We now call the <a href='http://rpackages.ianhowson.com/cran/h2o/man/h2o.anomaly.html' target='_blank'>h2o.anomaly</a> function to reconstruct the original data set using the reduced set of features and calculate a means squared error between both. Here we set ``per_feature`` parameter to FALSE in the ``h2o.anomaly`` function call as we want a reconstruction meany error based on observations, not individual features (but you should definitely play around feature-level scores as it could lead to important insights into your data).
 
-```{r eval=FALSE}
+```{r}
 prostate.anon = h2o.anomaly(prostate.dl, prostate.hex, per_feature=FALSE)
 head(prostate.anon)
 err <- as.data.frame(prostate.anon)
@@ -187,7 +186,7 @@ err <- as.data.frame(prostate.anon)
 <BR><BR>
 Let's sort and plot the reconstructed MSE. The autoencoder struggles from index 150 onwards as the error count accelerates upwards. We can determine that the model recognizes patterns in the first 150 observations that it can't see as easily in the latter 50.
 
-```{r eval=FALSE}
+```{r}
 plot(sort(err$Reconstruction.MSE))
 ```
 <BR><BR>
@@ -197,12 +196,12 @@ plot(sort(err$Reconstruction.MSE))
 <h3><a id="anomaly">Modeling With and Without Anomalies</a></h3>
 The next logical step is to use the clean observations, those that the autoencoder reconstructed easily and model that with our random forest model.
 
-```{r eval=FALSE}
+```{r}
 # rebuild obj_test with best observations
 obj_test_auto <- obj_test[err$Reconstruction.MSE < 0.1,]
 ```
 <BR><BR>
-```{r eval=FALSE}
+```{r}
 
 set.seed(1234)
 rf_model <- randomForest(x=train_df_auto[,feature_names],
@@ -219,7 +218,7 @@ abline(h=1,col='blue')
 abline(h=0,col='green')
 
 ```
-<BR>
+<BR><BR>
 <p style="text-align:center">
 <img src="../img/posts/anomaly-detection-h2o/auc_0.771.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR>
@@ -227,9 +226,7 @@ An AUC of 0.771, an improvement over our original random forest model of 0.757 w
 
 Let's try the same model on the hard to reconstruct portion:
 
-
-```{r eval=FALSE}
-
+```{r}
 train_df_auto <- train_df[err$Reconstruction.MSE > 0.1,]
 
 set.seed(1234)
@@ -245,18 +242,14 @@ auc_rf = roc(response=as.numeric(as.factor(validate_df[,outcome_name]))-1,
 plot(auc_rf, print.thres = "best", main=paste('AUC:',round(auc_rf$auc[[1]],3)))
 abline(h=1,col='blue')
 abline(h=0,col='green')
-
-
 ```
-<BR>
+<BR><BR>
 <p style="text-align:center">
 <img src="../img/posts/anomaly-detection-h2o/auc_0.743.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR>
 It should be clear by now that these top portions behave very differently under the same model. What bagging both models (adding both predictions together and dividing the total by two)?
 
-
-```{r eval=FALSE}
-
+```{r}
 valid_all <- (validate_predictions_known[,2] + validate_predictions_unknown[,2]) / 2
 
 # AUC 0.806
@@ -267,15 +260,13 @@ auc_rf = roc(response=as.numeric(as.factor(validate_df[,outcome_name]))-1,
 plot(auc_rf, print.thres = "best", main=paste('AUC:',round(auc_rf$auc[[1]],3)))
 abline(h=1,col='blue')
 abline(h=0,col='green')
-
 ```
-<BR>
+<BR><BR>
 <p style="text-align:center">
 <img src="../img/posts/anomaly-detection-h2o/auc_0.806.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR>
 
 Tremendous! We end up with an AUC of 0.806!! Awesome! Mind you, this doesn't always pan out this way - a lot has to do on the type of data you are dealing with and the modeling algorithms.
-
 
 <B>Note:</B> H2O is a fast moving target so if certain aspects of this walk-through don't work, check the documentation if some aspect of the object model changed from the package you are using compared to the one used here.
 
@@ -283,7 +274,7 @@ Tremendous! We end up with an AUC of 0.806!! Awesome! Mind you, this doesn't alw
 <a id="sourcecode">Full source code</a>:
 <BR><BR>
 
-```{r eval=FALSE}
+```{r}
 # install.packages("h2o")
 
 # point to the prostate data set in the h2o folder - no need to load h2o in memory yet
