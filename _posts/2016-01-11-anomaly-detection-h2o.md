@@ -155,7 +155,7 @@ abline(h=0,col='green')
 <img src="../img/posts/anomaly-detection-h2o/auc_0.757.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 
 We get an AUC of **0.757** with our current data split.
-
+<BR><BR>
 <h3><a id="autoencoder">Autoencoder</a></h3>
 Let's see how an unsupervised **autoencoder** can assist us here. Start by initializing an h2o instance and create an H2O frame from the prostate data set:
 
@@ -197,12 +197,10 @@ plot(sort(err$Reconstruction.MSE))
 The next logical step is to use the clean observations, those that the autoencoder reconstructed easily and model that with our random forest model.
 
 ```{r}
-# rebuild obj_test with best observations
-obj_test_auto <- obj_test[err$Reconstruction.MSE < 0.1,]
+# rebuild train_df_auto with best observations
+train_df_auto <- obj_test[err$Reconstruction.MSE < 0.1,]
 ```
-<BR><BR>
 ```{r}
-
 set.seed(1234)
 rf_model <- randomForest(x=train_df_auto[,feature_names],
                          y=as.factor(train_df_auto[,outcome_name]),
