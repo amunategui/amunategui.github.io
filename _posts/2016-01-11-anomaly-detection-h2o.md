@@ -42,7 +42,7 @@ image: anomaly-detection-h2o/encoding_squeeze.png
 
 Let's apply <a href='http://www.h2o.ai/product/' target='_blank'>H2O's</a> anomaly detection to separate a data set into **easy** and **hard** to model subsets and attempt to gain predictive accuracy.
 
-For those who don't know yet, ``H2O`` is an open-source software for machine learning and big-data analysis. It offers a various models such as **GLM**, **GBM** and **Random Forest**, but more importantly, offers a **deep learning neural network** and large-scale clustering!
+For those who don't know yet, ``H2O`` is an open-source software for machine learning and big-data analysis. It offers various models such as **GLM**, **GBM** and **Random Forest**, but more importantly, offers a **deep learning neural network** and large-scale clustering!
 
 For a great introduction to numerous features check out: <a href='https://h2o-release.s3.amazonaws.com/h2o/rel-slater/9/docs-website/h2o-docs/booklets/DeepLearning_Vignette.pdf' target='_blank'>DeepLearning_Vignette.pdf</a>
 <BR><BR>
@@ -90,7 +90,7 @@ summary(prostate_df)
 ```
 
 <h3><a id="benchmark">Benchmark Random Forest Model</a></h3>
-Let's start by running a simple <a href='https://en.wikipedia.org/wiki/Random_forest' target='_blank'>random forest</a> model on the data by splitting it in two random protions (with a seed) - a training and a testing portion. This will give us a base score to measure our imporvements using autoencoding.
+Let's start by running a simple <a href='https://en.wikipedia.org/wiki/Random_forest' target='_blank'>random forest</a> model on the data by splitting it in two random portions (with a seed) - a training and a testing portion. This will give us a base score to measure our improvements using autoencoding.
 
 ```{r}
 
@@ -102,7 +102,7 @@ validate_df <- prostate_df[random_splits >=.5,]
 dim(validate_df)
 
 ```
-Install **random forest** and **pROC** and run a simple classifcation model on outcome variable ``CAPSULE``:
+Install **random forest** and **pROC** and run a simple classification model on outcome variable ``CAPSULE``:
 
 ```{r}
 
@@ -120,7 +120,7 @@ validate_predictions <- predict(rf_model, newdata=validate_df[,feature_names], t
 
 ```
 
-Let's use the ``pROC`` library to caluculate our AUC score (remember, an AUC of 0.5 is random and 1 is perfect) and plot a chart:
+Let's use the ``pROC`` library to calculate our AUC score (remember, an AUC of 0.5 is random and 1 is perfect) and plot a chart:
 
 ```{r eval=FALSE}
 
@@ -165,7 +165,7 @@ prostate.dl = h2o.deeplearning(x = feature_names, training_frame = prostate.hex,
 ```
 
 
-We now call the <a href='http://rpackages.ianhowson.com/cran/h2o/man/h2o.anomaly.html' target='_blank'>h2o.anomaly</a> function to reconstruct the original data set using the reduced set of features and calculate a means squared error between both. Here we set ``per_feature`` paratmer to FALSE in the ``h2o.anomaly`` function call as we want a reconstruction meany error based on observations, not individual features (but you should definitely play around feature-level scores as it could lead to important insights into your data).
+We now call the <a href='http://rpackages.ianhowson.com/cran/h2o/man/h2o.anomaly.html' target='_blank'>h2o.anomaly</a> function to reconstruct the original data set using the reduced set of features and calculate a means squared error between both. Here we set ``per_feature`` parameter to FALSE in the ``h2o.anomaly`` function call as we want a reconstruction meany error based on observations, not individual features (but you should definitely play around feature-level scores as it could lead to important insights into your data).
 
 ```{r eval=FALSE}
 
@@ -174,7 +174,7 @@ head(prostate.anon)
 err <- as.data.frame(prostate.anon)
 ```
 
-Let's sort and plot the reconstructed MSE. The autoencoder struggles from index 150 onwards as the error count accelerates upwards. We can determine that the model recognizes patterns in the first 150 observations that itcan't see as easily in the latter 50.
+Let's sort and plot the reconstructed MSE. The autoencoder struggles from index 150 onwards as the error count accelerates upwards. We can determine that the model recognizes patterns in the first 150 observations that it can't see as easily in the latter 50.
 
 ```{r eval=FALSE}
 plot(sort(err$Reconstruction.MSE))
@@ -215,7 +215,7 @@ abline(h=0,col='green')
 <p style="text-align:center">
 <img src="../img/posts/anomaly-detection-h2o/auc_0.771.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR>
-An AUC of 0.771, an improvment over our original random forest model of 0.757 while using less observations!
+An AUC of 0.771, an improvement over our original random forest model of 0.757 while using less observations!
 
 Let's try the same model on the hard to reconstruct portion:
 
