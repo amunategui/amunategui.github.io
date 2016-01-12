@@ -7,7 +7,7 @@ year: 2016
 month: 01
 day: 11
 published: true
-summary: "Use H2O's anomaly detection with R to separate a data set into easy and hard to model subsets and gain predictive insight."
+summary: "Use H2O's anomaly detection with R to separate data into easy and hard to model subsets and gain predictive insight."
 image: anomaly-detection-h2o/encoding_squeeze.png
 ---
 <BR>
