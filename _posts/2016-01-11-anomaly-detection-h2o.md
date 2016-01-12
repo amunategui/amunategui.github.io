@@ -140,6 +140,7 @@ validate_predictions <- predict(rf_model, newdata=validate_df[,feature_names], t
 
 Let's use the ``pROC`` library to calculate our AUC score (remember, an AUC of 0.5 is random and 1 is perfect) and plot a chart:
 <BR><BR>
+
 ```{r}
 install.packages('pROC')
 library(pROC)
@@ -159,7 +160,7 @@ We get an AUC of **0.757** with our current data split.
 <h3><a id="autoencoder">Autoencoder</a></h3>
 Let's see how an unsupervised **autoencoder** can assist us here. Start by initializing an h2o instance and create an H2O frame from the prostate data set
 
-```{r eval=FALSE}
+```{r}
 library(h2o)
 localH2O = h2o.init()
 
