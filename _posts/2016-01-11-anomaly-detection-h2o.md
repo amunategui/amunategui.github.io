@@ -263,10 +263,9 @@ abline(h=0,col='green')
 <img src="../img/posts/anomaly-detection-h2o/auc_0.806.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR>
 
-Tremendous! We end up with an AUC of 0.806!! Awesome! In this case, random forest benefitted from the splitting of our data set into two groups of varying patterns. In essence it managed to create better trees for each type which it couldn't do with the larger original set. Mind you, this doesn't always pan out this way - a lot has to do on the type of data you are dealing with and the modeling algorithms. 
+Tremendous! We end up with an AUC of 0.806!! Awesome! In this case, random forest benefitted from the splitting of our data set into two groups of varying patterns. In essence it managed to create better trees for each type which it couldn't do with the larger original set. Mind you, this doesn't always pan out this way - a lot has to do on the type of data you are dealing with and the modeling algorithms.
 
-<B>Note:</B> H2O is a fast moving development project, so if certain aspects of this walk-through don't work, check the documentation for any changes in the library since the making of this walk-through.
-
+<B>Note:</B> H2O is a fast moving development project, so if certain aspects of this walk-through don't work, check the documentation for changes in the library.
 <BR><BR>        
 <a id="sourcecode">Full source code</a>:
 <BR><BR>
