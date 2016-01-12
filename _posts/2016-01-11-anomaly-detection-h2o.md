@@ -5,7 +5,7 @@ category: Machine Learning
 tags: h2o aws ec2 modeling r
 year: 2016
 month: 01
-day: 12
+day: 11
 published: true
 summary: "See how to use H2O's anomaly detection and R to separate a data set into an easy to model and hard to model subset to gain predictive accuracy. We'll also talk a brief look at non-linear dimensional reduction."
 image: anomaly-detection-h2o/encoding_squeeze.png
