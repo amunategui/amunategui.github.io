@@ -192,15 +192,14 @@ plot(sort(err$Reconstruction.MSE))
 <BR><BR>
 <p style="text-align:center">
 <img src="../img/posts/anomaly-detection-h2o/annomally_error_plot.png" alt="Error Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
-
+<BR><BR>
 <h3><a id="anomaly">Modeling With and Without Anomalies</a></h3>
-The next logical step is to use the clean observations, those that the autoencoder reconstructed easily and model that with our random forest model.
+The next logical step is to use the clean observations, those that the autoencoder reconstructed easily and model that with our random forest model. We use the ``err``'s ``Reconstruction.MSE`` vector to gather everything below 0.1:
 
 ```{r}
 # rebuild train_df_auto with best observations
 train_df_auto <- obj_test[err$Reconstruction.MSE < 0.1,]
-```
-```{r}
+
 set.seed(1234)
 rf_model <- randomForest(x=train_df_auto[,feature_names],
                          y=as.factor(train_df_auto[,outcome_name]),
