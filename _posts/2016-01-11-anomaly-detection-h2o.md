@@ -56,7 +56,7 @@ Here is an interesting video from Arno Candel, the Chief Architect of H2O.ai, <a
 
 <BR><BR>
 <h3><a id="h2o">H2O on AWS</a></h3>
-I use **H2O** on Amazon Web Services (AWS) as it is both trivial to set up and advantageous to your research (H2O supports cluster computing for distributed tasks). In the video, I quickly set up a new H2O Amazon Web Service (AWS) instance but won't cover it here as it is fully covered in my previous walk-through and video entitled <a href='http://amunategui.github.io/h2o-on-aws/' target='_blank'>H2O & RStudio Server on Amazon Web Services (AWS), the Easy Way!</a>.
+I will use **H2O** on <a href='https://aws.amazon.com/' target='_blank'>Amazon Web Services (AWS)</a> as it is both trivial to set up and advantageous to your research (H2O supports cluster computing for distributed tasks). In the video, I quickly set up a new H2O Amazon Web Service (AWS) instance but won't cover it here as it is fully covered in my previous walk-through and video entitled <a href='http://amunategui.github.io/h2o-on-aws/' target='_blank'>H2O & RStudio Server on Amazon Web Services (AWS), the Easy Way!</a>.
 
 <h3><a id="code">Let's code!</a></h3>
 
@@ -140,7 +140,7 @@ validate_predictions <- predict(rf_model, newdata=validate_df[,feature_names], t
 
 Let's use the ``pROC`` library to calculate our AUC score (remember, an AUC of 0.5 is random and 1 is perfect) and plot a chart:
 <BR><BR>
-```{r eval=FALSE}
+```{r}
 install.packages('pROC')
 library(pROC)
 auc_rf = roc(response=as.numeric(as.factor(validate_df[,outcome_name]))-1,
