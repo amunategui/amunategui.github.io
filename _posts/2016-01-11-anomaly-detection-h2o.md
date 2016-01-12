@@ -194,7 +194,7 @@ plot(sort(err$Reconstruction.MSE))
 <img src="../img/posts/anomaly-detection-h2o/annomally_error_plot.png" alt="Error Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR><BR>
 <h3><a id="anomaly">Modeling With and Without Anomalies</a></h3>
-The next logical step is to use the clean observations, those that the autoencoder reconstructed easily and model that with our random forest model. We use the ``err``'s ``Reconstruction.MSE`` vector to gather everything below 0.1:
+The next logical step is to use the clean observations, those that the autoencoder reconstructed easily and model that with our random forest model. We use the ``err``'s ``Reconstruction.MSE`` vector to gather everything all observations in our prostate data set with an error below 0.1:
 
 ```{r}
 # rebuild train_df_auto with best observations
@@ -243,8 +243,8 @@ abline(h=0,col='green')
 <BR><BR>
 <p style="text-align:center">
 <img src="../img/posts/anomaly-detection-h2o/auc_0.743.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
-<BR>
-It should be clear by now that these top portions behave very differently under the same model. What bagging both models (adding both predictions together and dividing the total by two)?
+<BR><BR>
+It should be clear by now that these top portions behave very differently under the same model. What about bagging both prediction sets (adding both prediction vectors together and dividing the total by two)?
 
 ```{r}
 valid_all <- (validate_predictions_known[,2] + validate_predictions_unknown[,2]) / 2
@@ -263,9 +263,9 @@ abline(h=0,col='green')
 <img src="../img/posts/anomaly-detection-h2o/auc_0.806.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR>
 
-Tremendous! We end up with an AUC of 0.806!! Awesome! Mind you, this doesn't always pan out this way - a lot has to do on the type of data you are dealing with and the modeling algorithms.
+Tremendous! We end up with an AUC of 0.806!! Awesome! In this case, random forest benefitted from the splitting of our data set into two groups of varying patterns. In essence it managed to create better trees for each type which it couldn't do with the larger original set. Mind you, this doesn't always pan out this way - a lot has to do on the type of data you are dealing with and the modeling algorithms. 
 
-<B>Note:</B> H2O is a fast moving target so if certain aspects of this walk-through don't work, check the documentation if some aspect of the object model changed from the package you are using compared to the one used here.
+<B>Note:</B> H2O is a fast moving development project, so if certain aspects of this walk-through don't work, check the documentation for any changes in the library since the making of this walk-through.
 
 <BR><BR>        
 <a id="sourcecode">Full source code</a>:
