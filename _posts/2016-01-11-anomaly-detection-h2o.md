@@ -173,21 +173,24 @@ prostate.dl = h2o.deeplearning(x = feature_names, training_frame = prostate.hex,
                                autoencoder = TRUE,
                                reproducible = T,
                                seed = 1234,
-                               hidden = c(10,20,10), epochs = 50)
+                               hidden = c(6,5,6), epochs = 50)
 ```
 <BR><BR>
 We now call the <a href='http://rpackages.ianhowson.com/cran/h2o/man/h2o.anomaly.html' target='_blank'>h2o.anomaly</a> function to reconstruct the original data set using the reduced set of features and calculate a means squared error between both. Here we set ``per_feature`` parameter to FALSE in the ``h2o.anomaly`` function call as we want a reconstruction meany error based on observations, not individual features (but you should definitely play around feature-level scores as it could lead to important insights into your data).
 
 ```{r}
+# prostate.anon = h2o.anomaly(prostate.dl, prostate.hex, per_feature=TRUE)
+# head(prostate.anon)
+
 prostate.anon = h2o.anomaly(prostate.dl, prostate.hex, per_feature=FALSE)
 head(prostate.anon)
 err <- as.data.frame(prostate.anon)
 ```
 <BR><BR>
-Let's sort and plot the reconstructed MSE. The autoencoder struggles from index 150 onwards as the error count accelerates upwards. We can determine that the model recognizes patterns in the first 150 observations that it can't see as easily in the latter 50.
+Let's sort and plot the reconstructed MSE. The autoencoder struggles from index 150 onwards as the error count accelerates upwards. We can determine that the model recognizes patterns in the first 150 observations that it can't see as easily in the last 50.
 
 ```{r}
-plot(sort(err$Reconstruction.MSE))
+plot(sort(err$Reconstruction.MSE), main='Reconstruction Error')
 ```
 <BR><BR>
 <p style="text-align:center">
@@ -198,7 +201,7 @@ The next logical step is to use the clean observations, those that the autoencod
 
 ```{r}
 # rebuild train_df_auto with best observations
-train_df_auto <- obj_test[err$Reconstruction.MSE < 0.1,]
+train_df_auto <- train_df[err$Reconstruction.MSE < 0.1,]
 
 set.seed(1234)
 rf_model <- randomForest(x=train_df_auto[,feature_names],
@@ -219,12 +222,13 @@ abline(h=0,col='green')
 <p style="text-align:center">
 <img src="../img/posts/anomaly-detection-h2o/auc_0.78_easy.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR>
-An AUC of 0.771, an improvement over our original random forest model of 0.757 while using less observations!
+An AUC of 0.78, an improvement over our original random forest model of 0.757 while using less observations!
 
 Let's try the same model on the hard to reconstruct portion:
 
 ```{r}
-train_df_auto <- train_df[err$Reconstruction.MSE > 0.1,]
+# rebuild train_df_auto with best observations
+train_df_auto <- train_df[err$Reconstruction.MSE >= 0.1,]
 
 set.seed(1234)
 rf_model <- randomForest(x=train_df_auto[,feature_names],
@@ -263,7 +267,7 @@ abline(h=0,col='green')
 <img src="../img/posts/anomaly-detection-h2o/auc_0.816_final.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR>
 
-Tremendous! We end up with an AUC of 0.806!! Awesome! In this case, random forest benefitted from the splitting of our data set into two groups of varying patterns. In essence it managed to create better trees for each type which it couldn't do with the larger original set. Mind you, this doesn't always pan out this way - a lot has to do on the type of data you are dealing with and the modeling algorithms.
+Tremendous! We end up with an AUC of 0.816!! Awesome! In this case, random forest benefitted from the splitting of our data set into two groups of varying patterns. In essence it managed to create better trees for each type which it couldn't do with the larger original set. Mind you, this doesn't always pan out this way - a lot has to do on the type of data you are dealing with and the modeling algorithms.
 
 <B>Note:</B> H2O is a fast moving development project, so if certain aspects of this walk-through don't work, check the documentation for changes in the library.
 <BR><BR>       
