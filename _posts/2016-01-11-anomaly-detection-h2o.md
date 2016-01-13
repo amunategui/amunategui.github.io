@@ -122,7 +122,7 @@ dim(validate_df)
 ## [1] 187   8
 ```
 <BR><BR>
-Install **random forest** and **pROC** and run a simple classification model on outcome variable ``CAPSULE``:
+Install packages **randomForest** and **pROC** and run a simple classification model on outcome variable ``CAPSULE``:
 
 ```{r}
 install.packages('randomForest')
@@ -152,12 +152,12 @@ abline(h=0,col='green')
 ```
 <BR><BR>
 <p style="text-align:center">
-<img src="../img/posts/anomaly-detection-h2o/auc_0.757.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/anomaly-detection-h2o/auc_0.757_intro.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 
 We get an AUC of **0.757** with our current data split.
 <BR><BR>
 <h3><a id="autoencoder">Autoencoder</a></h3>
-Let's see how an unsupervised **autoencoder** can assist us here. Start by initializing an h2o instance and create an H2O frame from the prostate data set:
+Let's see how an unsupervised **autoencoding** can assist us here. Start by initializing an h2o instance and create an H2O frame from the prostate data set:
 
 ```{r}
 library(h2o)
@@ -166,7 +166,7 @@ localH2O = h2o.init()
 prostate.hex<-as.h2o(train_df, destination_frame="train.hex")
 ```
 <BR><BR>
-Getting down to the heart of our business, let's call the deeplearning function with parameter ``autoencoder`` set to TRUE:
+Getting down to the heart of our business, let's call the deeplearning function with parameter ``autoencoder`` set to TRUE (we also set the ``reproducible`` flag to ``TRUE`` along with a seed so we all see the same results but this is substantially slower than setting the flag to ``FALSE``):
 
 ```{r}
 prostate.dl = h2o.deeplearning(x = feature_names, training_frame = prostate.hex,
@@ -191,7 +191,7 @@ plot(sort(err$Reconstruction.MSE))
 ```
 <BR><BR>
 <p style="text-align:center">
-<img src="../img/posts/anomaly-detection-h2o/annomally_error_plot.png" alt="Error Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/anomaly-detection-h2o/err_plot.png" alt="Error Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR><BR>
 <h3><a id="anomaly">Modeling With and Without Anomalies</a></h3>
 The next logical step is to use the clean observations, those that the autoencoder reconstructed easily and model that with our random forest model. We use the ``err``'s ``Reconstruction.MSE`` vector to gather everything all observations in our prostate data set with an error below 0.1:
@@ -217,7 +217,7 @@ abline(h=0,col='green')
 ```
 <BR><BR>
 <p style="text-align:center">
-<img src="../img/posts/anomaly-detection-h2o/auc_0.771.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/anomaly-detection-h2o/auc_0.78_easy.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR>
 An AUC of 0.771, an improvement over our original random forest model of 0.757 while using less observations!
 
@@ -242,7 +242,7 @@ abline(h=0,col='green')
 ```
 <BR><BR>
 <p style="text-align:center">
-<img src="../img/posts/anomaly-detection-h2o/auc_0.743.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/anomaly-detection-h2o/auc_0.752_hard.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR><BR>
 It should be clear by now that these top portions behave very differently under the same model. What about bagging both prediction sets (adding both prediction vectors together and dividing the total by two)?
 
@@ -260,7 +260,7 @@ abline(h=0,col='green')
 ```
 <BR><BR>
 <p style="text-align:center">
-<img src="../img/posts/anomaly-detection-h2o/auc_0.806.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/anomaly-detection-h2o/auc_0.816_final.png" alt="AUC Chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <BR>
 
 Tremendous! We end up with an AUC of 0.806!! Awesome! In this case, random forest benefitted from the splitting of our data set into two groups of varying patterns. In essence it managed to create better trees for each type which it couldn't do with the larger original set. Mind you, this doesn't always pan out this way - a lot has to do on the type of data you are dealing with and the modeling algorithms.
@@ -288,9 +288,11 @@ set.seed(1234)
 random_splits <- runif(nrow(prostate_df))
 train_df <- prostate_df[random_splits < .5,]
 dim(train_df)
+
 validate_df <- prostate_df[random_splits >=.5,]
 dim(validate_df)
 
+# Get benchmark score
 
 # install.packages('randomForest')
 library(randomForest)
@@ -306,7 +308,6 @@ validate_predictions <- predict(rf_model, newdata=validate_df[,feature_names], t
 
 
 # install.packages('pROC')
-# AUC 0.757
 library(pROC)
 auc_rf = roc(response=as.numeric(as.factor(validate_df[,outcome_name]))-1,
              predictor=validate_predictions[,2])
@@ -315,30 +316,35 @@ plot(auc_rf, print.thres = "best", main=paste('AUC:',round(auc_rf$auc[[1]],3)))
 abline(h=1,col='blue')
 abline(h=0,col='green')
 
+# build autoencoder model
 
-# h2O time
 library(h2o)
 localH2O = h2o.init()
-
 prostate.hex<-as.h2o(train_df, destination_frame="train.hex")
-
 prostate.dl = h2o.deeplearning(x = feature_names, training_frame = prostate.hex,
                                autoencoder = TRUE,
                                reproducible = T,
                                seed = 1234,
-                               hidden = c(10,20,10), epochs = 50)
+                               hidden = c(6,5,6), epochs = 50)
+
+# interesting per feature error scores
+# prostate.anon = h2o.anomaly(prostate.dl, prostate.hex, per_feature=TRUE)
+# head(prostate.anon)
 
 prostate.anon = h2o.anomaly(prostate.dl, prostate.hex, per_feature=FALSE)
 head(prostate.anon)
 err <- as.data.frame(prostate.anon)
-plot(sort(err$Reconstruction.MSE), main='Reconstruction MSE')
 
-# rebuild obj_test with best observations
+# interesting reduced features (defaults to last hidden layer)
+# http://www.rdocumentation.org/packages/h2o/functions/h2o.deepfeatures
+# reduced_new  <- h2o.deepfeatures(prostate.dl, prostate.hex)
+
+plot(sort(err$Reconstruction.MSE))
+
+# use the easy portion and model with random forest using same settings
+
 train_df_auto <- train_df[err$Reconstruction.MSE < 0.1,]
 
-library(randomForest)
-outcome_name <- 'CAPSULE'
-feature_names <- setdiff(names(prostate_df), outcome_name)
 set.seed(1234)
 rf_model <- randomForest(x=train_df_auto[,feature_names],
                          y=as.factor(train_df_auto[,outcome_name]),
@@ -346,8 +352,6 @@ rf_model <- randomForest(x=train_df_auto[,feature_names],
 
 validate_predictions_known <- predict(rf_model, newdata=validate_df[,feature_names], type="prob")
 
-# AUC 0.771
-library(pROC)
 auc_rf = roc(response=as.numeric(as.factor(validate_df[,outcome_name]))-1,
              predictor=validate_predictions_known[,2])
 
@@ -355,12 +359,10 @@ plot(auc_rf, print.thres = "best", main=paste('AUC:',round(auc_rf$auc[[1]],3)))
 abline(h=1,col='blue')
 abline(h=0,col='green')
 
+# use the hard portion and model with random forest using same settings
 
-train_df_auto <- train_df[err$Reconstruction.MSE > 0.1,]
+train_df_auto <- train_df[err$Reconstruction.MSE >= 0.1,]
 
-library(randomForest)
-outcome_name <- 'CAPSULE'
-feature_names <- setdiff(names(prostate_df), outcome_name)
 set.seed(1234)
 rf_model <- randomForest(x=train_df_auto[,feature_names],
                          y=as.factor(train_df_auto[,outcome_name]),
@@ -368,8 +370,6 @@ rf_model <- randomForest(x=train_df_auto[,feature_names],
 
 validate_predictions_unknown <- predict(rf_model, newdata=validate_df[,feature_names], type="prob")
 
-# AUC 0.743
-library(pROC)
 auc_rf = roc(response=as.numeric(as.factor(validate_df[,outcome_name]))-1,
              predictor=validate_predictions_unknown[,2])
 
@@ -377,6 +377,8 @@ plot(auc_rf, print.thres = "best", main=paste('AUC:',round(auc_rf$auc[[1]],3)))
 abline(h=1,col='blue')
 abline(h=0,col='green')
 
+
+# bag both results set and measure final AUC score
 
 valid_all <- (validate_predictions_known[,2] + validate_predictions_unknown[,2]) / 2
 
@@ -388,5 +390,10 @@ auc_rf = roc(response=as.numeric(as.factor(validate_df[,outcome_name]))-1,
 plot(auc_rf, print.thres = "best", main=paste('AUC:',round(auc_rf$auc[[1]],3)))
 abline(h=1,col='blue')
 abline(h=0,col='green')
+
+
+
+
+
 
 ```
