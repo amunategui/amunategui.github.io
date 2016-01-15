@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Let's Get Rich! See how {quantmod} And R Can Enrich Your Knowledge Of The Financial Markets!
-category: Machine Learning 
+category: Machine Learning
 tags: exploring modeling visualizing quantmod r
 year: 2014
 month: 11
@@ -13,7 +13,7 @@ image: wallstreet/unnamed-chunk-11.png
 
 <BR>
 Check out my new class on <b>quantatative and technical analysis with quantmod and financial data</b>:<BR>
-<a href='https://www.udemy.com/practical-data-science-analyzing-stock-market-data-with-r/?couponCode=1010' target='_blank'><B>$10-off coupon to my new Udemy course - Practical Data Science: Analyzing Stock Market Data with R</B></a> 
+<a href='https://www.udemy.com/practical-data-science-analyzing-stock-market-data-with-r/?couponCode=1010' target='_blank'><B>$25 coupon to my new Udemy course - Practical Data Science: Analyzing Stock Market Data with R</B></a>
 <BR><BR>
 **Resources**
 <ul>
@@ -35,14 +35,14 @@ Check out my new class on <b>quantatative and technical analysis with quantmod a
 This walkthrough has two parts:
 
 <ol type="1">
- <li>The first part is a very basic introduction to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat.</li> 
+ <li>The first part is a very basic introduction to <b>quantmod</b> and, if you haven't used it before and need basic access to daily stock market data and charting, then you're in for a <b>huge</b> treat.</li>
 <li>The second part goes deeper into quantitative finance by leveraging <b>quantmod</b> to access all the stocks composing the <a href='http://www.nasdaq.com/markets/indices/nasdaq-100.aspx' target='_blank>'>NASDAQ 100 Index</a> to build a vocabulary of market moves and attempt to predict whether the following trading day's <b>volumne</b> will be <b>higher</b> or <b>lower</b>.</li>
 </ol>
 
 <BR><BR>
 <b>quantmod</b> stands for <i>"Quantitative Financial Modeling and Trading Framework for R"</i>
 <BR><BR>
-It has many features so check out the help file for a full coverage or the <a href='http://www.quantmod.com/' target='_blank'>Quantmod's official website</a>. 
+It has many features so check out the help file for a full coverage or the <a href='http://www.quantmod.com/' target='_blank'>Quantmod's official website</a>.
 <BR><BR>
 Let's see how Amazon has been doing lately:
 
@@ -51,10 +51,10 @@ library(quantmod)
 getSymbols(c("AMZN"))
 ```
 ```r
-barChart(AMZN,theme='white.mono',bar.type='hlc') 
+barChart(AMZN,theme='white.mono',bar.type='hlc')
 ```
 <BR><BR>
-![plot of chunk unnamed-chunk-1](../img/posts/wallstreet/unnamed-chunk-1.png) 
+![plot of chunk unnamed-chunk-1](../img/posts/wallstreet/unnamed-chunk-1.png)
 <BR><BR>
 The ``getSymbols`` function downloaded daily data going all the way back to January 2007. The ``barChart`` function displays the data in a nice clean fashion following a theme-based parameter (<a href='http://www.quantmod.com/' target='_blank'>see the help file for more</a>). Not bad for 2 lines of code!!
 <BR><BR>
@@ -66,7 +66,7 @@ chartSeries(GSPC, subset='last 3 months')
 addBBands(n = 20, sd = 2, ma = "SMA", draw = 'bands', on = -1)
 ```
 <BR><BR>
-![plot of chunk unnamed-chunk-22](../img/posts/wallstreet/unnamed-chunk-22.png) 
+![plot of chunk unnamed-chunk-22](../img/posts/wallstreet/unnamed-chunk-22.png)
 <BR><BR>
 <b>quantmod</b> uses <b>Yahoo</b> to get it's financial data. In the above example ``^GSPC`` represents the <b>S&P 500 Index</b>. Most financial product symbols are straightforward like <b>MSFT</b> for <b>Microsoft</b>. For indexes and other esoteric symbols, refer to <a href='http://finance.yahoo.com/lookup' target='_blank'>finance.yahoo.com/lookup</a> to see how they abbreviated it.
 <BR><BR>
@@ -79,18 +79,18 @@ Moving deeper into quantitative finance, let's design a pattern-based system to 
 We'll use <b>quantmod</b> to download all the stocks that compose the <b>NASDAQ 100 Index</b>. Then we'll ``merge`` together all our time series to synchronize them. This will collate the data by time and fill in any missing data with ``NA``s:
 
 ```r
-Nasdaq100_Symbols <- c("AAPL", "ADBE", "ADI", "ADP", "ADSK", "AKAM", "ALTR", "ALXN", 
-"AMAT", "AMGN", "AMZN", "ATVI", "AVGO", "BBBY", "BIDU", "BIIB", 
-"BRCM", "CA", "CELG", "CERN", "CHKP", "CHRW", "CHTR", "CMCSA", 
-"COST", "CSCO", "CTRX", "CTSH", "CTXS", "DISCA", "DISCK", "DISH", 
-"DLTR", "DTV", "EBAY", "EQIX", "ESRX", "EXPD", "EXPE", "FAST", 
-"FB", "FFIV", "FISV", "FOXA", "GILD", "GMCR", "GOOG", "GOOGL", 
-"GRMN", "HSIC", "ILMN", "INTC", "INTU", "ISRG", "KLAC", "KRFT", 
-"LBTYA", "LLTC", "LMCA", "LMCK", "LVNTA", "MAR", "MAT", "MDLZ", 
-"MNST", "MSFT", "MU", "MXIM", "MYL", "NFLX", "NTAP", "NVDA", 
-"NXPI", "ORLY", "PAYX", "PCAR", "PCLN", "QCOM", "QVCA", "REGN", 
-"ROST", "SBAC", "SBUX", "SIAL", "SIRI", "SNDK", "SPLS", "SRCL", 
-"STX", "SYMC", "TRIP", "TSCO", "TSLA", "TXN", "VIAB", "VIP", 
+Nasdaq100_Symbols <- c("AAPL", "ADBE", "ADI", "ADP", "ADSK", "AKAM", "ALTR", "ALXN",
+"AMAT", "AMGN", "AMZN", "ATVI", "AVGO", "BBBY", "BIDU", "BIIB",
+"BRCM", "CA", "CELG", "CERN", "CHKP", "CHRW", "CHTR", "CMCSA",
+"COST", "CSCO", "CTRX", "CTSH", "CTXS", "DISCA", "DISCK", "DISH",
+"DLTR", "DTV", "EBAY", "EQIX", "ESRX", "EXPD", "EXPE", "FAST",
+"FB", "FFIV", "FISV", "FOXA", "GILD", "GMCR", "GOOG", "GOOGL",
+"GRMN", "HSIC", "ILMN", "INTC", "INTU", "ISRG", "KLAC", "KRFT",
+"LBTYA", "LLTC", "LMCA", "LMCK", "LVNTA", "MAR", "MAT", "MDLZ",
+"MNST", "MSFT", "MU", "MXIM", "MYL", "NFLX", "NTAP", "NVDA",
+"NXPI", "ORLY", "PAYX", "PCAR", "PCLN", "QCOM", "QVCA", "REGN",
+"ROST", "SBAC", "SBUX", "SIAL", "SIRI", "SNDK", "SPLS", "SRCL",
+"STX", "SYMC", "TRIP", "TSCO", "TSLA", "TXN", "VIAB", "VIP",
 "VOD", "VRSK", "VRTX", "WDC", "WFM", "WYNN", "XLNX", "YHOO")
 getSymbols(Nasdaq100_Symbols)
 ```
@@ -102,37 +102,37 @@ getSymbols(Nasdaq100_Symbols)
 ```
 
 ```
-##   [1] "AAPL"  "ADBE"  "ADI"   "ADP"   "ADSK"  "AKAM"  "ALTR"  "ALXN" 
-##   [9] "AMAT"  "AMGN"  "AMZN"  "ATVI"  "AVGO"  "BBBY"  "BIDU"  "BIIB" 
+##   [1] "AAPL"  "ADBE"  "ADI"   "ADP"   "ADSK"  "AKAM"  "ALTR"  "ALXN"
+##   [9] "AMAT"  "AMGN"  "AMZN"  "ATVI"  "AVGO"  "BBBY"  "BIDU"  "BIIB"
 ##  [17] "BRCM"  "CA"    "CELG"  "CERN"  "CHKP"  "CHRW"  "CHTR"  "CMCSA"
-##  [25] "COST"  "CSCO"  "CTRX"  "CTSH"  "CTXS"  "DISCA" "DISCK" "DISH" 
-##  [33] "DLTR"  "DTV"   "EBAY"  "EQIX"  "ESRX"  "EXPD"  "EXPE"  "FAST" 
+##  [25] "COST"  "CSCO"  "CTRX"  "CTSH"  "CTXS"  "DISCA" "DISCK" "DISH"
+##  [33] "DLTR"  "DTV"   "EBAY"  "EQIX"  "ESRX"  "EXPD"  "EXPE"  "FAST"
 ##  [41] "FB"    "FFIV"  "FISV"  "FOXA"  "GILD"  "GMCR"  "GOOG"  "GOOGL"
-##  [49] "GRMN"  "HSIC"  "ILMN"  "INTC"  "INTU"  "ISRG"  "KLAC"  "KRFT" 
-##  [57] "LBTYA" "LLTC"  "LMCA"  "LMCK"  "LVNTA" "MAR"   "MAT"   "MDLZ" 
-##  [65] "MNST"  "MSFT"  "MU"    "MXIM"  "MYL"   "NFLX"  "NTAP"  "NVDA" 
-##  [73] "NXPI"  "ORLY"  "PAYX"  "PCAR"  "PCLN"  "QCOM"  "QVCA"  "REGN" 
-##  [81] "ROST"  "SBAC"  "SBUX"  "SIAL"  "SIRI"  "SNDK"  "SPLS"  "SRCL" 
+##  [49] "GRMN"  "HSIC"  "ILMN"  "INTC"  "INTU"  "ISRG"  "KLAC"  "KRFT"
+##  [57] "LBTYA" "LLTC"  "LMCA"  "LMCK"  "LVNTA" "MAR"   "MAT"   "MDLZ"
+##  [65] "MNST"  "MSFT"  "MU"    "MXIM"  "MYL"   "NFLX"  "NTAP"  "NVDA"
+##  [73] "NXPI"  "ORLY"  "PAYX"  "PCAR"  "PCLN"  "QCOM"  "QVCA"  "REGN"
+##  [81] "ROST"  "SBAC"  "SBUX"  "SIAL"  "SIRI"  "SNDK"  "SPLS"  "SRCL"
 ##  [89] "STX"   "SYMC"  "TRIP"  "TSCO"  "TSLA"  "TXN"   "VIAB"  "VIP"  
 ##  [97] "VOD"   "VRSK"  "VRTX"  "WDC"   "WFM"   "WYNN"  "XLNX"  "YHOO"
 ```
 <BR><BR>
-Be warned, that this does take a little time as <b>quantmod</b> will throttle the download. Each symbol is loaded in memory under the symbol name, therefore we have over 100 new objects loaded in memory each with years of daily market data. As these are independent time series, we have to merge everything together and fill in missing data so everything fits nicely in a data frame. We'll use the ``merge.xts`` function to merge by time all these objects into one data frame: 
+Be warned, that this does take a little time as <b>quantmod</b> will throttle the download. Each symbol is loaded in memory under the symbol name, therefore we have over 100 new objects loaded in memory each with years of daily market data. As these are independent time series, we have to merge everything together and fill in missing data so everything fits nicely in a data frame. We'll use the ``merge.xts`` function to merge by time all these objects into one data frame:
 
 
 ```r
-nasdaq100 <- data.frame(as.xts(merge(AAPL, ADBE, ADI, ADP, ADSK, AKAM, 
-                ALTR, ALXN,AMAT, AMGN, AMZN, ATVI, AVGO, BBBY, BIDU, BIIB, 
-                 BRCM, CA, CELG, CERN, CHKP, CHRW, CHTR, CMCSA, 
-                 COST, CSCO, CTRX, CTSH, CTXS, DISCA, DISCK, DISH, 
-                 DLTR, DTV, EBAY, EQIX, ESRX, EXPD, EXPE, FAST, 
-                 FB, FFIV, FISV, FOXA, GILD, GMCR, GOOG, GOOGL, 
-                 GRMN, HSIC, ILMN, INTC, INTU, ISRG, KLAC, KRFT, 
-                 LBTYA, LLTC, LMCA, LMCK, LVNTA, MAR, MAT, MDLZ, 
-                 MNST, MSFT, MU, MXIM, MYL, NFLX, NTAP, NVDA, 
-                 NXPI, ORLY, PAYX, PCAR, PCLN, QCOM, QVCA, REGN, 
-                 ROST, SBAC, SBUX, SIAL, SIRI, SNDK, SPLS, SRCL, 
-                 STX, SYMC, TRIP, TSCO, TSLA, TXN, VIAB, VIP, 
+nasdaq100 <- data.frame(as.xts(merge(AAPL, ADBE, ADI, ADP, ADSK, AKAM,
+                ALTR, ALXN,AMAT, AMGN, AMZN, ATVI, AVGO, BBBY, BIDU, BIIB,
+                 BRCM, CA, CELG, CERN, CHKP, CHRW, CHTR, CMCSA,
+                 COST, CSCO, CTRX, CTSH, CTXS, DISCA, DISCK, DISH,
+                 DLTR, DTV, EBAY, EQIX, ESRX, EXPD, EXPE, FAST,
+                 FB, FFIV, FISV, FOXA, GILD, GMCR, GOOG, GOOGL,
+                 GRMN, HSIC, ILMN, INTC, INTU, ISRG, KLAC, KRFT,
+                 LBTYA, LLTC, LMCA, LMCK, LVNTA, MAR, MAT, MDLZ,
+                 MNST, MSFT, MU, MXIM, MYL, NFLX, NTAP, NVDA,
+                 NXPI, ORLY, PAYX, PCAR, PCLN, QCOM, QVCA, REGN,
+                 ROST, SBAC, SBUX, SIAL, SIRI, SNDK, SPLS, SRCL,
+                 STX, SYMC, TRIP, TSCO, TSLA, TXN, VIAB, VIP,
                  VOD, VRSK, VRTX, WDC, WFM, WYNN, XLNX, YHOO)))
 head(nasdaq100[,1:12],2)
 ```
@@ -149,7 +149,7 @@ head(nasdaq100[,1:12],2)
 ## 2007-01-04     4503700         40.82
 ```
 <BR><BR>
-Now that we have a handful of years of market data for every stock currently in the <b>NASDAQ 100 Index</b>, we need to do something with it. We're going to create a variety of measures between price and volume points. The idea is to quantify stock moves as patterns by subtracting one day versus a previous one. We'll create a series of differences: 
+Now that we have a handful of years of market data for every stock currently in the <b>NASDAQ 100 Index</b>, we need to do something with it. We're going to create a variety of measures between price and volume points. The idea is to quantify stock moves as patterns by subtracting one day versus a previous one. We'll create a series of differences:
 <ul>
 <li type="square">1 day versus 2 days ago</li>
 <li type="square">1 day versus 3 days ago</li>
@@ -178,7 +178,7 @@ nasdaq100$outcome <- ifelse(nasdaq100[,paste0(outcomeSymbol,'.1')] > nasdaq100[,
 nasdaq100 <- nasdaq100[,!names(nasdaq100) %in% c(paste0(outcomeSymbol,'.1'))]
 ```
 <BR><BR>
-Cast the date field to type ``date`` as it currently is of type ``character`` and sort by decreasing order: 
+Cast the date field to type ``date`` as it currently is of type ``character`` and sort by decreasing order:
 
 
 ```r
@@ -197,7 +197,7 @@ GetDiffDays <- function(objDF,days=c(10), offLimitsSymbols=c('outcome'), roundBy
                 if (!sym %in% offLimitsSymbols) {
                         print(paste('*********', sym))
                         objDF[,sym] <- round(scale(objDF[,sym]),roundByScaler)
-                        
+
                         print(paste('theColName', sym))
                         for (day in days) {
                                 objDF[paste0(sym,'_',day)] <- c(diff(objDF[,sym],lag = day),rep(x=0,day)) * -1
@@ -255,16 +255,16 @@ dput(names(nasdaq100)[grepl('YHOO.',names(nasdaq100))])
 ```
 
 ```
-## c("YHOO.Open", "YHOO.High", "YHOO.Low", "YHOO.Close", "YHOO.Volume", 
-## "YHOO.Adjusted", "YHOO.Open_1", "YHOO.Open_2", "YHOO.Open_3", 
-## "YHOO.Open_4", "YHOO.Open_5", "YHOO.Open_10", "YHOO.Open_20", 
-## "YHOO.High_1", "YHOO.High_2", "YHOO.High_3", "YHOO.High_4", "YHOO.High_5", 
-## "YHOO.High_10", "YHOO.High_20", "YHOO.Low_1", "YHOO.Low_2", "YHOO.Low_3", 
-## "YHOO.Low_4", "YHOO.Low_5", "YHOO.Low_10", "YHOO.Low_20", "YHOO.Close_1", 
-## "YHOO.Close_2", "YHOO.Close_3", "YHOO.Close_4", "YHOO.Close_5", 
-## "YHOO.Close_10", "YHOO.Close_20", "YHOO.Volume_1", "YHOO.Volume_2", 
-## "YHOO.Volume_3", "YHOO.Volume_4", "YHOO.Volume_5", "YHOO.Volume_10", 
-## "YHOO.Volume_20", "YHOO.Adjusted_1", "YHOO.Adjusted_2", "YHOO.Adjusted_3", 
+## c("YHOO.Open", "YHOO.High", "YHOO.Low", "YHOO.Close", "YHOO.Volume",
+## "YHOO.Adjusted", "YHOO.Open_1", "YHOO.Open_2", "YHOO.Open_3",
+## "YHOO.Open_4", "YHOO.Open_5", "YHOO.Open_10", "YHOO.Open_20",
+## "YHOO.High_1", "YHOO.High_2", "YHOO.High_3", "YHOO.High_4", "YHOO.High_5",
+## "YHOO.High_10", "YHOO.High_20", "YHOO.Low_1", "YHOO.Low_2", "YHOO.Low_3",
+## "YHOO.Low_4", "YHOO.Low_5", "YHOO.Low_10", "YHOO.Low_20", "YHOO.Close_1",
+## "YHOO.Close_2", "YHOO.Close_3", "YHOO.Close_4", "YHOO.Close_5",
+## "YHOO.Close_10", "YHOO.Close_20", "YHOO.Volume_1", "YHOO.Volume_2",
+## "YHOO.Volume_3", "YHOO.Volume_4", "YHOO.Volume_5", "YHOO.Volume_10",
+## "YHOO.Volume_20", "YHOO.Adjusted_1", "YHOO.Adjusted_2", "YHOO.Adjusted_3",
 ## "YHOO.Adjusted_4", "YHOO.Adjusted_5", "YHOO.Adjusted_10", "YHOO.Adjusted_20"
 ## )
 ```
@@ -297,20 +297,20 @@ set.seed(1234)
 split <- sample(nrow(nasdaq100), floor(0.7*nrow(nasdaq100)))
 train <-nasdaq100[split,]
 test <- nasdaq100[-split,]
- 
+
 bst <- xgboost(data = as.matrix(train[,predictorNames]),
                label = train$outcome,
                verbose=0,
                eta = 0.1,
-               gamma = 50, 
+               gamma = 50,
                nround = 50,
                missing = NaN,
                colsample_bytree = 0.1,
                subsample = 8.6,
                objective="binary:logistic")
- 
+
 predictions <- predict(bst, as.matrix(test[,predictorNames]), missing = NaN, outputmargin=TRUE)
- 
+
 library(pROC)
 auc <- roc(test$outcome, predictions)
 print(paste('AUC score:', auc$auc))
@@ -331,141 +331,13 @@ library(quantmod)
 
 # display a simple bar chart
 getSymbols(c("AMZN"))
-barChart(AMZN,theme='white.mono',bar.type='hlc') 
- 
-# display a complex chart
-getSymbols(c("^GSPC"))
-chartSeries(GSPC, subset='last 3 months')
-addBBands(n = 20, sd = 2, ma = "SMA", draw = 'bands', on = -1)
-
-# get market data for all symbols making up the NASDAQ 100 Index
-Nasdaq100_Symbols <- c("AAPL", "ADBE", "ADI", "ADP", "ADSK", "AKAM", "ALTR", "ALXN", 
-"AMAT", "AMGN", "AMZN", "ATVI", "AVGO", "BBBY", "BIDU", "BIIB", 
-"BRCM", "CA", "CELG", "CERN", "CHKP", "CHRW", "CHTR", "CMCSA", 
-"COST", "CSCO", "CTRX", "CTSH", "CTXS", "DISCA", "DISCK", "DISH", 
-"DLTR", "DTV", "EBAY", "EQIX", "ESRX", "EXPD", "EXPE", "FAST", 
-"FB", "FFIV", "FISV", "FOXA", "GILD", "GMCR", "GOOG", "GOOGL", 
-"GRMN", "HSIC", "ILMN", "INTC", "INTU", "ISRG", "KLAC", "KRFT", 
-"LBTYA", "LLTC", "LMCA", "LMCK", "LVNTA", "MAR", "MAT", "MDLZ", 
-"MNST", "MSFT", "MU", "MXIM", "MYL", "NFLX", "NTAP", "NVDA", 
-"NXPI", "ORLY", "PAYX", "PCAR", "PCLN", "QCOM", "QVCA", "REGN", 
-"ROST", "SBAC", "SBUX", "SIAL", "SIRI", "SNDK", "SPLS", "SRCL", 
-"STX", "SYMC", "TRIP", "TSCO", "TSLA", "TXN", "VIAB", "VIP", 
-"VOD", "VRSK", "VRTX", "WDC", "WFM", "WYNN", "XLNX", "YHOO")
-getSymbols(Nasdaq100_Symbols)
-
-# merge them all together
-nasdaq100 <- data.frame(as.xts(merge(AAPL, ADBE, ADI, ADP, ADSK, AKAM, 
-                ALTR, ALXN,AMAT, AMGN, AMZN, ATVI, AVGO, BBBY, BIDU, BIIB, 
-                 BRCM, CA, CELG, CERN, CHKP, CHRW, CHTR, CMCSA, 
-                 COST, CSCO, CTRX, CTSH, CTXS, DISCA, DISCK, DISH, 
-                 DLTR, DTV, EBAY, EQIX, ESRX, EXPD, EXPE, FAST, 
-                 FB, FFIV, FISV, FOXA, GILD, GMCR, GOOG, GOOGL, 
-                 GRMN, HSIC, ILMN, INTC, INTU, ISRG, KLAC, KRFT, 
-                 LBTYA, LLTC, LMCA, LMCK, LVNTA, MAR, MAT, MDLZ, 
-                 MNST, MSFT, MU, MXIM, MYL, NFLX, NTAP, NVDA, 
-                 NXPI, ORLY, PAYX, PCAR, PCLN, QCOM, QVCA, REGN, 
-                 ROST, SBAC, SBUX, SIAL, SIRI, SNDK, SPLS, SRCL, 
-                 STX, SYMC, TRIP, TSCO, TSLA, TXN, VIAB, VIP, 
-                 VOD, VRSK, VRTX, WDC, WFM, WYNN, XLNX, YHOO)))
-head(nasdaq100[,1:12],2)
-
-# set outcome variable
-outcomeSymbol <- 'FISV.Volume'
-
-# shift outcome value to be on same line as predictors
-library(xts)
-nasdaq100 <- xts(nasdaq100,order.by=as.Date(rownames(nasdaq100)))
-nasdaq100 <- as.data.frame(merge(nasdaq100, lm1=lag(nasdaq100[,outcomeSymbol],-1)))
-nasdaq100$outcome <- ifelse(nasdaq100[,paste0(outcomeSymbol,'.1')] > nasdaq100[,outcomeSymbol], 1, 0)
-
-# remove shifted down volume field as we don't care by the value
-nasdaq100 <- nasdaq100[,!names(nasdaq100) %in% c(paste0(outcomeSymbol,'.1'))]
-
-# cast date to true date and order in decreasing order
-nasdaq100$date <- as.Date(row.names(nasdaq100))
-nasdaq100 <- nasdaq100[order(as.Date(nasdaq100$date, "%m/%d/%Y"), decreasing = TRUE),]
-
-# calculate all day differences and populate them on same row
-GetDiffDays <- function(objDF,days=c(10), offLimitsSymbols=c('outcome'), roundByScaler=3) {
-        # needs to be sorted by date in decreasing order
-        ind <- sapply(objDF, is.numeric)
-        for (sym in names(objDF)[ind]) {
-                if (!sym %in% offLimitsSymbols) {
-                        print(paste('*********', sym))
-                        objDF[,sym] <- round(scale(objDF[,sym]),roundByScaler)
-                        
-                        print(paste('theColName', sym))
-                        for (day in days) {
-                                objDF[paste0(sym,'_',day)] <- c(diff(objDF[,sym],lag = day),rep(x=0,day)) * -1
-                        }
-                }
-        }
-        return (objDF)
-}
-
-# call the function with the following differences
-nasdaq100 <- GetDiffDays(nasdaq100, days=c(1,2,3,4,5,10,20), offLimitsSymbols=c('outcome'), roundByScaler=2)
-
-# drop most recent entry as we don't have an outcome
-nasdaq100 <- nasdaq100[2:nrow(nasdaq100),]
-
-# take a peek at YHOO features:
-dput(names(nasdaq100)[grepl('YHOO.',names(nasdaq100))])
-
-# well use POSIXlt to add day of the week, day of the month, day of the year
-nasdaq100$wday <- as.POSIXlt(nasdaq100$date)$wday
-nasdaq100$yday <- as.POSIXlt(nasdaq100$date)$mday
-nasdaq100$mon<- as.POSIXlt(nasdaq100$date)$mon
- 
-# remove date field and shuffle data frame
-nasdaq100 <- subset(nasdaq100, select=-c(date))
-nasdaq100 <- nasdaq100[sample(nrow(nasdaq100)),]
- 
-# let's model
-library(xgboost)
-predictorNames <- names(nasdaq100)[names(nasdaq100) != 'outcome']
- 
-set.seed(1234)
-split <- sample(nrow(nasdaq100), floor(0.7*nrow(nasdaq100)))
-train <-nasdaq100[split,]
-test <- nasdaq100[-split,]
- 
-bst <- xgboost(data = as.matrix(train[,predictorNames]),
-               label = train$outcome,
-               verbose=0,
-               eta = 0.1,
-               gamma = 50, 
-               missing = NaN,
-               nround = 50,
-               colsample_bytree = 0.1,
-               subsample = 8.6,
-               objective="binary:logistic")
- 
-predictions <- predict(bst, as.matrix(test[,predictorNames]), missing = NaN, outputmargin=TRUE)
- 
-library(pROC)
-auc <- roc(test$outcome, predictions)
-print(paste('AUC score:', auc$auc))
-```
-
-<BR><BR>        
-<a id="sourcecode_gbm">GBM source code</a>:
-<BR><BR>
-
-```r
-
-library(quantmod)
- 
-# display a simple bar chart
-getSymbols(c("AMZN"))
 barChart(AMZN,theme='white.mono',bar.type='hlc')
- 
+
 # display a complex chart
 getSymbols(c("^GSPC"))
 chartSeries(GSPC, subset='last 3 months')
 addBBands(n = 20, sd = 2, ma = "SMA", draw = 'bands', on = -1)
- 
+
 # get market data for all symbols making up the NASDAQ 100 Index
 Nasdaq100_Symbols <- c("AAPL", "ADBE", "ADI", "ADP", "ADSK", "AKAM", "ALTR", "ALXN",
 "AMAT", "AMGN", "AMZN", "ATVI", "AVGO", "BBBY", "BIDU", "BIIB",
@@ -481,7 +353,7 @@ Nasdaq100_Symbols <- c("AAPL", "ADBE", "ADI", "ADP", "ADSK", "AKAM", "ALTR", "AL
 "STX", "SYMC", "TRIP", "TSCO", "TSLA", "TXN", "VIAB", "VIP",
 "VOD", "VRSK", "VRTX", "WDC", "WFM", "WYNN", "XLNX", "YHOO")
 getSymbols(Nasdaq100_Symbols)
- 
+
 # merge them all together
 nasdaq100 <- data.frame(as.xts(merge(AAPL, ADBE, ADI, ADP, ADSK, AKAM,
                 ALTR, ALXN,AMAT, AMGN, AMZN, ATVI, AVGO, BBBY, BIDU, BIIB,
@@ -497,23 +369,23 @@ nasdaq100 <- data.frame(as.xts(merge(AAPL, ADBE, ADI, ADP, ADSK, AKAM,
                  STX, SYMC, TRIP, TSCO, TSLA, TXN, VIAB, VIP,
                  VOD, VRSK, VRTX, WDC, WFM, WYNN, XLNX, YHOO)))
 head(nasdaq100[,1:12],2)
- 
+
 # set outcome variable
 outcomeSymbol <- 'FISV.Volume'
- 
+
 # shift outcome value to be on same line as predictors
 library(xts)
 nasdaq100 <- xts(nasdaq100,order.by=as.Date(rownames(nasdaq100)))
 nasdaq100 <- as.data.frame(merge(nasdaq100, lm1=lag(nasdaq100[,outcomeSymbol],-1)))
 nasdaq100$outcome <- ifelse(nasdaq100[,paste0(outcomeSymbol,'.1')] > nasdaq100[,outcomeSymbol], 1, 0)
- 
+
 # remove shifted down volume field as we don't care by the value
 nasdaq100 <- nasdaq100[,!names(nasdaq100) %in% c(paste0(outcomeSymbol,'.1'))]
- 
+
 # cast date to true date and order in decreasing order
 nasdaq100$date <- as.Date(row.names(nasdaq100))
 nasdaq100 <- nasdaq100[order(as.Date(nasdaq100$date, "%m/%d/%Y"), decreasing = TRUE),]
- 
+
 # calculate all day differences and populate them on same row
 GetDiffDays <- function(objDF,days=c(10), offLimitsSymbols=c('outcome'), roundByScaler=3) {
         # needs to be sorted by date in decreasing order
@@ -522,7 +394,7 @@ GetDiffDays <- function(objDF,days=c(10), offLimitsSymbols=c('outcome'), roundBy
                 if (!sym %in% offLimitsSymbols) {
                         print(paste('*********', sym))
                         objDF[,sym] <- round(scale(objDF[,sym]),roundByScaler)
- 
+
                         print(paste('theColName', sym))
                         for (day in days) {
                                 objDF[paste0(sym,'_',day)] <- c(diff(objDF[,sym],lag = day),rep(x=0,day)) * -1
@@ -531,38 +403,166 @@ GetDiffDays <- function(objDF,days=c(10), offLimitsSymbols=c('outcome'), roundBy
         }
         return (objDF)
 }
- 
+
 # call the function with the following differences
 nasdaq100 <- GetDiffDays(nasdaq100, days=c(1,2,3,4,5,10,20), offLimitsSymbols=c('outcome'), roundByScaler=2)
- 
+
 # drop most recent entry as we don't have an outcome
 nasdaq100 <- nasdaq100[2:nrow(nasdaq100),]
- 
+
 # take a peek at YHOO features:
 dput(names(nasdaq100)[grepl('YHOO.',names(nasdaq100))])
- 
+
 # well use POSIXlt to add day of the week, day of the month, day of the year
 nasdaq100$wday <- as.POSIXlt(nasdaq100$date)$wday
 nasdaq100$yday <- as.POSIXlt(nasdaq100$date)$mday
 nasdaq100$mon<- as.POSIXlt(nasdaq100$date)$mon
- 
+
 # remove date field and shuffle data frame
 nasdaq100 <- subset(nasdaq100, select=-c(date))
 nasdaq100 <- nasdaq100[sample(nrow(nasdaq100)),]
- 
+
 # let's model
-library(caret)
+library(xgboost)
 predictorNames <- names(nasdaq100)[names(nasdaq100) != 'outcome']
- 
+
 set.seed(1234)
 split <- sample(nrow(nasdaq100), floor(0.7*nrow(nasdaq100)))
 train <-nasdaq100[split,]
 test <- nasdaq100[-split,]
- 
+
+bst <- xgboost(data = as.matrix(train[,predictorNames]),
+               label = train$outcome,
+               verbose=0,
+               eta = 0.1,
+               gamma = 50,
+               missing = NaN,
+               nround = 50,
+               colsample_bytree = 0.1,
+               subsample = 8.6,
+               objective="binary:logistic")
+
+predictions <- predict(bst, as.matrix(test[,predictorNames]), missing = NaN, outputmargin=TRUE)
+
+library(pROC)
+auc <- roc(test$outcome, predictions)
+print(paste('AUC score:', auc$auc))
+```
+
+<BR><BR>        
+<a id="sourcecode_gbm">GBM source code</a>:
+<BR><BR>
+
+```r
+
+library(quantmod)
+
+# display a simple bar chart
+getSymbols(c("AMZN"))
+barChart(AMZN,theme='white.mono',bar.type='hlc')
+
+# display a complex chart
+getSymbols(c("^GSPC"))
+chartSeries(GSPC, subset='last 3 months')
+addBBands(n = 20, sd = 2, ma = "SMA", draw = 'bands', on = -1)
+
+# get market data for all symbols making up the NASDAQ 100 Index
+Nasdaq100_Symbols <- c("AAPL", "ADBE", "ADI", "ADP", "ADSK", "AKAM", "ALTR", "ALXN",
+"AMAT", "AMGN", "AMZN", "ATVI", "AVGO", "BBBY", "BIDU", "BIIB",
+"BRCM", "CA", "CELG", "CERN", "CHKP", "CHRW", "CHTR", "CMCSA",
+"COST", "CSCO", "CTRX", "CTSH", "CTXS", "DISCA", "DISCK", "DISH",
+"DLTR", "DTV", "EBAY", "EQIX", "ESRX", "EXPD", "EXPE", "FAST",
+"FB", "FFIV", "FISV", "FOXA", "GILD", "GMCR", "GOOG", "GOOGL",
+"GRMN", "HSIC", "ILMN", "INTC", "INTU", "ISRG", "KLAC", "KRFT",
+"LBTYA", "LLTC", "LMCA", "LMCK", "LVNTA", "MAR", "MAT", "MDLZ",
+"MNST", "MSFT", "MU", "MXIM", "MYL", "NFLX", "NTAP", "NVDA",
+"NXPI", "ORLY", "PAYX", "PCAR", "PCLN", "QCOM", "QVCA", "REGN",
+"ROST", "SBAC", "SBUX", "SIAL", "SIRI", "SNDK", "SPLS", "SRCL",
+"STX", "SYMC", "TRIP", "TSCO", "TSLA", "TXN", "VIAB", "VIP",
+"VOD", "VRSK", "VRTX", "WDC", "WFM", "WYNN", "XLNX", "YHOO")
+getSymbols(Nasdaq100_Symbols)
+
+# merge them all together
+nasdaq100 <- data.frame(as.xts(merge(AAPL, ADBE, ADI, ADP, ADSK, AKAM,
+                ALTR, ALXN,AMAT, AMGN, AMZN, ATVI, AVGO, BBBY, BIDU, BIIB,
+                 BRCM, CA, CELG, CERN, CHKP, CHRW, CHTR, CMCSA,
+                 COST, CSCO, CTRX, CTSH, CTXS, DISCA, DISCK, DISH,
+                 DLTR, DTV, EBAY, EQIX, ESRX, EXPD, EXPE, FAST,
+                 FB, FFIV, FISV, FOXA, GILD, GMCR, GOOG, GOOGL,
+                 GRMN, HSIC, ILMN, INTC, INTU, ISRG, KLAC, KRFT,
+                 LBTYA, LLTC, LMCA, LMCK, LVNTA, MAR, MAT, MDLZ,
+                 MNST, MSFT, MU, MXIM, MYL, NFLX, NTAP, NVDA,
+                 NXPI, ORLY, PAYX, PCAR, PCLN, QCOM, QVCA, REGN,
+                 ROST, SBAC, SBUX, SIAL, SIRI, SNDK, SPLS, SRCL,
+                 STX, SYMC, TRIP, TSCO, TSLA, TXN, VIAB, VIP,
+                 VOD, VRSK, VRTX, WDC, WFM, WYNN, XLNX, YHOO)))
+head(nasdaq100[,1:12],2)
+
+# set outcome variable
+outcomeSymbol <- 'FISV.Volume'
+
+# shift outcome value to be on same line as predictors
+library(xts)
+nasdaq100 <- xts(nasdaq100,order.by=as.Date(rownames(nasdaq100)))
+nasdaq100 <- as.data.frame(merge(nasdaq100, lm1=lag(nasdaq100[,outcomeSymbol],-1)))
+nasdaq100$outcome <- ifelse(nasdaq100[,paste0(outcomeSymbol,'.1')] > nasdaq100[,outcomeSymbol], 1, 0)
+
+# remove shifted down volume field as we don't care by the value
+nasdaq100 <- nasdaq100[,!names(nasdaq100) %in% c(paste0(outcomeSymbol,'.1'))]
+
+# cast date to true date and order in decreasing order
+nasdaq100$date <- as.Date(row.names(nasdaq100))
+nasdaq100 <- nasdaq100[order(as.Date(nasdaq100$date, "%m/%d/%Y"), decreasing = TRUE),]
+
+# calculate all day differences and populate them on same row
+GetDiffDays <- function(objDF,days=c(10), offLimitsSymbols=c('outcome'), roundByScaler=3) {
+        # needs to be sorted by date in decreasing order
+        ind <- sapply(objDF, is.numeric)
+        for (sym in names(objDF)[ind]) {
+                if (!sym %in% offLimitsSymbols) {
+                        print(paste('*********', sym))
+                        objDF[,sym] <- round(scale(objDF[,sym]),roundByScaler)
+
+                        print(paste('theColName', sym))
+                        for (day in days) {
+                                objDF[paste0(sym,'_',day)] <- c(diff(objDF[,sym],lag = day),rep(x=0,day)) * -1
+                        }
+                }
+        }
+        return (objDF)
+}
+
+# call the function with the following differences
+nasdaq100 <- GetDiffDays(nasdaq100, days=c(1,2,3,4,5,10,20), offLimitsSymbols=c('outcome'), roundByScaler=2)
+
+# drop most recent entry as we don't have an outcome
+nasdaq100 <- nasdaq100[2:nrow(nasdaq100),]
+
+# take a peek at YHOO features:
+dput(names(nasdaq100)[grepl('YHOO.',names(nasdaq100))])
+
+# well use POSIXlt to add day of the week, day of the month, day of the year
+nasdaq100$wday <- as.POSIXlt(nasdaq100$date)$wday
+nasdaq100$yday <- as.POSIXlt(nasdaq100$date)$mday
+nasdaq100$mon<- as.POSIXlt(nasdaq100$date)$mon
+
+# remove date field and shuffle data frame
+nasdaq100 <- subset(nasdaq100, select=-c(date))
+nasdaq100 <- nasdaq100[sample(nrow(nasdaq100)),]
+
+# let's model
+library(caret)
+predictorNames <- names(nasdaq100)[names(nasdaq100) != 'outcome']
+
+set.seed(1234)
+split <- sample(nrow(nasdaq100), floor(0.7*nrow(nasdaq100)))
+train <-nasdaq100[split,]
+test <- nasdaq100[-split,]
+
 train$outcome <- ifelse(train$outcome==1,'yes','nope')
 # create caret trainControl object to control the number of cross-validations performed
 objControl <- trainControl(method='cv', number=2, returnResamp='none', summaryFunction = twoClassSummary, classProbs = TRUE)
- 
+
 # run model
 bst <- train(train[,predictorNames],  as.factor(train$outcome),
                                    method='gbm',
@@ -570,13 +570,12 @@ bst <- train(train[,predictorNames],  as.factor(train$outcome),
                                    metric = "ROC",
                                    tuneGrid = expand.grid(n.trees = 5, interaction.depth = 3, shrinkage = 0.1)
 )
- 
+
 predictions <- predict(object=bst, train[,predictorNames], type='prob')
 library(pROC)
 auc <- auc(train$outcome,predictions[[2]])
 print(paste('AUC score:', auc))
- 
- 
+
+
 
 ```
-
