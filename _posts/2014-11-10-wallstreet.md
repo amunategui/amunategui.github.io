@@ -13,7 +13,7 @@ image: wallstreet/unnamed-chunk-11.png
 
 <BR>
 Check out my new class on <b>quantatative and technical analysis with quantmod and financial data</b>:<BR>
-<a href='https://www.udemy.com/practical-data-science-analyzing-stock-market-data-with-r/?couponCode=1010' target='_blank'><B>$25 coupon to my new Udemy course - Practical Data Science: Analyzing Stock Market Data with R</B></a>
+<a href='https://www.udemy.com/practical-data-science-analyzing-stock-market-data-with-r/?couponCode=1111' target='_blank'><B>$25 coupon to my new Udemy course - Practical Data Science: Analyzing Stock Market Data with R</B></a>
 <BR><BR>
 **Resources**
 <ul>
