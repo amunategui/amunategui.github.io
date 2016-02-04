@@ -29,7 +29,7 @@ As the name implies, the ``dummyVars`` function allows you to create dummy varia
 
 If you are planning on doing predictive analytics or machine learning and want to use regression or any other modeling technique that requires numerical data, you will need to transform your text data into numbers otherwise you run the risk of leaving a lot of information on the table...
 
-In R, there are plenty of ways of translating text into numerical data. You can do it manually, use a base function, such as **matrix**, or a packaged function like dummyVarfrom the caret package. One of the big advantages of going with the caret package is that it's full of features, including hundreds of algorithms and pre-processing functions. Once your data fits into caret's modular design, it can be run through different models with minimal tweaking.
+In R, there are plenty of ways of translating text into numerical data. You can do it manually, use a base function, such as **matrix**, or a packaged function like dummyVar from the caret package. One of the big advantages of going with the caret package is that it's full of features, including hundreds of algorithms and pre-processing functions. Once your data fits into caret's modular design, it can be run through different models with minimal tweaking.
 
 Let's look at a few examples of dummy variables. If you have a survey question with 5 categorical values such as very unhappy, unhappy, neutral, happy and very happy.
 
@@ -65,8 +65,8 @@ print(survey)
 <BR>
 So, the above could easily be used in a model that needs numbers and still represent that data accurately using the 'rank' variable instead of 'service'. **But** this only works in specific situations where you have somewhat linear and continuous-like data. What happens with categorical values such as marital status, gender, alive?
 <BR><BR>
-Does it make sense to be a quarter female? Or half single? Even numerical data of a categorical nature may require transformation. Take the zip code system. Does the half-way point between two zip codes make geographical sense? Because that is how a regression model would use it. 
-<BR><BR
+Does it make sense to be a quarter female? Or half single? Even numerical data of a categorical nature may require transformation. Take the zip code system. Does the half-way point between two zip codes make geographical sense? Because that is how a regression model would use it.
+<BR><BR>
 It may work in a fuzzy-logic way but it won't help in predicting much; therefore we need a more precise way of translating these values into numbers so that they can be regressed by the model.
 
 ```r
@@ -79,9 +79,9 @@ The **dummyVars** function breaks out unique values from a column into individua
 
 ```r
 customers <- data.frame(
-                id=c(10,20,30,40,50), 
-                gender=c('male','female','female','male','female'), 
-                mood=c('happy','sad','happy','sad','happy'), 
+                id=c(10,20,30,40,50),
+                gender=c('male','female','female','male','female'),
+                mood=c('happy','sad','happy','sad','happy'),
                 outcome=c(1,1,0,0,0))
 ```
 <BR>
@@ -107,9 +107,9 @@ If you just want one column transform you need to include that column in the for
 
 ```r
 customers <- data.frame(
-                id=c(10,20,30,40,50), 
-                gender=c('male','female','female','male','female'), 
-                mood=c('happy','sad','happy','sad','happy'), 
+                id=c(10,20,30,40,50),
+                gender=c('male','female','female','male','female'),
+                mood=c('happy','sad','happy','sad','happy'),
                 outcome=c(1,1,0,0,0))
 
 dmy <- dummyVars(" ~ gender", data = customers)
@@ -132,9 +132,9 @@ Let's turn on ``fullRank`` and try our data frame again:
 
 ```r
 customers <- data.frame(
-                id=c(10,20,30,40,50), 
-                gender=c('male','female','female','male','female'), 
-                mood=c('happy','sad','happy','sad','happy'), 
+                id=c(10,20,30,40,50),
+                gender=c('male','female','female','male','female'),
+                mood=c('happy','sad','happy','sad','happy'),
                 outcome=c(1,1,0,0,0))
 
 dmy <- dummyVars(" ~ .", data = customers, fullRank=T)
@@ -166,14 +166,14 @@ print(survey)
 survey <- data.frame(service=c('very unhappy','unhappy','neutral','happy','very happy'), rank=c(1,2,3,4,5))
 print(survey)
 
-library(caret) 
+library(caret)
 
 ?dummyVars # many options
 
 customers <- data.frame(
-        id=c(10,20,30,40,50), 
-        gender=c('male','female','female','male','female'), 
-        mood=c('happy','sad','happy','sad','happy'), 
+        id=c(10,20,30,40,50),
+        gender=c('male','female','female','male','female'),
+        mood=c('happy','sad','happy','sad','happy'),
         outcome=c(1,1,0,0,0))
 
 dmy <- dummyVars(" ~ .", data = customers)
@@ -194,4 +194,3 @@ dmy <- dummyVars(" ~ .", data = customers, fullRank=T)
 trsf <- data.frame(predict(dmy, newdata = customers))
 print(trsf)
 ```
-
