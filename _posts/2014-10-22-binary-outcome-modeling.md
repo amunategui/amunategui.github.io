@@ -78,7 +78,7 @@ print(str(titanicDF))
 ## NULL
 ```
 <br><br>
-Our data is starting to look good but we have to fix the **factor** variables as most models only accept **numeric** data. Again, **gbm** can deal with factor variables as it will dummify them internally, but **glmnet** won't. In a nutshell, dummifying factors breaks all the unique values into separate columns (<a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">see my post on Brief Walkthrough Of The dummyVars function from {caret}</a>). This is a **caret** function:
+Our data is starting to look good but we have to fix the **factor** variables as most models only accept **numeric** data. Again, **gbm** can deal with factor variables as it will dummify them internally, but **glmnet** won't. In a nutshell, dummifying factors breaks all the unique values into separate columns (<a href="http://amunategui.github.io/dummyVar-Walkthrough" target="_blank">see my post on Brief Walkthrough Of The dummyVars function from {caret}</a>). This is a **caret** function:
 
 
 ```r
