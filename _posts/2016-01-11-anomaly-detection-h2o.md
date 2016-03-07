@@ -275,7 +275,8 @@ Tremendous! We end up with an AUC of 0.816!! Awesome! In this case, random fores
 <a id="sourcecode">Full source code</a>:
 <BR><BR>
 
-```{r}
+```r
+
 # install.packages("h2o")
 
 # point to the prostate data set in the h2o folder - no need to load h2o in memory yet
