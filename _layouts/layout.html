@@ -36,18 +36,16 @@
 {% include navigation.html %}
 
 <div class="container">
-	<div class="marketing">
-		<div class="content">	  
-			<div class="row">			   				
-				<div class="span7 columns">						
+
+  <div class="row">
+    <div class="col-md-9" role="main">		   				
+			 <div class="fu-docs-section">					
 					{{ content }} 					
 				</div>	
-				 				
-					 {% include aboutme.html %}							
-				 		
-			</div>						
-		</div>			
-	</div>		
+	</div>	
+				 	{% include aboutme.html %}								
+		 					
+	 	
 </div>
 
 {% include footer.html %}
