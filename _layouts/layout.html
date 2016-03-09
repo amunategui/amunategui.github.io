@@ -52,5 +52,49 @@
 
 {% include footer.html %}
   
+
+<script src="http://getfuelux.com/assets/vendor/requirejs/require.js"></script>
+<script>
+  (function () {
+    requirejs.config({
+      config: {
+        moment: {
+          noGlobal: true
+        }
+      },
+      paths: {
+        assets: 'http://getfuelux.com/assets',
+        bootstrap: 'http://getfuelux.com/assets/vendor/bootstrap/dist/js/bootstrap',
+        fuelux: 'http://getfuelux.com/assets/vendor/fuelux/dist/js/fuelux',
+        jquery: 'http://getfuelux.com/assets/vendor/jquery-1.11.0/dist/jquery',
+        moment: 'http://getfuelux.com/assets/vendor/moment/min/moment-with-locales.min', // comment out if you dont want momentjs to be default
+        underscore: 'http://getfuelux.com/assets/vendor/underscore/underscore',
+        backbone: 'http://getfuelux.com/assets/vendor/backbone/backbone',
+        formbuilder: 'http://getfuelux.com/assets/js/form-builder',
+        collections: 'http://getfuelux.com/assets/js/form-builder/collections',
+        data: 'http://getfuelux.com/assets/js/form-builder/data',
+        models: 'http://getfuelux.com/assets/js/form-builder/models',
+        helper: 'http://getfuelux.com/assets/js/form-builder/helper',
+        templates: 'http://getfuelux.com/assets/js/form-builder/templates',
+        views: 'http://getfuelux.com/assets/js/form-builder/views',
+        text: 'http://getfuelux.com/assets/vendor/requirejs-text/text',
+        supercopy: 'http://getfuelux.com/assets/js/super-copy',
+      },
+      // Bootstrap is a "browser globals" script :-(
+      shim: {
+        'bootstrap': { deps: ['jquery'] },
+        'backbone': {
+          deps: ['underscore', 'jquery'],
+          exports: 'Backbone'
+        }
+      }
+    });
+  })();
+</script>
+ 
+
+<script>
+  require(['jquery', 'bootstrap', 'moment', 'assets/js/application'], function($){});
+</script>
   </body>
 </html>
