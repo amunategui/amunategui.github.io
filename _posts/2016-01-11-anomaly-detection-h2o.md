@@ -62,20 +62,20 @@ I will use **H2O** on <a href='https://aws.amazon.com/' target='_blank'>Amazon W
 
 First thing we need to do once we have RStudio up and running is to install ``H2O``:
 
-```{r}
+```r
 install.packages("h2o")
 ```
 
 
 In the output pane during the installation of H2O, you will see:
 
-```{r}
+```r
 ## prostate                                html
 ```
 
 This is the data set we will use to run our models. Let's go get it and assign it to ``prostate_df``:
 
-```{r}
+```r
 # point to the prostate data set in the h2o folder - no need to load h2o in memory yet
 prosPath = system.file("extdata", "prostate.csv", package = "h2o")
 prostate_df <- read.csv(prosPath)
@@ -85,7 +85,7 @@ prostate_df <- prostate_df[,-1]
 summary(prostate_df)
 
 ```
-```{r}
+```r
 ##     CAPSULE            AGE             RACE           DPROS      
 ##  Min.   :0.0000   Min.   :43.00   Min.   :0.000   Min.   :1.000  
 ##  1st Qu.:0.0000   1st Qu.:62.00   1st Qu.:1.000   1st Qu.:1.000  
@@ -105,26 +105,26 @@ summary(prostate_df)
 <h3><a id="benchmark">Benchmark Random Forest Model</a></h3>
 Let's start by running a simple <a href='https://en.wikipedia.org/wiki/Random_forest' target='_blank'>random forest</a> model on the data by splitting it in two random portions (with a seed) - a training and a testing portion. This will give us a base score to measure our improvements using autoencoding.
 
-```{r}
+```r
 set.seed(1234)
 random_splits <- runif(nrow(prostate_df))
 train_df <- prostate_df[random_splits < .5,]
 dim(train_df)
 ```
-```{r}
+```r
 ## [1] 193   8
 ```
-```{r}
+```r
 validate_df <- prostate_df[random_splits >=.5,]
 dim(validate_df)
 ```
-```{r}
+```r
 ## [1] 187   8
 ```
 <BR><BR>
 Install packages **randomForest** and **pROC** and run a simple classification model on outcome variable ``CAPSULE``:
 
-```{r}
+```r
 install.packages('randomForest')
 library(randomForest)
 
@@ -140,7 +140,7 @@ validate_predictions <- predict(rf_model, newdata=validate_df[,feature_names], t
 <BR><BR>
 Let's use the ``pROC`` library to calculate our AUC score (remember, an AUC of 0.5 is random and 1 is perfect) and plot a chart:
 
-```{r}
+```r
 install.packages('pROC')
 library(pROC)
 auc_rf = roc(response=as.numeric(as.factor(validate_df[,outcome_name]))-1,
@@ -159,7 +159,7 @@ We get an AUC of **0.757** with our current data split.
 <h3><a id="autoencoder">Autoencoder</a></h3>
 Let's see how an unsupervised **autoencoding** can assist us here. Start by initializing an h2o instance and create an H2O frame from the prostate data set:
 
-```{r}
+```r
 library(h2o)
 localH2O = h2o.init()
 
@@ -168,7 +168,7 @@ prostate.hex<-as.h2o(train_df, destination_frame="train.hex")
 <BR><BR>
 Getting down to the heart of our business, let's call the deeplearning function with parameter ``autoencoder`` set to TRUE (we also set the ``reproducible`` flag to ``TRUE`` along with a seed so we all see the same results but this is substantially slower than setting the flag to ``FALSE``):
 
-```{r}
+```r
 prostate.dl = h2o.deeplearning(x = feature_names, training_frame = prostate.hex,
                                autoencoder = TRUE,
                                reproducible = T,
@@ -178,7 +178,7 @@ prostate.dl = h2o.deeplearning(x = feature_names, training_frame = prostate.hex,
 <BR><BR>
 We now call the <a href='http://rpackages.ianhowson.com/cran/h2o/man/h2o.anomaly.html' target='_blank'>h2o.anomaly</a> function to reconstruct the original data set using the reduced set of features and calculate a means squared error between both. Here we set ``per_feature`` parameter to FALSE in the ``h2o.anomaly`` function call as we want a reconstruction meany error based on observations, not individual features (but you should definitely play around feature-level scores as it could lead to important insights into your data).
 
-```{r}
+```r
 # prostate.anon = h2o.anomaly(prostate.dl, prostate.hex, per_feature=TRUE)
 # head(prostate.anon)
 
@@ -189,7 +189,7 @@ err <- as.data.frame(prostate.anon)
 <BR><BR>
 Let's sort and plot the reconstructed MSE. The autoencoder struggles from index 150 onwards as the error count accelerates upwards. We can determine that the model recognizes patterns in the first 150 observations that it can't see as easily in the last 50.
 
-```{r}
+```r
 plot(sort(err$Reconstruction.MSE), main='Reconstruction Error')
 ```
 <BR><BR>
@@ -199,7 +199,7 @@ plot(sort(err$Reconstruction.MSE), main='Reconstruction Error')
 <h3><a id="anomaly">Modeling With and Without Anomalies</a></h3>
 The next logical step is to use the clean observations, those that the autoencoder reconstructed easily and model that with our random forest model. We use the ``err``'s ``Reconstruction.MSE`` vector to gather everything all observations in our prostate data set with an error below 0.1:
 
-```{r}
+```r
 # rebuild train_df_auto with best observations
 train_df_auto <- train_df[err$Reconstruction.MSE < 0.1,]
 
@@ -226,7 +226,7 @@ An AUC of 0.78, an improvement over our original random forest model of 0.757 wh
 
 Let's try the same model on the hard to reconstruct portion:
 
-```{r}
+```r
 # rebuild train_df_auto with best observations
 train_df_auto <- train_df[err$Reconstruction.MSE >= 0.1,]
 
@@ -250,7 +250,7 @@ abline(h=0,col='green')
 <BR><BR>
 It should be clear by now that these top portions behave very differently under the same model. What about bagging both prediction sets (adding both prediction vectors together and dividing the total by two)?
 
-```{r}
+```r
 valid_all <- (validate_predictions_known[,2] + validate_predictions_unknown[,2]) / 2
 
 auc_rf = roc(response=as.numeric(as.factor(validate_df[,outcome_name]))-1,
