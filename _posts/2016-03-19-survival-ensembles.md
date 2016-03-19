@@ -207,7 +207,7 @@ dim(validate_df_official)
 <H4>
 Random Forest Classification Model
 </H4>
-So going forward, and in order to align the survival and the classification models, we will focus on the probability of reaching event over the first 70 days.
+So going forward, and in order to align the survival and the classification models, we will focus on the probability of reaching event over the first 82 days.
 
 ``` r
 period_choice <- 82 # 103 
@@ -290,13 +290,7 @@ gbm_model = gbm(classification_formula,
                 cv.folds=5)
 
 nTrees <- gbm.perf(gbm_model)
-```
 
-    ## Using cv method...
-
-![](survival-ensembles_files/figure-markdown_github/unnamed-chunk-12-1.png)
-
-``` r
 validate_predictions <- predict(gbm_model, newdata=validate_df_classification[,feature_names], type="response", n.trees=nTrees)
 
 # install.packages('pROC')
