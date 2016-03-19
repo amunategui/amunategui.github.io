@@ -146,7 +146,7 @@ plot(survival_model$unique.death.times, survival_model$survival[1,], type='l', c
 lines(survival_model$unique.death.times, survival_model$survival[56,], col='blue')
 ```
 
-![plot of survival of two patients](../img/posts/survival-ensembles/survival-two-patiens.png) 
+![plot of survival of two patients](../img/posts/survival-ensembles/survival-two-patients.png) 
 
 The plots represent the probability of survival/not reaching event over time. In these cases, the orange line has a much higher provability of not being diagnosed with AIDS or dying than the blue line. This can be confusing, but a survival model yields a probability of **NOT** reaching event.
 
@@ -181,7 +181,8 @@ for (x in c(2:100)) {
 }
 ```
 
-![](survival-ensembles_files/figure-markdown_github/unnamed-chunk-8-1.png) <BR><BR>
+![plot of survival of many patients](../img/posts/survival-ensembles/survival-many-patients.png) 
+<BR><BR>
 
 <H4>
 Area Under The Curve
