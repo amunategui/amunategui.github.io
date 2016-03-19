@@ -72,7 +72,7 @@ plot(sort(actg320$time), pch='.', type='o',
      main = 'AIDS Clinical Trials Group Study 320 Data \nTime to AIDS diagnosis, death, or censor')
 ```
 
-![](survival-ensembles_files/figure-markdown_github/sorted-time-to-event.png) <BR><BR>
+![](survival-ensembles/sorted-time-to-event.png) <BR><BR>
 
 <H4>
 Survival Modeling
