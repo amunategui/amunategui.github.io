@@ -312,6 +312,7 @@ Scoring the Random Forest Survival Model
 </H4>
 Now let's score our RF survival model for the period in question.
 ``` r
+
 survival_model <- ranger(survival_formula,
                 data = train_df_official,
                 seed=1234,
@@ -324,7 +325,9 @@ survival_model <- ranger(survival_formula,
 <BR><BR> The `survival_model` object can offer probabilities on periods it has trained on. In order to get that list:
 
 ``` r
+
 survival_model$unique.death.times
+
 ```
 
     ##   [1]   1   2   3   7  13  14  16  17  18  20  25  26  27  35  39  42  46
@@ -346,12 +349,14 @@ survival_model$unique.death.times
 First we get the basic survival prediction using our validation split set and then we flip the probability of the period of choice and get the AUC score:
 
 ``` r
+
 suvival_predictions <- predict( survival_model, validate_df_official[, c('treatment','treatment_group',
                                                  'strat2','sex','raceth','ivdrug',
                                                  'hemophil','karnof','cd4',
                                                  'priorzdv','age')])
 
 roc(response=validate_df_classification$ReachedEvent, predictor=1 - suvival_predictions$survival[,which(suvival_predictions$unique.death.times==period_choice)])
+
 ```
 
     ## 
@@ -364,9 +369,11 @@ roc(response=validate_df_classification$ReachedEvent, predictor=1 - suvival_pred
 <BR><BR> Now that both models can predict the same period and the probability of reaching the event, we average them together and see how they help each other (straight 50/50 here which may not be the best mix)
 
 ``` r
+
  # blend both together 
 roc(predictor = (validate_predictions + (1 - suvival_predictions$survival[,which(suvival_predictions$unique.death.times==period_choice)]))/2, 
           response = validate_df_classification$ReachedEvent)
+
 ```
 
     ## 
@@ -569,4 +576,9 @@ roc(response=validate_df_final$ReachedEvent, predictor=validate_predictions)
     ## Data: validate_predictions in 566 controls (validate_df_final$ReachedEvent 0) < 17 cases (validate_df_final$ReachedEvent 1).
     ## Area under the curve: 0.7971
 
-<BR><BR> We did get a small boost from this appraoch. Truth be told, this data set is small that you will get different results if you change the period setting. The point here isn't about the better score on this data set, but the concept of brining different types of models together in different manners to see if you can benefit from the synergy effect.
+<BR><BR> 
+We did get a small boost from this approach. Truth be told, this data set is small that you will get different results if you change the period setting. The point here isn't about the better score on this data set, but the concept of brining different types of models together in different manners to see if you can benefit from the synergy effect.
+
+And a big thanks to Thomas and Lucas for the art survivalist artwork! 
+
+
