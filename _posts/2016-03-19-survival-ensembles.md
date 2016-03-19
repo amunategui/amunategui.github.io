@@ -109,8 +109,6 @@ survival_formula <- formula(paste('Surv(', 'time', ',', 'censor', ') ~ ','treatm
 ```
 
 ``` r
-require(ranger)
-require(survival)
 
 survival_formula
 ```
@@ -265,7 +263,7 @@ summary(validate_df_classification$ReachedEvent)
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     ## 0.00000 0.00000 0.00000 0.02916 0.00000 1.00000
 
-<BR><BR> Now we can easily get an AUC score on the probability of reaching event within our allotted period choice <BR><BR>
+<BR>Now we can easily get an AUC score on the probability of reaching event within our allotted period choice <BR><BR>
 <H4>
 Classification
 </H4>
@@ -276,14 +274,7 @@ feature_names <- setdiff(names(train_df_classificaiton), c('ReachedEvent', 'time
 
 # isntall.packages('gbm')
 library(gbm)
-```
 
-    ## Loading required package: lattice
-    ## Loading required package: splines
-    ## Loading required package: parallel
-    ## Loaded gbm 2.1.1
-
-``` r
 classification_formula <- formula(paste('ReachedEvent ~ ','treatment+treatment_group',
                                   '+strat2+sex+raceth+ivdrug+hemophil+karnof+cd4+priorzdv+age'))
 
@@ -310,18 +301,8 @@ validate_predictions <- predict(gbm_model, newdata=validate_df_classification[,f
 
 # install.packages('pROC')
 library(pROC)
-```
-
-    ## Type 'citation("pROC")' for a citation.
-    ## 
-    ## Attaching package: 'pROC'
-    ## 
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     cov, smooth, var
-
-``` r
 roc(response=validate_df_classification$ReachedEvent, predictor=validate_predictions)
+
 ```
 
     ## 
@@ -388,7 +369,7 @@ roc(response=validate_df_classification$ReachedEvent, predictor=1 - suvival_pred
 <BR><BR> Now that both models can predict the same period and the probability of reaching the event, we average them together and see how they help each other (straight 50/50 here which may not be the best mix)
 
 ``` r
- # blend both together -------------------------------------------------------
+ # blend both together 
 roc(predictor = (validate_predictions + (1 - suvival_predictions$survival[,which(suvival_predictions$unique.death.times==period_choice)]))/2, 
           response = validate_df_classification$ReachedEvent)
 ```
@@ -404,9 +385,9 @@ roc(predictor = (validate_predictions + (1 - suvival_predictions$survival[,which
 <H4>
 Ensembling Survival and Classification
 </H4>
-We need to split our data set into two smaller chunks. This will allow us to get a survival probability on all the data, not just our validation set. So, we split the training set into to parts, and validation into two parts, then use one training chunk to train and predict on the other training chunk and half of the validation chunk. We then train on the other half of our original training set, to predict on the first split chunk of training data and the second half of the testin data... yikes!
+We need to split our data set into two smaller chunks. This will allow us to get a survival probability on all the data, not just our validation set. So, we split the training set into to parts, and validation into two parts, then use one training chunk to train and predict on the other training chunk and half of the validation chunk. We then train on the other half of our original training set, to predict on the first split chunk of training data and the second half of the testing data... yikes!
 
-But in the end we can get a survival probablity on all the data without ever peeking or cheating. Hang in there!
+But in the end we can get a survival probability on all the data without ever peeking or cheating. Hang in there!
 
 ``` r
 # split training into two datasets
@@ -436,8 +417,10 @@ dim(test_1)
     ## [1] 275  13
 
 ``` r
+
 test_2 <- validate_df_official[random_splits >= .5,]
 dim(test_2)
+
 ```
 
     ## [1] 308  13
@@ -445,6 +428,7 @@ dim(test_2)
 Now that we have our four chunks of data, we can start predicting each chunk:
 
 ``` r
+
 surv_1 <- ranger(survival_formula,
                  data =  train_1,
                  verbose = TRUE,
@@ -452,22 +436,10 @@ surv_1 <- ranger(survival_formula,
                  num.trees = 50,
                  mtry = 2,
                  write.forest=TRUE )
-surv_1$unique.death.times
-```
 
-    ##   [1]   1   2   3  13  14  17  20  27  35  39  42  46  47  54  55  56  62
-    ##  [18]  65  66  70  76  82  84  88 103 104 105 110 113 114 116 117 123 124
-    ##  [35] 125 126 127 129 131 132 136 137 139 143 144 145 146 151 152 153 158
-    ##  [52] 159 160 161 171 172 173 175 178 179 180 181 186 187 188 189 193 196
-    ##  [69] 200 202 203 208 214 215 217 220 222 223 224 227 228 229 230 231 236
-    ##  [86] 238 242 243 244 248 250 251 252 255 256 257 258 259 263 265 266 269
-    ## [103] 271 272 273 276 277 278 279 280 283 284 285 287 290 291 292 293 294
-    ## [120] 298 299 300 304 305 308 312 313 314 315 318 319 320 321 322 326 327
-    ## [137] 328 329 333 335 336 341 342 343 346 347 348 349 350 354
-
-``` r
 preds <- predict( surv_1, rbind(train_2[,feature_names], test_2[,feature_names]))
 preds_1 <- data.frame(preds$survival)
+
 
 surv_2 <- ranger(survival_formula,
                  data = train_2,
@@ -476,23 +448,10 @@ surv_2 <- ranger(survival_formula,
                  num.trees = 50,
                  mtry = 2,
                  write.forest=TRUE )
-surv_2$unique.death.times
-```
 
-    ##   [1]   1   7  14  16  17  18  25  26  39  42  47  56  58  59  61  62  63
-    ##  [18]  68  69  75  77  82  84  85  86  88  90  91  98 100 103 105 110 112
-    ##  [35] 113 115 117 118 125 130 132 133 136 138 140 143 144 145 146 151 152
-    ##  [52] 154 158 159 161 166 168 173 174 175 179 180 181 182 186 189 190 192
-    ##  [69] 194 196 201 203 208 210 213 214 215 216 217 221 223 228 230 231 235
-    ##  [86] 237 241 242 243 244 248 250 251 255 256 257 258 259 262 263 264 265
-    ## [103] 266 270 271 272 273 276 278 279 280 283 284 285 286 287 290 291 292
-    ## [120] 293 294 297 298 299 300 301 305 306 307 308 311 312 313 314 315 318
-    ## [137] 319 320 321 322 326 327 328 329 332 333 334 335 336 339 341 342 346
-    ## [154] 347 348 353 362 364
-
-``` r
 preds <- predict( surv_2, rbind(train_1[,feature_names], test_1[,feature_names]))
 preds_2 <- data.frame(preds$survival)
+
 ```
 
 <BR><BR> So, this is the important part, we now rebuild the data set into the orginal training and validation portions with the an added feature: the survival probablity for our period of interest.
@@ -585,6 +544,7 @@ validate_df_final$ReachedEvent <- ifelse((validate_df_final$censor==1 &
 <BR><BR> Finally, we can enjoy the fruits of our hard work by modeling our augmented data set with our GBM classification model:
 
 ``` r
+
 feature_names <- setdiff(names(train_df_final), c('ReachedEvent', 'time', 'censor'))
 
 classification_formula <- formula(paste('ReachedEvent ~ ','treatment+treatment_group',
@@ -602,15 +562,9 @@ gbm_model = gbm(classification_formula,
                 cv.folds=5)
 
 nTrees <- gbm.perf(gbm_model)
-```
-
-    ## Using cv method...
-
-![](survival-ensembles_files/figure-markdown_github/unnamed-chunk-21-1.png)
-
-``` r
 validate_predictions <- predict(gbm_model, newdata=validate_df_final[,feature_names], type="response", n.trees=nTrees)
 roc(response=validate_df_final$ReachedEvent, predictor=validate_predictions)
+
 ```
 
     ## 
