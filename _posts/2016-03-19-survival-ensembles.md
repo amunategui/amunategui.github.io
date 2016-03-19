@@ -267,7 +267,7 @@ summary(validate_df_classification$ReachedEvent)
 <H4>
 Classification
 </H4>
-Let's run a classification GBM model
+Let's run and score our classification GBM model:
 
 ``` r
 feature_names <- setdiff(names(train_df_classificaiton), c('ReachedEvent', 'time', 'censor'))
@@ -310,6 +310,7 @@ roc(response=validate_df_classification$ReachedEvent, predictor=validate_predict
 <H4>
 Scoring the Random Forest Survival Model
 </H4>
+Now let's score our RF survival model for the period in question.
 ``` r
 survival_model <- ranger(survival_formula,
                 data = train_df_official,
@@ -340,7 +341,7 @@ survival_model$unique.death.times
     ## [188] 328 329 332 333 334 335 336 339 341 342 343 346 347 348 349 350 353
     ## [205] 354 362 364
 
-<BR><BR> Here is the tricky part, in order to get an AUC score out of a survival model, we need to choose our period (70th day) and reverse the probability - as we're interested in the probability of reaching event versus the probability of not reaching event.
+<BR><BR> Here is the tricky part, in order to get an AUC score out of a survival model, we need to choose our period (82nd day) and reverse the probability - as we're interested in the probability of reaching event versus the probability of not reaching event.
 
 First we get the basic survival prediction using our validation split set and then we flip the probability of the period of choice and get the AUC score:
 
