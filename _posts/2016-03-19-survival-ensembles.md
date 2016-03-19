@@ -7,7 +7,7 @@ year: 2016
 month: 03
 day: 19
 published: true
-summary: "In this post we will extract AUC scores from survival models, blend and ensemble random forest survial with gradient boosting classification models, and see how we can improve time-based predictions."
+summary: "In this post we'll look at extracting AUC scores from survival models, blending and ensembling random forest survival with gradient boosting classification models, and measure improvements on time-based predictions."
 image: survival-ensembles/suviving-suvival-models.png
 ---
 <BR>
@@ -17,7 +17,7 @@ image: survival-ensembles/suviving-suvival-models.png
 
 If you need to predict a time-based event, most common models, whether regression, classification or survival, can get you there but the quality, type of answer, and path taken will vary. A regression model will return a time estimate, a classification model will return the probability of an event at x time, and a survival model will return probabilities of an event not happening over various time frames. We'll skip the regression model here as we're not only interested in the time estimate but also the probability of an outcome. With a regression model you would have to first model the outcome and then figure out the time estimate.
 
-Instead, we'll use a survival model (<a href='https://cran.r-project.org/web/packages/ranger/index.html' target='_blank>ranger: A Fast Implementation of Random Forests</a>) that will give us an outcome probability over a time continuum, and a classification model (<a href='https://cran.r-project.org/web/packages/gbm/index.html' target='_blank>gbm: Generalized Boosted Regression Models</a>), where we'll measure the probability of the same event happening within x periods. We'll then look at two ways of ensembling the models and hope for synergy.
+Instead, we'll use a survival model (<a href='https://cran.r-project.org/web/packages/ranger/index.html' target='_blank'>ranger: A Fast Implementation of Random Forests</a>) that will give us an outcome probability over a time continuum, and a classification model (<a href='https://cran.r-project.org/web/packages/gbm/index.html' target='_blank'>'gbm: Generalized Boosted Regression Models</a>), where we'll measure the probability of the same event happening within x periods. We'll then look at two ways of ensembling the models and hope for synergy.
 
 We will use the <a href='https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_curve' target='_blank'>Area under the curve (AUC)</a> to measure the different approaches. We'll compare both estimates, then average out the results from both models, and finally ensemble them.
 
