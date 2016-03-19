@@ -72,7 +72,8 @@ plot(sort(actg320$time), pch='.', type='o',
      main = 'AIDS Clinical Trials Group Study 320 Data \nTime to AIDS diagnosis, death, or censor')
 ```
 
-![](survival-ensembles/sorted-time-to-event.png) <BR><BR>
+![plot of sorted time to event](../img/posts/survival-ensembles/sorted-time-to-event.png)
+<BR><BR>
 
 <H4>
 Survival Modeling
@@ -145,7 +146,7 @@ plot(survival_model$unique.death.times, survival_model$survival[1,], type='l', c
 lines(survival_model$unique.death.times, survival_model$survival[56,], col='blue')
 ```
 
-![](survival-ensembles_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![plot of survival of two patients](../img/posts/survival-ensembles/survival-two-patiens.png) 
 
 The plots represent the probability of survival/not reaching event over time. In these cases, the orange line has a much higher provability of not being diagnosed with AIDS or dying than the blue line. This can be confusing, but a survival model yields a probability of **NOT** reaching event.
 
