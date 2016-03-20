@@ -25,7 +25,7 @@ If you need to predict a time-based event, most common models, whether regressio
 
 Instead, we'll use a survival model (<a href='https://cran.r-project.org/web/packages/ranger/index.html' target='_blank'>ranger: A Fast Implementation of Random Forests</a>) that will give us an outcome probability over a time continuum (flipping the non-event to event probability), and a classification model (<a href='https://cran.r-project.org/web/packages/gbm/index.html' target='_blank'>gbm: Generalized Boosted Regression Models</a>), where we'll measure the probability of the same event happening within x periods. We'll then look at two ways of ensembling the models and hope for synergy.
 
-We will use the <a href='https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_curve' target='_blank'>Area under the curve (AUC)</a> to measure the different approaches. We'll compare both estimates, then average out the results from both models, and finally ensemble them.
+We will use the <a href='https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_curve' target='_blank'>Area under the curve (AUC)</a> to measure the different approaches. We'll compare both estimates, then average out the results from both models, and then ensemble them.
 
 We'll run our tests on the <a href='https://www.umass.edu/statdata/statdata/data/actg320.txt' target='_blank'>AIDS Clinical Trials Group Study 320 Data</a> from the <a href='https://www.umass.edu/' target='_blank'>University of Massachusetts Amherst</a>. The data represents a double-blind, placebo-controlled trial comparing two different sets of medication in HIV-infected patients. The outcome measures the time to AIDS diagnosis or death.
 <BR><BR>
@@ -582,13 +582,12 @@ roc(response=validate_df_final$ReachedEvent, predictor=validate_predictions)
     ## Data: validate_predictions in 566 controls (validate_df_final$ReachedEvent 0) < 17 cases (validate_df_final$ReachedEvent 1).
     ## Area under the curve: 0.7971
 
-<BR><BR> 
+<BR>
 We did get a small boost from this approach. Truth be told, this data set is small that you will get different results if you change the period setting. The point here isn't about the better score on this data set, but the concept of brining different types of models together in different manners to see if you can benefit from the synergy effect.
-
+<BR><BR>
 And a big thanks to Thomas and Lucas for the survivalist artwork! 
 
-
-<BR><BR>        
+<BR>        
 <a id="sourcecode">Full source code</a>:
 
 ```r
