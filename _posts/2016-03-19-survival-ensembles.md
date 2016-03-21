@@ -313,10 +313,9 @@ roc(response=validate_df_classification$ReachedEvent, predictor=validate_predict
     ## Area under the curve: 0.771
 
 <BR><BR>
-<H4>
-Scoring the Random Forest Survival Model
-</H4>
+<H4> Scoring the Random Forest Survival Model </H4>
 Now let's score our RF survival model for the period in question.
+<BR>
 ``` r
 
 survival_model <- ranger(survival_formula,
