@@ -326,6 +326,7 @@ survival_model <- ranger(survival_formula,
                 num.trees = 50,
                 mtry = 2,
                 write.forest=TRUE )
+                
 ```
 
 <BR><BR> The `survival_model` object can offer probabilities on periods it has trained on. In order to get that list:
