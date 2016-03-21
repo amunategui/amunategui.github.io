@@ -211,7 +211,7 @@ dim(validate_df_official)
 
 <BR><BR>
 <H4>
-Random Forest Classification Model
+Generalized Boosted Regression Model
 </H4>
 So going forward, and in order to align the survival and the classification models, we will focus on the probability of reaching event over the first 82 days.
 
