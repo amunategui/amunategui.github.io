@@ -7,7 +7,7 @@ year: 2016
 month: 03
 day: 19
 published: true
-summary: "In this post we'll look at extracting AUC scores from survival models, blending and ensembling random forest survival with gradient boosting classification models, and measure improvements on time-based predictions."
+summary: "In this post we'll look at extracting AUC scores from survival models, blending and ensembling random forest survival with gradient boosting classification models, and measuring improvements on time-based predictions."
 image: survival-ensembles/suviving-suvival-models.png
 ---
 <BR>
@@ -16,7 +16,7 @@ image: survival-ensembles/suviving-suvival-models.png
 
 **Resources**
 <ul>
-<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=6q-UFJUZK0g&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target='_blank'>YouTube Companion Video</a></li>
 <li type="square"><a href="#sourcecode">Full Source Code</a></li>
 </ul>
 <BR><BR>
@@ -326,7 +326,7 @@ survival_model <- ranger(survival_formula,
                 num.trees = 50,
                 mtry = 2,
                 write.forest=TRUE )
-                
+
 ```
 
 <BR><BR> The `survival_model` object can offer probabilities on periods it has trained on. In order to get that list:
