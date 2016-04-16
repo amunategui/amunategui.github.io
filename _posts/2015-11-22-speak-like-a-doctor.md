@@ -379,6 +379,12 @@ I would like to thank Lucas A. for the artwork - thanks pal!
 
 
 ```r
+
+Trim <- function( x ) {
+        # http://stackoverflow.com/questions/2261079/how-to-trim-leading-and-trailing-whitespace-in-r
+        gsub("(^[[:space:]]+|[[:space:]]+$)", "", x)
+}
+
 Get_PubMed_Data <- function(topic, start_date, end_date, return_count) {
         require(RISmed)
         
@@ -489,4 +495,5 @@ best_match <-  strsplit(x = best_match[[2]], split = " ")[[1]]
 best_match <- best_match[[1]]
 
 print(best_match)
+
 ```
