@@ -8,7 +8,7 @@ month: 05
 day: 02
 published: true
 summary: "Here is an easy way to get every top and bottom feature contributing to each prediction. Report readers will appreciate this level of detail to understand why the model assigned scores from row to row."
-image: actionable-insights/ROBOT.jpg
+image: actionable-insights/ROBOT.png
 ---
 
 When we talk of variable importance we most often think of variables at the aggregate level of a supervised task. This is useful to understand a model at a high level but falls short in terms of actionable insight. Report readers want to know why a particular observation is given a particular probability - knowing full well that each prediction is a different situation. This is the kind of information that a care giver can use to affect or rectify the outcome of a patient, given him/her information to tailor interventions at a very precise level.
