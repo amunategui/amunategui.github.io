@@ -10,7 +10,16 @@ published: true
 summary: "Here is an easy way to get the top and bottom features contributing to a prediction. This affords a level of transparency to the report reader in understanding why the model chose a particular probability for an observation."
 image: actionable-insights/ROBOT.png
 ---
+<BR>
+<p style="text-align:center">
+<img src="../img/posts/actionable-insights/ROBOT.png" alt="actionable insights" style='padding:1px; border:1px solid #021a40; width: 30%; height: 30%'></p>
 
+**Resources**
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=6q-UFJUZK0g&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target='_blank'>YouTube Companion Video</a></li>
+</ul>
+<BR><BR>
+ 
 When we talk of variable importance we most often think of variables at the aggregate level of a supervised task. This is useful to understand a model at a high level but falls short in terms of actionable insight. Report readers want to know why a particular observation is given a particular probability - knowing full well that each prediction is a different situation. 
 
 An easy way to extract the top variables for each observation is to simply cycle through each feature, average it to the population mean, and compare it to the original prediction. If the probability changes for that observation, then that feature has a strong effect for the observation. As probabilities share the same scale, we can measure the degree of change and sort each feature directionally. Let's see this through an example.
