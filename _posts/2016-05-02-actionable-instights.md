@@ -7,7 +7,7 @@ year: 2016
 month: 05
 day: 02
 published: true
-summary: "Here is an easy way to get every top and bottom feature contributing to each prediction. Report readers will appreciate this level of detail to understand why the model assigned scores from row to row."
+summary: "Here is an easy way to get the top and bottom features contributing to a prediction. Report readers will appreciate this level of detail in order to better understand why the model chose a particular probability to an observation."
 image: actionable-insights/ROBOT.png
 ---
 
