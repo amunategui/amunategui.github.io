@@ -254,7 +254,7 @@ tail(preds)
 ## 224                      Age Diastolic_blood_pressure
 ```
 <BR><BR>
-To confirm this, let's use a Generalized linear model (`glm`) from <a href='http://caret.r-forge.r-project.org/' target='_blank'>caret</a> to access directional variable importance:
+To confirm this, let's use a Generalized Linear Model (`glm`) from <a href='http://caret.r-forge.r-project.org/' target='_blank'>caret</a> to access directional variable importance:
 
 ``` r
 # install.packages('caret')
