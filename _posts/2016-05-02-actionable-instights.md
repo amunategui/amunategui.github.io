@@ -7,7 +7,7 @@ year: 2016
 month: 05
 day: 02
 published: true
-summary: "Here is an easy way to get the top and bottom features contributing to a prediction. Report readers will appreciate this level of detail in order to better understand why the model chose a particular probability to an observation."
+summary: "Here is an easy way to get the top and bottom features contributing to a prediction. This affords a level of transparency to the report reader in understanding why the model chose a particular probability for an observation."
 image: actionable-insights/ROBOT.png
 ---
 
