@@ -330,3 +330,5 @@ test_df[71,]
 ## 154     1
 
 ```
+<BR><BR>
+<b>Once again, thanks Lucas for the actionable insights explorer!!</b>
