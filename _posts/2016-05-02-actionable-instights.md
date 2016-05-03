@@ -11,7 +11,7 @@ summary: "Here is an easy way to get the top and bottom features contributing to
 image: actionable-insights/ROBOT.png
 ---
 
-When we talk of variable importance we most often think of variables at the aggregate level of a supervised task. This is useful to understand a model at a high level but falls short in terms of actionable insight. Report readers want to know why a particular observation is given a particular probability - knowing full well that each prediction is a different situation. This is the kind of information that a care giver can use to affect or rectify the outcome of a patient, given him/her information to tailor interventions at a very precise level.
+When we talk of variable importance we most often think of variables at the aggregate level of a supervised task. This is useful to understand a model at a high level but falls short in terms of actionable insight. Report readers want to know why a particular observation is given a particular probability - knowing full well that each prediction is a different situation. 
 
 An easy way to extract the top variables for each observation is to simply cycle through each feature, average it to the population mean, and compare it to the original prediction. If the probability changes for that observation, then that feature has a strong effect for the observation. As probabilities share the same scale, we can measure the degree of change and sort each feature directionally. Let's see this through an example.
 
@@ -27,6 +27,7 @@ pima_db <- read.csv('https://archive.ics.uci.edu/ml/machine-learning-databases/p
                     col.names = pima_db_names)
 
 
+# removing obscure features
 pima_db <- pima_db[,c("Number_times_pregnant", "Plasma_glucose", "Diastolic_blood_pressure","BMI", "Age", "Class")]
 
 ```
@@ -58,7 +59,7 @@ head(pima_db)
 
 ```
 <BR><BR> 
-The data is almost model-ready out of the box and we just need to split the data into train/test sets:
+The data is almost model-ready out of the box and we just need to split it into train/test sets:
 
 ``` r
 set.seed(1234)
@@ -76,7 +77,7 @@ dim(test_df)
 outcome_name <- 'Class'
 ```
 <BR><BR>
-To simplify things and maybe make this more useful for your advanced-anaytics pipeline, we'll build our prediction insight program into a function. The modeling engine will use
+To simplify things and maybe make this more useful for your advanced-analytics pipeline, we'll build our prediction insight program into a function. The modeling engine will use
 <a href='https://cran.r-project.org/web/packages/xgboost/index.html' target='_blank'>xgboost: Extreme Gradient Boosting</a> because it is easy to use and fast. You will need to install ``xgboost`` and ``dplyr`` if you don't already have them (both available on cran).
 
 ``` r
@@ -166,7 +167,7 @@ observation_level_variable_importance <- function(train_data, live_data, outcome
 <BR><BR> 
 The first half of the function is straight-forward `xgboost` classification (see <a href='https://xgboost.readthedocs.io/en/latest/R-package/xgboostPresentation.html' target='_blank'>XGBoost R Tutorial</a>) and we get a vector of predictions for our test/live data. It is in the second half that things get more interesting - after the model has trained on the training data split and predicted on the testing split, we are left with the prediction vector - dubbed original predictions. It is a long series of probabilities, one for each observation. The model used here isn't important and the above should work with most models.
 
-We then run through each feature a second time we reset the feature to the population mean. We feed that the new data set with its feature neutralized into the prediction function and compare the original prediction vector against this new one. Any time the prediction for an observation changes, we conclude it is important for that observation. We also record whether the original feature has a positive or negative influence on that predictions.
+We then run through each feature a second time we reset the feature to the population mean. We feed that the new data set with its feature neutralized into the prediction function and compare the original prediction vector against this new one. Any time the prediction for an observation changes, we conclude it is important for that observation. We also record whether the original feature has a positive or negative influence on that prediction.
 
 ```
 # get variable importance 
@@ -211,6 +212,12 @@ preds <- observation_level_variable_importance(train_data = train_df,
 ## [1] "BMI"
 ## [1] "Age"
 
+```
+<BR><BR>
+Let's take a look at the most extreme probabilities - ``Diastolic_blood_pressure`` is a strong influence for a low probability score, while ``Plasma_glucose`` is a strong influence for a high probability score:
+
+``` r
+
 preds <- preds[order(preds$original_preditcions),]
 head(preds)
 
@@ -247,7 +254,7 @@ tail(preds)
 ## 224                      Age Diastolic_blood_pressure
 ```
 <BR><BR>
-To understand what happened here, let's use a Generalized linear model (`glm`) from <a href='http://caret.r-forge.r-project.org/' target='_blank'>caret</a> to access directional variable importance:
+To confirm this, let's use a Generalized linear model (`glm`) from <a href='http://caret.r-forge.r-project.org/' target='_blank'>caret</a> to access directional variable importance:
 
 ``` r
 # install.packages('caret')
@@ -294,7 +301,11 @@ summary(glm_caret_model)
 ## AIC: 350.16
 ## 
 ## Number of Fisher Scoring iterations: 5
+```
+<BR><BR>
+In the ``Coefficients`` section, we confirm that ``Diastolic_blood_pressure`` has a negative influence on the outcome, while ``Plasma_glucose`` has a positive influence.
 
+``` r
 test_df[359,]
 
 ##     Number_times_pregnant Plasma_glucose Diastolic_blood_pressure  BMI Age
