@@ -22,7 +22,9 @@ image: actionable-insights/ROBOT.png
  
 When we talk of variable importance we most often think of variables at the aggregate level of a supervised task. This is useful to understand a model at a high level but falls short in terms of actionable insight. Report readers want to know why a particular observation is given a particular probability - knowing full well that each prediction is a different situation. 
 
-An easy way to extract the top variables for each observation is to simply cycle through each feature, average it to the population mean, and compare it to the original prediction. If the probability changes for that observation, then that feature has a strong effect for the observation. As probabilities share the same scale, we can measure the degree of change and sort each feature directionally. Let's see this through an example.
+An easy way to extract the top variables for each observation is to simply cycle through each feature, average it to the population mean, and compare it to the original prediction. If the probability changes for that observation, then that feature has a strong effect for the observation. As probabilities share the same scale, we can measure the degree of change and sort each feature directionally. 
+
+Let's see this through an example.
 
 We'll use the <a href='https://archive.ics.uci.edu/ml/machine-learning-databases/pima-indians-diabetes' target='_blank'>Pima Indians Diabetes Database from the UCI Machine Learning Repository</a>. The data represents 768 patient observations and a series of medical measures to predict signs of diabetes. 
 
