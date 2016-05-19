@@ -129,7 +129,7 @@ observation_level_variable_importance <- function(train_data, live_data, outcome
                               watchlist = watchlist,
                               maximize = TRUE)
      
-     original_preditcions <- predict(xgb_model, 
+     original_predictions <- predict(xgb_model, 
                                      data.matrix(live_data[,feature_names]), 
                                      outputmargin=FALSE, missing=NaN)
       
@@ -146,7 +146,7 @@ observation_level_variable_importance <- function(train_data, live_data, outcome
           }
           predictions <- predict(object=xgb_model, data.matrix(live_data_trsf[,feature_names]),
                                  outputmargin=FALSE, missing=NaN)
-          new_preds <- cbind(new_preds, original_preditcions-predictions)
+          new_preds <- cbind(new_preds, original_predictions)
      }
      
      positive_features <- c()
@@ -171,7 +171,7 @@ observation_level_variable_importance <- function(train_data, live_data, outcome
      negative_features <- data.frame(negative_features)
      names(negative_features) <- paste0('Neg_', names(negative_features))
      
-     return(data.frame(original_preditcions, positive_features, negative_features))
+     return(data.frame(original_predictions, positive_features, negative_features))
       
 } 
 ```
@@ -229,10 +229,10 @@ Let's take a look at the most extreme probabilities - ``Diastolic_blood_pressure
 
 ``` r
 
-preds <- preds[order(preds$original_preditcions),]
+preds <- preds[order(preds$original_predictions),]
 head(preds)
 
-##     original_preditcions                   Pos_X1                   Pos_X2
+##     original_predictions                   Pos_X1                   Pos_X2
 ## 42           0.003732002    Number_times_pregnant Diastolic_blood_pressure
 ## 346          0.003956458 Diastolic_blood_pressure    Number_times_pregnant
 ## 359          0.004147866 Diastolic_blood_pressure    Number_times_pregnant
@@ -249,7 +249,7 @@ head(preds)
 
 tail(preds)
 
-##     original_preditcions         Pos_X1                Pos_X2
+##     original_predictions         Pos_X1                Pos_X2
 ## 129            0.9508100 Plasma_glucose Number_times_pregnant
 ## 248            0.9511197 Plasma_glucose                   BMI
 ## 203            0.9590986 Plasma_glucose Number_times_pregnant
