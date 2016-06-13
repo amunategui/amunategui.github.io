@@ -146,7 +146,7 @@ observation_level_variable_importance <- function(train_data, live_data, outcome
           }
           predictions <- predict(object=xgb_model, data.matrix(live_data_trsf[,feature_names]),
                                  outputmargin=FALSE, missing=NaN)
-          new_preds <- cbind(new_preds, predictions)
+          new_preds <- cbind(new_preds, original_predictions - predictions)
      }
      
      positive_features <- c()
