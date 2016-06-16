@@ -69,13 +69,13 @@ frequencies.
 
     head(NWORDS)
 
-    ##    features   Freq
-    ## 1           101160
-    ## 2         a   6477
-    ## 3     aaron      4
-    ## 4   abandon      5
-    ## 5 abandoned     15
-    ## 6  abandons      1
+    ##   features   Freq
+    ## 1          303982
+    ## 2        a  21155
+    ## 3      aah      1
+    ## 4    aaron      5
+    ## 5       ab      2
+    ## 6    aback      3
 
 <BR><BR>
 
