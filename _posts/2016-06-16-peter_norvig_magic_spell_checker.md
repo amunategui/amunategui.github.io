@@ -28,8 +28,8 @@ Norvig's</a> blog entry entitled
 Write a Spelling Corrector</a>. He offers a clever way for any of us to
 create a good spell checker with nothing more than a few lines of code
 and some text data. No complex cascading grammar rules or API calls
-required! In essence, you compare every one of your words against the
-large corpus of correctly spelled words.
+required! In essence, you create slight but increasing alternations for every one of your words against the
+large corpus of correctly spelled words until you find a match (or until it gives up).
 
 In this post, I simply translated Peter's Python code into R as closely
 to the original as possible. I used (or tried my best) the same
@@ -140,29 +140,39 @@ are actual words from our corpus:
          return (unique(intersect(words,NWORDS$features)))
     }
 
-<BR><BR> All functions are ready and we now create the public function ``correct``. This function finds all correctly spelled words and returns the one with the highest frequency count:
+<BR><BR> All functions are ready and we now create the public function ``correct``. This function finds all correctly spelled words and returns the one with the least alterations and highest frequency count:
 
 
     correct <- function(word){
-         correct_spelling <- data.frame('features'=c(known(c(word)),known(edits1(word)),known_edits2(word),word))
+         correct_spelling <- known(c(word))
+         if (identical(correct_spelling, character(0))) {
+              correct_spelling <- known(edits1(word))
+              if (identical(correct_spelling, character(0))) {
+                   correct_spelling <- known_edits2(word)
+                   if (identical(correct_spelling, character(0))) {
+                        correct_spelling <- word
+                   }
+              }
+         }
+         correct_spelling <- data.frame('features'=correct_spelling)
          correct_spelling <- merge(correct_spelling, NWORDS, all.x=TRUE)
-         return(head(correct_spelling[order(correct_spelling$Freq, decreasing = TRUE),]), 1)
+         return(as.character(correct_spelling[order(correct_spelling$Freq, decreasing = TRUE),]$features[1]))
     }
 
     correct('spelng')
 
-    ## [1] "spend"
-
+    ## [1] "seeing"
+    
     correct('speling')
-
-    ## [1] "piling"
-
+    
+    ## [1] "spelling"
+    
     correct('spelingg')
-
-    ## [1] "spelingg"
-
+    
+    ## [1] "spelling"
+    
     correct('spelinggg')
-
+    
     ## [1] "spelinggg"
 
 <BR><BR>
