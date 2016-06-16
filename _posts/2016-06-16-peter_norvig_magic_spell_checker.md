@@ -28,11 +28,11 @@ Norvig's</a> blog entry entitled
 Write a Spelling Corrector</a>. He offers a clever way for any of us to
 create a good spell checker with nothing more than a few lines of code
 and some text data. No complex cascading grammar rules or API calls
-required! In essence, you compare every one of your words agains the
+required! In essence, you compare every one of your words against the
 large corpus of correctly spelled words.
 
 In this post, I simply translated Peter's Python code into R as closely
-to the orginal as possible. I used (or tried my best) the same
+to the original as possible. I used (or tried my best) the same
 functions, variable names and constructs. This isn't about optimization
 but clarity, and the good news is that there are plenty of ways of
 optimizing the R code.
@@ -42,7 +42,7 @@ Before we start looking at the code, you will need to download Peter's
 save it locally. `big.txt` contains a million or so words from
 <a href='http://www.gutenberg.org/wiki/Main_Page' target='_blank'>Project
 Gutenberg</a> and other sources.
-
+<BR><BR>
 **Coding Time**
 
 The first part is practically a verbatim copy of Peter's Python version.
@@ -82,7 +82,7 @@ frequencies.
 Now we get to the heart of the code - we create variations of the word
 being checked to help find the best match. We get iterations of the word
 missing a letter, two letters transpositions, sequential replacement and
-instertions with every letter of the alphabet - pheww!
+insertions with every letter of the alphabet - pheww!
 
     edits1 <- function(word) {
 
@@ -103,13 +103,14 @@ instertions with every letter of the alphabet - pheww!
               transposes <- c(transposes, paste(vec_word_tmp, collapse = ""))
          }
                
-         # create copies of word with every letter replaced by letters of the alphabet                     
+         # create copies of word with every letter swapped with entire alphabet                     
          replaces <- c()
          for (i in seq(1:nchar(word)))
               replaces <- c(replaces, paste0(substr(x=word,start = 0, stop=i-1), 
                                               letters, 
                                               substr(x=word,start = i+1, stop=nchar(word))))
      
+         # create copies of word with entire alphabet inserted before and after every letter
          inserts <- c()
          for (i in seq(1:(nchar(word)+1)))
               inserts <- c(inserts, paste0(substr(x=word,start = 0, stop=i-1), 
@@ -178,11 +179,11 @@ match).
 
 **Conclusion**
 
-Though Peter states this isn't as accurate as an industrical spell
+Though Peter states this isn't as accurate as an industrial spell
 checker, the ramifications of such a simple approach are big! You can
-easily focus your spell checking to higly specialized/technical terms as
+easily focus your spell checking to highly specialized/technical terms as
 long as you have the corpus - just as you can also localize your
-spelling to other languages with supporting corpuses.
+spelling to other languages with supporting corpus.
 
 <a href='http://www.sumsar.net/blog/2014/12/peter-norvigs-spell-checker-in-two-lines-of-r/' target='_blank'>And
 here is a great two-line implementation in R</a>! <BR><BR> <b>Big thanks
