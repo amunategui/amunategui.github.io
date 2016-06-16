@@ -85,11 +85,14 @@ missing a letter, two letters transpositions, sequential replacement and
 instertions with every letter of the alphabet - pheww!
 
     edits1 <- function(word) {
+
+         # create copies of word with one letter missing
          deletes <- c()
          for (i in seq(1:nchar(word)))
               deletes <- c(deletes, paste0(substr(x=word,start = 0, stop=i-1), 
                            substr(x=word,start = i+1, stop=nchar(word))))
 
+         # create copies of word with consecutive pair of letters transposed                   
          transposes <- c()
          vec_word <- strsplit(word, split = '')[[1]]
          for (i in seq(1:(nchar(word)-1))) {
@@ -100,6 +103,7 @@ instertions with every letter of the alphabet - pheww!
               transposes <- c(transposes, paste(vec_word_tmp, collapse = ""))
          }
                
+         # create copies of word with every letter replaced by letters of the alphabet                     
          replaces <- c()
          for (i in seq(1:nchar(word)))
               replaces <- c(replaces, paste0(substr(x=word,start = 0, stop=i-1), 
