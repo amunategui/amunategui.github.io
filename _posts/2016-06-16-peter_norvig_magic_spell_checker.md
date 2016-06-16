@@ -140,23 +140,13 @@ are actual words from our corpus:
          return (unique(intersect(words,NWORDS$features)))
     }
 
-<BR><BR> Our functions are ready but we need to call in them in order of
-importance - least expensive first! This is uglier than the Peter's
-Python version but it does know when to quit (i.e. when it gets the best
-match).
+<BR><BR> All functions are ready and we now create the public function ``correct``. This function finds all correctly spelled words and returns the one with the highest frequency count:
+
 
     correct <- function(word){
-         correct_spelling <- known(c(word))
-         if (identical(correct_spelling, character(0))) {
-              correct_spelling <- known(edits1(word))
-              if (identical(correct_spelling, character(0))) {
-                   correct_spelling <- known_edits2(word)
-                   if (identical(correct_spelling, character(0))) {
-                        correct_spelling <- word
-                   }
-              }
-         }
-         return (head(correct_spelling,1))
+         correct_spelling <- data.frame('features'=c(known(c(word)),known(edits1(word)),known_edits2(word),word))
+         correct_spelling <- merge(correct_spelling, NWORDS, all.x=TRUE)
+         return(head(correct_spelling[order(correct_spelling$Freq, decreasing = TRUE),]), 1)
     }
 
     correct('spelng')
