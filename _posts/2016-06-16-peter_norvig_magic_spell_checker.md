@@ -8,11 +8,11 @@ month: 06
 day: 16
 published: true
 summary: "Peter Norvig offers a clever way for any of us to create a good spell checker with nothing more than a few lines of code and some text data."
-image: magic-spell-checker/wizard_spell.png
+image: magic-spell-checker/wizard-spell.png
 ---
 <BR>
 <p style="text-align:center">
-<img src="../img/posts/magic-spell-checker/wizard_spell.png" alt="peter norvig magic spell checker" style='padding:1px; border:1px solid #021a40; width: 30%; height: 30%'></p>
+<img src="../img/posts/magic-spell-checker/wizard-spell.png" alt="peter norvig magic spell checker" style='padding:1px; border:1px solid #021a40; width: 30%; height: 30%'></p>
 
 **Resources**
 <ul>
