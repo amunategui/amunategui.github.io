@@ -186,5 +186,5 @@ long as you have the corpus - just as you can also localize your
 spelling to other languages with supporting corpus.
 
 <a href='http://www.sumsar.net/blog/2014/12/peter-norvigs-spell-checker-in-two-lines-of-r/' target='_blank'>And
-here is a great two-line implementation in R</a>! <BR><BR> <b>Big thanks
+here is a great two-line implementation in R</a>! <BR><BR><BR> <b>Big thanks
 to Lucas for the Spelling Wizard art work!</b>
