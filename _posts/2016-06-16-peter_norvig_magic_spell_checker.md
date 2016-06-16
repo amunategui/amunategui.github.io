@@ -7,7 +7,7 @@ year: 2016
 month: 06
 day: 16
 published: true
-summary: "Peter Norvig offers a clever way for any of us to create a good spell checker with nothing more than a few lines of code and some text data."
+summary: "Peter Norvig, Director of Research at Google, offers a clever way for any of us to create a good spell checker with nothing more than a few lines of code and some text data."
 image: magic-spell-checker/wizard-spell.png
 ---
 <BR>
