@@ -2,7 +2,7 @@
 layout: post
 title: "The Peter Norvig Magic Spell Checker in R"
 category: Machine Learning
-tags: modeling r
+tags: modeling r python
 year: 2016
 month: 06
 day: 16
