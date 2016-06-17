@@ -16,7 +16,7 @@ image: magic-spell-checker/wizard-spell.png
 
 **Resources**
 <ul>
-<li type="square"><a href="https://www.youtube.com/watch?v=gs74y1R-uEw&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=x2Jn709rSeY&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target='_blank'>YouTube Companion Video</a></li>
 </ul>
 <BR><BR>
 
