@@ -14,9 +14,10 @@ image: all-hacker-news/big-data-surveillance.png
 <p style="text-align:center">
 <img src="../img/posts/all-hacker-news/big-data-surveillance.png" alt="AWS" style='padding:1px; border:1px solid #021a40; width: 75%; height: 75%'>
 <BR><BR>
+
 **Resources**
 <ul>
-<li type="square"><a href="https://www.youtube.com/watch?v=x2Jn709rSeY&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
 </ul>
 <BR><BR>
 
