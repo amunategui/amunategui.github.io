@@ -1,19 +1,19 @@
 ---
 layout: post
-title: "EC2, PostgreSQL and All Hacker News"
+title: "EC2, PostgreSQL and all of Hacker News Data!"
 category: Machine Learning
 tags: exploring python ec2 aws
 year: 2016
 month: 07
 day: 20
 published: true
-summary: "We'll use Python, EC2 and PostgreSQL to download some or all of Hacker News content."
-image: magic-spell-checker/big-data-surveillance.png
+summary: "We'll look at two ways of downloading Hacker News data using Python, EC2 and PostgreSQL."
+image: all-hacker-news/big-data-surveillance.png
 ---
 <BR>
 <p style="text-align:center">
 <img src="../img/posts/all-hacker-news/big-data-surveillance.png" alt="AWS" style='padding:1px; border:1px solid #021a40; width: 75%; height: 75%'>
-
+<BR><BR>
 **Resources**
 <ul>
 <li type="square"><a href="https://www.youtube.com/watch?v=x2Jn709rSeY&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target='_blank'>YouTube Companion Video</a></li>
