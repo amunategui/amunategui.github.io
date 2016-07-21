@@ -7,7 +7,7 @@ year: 2016
 month: 07
 day: 20
 published: true
-summary: "We'll look at two APIs ways of downloading Hacker News data using Python, EC2 and PostgreSQL."
+summary: "We'll first look at the Algolia API and Max Woolfs scripts to download all Hacker News data using Python, EC2 and PostgreSQL, then we'll look at the Firebase/Hacker News API web service to pull specific content by ID."
 image: all-hacker-news/big-data-surveillance.png
 ---
 <BR>
