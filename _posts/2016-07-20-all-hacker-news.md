@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "EC2, PostgreSQL and all of Hacker News Data!"
+title: "Use EC2, PostgreSQL and Python to Download all of Hacker News Data!"
 category: Machine Learning
 tags: exploring python ec2 aws
 year: 2016
 month: 07
 day: 20
 published: true
-summary: "We'll look at two ways of downloading Hacker News data using Python, EC2 and PostgreSQL."
+summary: "We'll look at two APIs ways of downloading Hacker News data using Python, EC2 and PostgreSQL."
 image: all-hacker-news/big-data-surveillance.png
 ---
 <BR>
@@ -244,16 +244,18 @@ Around the end of the file (line 80), edit the following line so it says
 
     local   all             all                                     trust
 
-Restart the PostgreSQL database:
-
-    sudo service postgresql restart
-
 In order to 'edit' in `vim` you need to hit the `i` key to get in insert
 mode. Make the edit then hit the escape key followed by colon and wq.
 The colon gets you out of insert mode and `w` calls for saving your
 changes and `q` to quit out of vim.
 
 ESC : wq
+
+
+Restart the PostgreSQL database:
+
+    sudo service postgresql restart
+
 
 Now let's add the needed Python libraries:
 
