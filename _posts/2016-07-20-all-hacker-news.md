@@ -17,7 +17,7 @@ image: all-hacker-news/big-data-surveillance.png
 
 **Resources**
 <ul>
-<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target='_blank'>YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=Ijtn5AtPr90&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target='_blank'>YouTube Companion Video - Part 1</a></li>
 </ul>
 <BR><BR>
 
