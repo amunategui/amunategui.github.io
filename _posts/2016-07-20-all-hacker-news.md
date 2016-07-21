@@ -12,7 +12,7 @@ image: all-hacker-news/big-data-surveillance.png
 ---
 <BR>
 <p style="text-align:center">
-<img src="../img/posts/all-hacker-news/big-data-surveillance.png" alt="AWS" style='padding:1px; border:1px solid #021a40; width: 75%; height: 75%'>
+<img src="../img/posts/all-hacker-news/big-data-surveillance.png" alt="AWS" style='padding:1px; border:1px solid #021a40; width: 75%; height: 75%'></p>
 <BR><BR>
 
 **Resources**
