@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Big Data Surveillance: Use EC2, PostgreSQL and Python to Download all of Hacker News Data!"
+title: "Big Data Surveillance: Use EC2, PostgreSQL and Python to Download all Hacker News Data!"
 category: Machine Learning
 tags: exploring python ec2 aws
 year: 2016
