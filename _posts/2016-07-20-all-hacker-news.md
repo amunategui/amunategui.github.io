@@ -7,7 +7,7 @@ year: 2016
 month: 07
 day: 20
 published: true
-summary: "We'll first look at the Algolia API and Max Woolfs scripts to download all Hacker News data using Python, EC2 and PostgreSQL, then we'll look at the Firebase/Hacker News API web service to pull specific content by ID."
+summary: "We'll first look at the Algolia API and Max Woolf's scripts to download all Hacker News data using EC2 and PostgreSQL, then we'll look at the Firebase/Hacker News API web service to pull specific content by ID."
 image: all-hacker-news/big-data-surveillance.png
 ---
 <BR>
@@ -48,7 +48,7 @@ The twist is that we’ll use an Amazon EC2 instance to do the downloading
 and PostgreSQL storing. There is a good reason we’re doing it that way,
 just the comments take over 10 hours to download and process. I only
 have a notebook computer and I don’t want to wait that long nor is my
-internet connection as good as an EC2’s. We can get away with a small
+Internet connection as good as an EC2’s. We can get away with a small
 EC2. We need to install PostgreSQL, a few python libraries and we’re
 ready to go.
 
@@ -109,7 +109,7 @@ default instance:
 <p style="text-align:center">
 <img src="../img/posts/all-hacker-news/B1E1172B-AC08-4DB3-A5EB-37397764CB69.png" alt="AWS" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
-<BR><BR> Click the `Review and Lauch` button then the `Launch` button.
+<BR><BR> Click the `Review and Launch` button then the `Launch` button.
 It will ask you to create a new key pair. It is a security file that
 will live on your machine and is required to SSH into the instance. I
 tend to create them and leave them in my downloads. Whatever you decided
@@ -161,7 +161,7 @@ under `SSH-Auth`:
 <BR><BR> Click `Open` and you will connect to your instance. <BR><BR>
 **Mac/Linux Users**
 
-In the AWS web console window, select your instance (checkbox on left of
+In the AWS web console window, select your instance (check-box on left of
 description) and click the ‘Connect’ button and copy the example line.
 Copy the example line:
 
@@ -178,7 +178,7 @@ have your saved .pem file and paste the example ssh connection line:
 ***Loading Software on our Instance***
 
 Whether you're connected using PuTTY or the terminal window, the rest of
-the steps should be indentical.
+the steps should be identical.
 
 Install PostgreSQL:
 
@@ -271,7 +271,7 @@ Now let's add the needed Python libraries:
 We're going to make a few changes to Max Woolf's script
 <a href='https://github.com/minimaxir/get-all-hacker-news-submissions-comments/blob/master/hacker_news_comments_all.py' target='_blank'>hacker\_news\_comments\_all.py</a>.
 Because the script takes over 10 hours to collect all of Hacker News
-comments, we need to remove all `print` statemetns so that it can run in
+comments, we need to remove all `print` statements so that it can run in
 an unattended, background fashion.
 
 So, open a vim window with the following command:
