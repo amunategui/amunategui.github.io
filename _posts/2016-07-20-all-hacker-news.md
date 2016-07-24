@@ -418,3 +418,212 @@ let's make sure we're getting collecting data:
     SELECT count(*) FROM hn_comments;
 
 <BR><BR> <BR><BR> <BR><BR>
+
+
+***Some Analysis on Hacker News Comments***
+
+I ran it overnight and it ended after collecting some 9.5 million comments. 
+ 
+```{r eval=FALSE}
+sudo su - postgres
+psql -U postgres
+\c hacker_news
+SELECT count(*) FROM hn_comments;
+```
+
+```{r eval=FALSE}
+  count  
+---------
+ 9507873
+(1 row)
+```
+
+So, what is the date range of the data?
+```{r eval=FALSE}
+SELECT MIN(created_at), MAX(created_at) FROM hn_comments;
+```
+<p style="text-align:center">
+<img src="img/posts/all-hacker-news/040A3201-E358-440A-974C-14BE2CDBC14E.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<br><br>
+
+Let's run <a href='https://github.com/minimaxir/get-all-hacker-news-submissions-comments' target='_blank'>the example</a> that Max shares on his GitHub repo for table ``hn_comments``.
+
+```{r eval=FALSE}
+SELECT nth_comment, COUNT(num_points) AS users_who_made_num_comments, AVG(num_points) AS avg_points FROM (SELECT num_points, ROW_NUMBER() OVER (PARTITION BY author ORDER BY created_at ASC) AS nth_comment FROM hn_comments WHERE num_points IS NOT NULL) AS foo WHERE nth_comment <= 25 GROUP BY nth_comment ORDER BY nth_comment;
+```
+
+<p style="text-align:center">
+<img src="img/posts/all-hacker-news/46A24DB1-B6DE-4A23-BFFE-D7F72FD1D38A.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<br><br>
+
+**Exporting it to a text file**
+
+It is easy to export a PostgreSQL query to text. First we need to create a directory with the appropriate permission to receive the data:
+
+```{r eval=FALSE}
+\q
+exit
+
+cd ../../tmp/
+mkdir hacker-news
+cd ..
+sudo chmod -R 777 /tmp/
+```
+
+Now we go back to PostgreSQL and use the <a href='https://www.postgresql.org/docs/9.3/static/sql-copy.html' target='_blank'>\copy</a> command on a SQL query. For example, let's get 500 comments saved to text:
+
+```{r eval=FALSE}
+sudo su - postgres
+psql -U postgres
+\c hacker_news
+\copy (Select comment_text from hn_comments limit 500) To '/tmp/hacker-news/hn_comments.txt'  
+```
+
+<BR><BR>
+**EC2 – to local machine**
+
+Downloading the file to your local machine is very easy using either <a href='https://en.wikipedia.org/wiki/Cyberduck  target='_blank'>Cyberduck</a> or <a href='https://filezilla-project.org/' target='_blank'>FileZilla</a>. I hear great things for either package and both work on Mac or Windows. I will demo <a href='http://cyberduck.en.softonic.com/mac' target='_blank'>Cyberduck</a> for the Mac.
+
+Select ``SFTP``, enter the ``DNS`` server name of your instance, the user name ``ec2-user`` and click ``Connect``.
+
+<p style="text-align:center">
+<img src="img/posts/all-hacker-news/871CA3CA-10A1-4570-8820-E8D4C4F0B2A4.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<br><br>
+
+It will come back with a ``Login failed`` message, simply check the ``Use Public Key Authentication`` and browse to your ``.pem`` file.
+
+<p style="text-align:center">
+<img src="img/posts/all-hacker-news/875FD8D2-4BCE-4079-B324-8514056AF9B9.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<br><br>
+
+
+<p style="text-align:center">
+<img src="img/posts/all-hacker-news/A6AF1849-EC99-489C-A8E5-2FB7A1B3DB6A.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<br><br>
+
+Click ``Login`` and you should be able to see your instance's directory. 
+
+<p style="text-align:center">
+<img src="img/posts/all-hacker-news/70A028F2-35CA-45F9-8A10-AD511450A5FF.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<br><br>
+
+
+Double-click on the file and it will download it to your local directory.
+
+<BR><BR>
+**Moving Files from EC2 to local machine or S3**
+
+A method I use a lot is to move my data to an Amazon S3 bucket. You can then make that file public and access it from anywhere via a URL or keep it private and mount the drive using your authenthetication crdentials.
+
+<p style="text-align:center">
+<img src="img/posts/all-hacker-news/4E618D12-47AF-46F2-A27A-A8DC7F0FCADD.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<br><br>
+
+The following command will allow you to push your EC2 data into your bucket marked as public (<a href='http://docs.aws.amazon.com/cli/latest/userguide/using-s3-commands.html' target='_blank'>a more complete view of S3 commands</a>). 
+
+Navigate to the folder where you have the file you want to transfer, append your AWS access keys, the region of your instance (do not add the last letter of the region if it ends with and alphabetic character, and the bucket you want it in:
+
+```{r eval=FALSE}
+AWS_ACCESS_KEY_ID=xxxx.. AWS_SECRET_ACCESS_KEY=xxxx... aws s3 cp --region us-west-2  hn_comments.txt s3://amunategui.bucket 
+upload: ./hn_comments.txt to s3://amunategui.bucket/hn_comments.txt
+```
+
+Once in ``S3``, you can make the file public, get the ``URL``, and simple you R, Python, whatever language and access the data that way.
+
+<BR><BR>
+***Hacker News/Firebase API***
+
+Hacker News partnered with <a href='https://firebase.google.com/' target='_blank'>Firebase</a> to offer a web served <a href='https://github.com/HackerNews/API' target='_blank'>Hacker News API</a>. They describe it as follows: 
+
+<blockquote>'The v0 API is essentially a dump of our in-memory data structures'</blockquote>
+
+It is simple but it is your job to figure out what was returned. It is a global and incremental ID for any data event. The returned data could be a link to an article, a comment or a deletion. You also need to figure to whom this data event belongs to.
+
+For example, you can retrieve the last/max ID by pasting the following line in your browser: 
+```{r eval=FALSE}
+https://hacker-news.firebaseio.com/v0/maxitem.json?print=pretty
+```
+<BR><BR>
+This ID represents the last data event on Hacker News. Here is a Python way to access the last ID:
+
+```{r eval=FALSE}
+# max item posting
+import requests
+import json
+max_number = requests.get("https://hacker-news.firebaseio.com/v0/maxitem.json?print=pretty")
+last_ID = int(max_number.text)
+print(last_ID)
+```
+
+```{r eval=FALSE}
+>>> last_ID
+12154781
+```
+
+And to see what the ID contains:
+```{r eval=FALSE}
+https://hacker-news.firebaseio.com/v0/item/12154781.json?print=pretty
+```
+
+```{r eval=FALSE}
+{
+  "by" : "aexaey",
+  "id" : 12154781,
+  "parent" : 12154612,
+  "text" : "Why can&#x27;t I? For the purpose of this argument, Windows and Mac keyboards aren&#x27;t all that different. See for yourself - modern mac keyboards have two layouts:<p>- Full &#x2F; 105-key layout, which is a copy of Windows 105-key layout with renamed and re-shuffled lower row, featuring: control, option(alt), command(win), space, command, option, control; [1]<p>- Compact (laptop &#x2F; magic), where lower row has: fn, control, option(alt), command(win), space, command option; [2]<p>Other (Windows) layouts of the bottom row:<p>- Full&#x2F;Desktop 105-key: Ctrl, Win, Alt, Space, Alt, Win, Menu, Ctrl;<p>- Lenovo laptop: Fn, Ctrl, Win, Alt, Space, Alt, Win[4]. Ctlr; [3]<p>- Dell laptop: Ctrl, Fn, Win, Alt, Space, Alt, Ctrl. [5]<p>...etc.<p>Now, <i>this</i> is ridiculous.<p>So my point is: sure, there are (ad-hoc) standards, but way too many of them, and all of them try to pack too many keys around core QWERTY field, especially lower row. Chromebook is the first one on record to prune this and offer a clean, usable layout.<p>[1] <a href=\"http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MB110LL&#x2F;B&#x2F;apple-keyboard-with-numeric-keypad-english-usa\" rel=\"nofollow\">http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MB110LL&#x2F;B&#x2F;apple-keyboard-w...</a><p>[2] <a href=\"http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MLA22LL&#x2F;A&#x2F;magic-keyboard-us-english\" rel=\"nofollow\">http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MLA22LL&#x2F;A&#x2F;magic-keyboard-u...</a><p>[3] <a href=\"http:&#x2F;&#x2F;www.lenovo.com&#x2F;images&#x2F;gallery&#x2F;main&#x2F;lenovo-convertible-tablet-thinkPad-helix-keyboard-view-9.jpg\" rel=\"nofollow\">http:&#x2F;&#x2F;www.lenovo.com&#x2F;images&#x2F;gallery&#x2F;main&#x2F;lenovo-convertible...</a><p>[4] On some models, PrintScreen takes place of second Win key<p>[5] <a href=\"http:&#x2F;&#x2F;kbimg.dell.com&#x2F;library&#x2F;KB&#x2F;DELL_ORGANIZATIONAL_GROUPS&#x2F;DELL_GLOBAL&#x2F;Content%20Team&#x2F;5450_5250_kybd.JPG\" rel=\"nofollow\">http:&#x2F;&#x2F;kbimg.dell.com&#x2F;library&#x2F;KB&#x2F;DELL_ORGANIZATIONAL_GROUPS&#x2F;...</a>",
+  "time" : 1469392810,
+  "type" : "comment"
+}
+```
+
+<BR><BR>
+Now that we have this ``ID``, let's see what is attached to it:
+
+```{r eval=FALSE}
+entry = requests.get("https://hacker-news.firebaseio.com/v0/item/" + str(last_ID) + ".json?print=pretty")
+
+>>> entry.json()
+{u'parent': 12154612, u'text': u'Not sure what would you consider being conflated. Modern mac keyboards have two layouts:<p>- Full &#x2F; 105-key layout with lower row featuring control, option(alt), command(win), space, command, option, control; [1]<p>- Compact (laptop &#x2F; magic), lower row has: fn, control, option(alt), command(win), space, command option; [2]<p>Other (Windows) layouts of the bottom row:<p>- Full&#x2F;Desktop 105-key: Ctrl, Win, Alt, Space, Alt, Win, Menu, Ctrl;<p>- Lenovo laptop: Fn, Ctrl, Win, Alt, Space, Alt, Win[4]. Ctlr; [3]<p>- Dell laptop: Ctrl, Fn, Win, Alt, Space, Alt, Ctrl. [5]<p>...etc.<p>So my point is: sure, there are standards, but way too many of them, and all of them try to pack way to many keys around core QWERTY field, especially lower row. Chromebook is the first one on record to prune this and offer a clean, usable layout.<p>[1] <a href="http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MB110LL&#x2F;B&#x2F;apple-keyboard-with-numeric-keypad-english-usa" rel="nofollow">http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MB110LL&#x2F;B&#x2F;apple-keyboard-w...</a><p>[2] <a href="http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MLA22LL&#x2F;A&#x2F;magic-keyboard-us-english" rel="nofollow">http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MLA22LL&#x2F;A&#x2F;magic-keyboard-u...</a><p>[3] <a href="http:&#x2F;&#x2F;www.lenovo.com&#x2F;images&#x2F;gallery&#x2F;main&#x2F;lenovo-convertible-tablet-thinkPad-helix-keyboard-view-9.jpg" rel="nofollow">http:&#x2F;&#x2F;www.lenovo.com&#x2F;images&#x2F;gallery&#x2F;main&#x2F;lenovo-convertible...</a><p>[4] On some models, PrintScreen.<p>[5] <a href="http:&#x2F;&#x2F;kbimg.dell.com&#x2F;library&#x2F;KB&#x2F;DELL_ORGANIZATIONAL_GROUPS&#x2F;DELL_GLOBAL&#x2F;Content%20Team&#x2F;5450_5250_kybd.JPG" rel="nofollow">http:&#x2F;&#x2F;kbimg.dell.com&#x2F;library&#x2F;KB&#x2F;DELL_ORGANIZATIONAL_GROUPS&#x2F;...</a>', u'id': 12154781, u'time': 1469392810, u'type': u'comment', u'by': u'aexaey'}
+
+```
+<BR><BR>
+What are the keys return by our ``JSON`` query?
+```{r eval=FALSE}
+>>> entry.json().keys()
+[u'parent', u'text', u'id', u'time', u'type', u'by']
+```
+<BR><BR>
+Let's find out the ``type``:
+```{r eval=FALSE}
+>>> entry.json()['type']
+u'comment'
+```
+<BR><BR>
+What's the parent ``ID``:
+```{r eval=FALSE}
+>>> entry.json()['parent']
+
+
+entry = requests.get("https://hacker-news.firebaseio.com/v0/item/12154612.json?print=pretty")
+entry.json()['type']
+entry.json()['text']
+```
+<BR><BR>
+Work your way up to the story?
+```{r eval=FALSE}
+>>> entry.json()['type']
+u'story'
+```
+
+<BR><BR>
+To the a list of the top stories (i.e. what you see on the landing page of ``https://news.ycombinator.com/``):
+
+```{r eval=FALSE}
+https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty
+```
+
+<BR><BR><BR>
+Big thanks to Lucas for the "Big Data Surveillance" artwork!
+
+
+
