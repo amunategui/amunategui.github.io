@@ -482,24 +482,24 @@ Downloading the file to your local machine is very easy using either <a href='ht
 Select ``SFTP``, enter the ``DNS`` server name of your instance, the user name ``ec2-user`` and click ``Connect``.
 
 <p style="text-align:center">
-<img src="img/posts/all-hacker-news/871CA3CA-10A1-4570-8820-E8D4C4F0B2A4.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/all-hacker-news/871CA3CA-10A1-4570-8820-E8D4C4F0B2A4.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <br><br>
 
 It will come back with a ``Login failed`` message, simply check the ``Use Public Key Authentication`` and browse to your ``.pem`` file.
 
 <p style="text-align:center">
-<img src="img/posts/all-hacker-news/875FD8D2-4BCE-4079-B324-8514056AF9B9.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/all-hacker-news/875FD8D2-4BCE-4079-B324-8514056AF9B9.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <br><br>
 
 
 <p style="text-align:center">
-<img src="img/posts/all-hacker-news/A6AF1849-EC99-489C-A8E5-2FB7A1B3DB6A.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/all-hacker-news/A6AF1849-EC99-489C-A8E5-2FB7A1B3DB6A.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <br><br>
 
 Click ``Login`` and you should be able to see your instance's directory. 
 
 <p style="text-align:center">
-<img src="img/posts/all-hacker-news/70A028F2-35CA-45F9-8A10-AD511450A5FF.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/all-hacker-news/70A028F2-35CA-45F9-8A10-AD511450A5FF.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <br><br>
 
 
@@ -511,7 +511,7 @@ Double-click on the file and it will download it to your local directory.
 A method I use a lot is to move my data to an Amazon S3 bucket. You can then make that file public and access it from anywhere via a URL or keep it private and mount the drive using your authenthetication crdentials.
 
 <p style="text-align:center">
-<img src="img/posts/all-hacker-news/4E618D12-47AF-46F2-A27A-A8DC7F0FCADD.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/all-hacker-news/4E618D12-47AF-46F2-A27A-A8DC7F0FCADD.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <br><br>
 
 The following command will allow you to push your EC2 data into your bucket marked as public (<a href='http://docs.aws.amazon.com/cli/latest/userguide/using-s3-commands.html' target='_blank'>a more complete view of S3 commands</a>). 
@@ -563,7 +563,7 @@ And to see what the ID contains, enter the following in your browser: ``https://
 <BR><BR>
 Now that we have this ``ID``, let's see what is attached to it:
 
-    entry = requests.get("https://hacker-news.firebaseio.com/v0/item/" + str(last_ID) + ".json?print=pretty")
+    >>> entry = requests.get("https://hacker-news.firebaseio.com/v0/item/" + str(last_ID) + ".json?print=pretty")
 
     >>> entry.json()
     {u'parent': 12154612, u'text': u'Not sure what would you consider being conflated. Modern mac keyboards have two layouts:<p>- Full &#x2F; 105-key layout with lower row featuring control, option(alt), command(win), space, command, option, control; [1]<p>- Compact (laptop &#x2F; magic), lower row has: fn, control, option(alt), command(win), space, command option; [2]<p>Other (Windows) layouts of the bottom row:<p>- Full&#x2F;Desktop 105-key: Ctrl, Win, Alt, Space, Alt, Win, Menu, Ctrl;<p>- Lenovo laptop: Fn, Ctrl, Win, Alt, Space, Alt, Win[4]. Ctlr; [3]<p>- Dell laptop: Ctrl, Fn, Win, Alt, Space, Alt, Ctrl. [5]<p>...etc.<p>So my point is: sure, there are standards, but way too many of them, and all of them try to pack way to many keys around core QWERTY field, especially lower row. Chromebook is the first one on record to prune this and offer a clean, usable layout.<p>[1] <a href="http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MB110LL&#x2F;B&#x2F;apple-keyboard-with-numeric-keypad-english-usa" rel="nofollow">http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MB110LL&#x2F;B&#x2F;apple-keyboard-w...</a><p>[2] <a href="http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MLA22LL&#x2F;A&#x2F;magic-keyboard-us-english" rel="nofollow">http:&#x2F;&#x2F;www.apple.com&#x2F;shop&#x2F;product&#x2F;MLA22LL&#x2F;A&#x2F;magic-keyboard-u...</a><p>[3] <a href="http:&#x2F;&#x2F;www.lenovo.com&#x2F;images&#x2F;gallery&#x2F;main&#x2F;lenovo-convertible-tablet-thinkPad-helix-keyboard-view-9.jpg" rel="nofollow">http:&#x2F;&#x2F;www.lenovo.com&#x2F;images&#x2F;gallery&#x2F;main&#x2F;lenovo-convertible...</a><p>[4] On some models, PrintScreen.<p>[5] <a href="http:&#x2F;&#x2F;kbimg.dell.com&#x2F;library&#x2F;KB&#x2F;DELL_ORGANIZATIONAL_GROUPS&#x2F;DELL_GLOBAL&#x2F;Content%20Team&#x2F;5450_5250_kybd.JPG" rel="nofollow">http:&#x2F;&#x2F;kbimg.dell.com&#x2F;library&#x2F;KB&#x2F;DELL_ORGANIZATIONAL_GROUPS&#x2F;...</a>', u'id': 12154781, u'time': 1469392810, u'type': u'comment', u'by': u'aexaey'}
@@ -585,9 +585,9 @@ Let's find out the ``type``:
 What's the parent ``ID``:
 
     >>> entry.json()['parent']
-    entry = requests.get("https://hacker-news.firebaseio.com/v0/item/12154612.json?print=pretty")
-    entry.json()['type']
-    entry.json()['text']
+    >>> entry = requests.get("https://hacker-news.firebaseio.com/v0/item/12154612.json?print=pretty")
+    >>> entry.json()['type']
+    >>> entry.json()['text']
 
 <BR><BR>
 Work your way up to the story?
@@ -597,9 +597,7 @@ Work your way up to the story?
 
 
 <BR><BR>
-To the a list of the top stories (i.e. what you see on the landing page of ``https://news.ycombinator.com/``):
-
-    https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty
+To the a list of the top stories (i.e. what you see on the landing page of https://news.ycombinator.com/): ``https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty``
 
 <BR><BR><BR>
 Big thanks to Lucas for the "Big Data Surveillance" artwork!
