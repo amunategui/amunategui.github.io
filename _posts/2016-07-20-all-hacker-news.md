@@ -477,7 +477,7 @@ Now we go back to PostgreSQL and use the <a href='https://www.postgresql.org/doc
 <BR><BR>
 **EC2 – to local machine**
 
-Downloading the file to your local machine is very easy using either <a href='https://en.wikipedia.org/wiki/Cyberduck  target='_blank'>Cyberduck</a> or <a href='https://filezilla-project.org/' target='_blank'>FileZilla</a>. I hear great things for either package and both work on Mac or Windows. I will demo <a href='http://cyberduck.en.softonic.com/mac' target='_blank'>Cyberduck</a> for the Mac.
+Downloading the file to your local machine is very easy using either <a href='https://en.wikipedia.org/wiki/Cyberduck'  target='_blank'>Cyberduck</a> or <a href='https://filezilla-project.org/' target='_blank'>FileZilla</a>. I hear great things about both packages and both have a Mac or Windows version. I will demo <a href='http://cyberduck.en.softonic.com/mac' target='_blank'>Cyberduck</a> for the Mac.
 
 Select ``SFTP``, enter the ``DNS`` server name of your instance, the user name ``ec2-user`` and click ``Connect``.
 
