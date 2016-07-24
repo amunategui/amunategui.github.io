@@ -441,7 +441,7 @@ So, what is the date range of the data?
     SELECT MIN(created_at), MAX(created_at) FROM hn_comments;
 
 <p style="text-align:center">
-<img src="..img/posts/all-hacker-news/040A3201-E358-440A-974C-14BE2CDBC14E.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/all-hacker-news/040A3201-E358-440A-974C-14BE2CDBC14E.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <br><br>
 
 Let's run <a href='https://github.com/minimaxir/get-all-hacker-news-submissions-comments' target='_blank'>the example</a> that Max shares on his GitHub repo for table ``hn_comments``.
@@ -451,7 +451,7 @@ Let's run <a href='https://github.com/minimaxir/get-all-hacker-news-submissions-
 
 
 <p style="text-align:center">
-<img src="..img/posts/all-hacker-news/46A24DB1-B6DE-4A23-BFFE-D7F72FD1D38A.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<img src="../img/posts/all-hacker-news/46A24DB1-B6DE-4A23-BFFE-D7F72FD1D38A.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <br><br>
 
 **Exporting it to a text file**
