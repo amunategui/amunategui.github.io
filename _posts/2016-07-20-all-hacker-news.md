@@ -20,6 +20,17 @@ image: all-hacker-news/big-data-surveillance.png
 <li type="square"><a href="https://www.youtube.com/watch?v=Ijtn5AtPr90&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target='_blank'>YouTube Companion Video - Part 1</a></li>
 </ul>
 <BR><BR>
+<br><br>
+<ul>
+    <li type="square"><a href="#aws">Amazon Web Serivces</a></li>
+    <li type="square"><a href="#installing-spark">PuTTY Connection</a></li>
+    <li type="square"><a href="#creating-clusters">Terminal Connection</a></li>
+    <li type="square"><a href="#connecting-to-the-master-cluster">PostgreSQL</a></li>
+    <li type="square"><a href="#rstudio">Max Woolf Python's Script/Algolia API </a></li>
+    <li type="square"><a href="#analysis">Some Analysis on Hacker News Comments</a></li>
+    <li type="square"><a href="#rstudio">Moving EC2 Files</a></li>
+    <li type="square"><a href="#firebase">Hacker News/Firebase API</a></li>
+</ul>
 
 Hacker News is a fascinating site with a constant flow of news, current
 events, general-interest articles vetted and posted by users and
@@ -43,6 +54,8 @@ the other for news stories that calls the
 and stores them in PostgreSQL. We’ll only look at comments but the same
 concept applies with his news stories script. He also offers basic SQL
 queries for aggregate analysis of the data.
+
+<h2><a id="aws">AWS Instance</a></h2>
 
 The twist is that we’ll use an Amazon EC2 instance to do the downloading
 and PostgreSQL storing. There is a good reason we’re doing it that way,
@@ -419,8 +432,7 @@ let's make sure we're getting collecting data:
 
 <BR><BR><BR>
 
-
-***Some Analysis on Hacker News Comments***
+<h2><a id="analysis">Some Analysis on Hacker News Comments</a></h2>
 
 I ran it overnight and it ended after collecting some 9.5 million comments. 
  
@@ -503,7 +515,7 @@ Click ``Login`` and you should be able to see your instance's directory.
 <br><br>
 
 
-Double-click on the file and it will download it to your local directory.
+Double-click on the file and it will be downloaded onto your local machine.
 
 <BR><BR>
 **Moving Files from EC2 to local machine or S3**
@@ -524,7 +536,7 @@ Navigate to the folder where you have the file you want to transfer, append your
 Once in ``S3``, you can make the file public, get the ``URL``, and simple you R, Python, whatever language and access the data that way.
 
 <BR><BR>
-***Hacker News/Firebase API***
+<h2><a id="firebase">Hacker News/Firebase API</a></h2>
 
 Hacker News partnered with <a href='https://firebase.google.com/' target='_blank'>Firebase</a> to offer a web served <a href='https://github.com/HackerNews/API' target='_blank'>Hacker News API</a>. They describe it as follows: 
 
