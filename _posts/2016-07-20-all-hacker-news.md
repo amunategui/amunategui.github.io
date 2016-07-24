@@ -424,19 +424,17 @@ let's make sure we're getting collecting data:
 
 I ran it overnight and it ended after collecting some 9.5 million comments. 
  
-```{r eval=FALSE}
-sudo su - postgres
-psql -U postgres
-\c hacker_news
-SELECT count(*) FROM hn_comments;
-```
+    sudo su - postgres
+    psql -U postgres
+    \c hacker_news
+    SELECT count(*) FROM hn_comments;
 
-```{r eval=FALSE}
-  count  
----------
- 9507873
-(1 row)
-```
+
+    count  
+    ---------
+     9507873
+    (1 row)
+
 
 So, what is the date range of the data?
 ```{r eval=FALSE}
