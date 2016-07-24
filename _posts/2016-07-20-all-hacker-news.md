@@ -27,7 +27,7 @@ image: all-hacker-news/big-data-surveillance.png
     <li type="square"><a href="#creating-clusters">Terminal Connection</a></li>
     <li type="square"><a href="#connecting-to-the-master-cluster">PostgreSQL</a></li>
     <li type="square"><a href="#rstudio">Max Woolf Python's Script/Algolia API </a></li>
-    <li type="square"><a href="#analysis">Some Analysis on Hacker News Comments</a></li>
+    <li type="square"><a href="#analysis">Analysis of Hacker News Comments</a></li>
     <li type="square"><a href="#rstudio">Moving EC2 Files</a></li>
     <li type="square"><a href="#firebase">Hacker News/Firebase API</a></li>
 </ul>
@@ -432,7 +432,7 @@ let's make sure we're getting collecting data:
 
 <BR><BR><BR>
 
-<h2><a id="analysis">Some Analysis on Hacker News Comments</a></h2>
+<h2><a id="analysis">Analysis of Hacker News Comments</a></h2>
 
 I ran it overnight and it ended after collecting some 9.5 million comments. 
  
