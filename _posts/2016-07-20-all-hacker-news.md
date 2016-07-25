@@ -21,7 +21,7 @@ image: all-hacker-news/big-data-surveillance.png
 </ul>
 <BR><BR>
 <br>
-**Index**
+**Shortcuts**
 <ul>
     <li type="square"><a href="#aws">Amazon Web Serivces</a></li>
     <li type="square"><a href="#putty">PuTTY Connection</a></li>
@@ -193,6 +193,7 @@ have your saved .pem file and paste the example ssh connection line:
 Whether you're connected using PuTTY or the terminal window, the rest of
 the steps should be identical.
 
+<h3><a id="postgresql">PostgreSQL</a></h3>
 Install PostgreSQL:
 
     sudo yum install postgresql postgresql-server postgresql-devel postgresql-contrib postgresql-docs
@@ -474,7 +475,6 @@ It is easy to export a PostgreSQL query to text. First we need to create a direc
     exit
     cd ../../tmp/
     mkdir hacker-news
-    cd ..
     sudo chmod -R 777 /tmp/
 
 
@@ -531,6 +531,7 @@ The following command will allow you to push your EC2 data into your bucket mark
 Navigate to the folder where you have the file you want to transfer, append your AWS access keys, the region of your instance (do not add the last letter of the region if it ends with and alphabetic character, and the bucket you want it in:
 
     AWS_ACCESS_KEY_ID=xxxx.. AWS_SECRET_ACCESS_KEY=xxxx... aws s3 cp --region us-west-2  hn_comments.txt s3://amunategui.bucket 
+    
     upload: ./hn_comments.txt to s3://amunategui.bucket/hn_comments.txt
 
 Once in ``S3``, you can make the file public, get the ``URL``, and simple you R, Python, whatever language and access the data that way.
