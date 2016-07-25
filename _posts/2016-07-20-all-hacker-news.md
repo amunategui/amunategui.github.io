@@ -467,7 +467,7 @@ Let's run <a href='https://github.com/minimaxir/get-all-hacker-news-submissions-
 <img src="../img/posts/all-hacker-news/46A24DB1-B6DE-4A23-BFFE-D7F72FD1D38A.png" alt="hacker_news" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
 <br><br>
 
-**Exporting it to a text file**
+<h2><a id="files">Exporting it to a text file</a></h2>
 
 It is easy to export a PostgreSQL query to text. First we need to create a directory with the appropriate permission to receive the data:
 
