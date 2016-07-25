@@ -173,7 +173,7 @@ under `SSH-Auth`:
 <img src="../img/posts/all-hacker-news/EFFA743F-59EB-450A-BA3F-EA3758DBBAEF.png" alt="PuTTY" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 <BR><BR> Click `Open` and you will connect to your instance. <BR><BR>
-<h3><a id="putty">Mac/Linux Users - Terminal</a></h3>
+<h3><a id="terminal">Mac/Linux Users - Terminal</a></h3>
 In the AWS web console window, select your instance (check-box on left of
 description) and click the ‘Connect’ button and copy the example line.
 Copy the example line:
@@ -280,8 +280,8 @@ Now let's add the needed Python libraries:
     sudo yum -y install gcc-c++
     sudo pip install psycopg2
 
-<BR><BR> **Python Script**
-
+<BR><BR>
+<h2><a id="algolia">Python Script</a></h2>
 We're going to make a few changes to Max Woolf's script
 <a href='https://github.com/minimaxir/get-all-hacker-news-submissions-comments/blob/master/hacker_news_comments_all.py' target='_blank'>hacker\_news\_comments\_all.py</a>.
 Because the script takes over 10 hours to collect all of Hacker News
@@ -531,7 +531,7 @@ The following command will allow you to push your EC2 data into your bucket mark
 Navigate to the folder where you have the file you want to transfer, append your AWS access keys, the region of your instance (do not add the last letter of the region if it ends with and alphabetic character, and the bucket you want it in:
 
     AWS_ACCESS_KEY_ID=xxxx.. AWS_SECRET_ACCESS_KEY=xxxx... aws s3 cp --region us-west-2  hn_comments.txt s3://amunategui.bucket 
-    
+
     upload: ./hn_comments.txt to s3://amunategui.bucket/hn_comments.txt
 
 Once in ``S3``, you can make the file public, get the ``URL``, and simple you R, Python, whatever language and access the data that way.
