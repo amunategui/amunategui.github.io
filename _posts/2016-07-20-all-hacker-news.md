@@ -20,15 +20,16 @@ image: all-hacker-news/big-data-surveillance.png
 <li type="square"><a href="https://www.youtube.com/watch?v=Ijtn5AtPr90&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target='_blank'>YouTube Companion Video - Part 1</a></li>
 </ul>
 <BR><BR>
-<br><br>
+<br>
+**Index**
 <ul>
     <li type="square"><a href="#aws">Amazon Web Serivces</a></li>
-    <li type="square"><a href="#installing-spark">PuTTY Connection</a></li>
-    <li type="square"><a href="#creating-clusters">Terminal Connection</a></li>
-    <li type="square"><a href="#connecting-to-the-master-cluster">PostgreSQL</a></li>
-    <li type="square"><a href="#rstudio">Max Woolf Python's Script/Algolia API </a></li>
+    <li type="square"><a href="#putty">PuTTY Connection</a></li>
+    <li type="square"><a href="#terminal">Terminal Connection</a></li>
+    <li type="square"><a href="#postgresql">PostgreSQL</a></li>
+    <li type="square"><a href="#algolia">Max Woolf Python's Script/Algolia API </a></li>
     <li type="square"><a href="#analysis">Analysis of Hacker News Comments</a></li>
-    <li type="square"><a href="#rstudio">Moving EC2 Files</a></li>
+    <li type="square"><a href="#files">Moving EC2 Files</a></li>
     <li type="square"><a href="#firebase">Hacker News/Firebase API</a></li>
 </ul>
 
@@ -141,8 +142,8 @@ initializing.
 <p style="text-align:center">
 <img src="../img/posts/all-hacker-news/ec2_instance.png" alt="EC2" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
-**Window Users**
 
+<h3><a id="putty">Window Users - PuTTY</a></h3>
 If you're using windows, download
 <a href='http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html' target='_blank'>PuTTYgen
 and PuTTY</a>.
@@ -172,8 +173,7 @@ under `SSH-Auth`:
 <img src="../img/posts/all-hacker-news/EFFA743F-59EB-450A-BA3F-EA3758DBBAEF.png" alt="PuTTY" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 <BR><BR> Click `Open` and you will connect to your instance. <BR><BR>
-**Mac/Linux Users**
-
+<h3><a id="putty">Mac/Linux Users - Terminal</a></h3>
 In the AWS web console window, select your instance (check-box on left of
 description) and click the ‘Connect’ button and copy the example line.
 Copy the example line:
