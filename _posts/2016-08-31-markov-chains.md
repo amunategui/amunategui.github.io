@@ -166,11 +166,8 @@ you see that the highest probability for the next note after `A` is
 <p style="text-align:center">
 <img src="../img/posts/markov-chains/transition-matrix.png" alt="1st order matrix" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
-<br><br> In our case, we will analyze each event in a sequence and
-catalog the market behavior. We then tally all the moves
-
-we will have two probability matrices of volume action, one for up moves
-and another for down moves. We then match each move
+<br><br> 
+In our case, we will analyze each event pair in a sequence and catalog the market behavior. We then tally all the matching moves and create two data sets for volume action, one for up moves and another for down moves. New stock market events are then broken down into sequential pairs and tallied for both positive and negative outcomes - biggest moves win (there is a little more to this in the code, but that's it in a nutshell).
 
 <BR>
 <H2>
@@ -424,8 +421,10 @@ thing on and see how well it predicts stock market behavior. We
 
 <BR>
 <h2>
-What To Try Next
+What To Try Next?
 </H2>
-Adding more complex or simpler patterns into the sequence (symbol at
-beginning of sequence versus end with differing weights). sequence
-number sample size sample(5:10, 1)
+You dial up or down the complexity of the pattern, predict others things than volume changes, add more or less sequences, etc. Sky's the limit...
+
+<BR><BR>
+Thanks Lucas A. for the Markov-Dollar-Chains artwork!
+<BR>
