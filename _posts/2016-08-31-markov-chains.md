@@ -7,7 +7,7 @@ year: 2016
 month: 08
 day: 31
 published: true
-summary: "Here we look at applying Markov Chains to map and understand stock-market behavior using the R language."
+summary: "Here we apply Markov Chains to map and understand stock-market behavior using the R language."
 image: markov-chains/markov.png
 ---
 <BR>
@@ -391,6 +391,7 @@ thing on and see how well it predicts stock market behavior. We
     result 
 
 <BR>
+A 55% accuracy may not sound like much, but in the world of predicting stock market behavior, anything over a flip-of-a-coin is potentially intesesting.
 
      Confusion Matrix and Statistics
      
