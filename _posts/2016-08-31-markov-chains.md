@@ -21,7 +21,7 @@ A
 Chain</a> offers a probabilistic approach in predicting the likelihood
 of an event based on previous behavior
 (<a href='http://setosa.io/blog/2014/07/26/markov-chains/' target='_blank'>learn
-more about Markov Chains here</a>).
+more about Markov Chains here</a> and <a href='http://blog.revolutionanalytics.com/2016/01/getting-started-with-markov-chains.html' target='_blank'>here</a>).
 
 <BR>
 <H2>
@@ -164,7 +164,7 @@ you see that the highest probability for the next note after `A` is
 `C#`.
 
 <p style="text-align:center">
-<img src="../img/posts/markov-chains/transition-matrix.png" alt="1st order matrix" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+<img src="../img/posts/markov-chains/transition-matrix.png" alt="1st order matrix" style='padding:1px; border:1px solid #021a40; width: 30%; height: 30%'>
 </p>
 <br><br> 
 In our case, we will analyze each event pair in a sequence and catalog the market behavior. We then tally all the matching moves and create two data sets for volume action, one for up moves and another for down moves. New stock market events are then broken down into sequential pairs and tallied for both positive and negative outcomes - biggest moves win (there is a little more to this in the code, but that's it in a nutshell).
@@ -218,28 +218,22 @@ thing on and see how well it predicts stock market behavior. We
 
     dim(new_set)
 
-    new_set_bak -> new_set
-    dim(new_set_bak)
-    # only  keep big moves
-    summary(new_set$Outcome_Next_Day_Direction)
-     
-
     # create sequences
     # simplify the data by binning values into three groups
-    # 
-    # # High_Gap
-    # range(new_set$High_Gap)
-    # data_dicretized <- discretize(new_set$High_Gap, disc="equalfreq", nbins=3)
-    # new_set$High_Gap <- data_dicretized$X
-    # new_set$High_Gap_LMH <- ifelse(new_set$High_Gap == 1, 'L', 
-    #                                ifelse(new_set$High_Gap ==2, 'M','H'))
-    # 
-    # # Low_Gap
-    # range(new_set$Low_Gap)
-    # data_dicretized <- discretize(new_set$Low_Gap, disc="equalfreq", nbins=3)
-    # new_set$Low_Gap <- data_dicretized$X
-    # new_set$Low_Gap_LMH <- ifelse(new_set$Low_Gap == 1, 'L', 
-    #                               ifelse(new_set$Low_Gap ==2, 'M','H'))
+     
+    # High_Gap
+    range(new_set$High_Gap)
+    data_dicretized <- discretize(new_set$High_Gap, disc="equalfreq", nbins=3)
+    new_set$High_Gap <- data_dicretized$X
+    new_set$High_Gap_LMH <- ifelse(new_set$High_Gap == 1, 'L', 
+                                    ifelse(new_set$High_Gap ==2, 'M','H'))
+     
+    # Low_Gap
+    range(new_set$Low_Gap)
+    data_dicretized <- discretize(new_set$Low_Gap, disc="equalfreq", nbins=3)
+    new_set$Low_Gap <- data_dicretized$X
+    new_set$Low_Gap_LMH <- ifelse(new_set$Low_Gap == 1, 'L', 
+                                   ifelse(new_set$Low_Gap ==2, 'M','H'))
 
     # Close_Gap
     range(new_set$Close_Gap)
