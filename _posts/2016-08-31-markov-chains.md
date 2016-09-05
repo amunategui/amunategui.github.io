@@ -223,20 +223,6 @@ thing on and see how well it predicts stock market behavior. We
     # create sequences
     # simplify the data by binning values into three groups
      
-    # High_Gap
-    range(new_set$High_Gap)
-    data_dicretized <- discretize(new_set$High_Gap, disc="equalfreq", nbins=3)
-    new_set$High_Gap <- data_dicretized$X
-    new_set$High_Gap_LMH <- ifelse(new_set$High_Gap == 1, 'L', 
-                                    ifelse(new_set$High_Gap ==2, 'M','H'))
-     
-    # Low_Gap
-    range(new_set$Low_Gap)
-    data_dicretized <- discretize(new_set$Low_Gap, disc="equalfreq", nbins=3)
-    new_set$Low_Gap <- data_dicretized$X
-    new_set$Low_Gap_LMH <- ifelse(new_set$Low_Gap == 1, 'L', 
-                                   ifelse(new_set$Low_Gap ==2, 'M','H'))
-
     # Close_Gap
     range(new_set$Close_Gap)
     data_dicretized <- discretize(new_set$Close_Gap, disc="equalfreq", nbins=3)
@@ -263,8 +249,6 @@ thing on and see how well it predicts stock market behavior. We
     new_set <- new_set[,c("Sequence_ID", "Close_Date", "Close_Gap_LMH", "Volume_Gap_LMH", "Daily_Change_LMH", "Outcome_Next_Day_Direction")]
 
     new_set$Event_Pattern <- paste0(new_set$Close_Gap_LMH,      
-                                    new_set$Low_Gap_LMH,
-                                    new_set$High_Gap_LMH,
                                     new_set$Volume_Gap_LMH, 
                                     new_set$Daily_Change_LMH) 
 
