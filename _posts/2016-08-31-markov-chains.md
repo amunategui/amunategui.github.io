@@ -310,9 +310,9 @@ thing on and see how well it predicts stock market behavior. We
               # how many times 
               for (to_event in unique_patterns) {
                    pattern <- paste0(from_event, ',', to_event)
-                   OpportunityIds_matches <- compressed_grid[grep(pattern, compressed_grid$Event_Pattern),]
-                   if (nrow(OpportunityIds_matches) > 0) {
-                        Event_Pattern <- paste0(OpportunityIds_matches$Event_Pattern, collapse = ',', sep='~~')
+                   IDs_matches <- compressed_grid[grep(pattern, compressed_grid$Event_Pattern),]
+                   if (nrow(IDs_matches) > 0) {
+                        Event_Pattern <- paste0(IDs_matches$Event_Pattern, collapse = ',', sep='~~')
                         found <- gregexpr(pattern = pattern, text = Event_Pattern)[[1]]
                         grid <- c(pattern,  length(found))
                    } else {
