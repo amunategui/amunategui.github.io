@@ -182,6 +182,8 @@ thing on and see how well it predicts stock market behavior. We
     library(dplyr)
     #install.packages('infotheo)
     library(infotheo)
+    #install.packages('caret')
+    library(caret)
 
     # get market data
     getSymbols(c("^GSPC"))
@@ -198,7 +200,7 @@ thing on and see how well it predicts stock market behavior. We
     # take random sets of sequential rows 
     new_set <- c()
     for (row_set in seq(10000)) {
-         row_quant <- sample(10:15, 1)
+         row_quant <- sample(10:30, 1)
          print(row_quant)
          row_start <- sample(1:(nrow(GSPC) - row_quant), 1)
          market_subset <- GSPC[row_start:(row_start + row_quant),]
@@ -212,7 +214,7 @@ thing on and see how well it predicts stock market behavior. We
                                         Outcome_Next_Day_Direction= (lead(GSPC.Volume)-GSPC.Volume)) %>%
               dplyr::select(-GSPC.Open, -GSPC.High, -GSPC.Low, -GSPC.Close, -GSPC.Volume, -GSPC.Adjusted, -Close.Date) %>%
               na.omit
-         market_subset$ID <- row_set
+         market_subset$Sequence_ID <- row_set
          new_set <- rbind(new_set, market_subset)
     }
 
@@ -258,7 +260,7 @@ thing on and see how well it predicts stock market behavior. We
                                        ifelse(new_set$Daily_Change ==2, 'M','H'))
 
     # new set
-    new_set <- new_set[,c("ID", "Close_Date", "Close_Gap_LMH", "Volume_Gap_LMH", "Daily_Change_LMH", "Outcome_Next_Day_Direction")]
+    new_set <- new_set[,c("Sequence_ID", "Close_Date", "Close_Gap_LMH", "Volume_Gap_LMH", "Daily_Change_LMH", "Outcome_Next_Day_Direction")]
 
     new_set$Event_Pattern <- paste0(new_set$Close_Gap_LMH,      
                                     new_set$Low_Gap_LMH,
@@ -267,21 +269,21 @@ thing on and see how well it predicts stock market behavior. We
                                     new_set$Daily_Change_LMH) 
 
     # reduce set 
-    compressed_set <- dplyr::group_by(new_set, ID, Close_Date) %>%
+    compressed_set <- dplyr::group_by(new_set, Sequence_ID, Close_Date) %>%
          dplyr::summarize(Event_Pattern = paste(Event_Pattern, collapse = ",")) %>%
          data.frame
-    compressed_set <- merge(x=compressed_set,y=dplyr::select(new_set, ID, Outcome_Next_Day_Direction) %>%
-                                 dplyr::group_by(ID) %>% 
+    compressed_set <- merge(x=compressed_set,y=dplyr::select(new_set, Sequence_ID, Outcome_Next_Day_Direction) %>%
+                                 dplyr::group_by(Sequence_ID) %>% 
                                  dplyr::slice(n()) %>%
-                                 dplyr::distinct(ID), by='ID')
+                                 dplyr::distinct(Sequence_ID), by='Sequence_ID')
 
 
 
     # use last x days of data for validation
     library(dplyr)
-    compressed_set_validation <- dplyr::filter(compressed_set, Close_Date >= Sys.Date()-120)
+    compressed_set_validation <- dplyr::filter(compressed_set, Close_Date >= Sys.Date()-90)
     dim(compressed_set_validation)
-    compressed_set <- dplyr::filter(compressed_set, Close_Date < Sys.Date()-120)
+    compressed_set <- dplyr::filter(compressed_set, Close_Date < Sys.Date()-90)
     dim(compressed_set)
 
     compressed_set <- dplyr::select(compressed_set, -Close_Date)
@@ -380,8 +382,7 @@ thing on and see how well it predicts stock market behavior. We
          
     }
 
-    library(caret)
-    result <- confusionMatrix(ifelse(predicted>0,1,0), actual)
+      result <- confusionMatrix(ifelse(predicted>0,1,0), actual)
     result 
 
 <BR>
