@@ -16,6 +16,12 @@ image: markov-chains/markov.png
 </p>
 <br><br>
 
+
+**Resources**
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=rE7zxbMqgNQ&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target='_blank'>YouTube Companion Video</a></li>
+</ul>
+<BR><BR>
 A
 <a href='https://en.wikipedia.org/wiki/Andrey_Markov' target='_blank'>Markov
 Chain</a> offers a probabilistic approach in predicting the likelihood
