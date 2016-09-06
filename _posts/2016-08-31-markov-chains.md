@@ -64,17 +64,15 @@ at some examples:
 
 <b>2012-10-18 to 2012-11-21</b>
 
-1417.26 --\> 1428.39 --\> 1394.53 --\> 1377.51 --\> <b>1379.85 --\>
-1380.03</b> <i>Next Day Volume Up</i>
+1417.26 --\> 1428.39 --\> 1394.53 --\> 1377.51 --\> <i>Next Day Volume Up</i>
 
 <b>2016-08-12 to 2016-08-22</b>
 
-2184.05 --\> 2190.15 --\> 2178.15 --\> 2182.22 --\> 2187.02 --\>
-<b>2183.87 </b> <i>Next Day Volume Up</i>
+2184.05 --\> 2190.15 --\> 2178.15 --\> 2182.22 --\> 2187.02 --\> <i>Next Day Volume Up</i>
 
 <b>2014-04-04 to 2014-04-10</b>
 
-1865.09 --\> 1845.04 --\> <b>1872.18 --\> 1833.08</b> <i>Next Day Volume Down</i>
+1865.09 --\> 1845.04 --\> <i>Next Day Volume Down</i>
 
 Take the last example, imagine that past three days of the current
 market match historical behaviors of day 1, 2 and 3. You now have a
