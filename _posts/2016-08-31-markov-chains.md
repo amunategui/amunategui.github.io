@@ -284,7 +284,7 @@ thing on and see how well it predicts stock market behavior. We
     dim(compressed_set_neg)
 
     # build the markov transition grid
-    build_grid <- function(compressed_grid, unique_patterns) {
+    build_transition_grid <- function(compressed_grid, unique_patterns) {
          grids <- c()
          for (from_event in unique_patterns) {
               print(from_event)
@@ -325,8 +325,8 @@ thing on and see how well it predicts stock market behavior. We
     }
     unique_patterns <- unique(strsplit(x = paste0(compressed_set$Event_Pattern, collapse = ','), split = ',')[[1]])
 
-    grid_pos <- build_grid(compressed_set_pos, unique_patterns)
-    grid_neg <- build_grid(compressed_set_neg, unique_patterns)
+    grid_pos <- build_transition_grid(compressed_set_pos, unique_patterns)
+    grid_neg <- build_transition_grid(compressed_set_neg, unique_patterns)
 
     # predict on out of sample data
     actual = c()
@@ -399,7 +399,7 @@ A 55% accuracy may not sound like much, but in the world of predicting stock mar
 <h2>
 What To Try Next?
 </H2>
-You dial up or down the complexity of the pattern, predict others things than volume changes, add more or less sequences, etc. Sky's the limit...
+You dial up or down the complexity of the pattern, predict others things than volume changes, add more or less sequences, using more bins, etc. Sky's the limit...
 
 <BR><BR>
 Thanks Lucas A. for the Markov-Dollar-Chains artwork!
