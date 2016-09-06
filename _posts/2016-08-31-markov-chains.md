@@ -7,7 +7,7 @@ year: 2016
 month: 08
 day: 31
 published: true
-summary: "Here we apply Markov Chains to map and understand stock-market behavior using the R language."
+summary: "We apply Markov Chains to map and understand stock-market behavior using the R programming language. By using 2 transition matrices instead of one, we are able to weigh the probability of a binary outcome."
 image: markov-chains/markov.png
 ---
 <BR>
