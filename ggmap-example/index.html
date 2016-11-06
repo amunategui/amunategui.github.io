@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Mapping The United States Census With {ggmap}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Mapping The United States Census With {ggmap}</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=EtJ-iTZeqTg&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br />
+<strong>Packages Used in this Walkthrough</strong></p>
+
+<ul>
+        <li type="square"><b>{RCurl}</b> - downloads https data</li>
+        <li type="square"><b>{xlsx}</b> - Excel reader</li>
+        <li type="square"><b>{zipcode}</b> - US zipcode tools and data</li>
+        <li type="square"><b>{ggmap}</b> - map visualization</li>
+        <li type="square"><b>{ggplot2}</b> - graphics</li>
+</ul>
+
+<p><br /><br /></p>
+
+<p>If you haven’t played with the <a href="http://cran.r-project.org/web/packages/ggmap/index.html" target="_blank">ggmap</a> package then you’re in for a treat! It will map your data on any location around the world as long as you give it proper geographical coordinates.</p>
+
+<p>Even though <strong>ggmap</strong> supports different map providers, I have only used it with Google Maps and that is what I will demonstrate in this article. We’re going to download the median household income for the United States from the 2006 to 2010 census. Normally you would need to download a shape file from the <a href="https://www.census.gov/geo/maps-data/data/tiger-line.html" target="_blank">Census.gov</a> site but the <strong>University of Michigan’s Institute for Social Research</strong> graciously provides an Excel file for the national numbers. The file is limited to the mean and median household numbers for every zip code in the United States.</p>
+
+<p>We’re going to load two packages in order to download the data: <a href="http://cran.r-project.org/web/packages/RCurl/index.html" target="_blank">RCurl</a> to handle HTTP protocols to download the file directly from the Internet and <a href="http://cran.r-project.org/web/packages/xlsx/index.html xlsx" target="_blank">xlsx</a> to read the Excel file and load the sheet named ‘Median’ into our data.frame:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="s1">'http://www.psc.isr.umich.edu/dis/census/Features/tract2zip/MedianZIP-3.xlsx'</span><span class="w">
+</span><span class="n">destfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"census20062010.xlsx"</span><span class="w">
+</span><span class="n">download.file</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">destfile</span><span class="p">,</span><span class="w"> </span><span class="n">mode</span><span class="o">=</span><span class="s2">"wb"</span><span class="p">)</span><span class="w">
+</span><span class="n">census</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.xlsx2</span><span class="p">(</span><span class="n">destfile</span><span class="p">,</span><span class="w"> </span><span class="n">sheetName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Median"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># NOTE: if you can't download the file automatically, download it manually at:
+# 'http://www.psc.isr.umich.edu/dis/census/Features/tract2zip/'
+</span></code></pre>
+</div>
+<p><br />
+We clean the file by keeping only the zip code and median household income variables and casting the median figures from factor to numbers:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">census</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">census</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'Zip'</span><span class="p">,</span><span class="s1">'Median..'</span><span class="p">)]</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">census</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'Zip'</span><span class="p">,</span><span class="s1">'Median'</span><span class="p">)</span><span class="w">
+</span><span class="n">census</span><span class="o">$</span><span class="n">Median</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">census</span><span class="o">$</span><span class="n">Median</span><span class="p">)</span><span class="w">
+</span><span class="n">census</span><span class="o">$</span><span class="n">Median</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">gsub</span><span class="p">(</span><span class="s1">','</span><span class="p">,</span><span class="s1">''</span><span class="p">,</span><span class="n">census</span><span class="o">$</span><span class="n">Median</span><span class="p">))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">head</span><span class="p">(</span><span class="n">census</span><span class="p">,</span><span class="m">5</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##    Zip Median
+## 1 1001  56663
+## 2 1002  49853
+## 3 1003  28462
+## 4 1005  75423
+## 5 1007  79076
+</code></pre>
+</div>
+<p><br />
+You will notice that the zip codes above only have 4 digits. We leverage another package called <a href="http://cran.r-project.org/web/packages/zipcode/index.html">zipcode</a> to not only clean our zip codes by removing any ‘+4’ data and padding with zeros where needed, but more importantly, to give us the central latitude and longitude coordinate for our zip codes (this requires downloading the zipcode data file):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">data</span><span class="p">(</span><span class="n">zipcode</span><span class="p">)</span><span class="w">
+</span><span class="n">census</span><span class="o">$</span><span class="n">Zip</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">clean.zipcodes</span><span class="p">(</span><span class="n">census</span><span class="o">$</span><span class="n">Zip</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+We merge our census data with the zipcode data on zip codes:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">census</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">census</span><span class="p">,</span><span class="w"> </span><span class="n">zipcode</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="o">=</span><span class="s1">'Zip'</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="o">=</span><span class="s1">'zip'</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+Finally, we reach the heart of our mapping goal, we download a map of the United States using <strong>ggmap</strong>. For a more detailed introduction to ggmap, check out this <a href="http://stat405.had.co.nz/ggmap.pdf">article</a> written by the authors of the package. The <strong>get_map</strong> function downloads the map as an image. Amongst the available parameters, we opt for zoom level 4 (which works well to cover the US), and request a colored, terrain-type map (versus satellite or black and white, amongst many otherr options):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">map</span><span class="o">&lt;-</span><span class="n">get_map</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="s1">'united states'</span><span class="p">,</span><span class="w"> </span><span class="n">zoom</span><span class="o">=</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">maptype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"terrain"</span><span class="p">,</span><span class="w">
+             </span><span class="n">source</span><span class="o">=</span><span class="s1">'google'</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">'color'</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## Map from URL : http://maps.googleapis.com/maps/api/staticmap?center=united+states&amp;zoom=4&amp;size=%20640x640&amp;scale=%202&amp;maptype=terrain&amp;sensor=false
+## Google Maps API Terms of Service : http://developers.google.com/maps/terms
+## Information from URL : http://maps.googleapis.com/maps/api/geocode/json?address=united+states&amp;sensor=false
+## Google Maps API Terms of Service : http://developers.google.com/maps/terms
+</code></pre>
+</div>
+<p><br />
+And <a href="http://cran.r-project.org/web/packages/ggplot2/index.html">ggplot2</a> that will handle the graphics (based on the grammar of graphics) where we pass our census data with the geographical coordinates:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">ggmap</span><span class="p">(</span><span class="n">map</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="w">
+        </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">longitude</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">latitude</span><span class="p">,</span><span class="w"> </span><span class="n">show_guide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="o">=</span><span class="n">Median</span><span class="p">),</span><span class="w"> 
+        </span><span class="n">data</span><span class="o">=</span><span class="n">census</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="o">=</span><span class="m">.5</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">  </span><span class="o">+</span><span class="w"> 
+        </span><span class="n">scale_color_gradient</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="s2">"beige"</span><span class="p">,</span><span class="w"> </span><span class="n">high</span><span class="o">=</span><span class="s2">"blue"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/unnamed-chunk-10.png" alt="plot of chunk unnamed-chunk-10" />
+<br />
+And there you have it, the median household income from 2006 to 2010 mapped onto a Google Map of the US in just a few lines of code! You can play around with the alpha setting to increase or decrease the transparency of the census data on the map.</p>
+
+<p><br /><br />      <br />
+<a id="sourcecode">Full source code (<a href="https://github.com/amunategui/Mapping-The-US-With-GGMAP" target="_blank">also on GitHub</a>)</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">require</span><span class="p">(</span><span class="n">RCurl</span><span class="p">)</span><span class="w">
+</span><span class="n">require</span><span class="p">(</span><span class="n">xlsx</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># NOTE if you can't download the file automatically, download it manually at:
+# 'http://www.psc.isr.umich.edu/dis/census/Features/tract2zip/'
+</span><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="s1">'http://www.psc.isr.umich.edu/dis/census/Features/tract2zip/MedianZIP-3.xlsx'</span><span class="w">
+</span><span class="n">destfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"census20062010.xlsx"</span><span class="w">
+</span><span class="n">download.file</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">destfile</span><span class="p">,</span><span class="w"> </span><span class="n">mode</span><span class="o">=</span><span class="s2">"wb"</span><span class="p">)</span><span class="w">
+</span><span class="n">census</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.xlsx2</span><span class="p">(</span><span class="n">destfile</span><span class="p">,</span><span class="w"> </span><span class="n">sheetName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Median"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># clean up data
+</span><span class="n">census</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">census</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'Zip'</span><span class="p">,</span><span class="s1">'Median..'</span><span class="p">)]</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">census</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'Zip'</span><span class="p">,</span><span class="s1">'Median'</span><span class="p">)</span><span class="w">
+</span><span class="n">census</span><span class="o">$</span><span class="n">Median</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">census</span><span class="o">$</span><span class="n">Median</span><span class="p">)</span><span class="w">
+</span><span class="n">census</span><span class="o">$</span><span class="n">Median</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">gsub</span><span class="p">(</span><span class="s1">','</span><span class="p">,</span><span class="s1">''</span><span class="p">,</span><span class="n">census</span><span class="o">$</span><span class="n">Median</span><span class="p">))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">head</span><span class="p">(</span><span class="n">census</span><span class="p">,</span><span class="m">5</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># get geographical coordinates from zipcode
+</span><span class="n">require</span><span class="p">(</span><span class="n">zipcode</span><span class="p">)</span><span class="w">
+</span><span class="n">data</span><span class="p">(</span><span class="n">zipcode</span><span class="p">)</span><span class="w">
+</span><span class="n">census</span><span class="o">$</span><span class="n">Zip</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">clean.zipcodes</span><span class="p">(</span><span class="n">census</span><span class="o">$</span><span class="n">Zip</span><span class="p">)</span><span class="w">
+</span><span class="n">census</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">census</span><span class="p">,</span><span class="w"> </span><span class="n">zipcode</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="o">=</span><span class="s1">'Zip'</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="o">=</span><span class="s1">'zip'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># get a Google map
+</span><span class="n">require</span><span class="p">(</span><span class="n">ggmap</span><span class="p">)</span><span class="w">
+</span><span class="n">map</span><span class="o">&lt;-</span><span class="n">get_map</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="s1">'united states'</span><span class="p">,</span><span class="w"> </span><span class="n">zoom</span><span class="o">=</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">maptype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"terrain"</span><span class="p">,</span><span class="w">
+             </span><span class="n">source</span><span class="o">=</span><span class="s1">'google'</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">'color'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># plot it with ggplot2
+</span><span class="n">require</span><span class="p">(</span><span class="s2">"ggplot2"</span><span class="p">)</span><span class="w">
+</span><span class="n">ggmap</span><span class="p">(</span><span class="n">map</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="w">
+        </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">longitude</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">latitude</span><span class="p">,</span><span class="w"> </span><span class="n">show_guide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="o">=</span><span class="n">Median</span><span class="p">),</span><span class="w"> 
+        </span><span class="n">data</span><span class="o">=</span><span class="n">census</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="o">=</span><span class="m">.8</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">  </span><span class="o">+</span><span class="w"> 
+        </span><span class="n">scale_color_gradient</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="s2">"beige"</span><span class="p">,</span><span class="w"> </span><span class="n">high</span><span class="o">=</span><span class="s2">"blue"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

@@ -1,0 +1,725 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Big Data Surveillance: Use EC2, PostgreSQL and Python to Download all Hacker News Data!</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+   
+  </head>
+
+ 
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Big Data Surveillance: Use EC2, PostgreSQL and Python to Download all Hacker News Data!</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+
+
+<p style="text-align:center">
+<img src="img/big-data-surveillance.png" alt="surveillance" style="padding:1px; border:1px solid #021a40; width: 75%; height: 75%"  />
+</p>
+<p><br /><br /></p>
+ 
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=Ijtn5AtPr90&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA&amp;index=1" target="_blank">YouTube Companion Video - Part 1</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=NMqM-EzUvLA&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA&amp;index=1" target="_blank">YouTube Companion Video - Part 2</a></li>
+</ul>
+
+<p><br /><br />
+<br />
+<strong>Shortcuts</strong></p>
+<ul>
+    <li type="square"><a href="#aws">Amazon Web Serivces</a></li>
+    <li type="square"><a href="#putty">PuTTY Connection</a></li>
+    <li type="square"><a href="#terminal">Terminal Connection</a></li>
+    <li type="square"><a href="#postgresql">PostgreSQL</a></li>
+    <li type="square"><a href="#algolia">Max Woolf Python's Script/Algolia API </a></li>
+    <li type="square"><a href="#analysis">Analysis of Hacker News Comments</a></li>
+    <li type="square"><a href="#files">Moving EC2 Files</a></li>
+    <li type="square"><a href="#firebase">Hacker News/Firebase API</a></li>
+</ul>
+
+<p>Hacker News is a fascinating site with a constant flow of news, current
+events, general-interest articles vetted and posted by users and
+commented on, liberally, by users as well. Hacker News is transparent
+about its data and offers different ways of accessing it without
+complicated hoops to go through or authentication schemes. Here we will
+look at two ways of doing it. The first is to download all of it to a
+PostgreSQL database using scripts from
+<a href="https://github.com/minimaxir/get-all-hacker-news-submissions-comments" target="_blank">Max
+Woolf Github’s repository</a> and the second is through the official
+Hacker News
+<a href="https://github.com/HackerNews/API" target="_blank">web-service
+API</a>. <br /><br /> <strong><em>Downloading Everything to PostgreSQL on EC2</em></strong></p>
+
+<p>The first way offers a relatively easy way of getting all of it in one
+call.
+<a href="https://github.com/minimaxir/get-all-hacker-news-submissions-comments" target="_blank">Max
+Woolf Github’s repository</a> offers two scripts, one for comments and
+the other for news stories that calls the
+<a href=" https://hn.algolia.com/api" target="_blank">Algolia API</a>
+and stores them in PostgreSQL. We’ll only look at comments but the same
+concept applies with his news stories script. He also offers basic SQL
+queries for aggregate analysis of the data.</p>
+
+<h2><a id="aws">AWS Instance</a></h2>
+
+<p>The twist is that we’ll use an Amazon EC2 instance to do the downloading
+and PostgreSQL storing. There is a good reason we’re doing it that way,
+just the comments take over 10 hours to download and process. I only
+have a notebook computer and I don’t want to wait that long nor is my
+Internet connection as good as an EC2’s. We can get away with a small
+EC2. We need to install PostgreSQL, a few python libraries and we’re
+ready to go.</p>
+
+<p>We’ll call the python script on a background process so we can close the
+EC2 terminal/Putty. <br /><br /> <strong><em>Getting Our EC2 Instance
+Up-and-Running</em></strong></p>
+
+<p>Log into <a href="https://aws.amazon.com/" target="_blank">Amazon Web
+Serivces</a>, click the orange cube in the upper left corner:</p>
+
+<p><br /></p>
+<p style="text-align:center">
+<img src="img/E0A7CD38-D472-49D3-826F-C2502583A887.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /></p>
+
+<p><strong>VPC</strong> Click <code class="highlighter-rouge">VPC</code>:</p>
+<p style="text-align:center">
+<img src="img/86DFA8C3-C9DC-4689-A267-65A2B439EEA9.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /></p>
+
+<p>Click <code class="highlighter-rouge">Start VPC Wizard</code>:</p>
+<p style="text-align:center">
+<img src="img/B352BF31-D152-42D5-8354-AE43DD094270.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> The defaults are fine so click <code class="highlighter-rouge">Select</code>:</p>
+<p style="text-align:center">
+<img src="img/8F3F6B8B-9A4A-448A-93B6-5F76E0F3ABF6.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> Enter a <code class="highlighter-rouge">VPC</code> name and choose an availability zone. Finally, in
+the bottom right, click <code class="highlighter-rouge">Create VPC</code>:</p>
+<p style="text-align:center">
+<img src="img/AF9B540F-85C5-4233-BD3B-BFED1DC55C60.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> <strong>EC2</strong></p>
+
+<p>Now let’s set up our EC2 instance. Click the orange cube in the upper
+left corner and select <code class="highlighter-rouge">EC2</code>:</p>
+
+<p style="text-align:center">
+<img src="img/590CF6BC-DE31-4592-8BB2-C9E7DBE3CBE2.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> Choose <code class="highlighter-rouge">Launch Instance</code>:</p>
+
+<p style="text-align:center">
+<img src="img/04201D14-7614-4AD4-AD91-B302830C68F9.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> In <code class="highlighter-rouge">Step 1: Choose an Amazon Machine Image (AMI)</code> choose the
+default instance:</p>
+
+<p style="text-align:center">
+<img src="img/4D040E08-DEBD-4136-8431-80E74A70F45D.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> In <code class="highlighter-rouge">Step 3: Configure Instance Details</code> select the correct
+<code class="highlighter-rouge">VPC</code> Network we just created, and enable <code class="highlighter-rouge">Auto-assign Public IP</code>:</p>
+
+<p style="text-align:center">
+<img src="img/B1E1172B-AC08-4DB3-A5EB-37397764CB69.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> Click the <code class="highlighter-rouge">Review and Launch</code> button then the <code class="highlighter-rouge">Launch</code> button.
+It will ask you to create a new key pair. It is a security file that
+will live on your machine and is required to SSH into the instance. I
+tend to create them and leave them in my downloads. Whatever you decided
+to do, make sure you know where it is as you’ll need to pass a path to
+it every time you want to connect to your instance. Create a new one,
+check the acknowledgment box and download it to your local machine.</p>
+<p style="text-align:center">
+<img src="img/4C01F64F-6F80-4CFC-8453-3CC1D10BB566.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> <strong><em>Connect to your EC2 Instance</em></strong></p>
+
+<p>Click the <code class="highlighter-rouge">View Instance</code> button or click the upper-left orange cube and
+then <code class="highlighter-rouge">EC2</code>. There you should see your instance either running or
+initializing.</p>
+
+<p style="text-align:center">
+<img src="img/ec2_instance.png" alt="EC2" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+
+<h3><a id="putty">Window Users - PuTTY</a></h3>
+<p>If you’re using windows, download
+<a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html" target="_blank">PuTTYgen
+and PuTTY</a>.</p>
+
+<p>Run <code class="highlighter-rouge">PuTTYgen</code>. Select load and choose your .pem file that you just
+downloaded.</p>
+
+<p style="text-align:center">
+<img src="img/59547025-1BEB-43DE-9223-BF1F019556EA.png" alt="PuTTY" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p>Save private key, in my case: <code class="highlighter-rouge">hknews.ppk</code> and remember its path.</p>
+
+<p style="text-align:center">
+<img src="img/6A26E032-CED7-4806-9E23-EEF4FCA2C1D2.png" alt="PuTTY" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p>Now run <code class="highlighter-rouge">PuTTY</code>, and enter your instance public DNS in Host Name (in my
+case: <a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#101;&#099;&#050;&#045;&#117;&#115;&#101;&#114;&#064;&#101;&#099;&#050;&#045;&#053;&#052;&#045;&#050;&#052;&#054;&#045;&#050;&#055;&#045;&#050;&#052;&#051;&#046;&#101;&#117;&#045;&#119;&#101;&#115;&#116;&#045;&#049;&#046;&#099;&#111;&#109;&#112;&#117;&#116;&#101;&#046;&#097;&#109;&#097;&#122;&#111;&#110;&#097;&#119;&#115;&#046;&#099;&#111;&#109;">&#101;&#099;&#050;&#045;&#117;&#115;&#101;&#114;&#064;&#101;&#099;&#050;&#045;&#053;&#052;&#045;&#050;&#052;&#054;&#045;&#050;&#055;&#045;&#050;&#052;&#051;&#046;&#101;&#117;&#045;&#119;&#101;&#115;&#116;&#045;&#049;&#046;&#099;&#111;&#109;&#112;&#117;&#116;&#101;&#046;&#097;&#109;&#097;&#122;&#111;&#110;&#097;&#119;&#115;&#046;&#099;&#111;&#109;</a>) and
+name you session hknews and hit save:</p>
+
+<p style="text-align:center">
+<img src="img/39E08BA4-B25D-49C9-8C85-C5167456B49F.png" alt="PuTTY" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> Finally enter the .ppk file and path we created using PuTTYgen
+under <code class="highlighter-rouge">SSH-Auth</code>:</p>
+
+<p style="text-align:center">
+<img src="img/EFFA743F-59EB-450A-BA3F-EA3758DBBAEF.png" alt="PuTTY" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> Click <code class="highlighter-rouge">Open</code> and you will connect to your instance. <br /><br /></p>
+<h3><a id="terminal">Mac/Linux Users - Terminal</a></h3>
+<p>In the AWS web console window, select your instance (check-box on left of
+description) and click the ‘Connect’ button and copy the example line.
+Copy the example line:</p>
+
+<p style="text-align:center">
+<img src="img/7204F62A-1F85-4FC5-AD88-C2FC2710B0FE.png" alt="Terminal" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> Open a terminal window, navigate to the same folder where you
+have your saved .pem file and paste the example ssh connection line:</p>
+
+<p style="text-align:center">
+<img src="img/91E7B625-B0E4-479F-B431-DE1FE373A915.png" alt="Terminal" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /> That’s it, you’re now connected to your instance! <br /><br />
+<strong><em>Loading Software on our Instance</em></strong></p>
+
+<p>Whether you’re connected using PuTTY or the terminal window, the rest of
+the steps should be identical.</p>
+
+<h3><a id="postgresql">PostgreSQL</a></h3>
+<p>Install PostgreSQL:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo yum install postgresql postgresql-server postgresql-devel postgresql-contrib postgresql-docs
+</code></pre>
+</div>
+
+<p>Initialize and start PostgreSQL database:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo service postgresql initdb
+sudo service postgresql start
+</code></pre>
+</div>
+
+<p>Set the <code class="highlighter-rouge">postgres</code> user password. Remember what you choose as you’ll
+need it through out this project.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo passwd postgres 
+</code></pre>
+</div>
+
+<p>Log into the database:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo su - postgres
+psql -U postgres
+</code></pre>
+</div>
+
+<p>Create our <code class="highlighter-rouge">hacker-news</code> database:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>CREATE DATABASE hacker_news WITH OWNER postgres;
+</code></pre>
+</div>
+
+<p style="text-align:center">
+<img src="img/7A27A2AF-3A29-473F-9A8C-BF4F27C0DD1C.png" alt="PostgreSQL" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p>Connect to the <code class="highlighter-rouge">hacker_news</code> database:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>\c hacker_news
+</code></pre>
+</div>
+
+<p style="text-align:center">
+<img src="img/F720860E-F538-40A9-8D57-83ED7C27FD5C.png" alt="PostgreSQL" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p>Run a test <code class="highlighter-rouge">INSERT</code> statement to verify that things are working. We’ll
+create a simple table named <code class="highlighter-rouge">ListOfNames</code></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>CREATE TABLE ListOfNames (first_name varchar(40), last_name varchar(40),  age int );
+</code></pre>
+</div>
+
+<p>Now let’s run the <code class="highlighter-rouge">\dt</code> command to list all avaiable tables in our
+<code class="highlighter-rouge">hacker_news</code> database:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>\dt
+</code></pre>
+</div>
+
+<p>One final test, let’s insert a few names… myself and Bill Gates:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>INSERT INTO ListOfNames (first_name, last_name, age) VALUES ('Manuel', 'Amunategui', 48), ('Bill', 'Gates', 60);
+SELECT * FROM ListOfNames;
+</code></pre>
+</div>
+
+<p>The <code class="highlighter-rouge">\q</code> command will get us out of PostgreSQL and <code class="highlighter-rouge">exit</code> will log us
+back to the default <code class="highlighter-rouge">ec2-user</code> account:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>\q
+exit
+</code></pre>
+</div>
+
+<p>We need to change the database access permissions in order to write to
+it from our Python script. Edit the <code class="highlighter-rouge">pg_hba.conf</code> file:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo vim /var/lib/pgsql9/data/pg_hba.conf
+</code></pre>
+</div>
+
+<p>Around the end of the file (line 80), edit the following line so it says
+<code class="highlighter-rouge">trust</code> instead of <code class="highlighter-rouge">peer</code>:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>local   all             all                                     trust
+</code></pre>
+</div>
+
+<p>In order to ‘edit’ in <code class="highlighter-rouge">vim</code> you need to hit the <code class="highlighter-rouge">i</code> key to get in insert
+mode. Make the edit then hit the escape key followed by colon and wq.
+The colon gets you out of insert mode and <code class="highlighter-rouge">w</code> calls for saving your
+changes and <code class="highlighter-rouge">q</code> to quit out of vim.</p>
+
+<p>ESC : wq</p>
+
+<p>Restart the PostgreSQL database:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo service postgresql restart
+</code></pre>
+</div>
+
+<p>Now let’s add the needed Python libraries:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo pip install pytz
+sudo yum -y install python-devel
+sudo yum -y install python-psycopg2
+sudo yum -y install libevent-devel
+sudo yum -y install gcc-c++
+sudo pip install psycopg2
+</code></pre>
+</div>
+
+<p><br /><br /></p>
+<h2><a id="algolia">Python Script</a></h2>
+<p>We’re going to make a few changes to Max Woolf’s script
+<a href="https://github.com/minimaxir/get-all-hacker-news-submissions-comments/blob/master/hacker_news_comments_all.py" target="_blank">hacker_news_comments_all.py</a>.
+Because the script takes over 10 hours to collect all of Hacker News
+comments, we need to remove all <code class="highlighter-rouge">print</code> statements so that it can run in
+an unattended, background fashion.</p>
+
+<p>So, open a vim window with the following command:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo vim get-all-hacker-news-comments-background.py
+</code></pre>
+</div>
+
+<p>Enter <code class="highlighter-rouge">insert</code> mode by hitting the escape key followed by <code class="highlighter-rouge">i</code> and paste
+the following code in vim:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>###
+import urllib2
+import json
+import datetime
+import time
+import pytz
+import psycopg2
+import re
+import HTMLParser
+
+###
+### Define database parameters here
+###
+
+dbname = "hacker_news"
+user = "postgres"
+password = "testing" # swap with whatever password you used 
+
+# Set up database connection settings and other parameters
+
+ts = str(int(time.time()))
+hitsPerPage = 1000
+tag = re.compile(r'&lt;[^&gt;]+&gt;')
+h = HTMLParser.HTMLParser()
+conn_string = "dbname=%s user=%s password=%s" % (dbname, user, password)
+db = psycopg2.connect(conn_string)
+cur = db.cursor()
+
+# Set up HN comment database table schema
+cur.execute("DROP TABLE IF EXISTS hn_comments;")
+cur.execute("CREATE TABLE hn_comments (objectID int PRIMARY KEY, story_id int, parent_id int, comment_text varchar, num_points int, author varchar, created_at timestamp);")
+
+num_processed = 0
+
+while True:
+    try:
+        # Retrieve HN comments from the Algolia API; finds all comments before timestamp of last known submission time
+        url = 'https://hn.algolia.com/api/v1/search_by_date?tags=comment&amp;hitsPerPage=%s&amp;numericFilters=created_at_i&lt;%s' % (hitsPerPage, ts)
+        req = urllib2.Request(url)
+        response = urllib2.urlopen(req)
+
+        data = json.loads(response.read())
+        comments = data['hits']
+        ts = comments[-1 + len(comments)]['created_at_i']
+
+        for comment in comments:
+
+            # if a comment does *not* have a parent_id key, it's definitely [dead] and should not be recorded
+            if 'parent_id' in comment.keys():
+
+                # make sure we remove smartquotes/HTML tags/other unicode from comment text
+                comment_text = tag.sub(' ', h.unescape(comment['comment_text'])).translate(dict.fromkeys([0x201c, 0x201d, 0x2011, 0x2013, 0x2014, 0x2018, 0x2019, 0x2026, 0x2032])).encode('utf-8')
+
+                # EST timestamp since USA activity reflects majority of HN activity
+                created_at = datetime.datetime.fromtimestamp(int(comment['created_at_i']), tz=pytz.timezone('America/New_York')).strftime('%Y-%m-%d %H:%M:%S')
+
+                parent_id = None if comment['parent_id'] is None else int(comment['parent_id'])
+                story_id = None if comment['story_id'] is None else int(comment['story_id'])
+
+                SQL = "INSERT INTO hn_comments (objectID, story_id, parent_id, comment_text, num_points, author, created_at) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+                insert_data = (int(comment['objectID']), story_id, parent_id, comment_text, comment['points'], comment['author'], created_at,)
+
+                try:
+                    cur.execute(SQL, insert_data)
+                    db.commit()
+
+                except Exception, e:
+                    # print insert_data
+                    # print e
+                    continue
+
+        # If there are no more HN comments, we're done!
+        if (data["nbHits"] &lt; hitsPerPage):
+            break
+
+        num_processed += hitsPerPage
+
+        # make sure we stay within API limits
+        time.sleep(3600/10000)
+
+    except Exception, e:
+        # print e
+        continue
+
+# Create sensible indices and vacuum the inserted data
+cur.execute('CREATE UNIQUE INDEX objectID_commentx ON hn_comments (objectID);')
+cur.execute('CREATE INDEX created_at_commentx ON hn_comments (created_at);')
+cur.execute('CREATE INDEX story_id_commentx ON hn_comments (story_id);')
+db.commit()
+
+db.set_isolation_level(0)
+cur.execute('VACUUM ANALYZE hn_comments;')
+db.close()
+</code></pre>
+</div>
+
+<p>Save your script by hitting the escape key, followed by <code class="highlighter-rouge">:wq</code>:</p>
+
+<p>You can also check that your script is working:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>python get-all-hacker-news-comments-background.py
+</code></pre>
+</div>
+
+<p>Let it run for a short while and hit <code class="highlighter-rouge">ctrl-c</code> to break out of it. Then
+go to PostgreSQL to verify that your table and some data did indeed get
+written to the <code class="highlighter-rouge">hn_comments</code> table:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo su - postgres
+psql -U postgres
+\c hacker_news
+\dt
+</code></pre>
+</div>
+
+<p style="text-align:center">
+<img src="img/DC4E633C-14A3-4B3B-8C39-B31A554E4806.png" alt="hacker_news" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" />
+</p>
+<p><br /><br /></p>
+
+<p>If you see both tables, then things are looking good. Let’s take a peek
+at some of the comments:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>SELECT count(*) FROM hn_comments;
+SELECT comment_text FROM hn_comments limit 1;
+\q
+exit
+</code></pre>
+</div>
+
+<p><strong>Running the Script in Background Mode</strong> Now that we confirmed
+everything is working, let’s fire up the script on a background process
+so that we can safely close the PuTTY/Terminal window:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>nohup python get-all-hacker-news-comments-background.py &amp;
+</code></pre>
+</div>
+
+<p>Before closing the terminal window (you can leave it open if you want),
+let’s make sure we’re getting collecting data:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo su - postgres
+psql -U postgres
+\c hacker_news
+SELECT count(*) FROM hn_comments;
+</code></pre>
+</div>
+
+<p><br /><br /><br /></p>
+
+<h2><a id="analysis">Analysis of Hacker News Comments</a></h2>
+
+<p>I ran it overnight and it ended after collecting some 9.5 million comments.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo su - postgres
+psql -U postgres
+\c hacker_news
+SELECT count(*) FROM hn_comments;
+
+
+count  
+---------
+ 9507873
+(1 row)
+</code></pre>
+</div>
+
+<p>So, what is the date range of the data?</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>SELECT MIN(created_at), MAX(created_at) FROM hn_comments;
+</code></pre>
+</div>
+
+<p style="text-align:center">
+<img src="img/040A3201-E358-440A-974C-14BE2CDBC14E.png" alt="hacker_news" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" /></p>
+<p><br /><br /></p>
+
+<p>Let’s run <a href="https://github.com/minimaxir/get-all-hacker-news-submissions-comments" target="_blank">the example</a> that Max shares on his GitHub repo for table <code class="highlighter-rouge">hn_comments</code>.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>SELECT nth_comment, COUNT(num_points) AS users_who_made_num_comments, AVG(num_points) AS avg_points FROM (SELECT num_points, ROW_NUMBER() OVER (PARTITION BY author ORDER BY created_at ASC) AS nth_comment FROM hn_comments WHERE num_points IS NOT NULL) AS foo WHERE nth_comment &lt;= 25 GROUP BY nth_comment ORDER BY nth_comment;
+</code></pre>
+</div>
+
+<p style="text-align:center">
+<img src="img/46A24DB1-B6DE-4A23-BFFE-D7F72FD1D38A.png" alt="hacker_news" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" /></p>
+<p><br /><br /></p>
+
+<h2><a id="files">Exporting it to a text file</a></h2>
+
+<p>It is easy to export a PostgreSQL query to text. First we need to create a directory with the appropriate permission to receive the data:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>\q
+exit
+cd ../../tmp/
+mkdir hacker-news
+sudo chmod -R 777 /tmp/
+</code></pre>
+</div>
+
+<p>Now we go back to PostgreSQL and use the <a href="https://www.postgresql.org/docs/9.3/static/sql-copy.html" target="_blank">\copy</a> command on a SQL query. For example, let’s get 500 comments saved to text:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo su - postgres
+psql -U postgres
+\c hacker_news
+\copy (Select comment_text from hn_comments limit 500) To '/tmp/hacker-news/hn_comments.txt'  
+</code></pre>
+</div>
+
+<p><br /><br />
+<strong>EC2 – to local machine</strong></p>
+
+<p>Downloading the file to your local machine is very easy using either <a href="https://en.wikipedia.org/wiki/Cyberduck" target="_blank">Cyberduck</a> or <a href="https://filezilla-project.org/" target="_blank">FileZilla</a>. I hear great things about both packages and both have a Mac or Windows version. I will demo <a href="http://cyberduck.en.softonic.com/mac" target="_blank">Cyberduck</a> for the Mac.</p>
+
+<p>Select <code class="highlighter-rouge">SFTP</code>, enter the <code class="highlighter-rouge">DNS</code> server name of your instance, the user name <code class="highlighter-rouge">ec2-user</code> and click <code class="highlighter-rouge">Connect</code>.</p>
+
+<p style="text-align:center">
+<img src="img/871CA3CA-10A1-4570-8820-E8D4C4F0B2A4.png" alt="hacker_news" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" /></p>
+<p><br /><br /></p>
+
+<p>It will come back with a <code class="highlighter-rouge">Login failed</code> message, simply check the <code class="highlighter-rouge">Use Public Key Authentication</code> and browse to your <code class="highlighter-rouge">.pem</code> file.</p>
+
+<p style="text-align:center">
+<img src="img/875FD8D2-4BCE-4079-B324-8514056AF9B9.png" alt="hacker_news" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" /></p>
+<p><br /><br /></p>
+
+<p style="text-align:center">
+<img src="img/A6AF1849-EC99-489C-A8E5-2FB7A1B3DB6A.png" alt="hacker_news" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" /></p>
+<p><br /><br /></p>
+
+<p>Click <code class="highlighter-rouge">Login</code> and you should be able to see your instance’s directory.</p>
+
+<p style="text-align:center">
+<img src="img/70A028F2-35CA-45F9-8A10-AD511450A5FF.png" alt="hacker_news" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" /></p>
+<p><br /><br /></p>
+
+<p>Double-click on the file and it will be downloaded onto your local machine.</p>
+
+<p><br /><br />
+<strong>Moving Files from EC2 to local machine or S3</strong></p>
+
+<p>A method I use a lot is to move my data to an Amazon S3 bucket. You can then make that file public and access it from anywhere via a URL or keep it private and mount the drive using your authenthetication crdentials.</p>
+
+<p style="text-align:center">
+<img src="img/4E618D12-47AF-46F2-A27A-A8DC7F0FCADD.png" alt="hacker_news" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" /></p>
+<p><br /><br /></p>
+
+<p>The following command will allow you to push your EC2 data into your bucket marked as public (<a href="http://docs.aws.amazon.com/cli/latest/userguide/using-s3-commands.html" target="_blank">a more complete view of S3 commands</a>).</p>
+
+<p>Navigate to the folder where you have the file you want to transfer, append your AWS access keys, the region of your instance (do not add the last letter of the region if it ends with and alphabetic character, and the bucket you want it in:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>AWS_ACCESS_KEY_ID=xxxx.. AWS_SECRET_ACCESS_KEY=xxxx... aws s3 cp --region us-west-2  hn_comments.txt s3://amunategui.bucket 
+
+upload: ./hn_comments.txt to s3://amunategui.bucket/hn_comments.txt
+</code></pre>
+</div>
+
+<p>Once in <code class="highlighter-rouge">S3</code>, you can make the file public, get the <code class="highlighter-rouge">URL</code>, and simple you R, Python, whatever language and access the data that way.</p>
+
+<p><br /><br /></p>
+<h2><a id="firebase">Hacker News/Firebase API</a></h2>
+
+<p>Hacker News partnered with <a href="https://firebase.google.com/" target="_blank">Firebase</a> to offer a web served <a href="https://github.com/HackerNews/API" target="_blank">Hacker News API</a>. They describe it as follows:</p>
+
+<blockquote>'The v0 API is essentially a dump of our in-memory data structures'</blockquote>
+
+<p>It is simple but it is your job to figure out what was returned. It is a global and incremental ID for any data event. The returned data could be a link to an article, a comment or a deletion. You also need to figure to whom this data event belongs to.</p>
+
+<p>For example, you can retrieve the last/max ID by pasting the following line in your browser: <code class="highlighter-rouge">https://hacker-news.firebaseio.com/v0/maxitem.json?print=pretty</code></p>
+
+<p><br /><br />
+This ID represents the last data event on Hacker News. Here is a Python way to access the last ID:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># max item posting
+import requests
+import json
+max_number = requests.get("https://hacker-news.firebaseio.com/v0/maxitem.json?print=pretty")
+last_ID = int(max_number.text)
+print(last_ID)
+
+&gt;&gt;&gt; last_ID
+12154781
+</code></pre>
+</div>
+
+<p>And to see what the ID contains, enter the following in your browser: <code class="highlighter-rouge">https://hacker-news.firebaseio.com/v0/item/12154781.json?print=pretty</code></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"by"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"aexaey"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"id"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">12154781</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"parent"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">12154612</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"text"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"Why can&amp;#x27;t I? For the purpose of this argument, Windows and Mac keyboards aren&amp;#x27;t all that different. See for yourself - modern mac keyboards have two layouts:&lt;p&gt;- Full &amp;#x2F; 105-key layout, which is a copy of Windows 105-key layout with renamed and re-shuffled lower row, featuring: control, option(alt), command(win), space, command, option, control; [1]&lt;p&gt;- Compact (laptop &amp;#x2F; magic), where lower row has: fn, control, option(alt), command(win), space, command option; [2]&lt;p&gt;Other (Windows) layouts of the bottom row:&lt;p&gt;- Full&amp;#x2F;Desktop 105-key: Ctrl, Win, Alt, Space, Alt, Win, Menu, Ctrl;&lt;p&gt;- Lenovo laptop: Fn, Ctrl, Win, Alt, Space, Alt, Win[4]. Ctlr; [3]&lt;p&gt;- Dell laptop: Ctrl, Fn, Win, Alt, Space, Alt, Ctrl. [5]&lt;p&gt;...etc.&lt;p&gt;Now, &lt;i&gt;this&lt;/i&gt; is ridiculous.&lt;p&gt;So my point is: sure, there are (ad-hoc) standards, but way too many of them, and all of them try to pack too many keys around core QWERTY field, especially lower row. Chromebook is the first one on record to prune this and offer a clean, usable layout.&lt;p&gt;[1] &lt;a href=\"http:&amp;#x2F;&amp;#x2F;www.apple.com&amp;#x2F;shop&amp;#x2F;product&amp;#x2F;MB110LL&amp;#x2F;B&amp;#x2F;apple-keyboard-with-numeric-keypad-english-usa\" rel=\"nofollow\"&gt;http:&amp;#x2F;&amp;#x2F;www.apple.com&amp;#x2F;shop&amp;#x2F;product&amp;#x2F;MB110LL&amp;#x2F;B&amp;#x2F;apple-keyboard-w...&lt;/a&gt;&lt;p&gt;[2] &lt;a href=\"http:&amp;#x2F;&amp;#x2F;www.apple.com&amp;#x2F;shop&amp;#x2F;product&amp;#x2F;MLA22LL&amp;#x2F;A&amp;#x2F;magic-keyboard-us-english\" rel=\"nofollow\"&gt;http:&amp;#x2F;&amp;#x2F;www.apple.com&amp;#x2F;shop&amp;#x2F;product&amp;#x2F;MLA22LL&amp;#x2F;A&amp;#x2F;magic-keyboard-u...&lt;/a&gt;&lt;p&gt;[3] &lt;a href=\"http:&amp;#x2F;&amp;#x2F;www.lenovo.com&amp;#x2F;images&amp;#x2F;gallery&amp;#x2F;main&amp;#x2F;lenovo-convertible-tablet-thinkPad-helix-keyboard-view-9.jpg\" rel=\"nofollow\"&gt;http:&amp;#x2F;&amp;#x2F;www.lenovo.com&amp;#x2F;images&amp;#x2F;gallery&amp;#x2F;main&amp;#x2F;lenovo-convertible...&lt;/a&gt;&lt;p&gt;[4] On some models, PrintScreen takes place of second Win key&lt;p&gt;[5] &lt;a href=\"http:&amp;#x2F;&amp;#x2F;kbimg.dell.com&amp;#x2F;library&amp;#x2F;KB&amp;#x2F;DELL_ORGANIZATIONAL_GROUPS&amp;#x2F;DELL_GLOBAL&amp;#x2F;Content%20Team&amp;#x2F;5450_5250_kybd.JPG\" rel=\"nofollow\"&gt;http:&amp;#x2F;&amp;#x2F;kbimg.dell.com&amp;#x2F;library&amp;#x2F;KB&amp;#x2F;DELL_ORGANIZATIONAL_GROUPS&amp;#x2F;...&lt;/a&gt;"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"time"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">1469392810</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"type"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"comment"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br />
+Now that we have this <code class="highlighter-rouge">ID</code>, let’s see what is attached to it:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt;&gt;&gt; entry = requests.get("https://hacker-news.firebaseio.com/v0/item/" + str(last_ID) + ".json?print=pretty")
+
+&gt;&gt;&gt; entry.json()
+{u'parent': 12154612, u'text': u'Not sure what would you consider being conflated. Modern mac keyboards have two layouts:&lt;p&gt;- Full &amp;#x2F; 105-key layout with lower row featuring control, option(alt), command(win), space, command, option, control; [1]&lt;p&gt;- Compact (laptop &amp;#x2F; magic), lower row has: fn, control, option(alt), command(win), space, command option; [2]&lt;p&gt;Other (Windows) layouts of the bottom row:&lt;p&gt;- Full&amp;#x2F;Desktop 105-key: Ctrl, Win, Alt, Space, Alt, Win, Menu, Ctrl;&lt;p&gt;- Lenovo laptop: Fn, Ctrl, Win, Alt, Space, Alt, Win[4]. Ctlr; [3]&lt;p&gt;- Dell laptop: Ctrl, Fn, Win, Alt, Space, Alt, Ctrl. [5]&lt;p&gt;...etc.&lt;p&gt;So my point is: sure, there are standards, but way too many of them, and all of them try to pack way to many keys around core QWERTY field, especially lower row. Chromebook is the first one on record to prune this and offer a clean, usable layout.&lt;p&gt;[1] &lt;a href="http:&amp;#x2F;&amp;#x2F;www.apple.com&amp;#x2F;shop&amp;#x2F;product&amp;#x2F;MB110LL&amp;#x2F;B&amp;#x2F;apple-keyboard-with-numeric-keypad-english-usa" rel="nofollow"&gt;http:&amp;#x2F;&amp;#x2F;www.apple.com&amp;#x2F;shop&amp;#x2F;product&amp;#x2F;MB110LL&amp;#x2F;B&amp;#x2F;apple-keyboard-w...&lt;/a&gt;&lt;p&gt;[2] &lt;a href="http:&amp;#x2F;&amp;#x2F;www.apple.com&amp;#x2F;shop&amp;#x2F;product&amp;#x2F;MLA22LL&amp;#x2F;A&amp;#x2F;magic-keyboard-us-english" rel="nofollow"&gt;http:&amp;#x2F;&amp;#x2F;www.apple.com&amp;#x2F;shop&amp;#x2F;product&amp;#x2F;MLA22LL&amp;#x2F;A&amp;#x2F;magic-keyboard-u...&lt;/a&gt;&lt;p&gt;[3] &lt;a href="http:&amp;#x2F;&amp;#x2F;www.lenovo.com&amp;#x2F;images&amp;#x2F;gallery&amp;#x2F;main&amp;#x2F;lenovo-convertible-tablet-thinkPad-helix-keyboard-view-9.jpg" rel="nofollow"&gt;http:&amp;#x2F;&amp;#x2F;www.lenovo.com&amp;#x2F;images&amp;#x2F;gallery&amp;#x2F;main&amp;#x2F;lenovo-convertible...&lt;/a&gt;&lt;p&gt;[4] On some models, PrintScreen.&lt;p&gt;[5] &lt;a href="http:&amp;#x2F;&amp;#x2F;kbimg.dell.com&amp;#x2F;library&amp;#x2F;KB&amp;#x2F;DELL_ORGANIZATIONAL_GROUPS&amp;#x2F;DELL_GLOBAL&amp;#x2F;Content%20Team&amp;#x2F;5450_5250_kybd.JPG" rel="nofollow"&gt;http:&amp;#x2F;&amp;#x2F;kbimg.dell.com&amp;#x2F;library&amp;#x2F;KB&amp;#x2F;DELL_ORGANIZATIONAL_GROUPS&amp;#x2F;...&lt;/a&gt;', u'id': 12154781, u'time': 1469392810, u'type': u'comment', u'by': u'aexaey'}
+</code></pre>
+</div>
+
+<p><br /><br />
+What are the keys return by our <code class="highlighter-rouge">JSON</code> query?</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt;&gt;&gt; entry.json().keys()
+[u'parent', u'text', u'id', u'time', u'type', u'by']
+</code></pre>
+</div>
+
+<p><br /><br />
+Let’s find out the <code class="highlighter-rouge">type</code>:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt;&gt;&gt; entry.json()['type']
+u'comment'
+</code></pre>
+</div>
+
+<p><br /><br />
+What’s the parent <code class="highlighter-rouge">ID</code>:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt;&gt;&gt; entry.json()['parent']
+&gt;&gt;&gt; entry = requests.get("https://hacker-news.firebaseio.com/v0/item/12154612.json?print=pretty")
+&gt;&gt;&gt; entry.json()['type']
+&gt;&gt;&gt; entry.json()['text']
+</code></pre>
+</div>
+
+<p><br /><br />
+Work your way up to the story?</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt;&gt;&gt; entry.json()['type']
+u'story'
+</code></pre>
+</div>
+
+<p><br /><br />
+To the a list of the top stories (i.e. what you see on the landing page of https://news.ycombinator.com/): <code class="highlighter-rouge">https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty</code></p>
+
+<p><br /><br /><br />
+Big thanks to Lucas for the “Big Data Surveillance” artwork!</p>
+ 
+</div>
+ 
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

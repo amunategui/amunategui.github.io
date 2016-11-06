@@ -1,0 +1,413 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Supercharge R with Spark: Getting Apache's SparkR Up and Running on Amazon Web Services (AWS)</title>
+ 
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Supercharge R with Spark: Getting Apache's SparkR Up and Running on Amazon Web Services (AWS)
+ </h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+    
+
+<p style="text-align:center">
+<img src="img/Spark.png" alt="Spark Logo" style="padding:0px; border:0px solid #021a40;" /></p>
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=ISsnKm2mAx4&amp;index=1&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+
+</ul>
+<p><br />
+<a href="http://spark.apache.org/" target="_blank">Spark</a> doesn’t need an introduction, but just in case, it extends Hadoop’s distributed / parallel computing paradigm by using both live memory in addition to disk storage. This makes for a much faster tool. As of version 1.4, <b>SparkR</b> is included in Apache’s Spark build. We’ll be using version 1.5 in this walk-through.</p>
+
+<p>This will be a two-part series, here we’ll install <b>SparkR</b> on <b>EC2</b> and fire up a few clusters. In the second part, will do some distributed modeling.
+<br /><br /></p>
+<ul>
+    <li type="square"><a href="#cluster-launcher">AWS Instance</a></li>
+    <ul>
+        <li type="square"><a href="#vpc">VPC</a></li>
+        <li type="square"><a href="#ec2">EC2</a></li>
+        <li type="square"><a href="#connecting-ec2">Connecting to EC2</a></li>
+    </ul>
+    <li type="square"><a href="#installing-spark">Installing Spark</a></li>
+    <li type="square"><a href="#creating-clusters">Creating Clusters</a></li>
+    <li type="square"><a href="#connecting-to-the-master-cluster">Connecting to the Master Cluster</a></li>
+    <li type="square"><a href="#rstudio">Working with RStudio</a></li>
+</ul>
+
+<p><br /><br />
+<strong><em>Cluster Launcher</em></strong></p>
+<h2><a id="cluster-launcher">AWS Instance</a></h2>
+
+<p>In order to approach this from the same vantage point, we’ll use a small EC2 instance to launch our Spark clusters. You will need an amazon <b>AWS</b> account and the ability to <b>Secure Shell Tunneling (SSH)</b> into AWS (more on this later). Keep in mind that AWS instances cost money and the more clusters you need, the more money Amazon will charge. So, always remember to <code class="highlighter-rouge">Stop</code> or <code class="highlighter-rouge">Terminate</code> you instances when not needed!</p>
+
+<p>First, sign into the <a href="http://aws.amazon.com/" target="_blank">AWS Console</a>:</p>
+
+<p style="text-align:center">
+<img src="img/aws2.png" alt="logging on AWS" style="padding:1px; border:1px solid #021a40;" />
+</p>
+<p><br /><br /></p>
+<h2><a id="vpc">VPC</a></h2>
+
+<p>Under header Networking, select VPC:</p>
+
+<p style="text-align:center">
+<img src="img/vpc.png" alt="VPC" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+A <b>virtual private cloud (VPC)</b> will determine who and what gets to access the site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. For our purposes, we’ll just go with one public VPC:
+<br /><br />
+Start the <code class="highlighter-rouge">wizard</code>:</p>
+
+<p style="text-align:center">
+<img src="img/vpc_wizard.png" alt="VPC Wizard" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Start the wizard and select <code class="highlighter-rouge">VPC with a Single Public Subnet</code>:</p>
+
+<p style="text-align:center">
+<img src="img/vpc_configuration.png" alt="VPC Configuration" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Most of the defaults are fine except you should add a name under <code class="highlighter-rouge">VPC name</code>:</p>
+
+<p style="text-align:center">
+<img src="img/vpc_single_subnet.png" alt="Single Subnet" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /></p>
+<h2><a id="ec2">EC2</a></h2>
+
+<p>VPC is done, let’s now create our EC2 instance - this is going to be our cluster-launching machine. Click on the orange cube in the upper left corner of the page. From the ensuing menu, choose the first option, <code class="highlighter-rouge">EC2</code>:</p>
+
+<p style="text-align:center">
+<img src="img/ec2.png" alt="EC2 Icon" style="padding:1px; border:1px solid #021a40;" /></p>
+<p>&lt;/p&gt;</p>
+
+<p>In <code class="highlighter-rouge">Create Instance</code>, select <code class="highlighter-rouge">Launch Instance</code>:</p>
+
+<p style="text-align:center">
+<img src="img/create_instance.png" alt="Create Instance" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Select the first option <code class="highlighter-rouge">Amazon Linux AMI</code>:</p>
+
+<p style="text-align:center">
+<img src="img/amazon_ami.png" alt="Create Instance" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+In <strong>Step 2</strong>, continue with the preselected machine and click <code class="highlighter-rouge">Next: Configure Instance Details</code>:</p>
+
+<p style="text-align:center">
+<img src="img/ec2_step2.png" alt="Create Instance" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+In <strong>Step 3</strong>, keep all defaults but change the <code class="highlighter-rouge">Auto-assign Public IP</code> to <code class="highlighter-rouge">Enable</code>:</p>
+
+<p style="text-align:center">
+<img src="img/step_3.png" alt="IP" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Select <code class="highlighter-rouge">Review and Launch</code>:</p>
+
+<p style="text-align:center">
+<img src="img/review_launch.png" alt="Review Launch" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+In <strong>Step 7</strong>, <code class="highlighter-rouge">SSH port 22</code> is opened by default so there is nothing for us to do but to click <code class="highlighter-rouge">Launch</code>. It will open a pop-up box where you will need to create a new key pair:</p>
+
+<p style="text-align:center">
+<img src="img/key_pair.png" alt="Key Pair" style="padding:1px; border:1px solid #021a40;" /></p>
+
+<p><br /><br />
+Key-pair is a security file that will live on your machine and is required to <code class="highlighter-rouge">SSH</code> into the instance. I tend to create them and leave them in my downloads. What ever you decided to do, make sure you know where it is as you’ll need to pass a path to it every time you want to connect to it. Create a new one, check the acknowledgment check-box.</p>
+
+<p>Finally, click Launch Instances. That’s it for our instance. Hit the View Instances on the next page as the machine is being initialized:</p>
+
+<p style="text-align:center">
+<img src="img/ec2_instance.png" alt="EC2 Instance" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+We need to wait till the Initializing is done. Meanwhile we can get the security credentials that will be needed to launch the clusters. Go to your account name drop down in the top right corner and click <code class="highlighter-rouge">Security Credentials</code>:</p>
+
+<p style="text-align:center">
+<img src="img/credentials.png" alt="Create Instance" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Choose <code class="highlighter-rouge">Access Keys</code></p>
+
+<p style="text-align:center">
+<img src="img/access_keys.png" alt="Create Instance" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+And <code class="highlighter-rouge">Create Access Key</code></p>
+
+<p style="text-align:center">
+<img src="img/create_key.png" alt="Create Instance" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+This will download two strings:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">AWS_ACCESS_KEY_ID</span><span class="o">=</span><span class="n">...</span><span class="w">
+</span><span class="n">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span><span class="w"> </span><span class="n">...</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Keep that download handy as we’ll need the values shortly.</p>
+
+<p>Back at the instance window, check that our new instance is running, you can click on the check box to access the assigned dynamic IP address:</p>
+
+<p style="text-align:center">
+<img src="img/public_ip.png" alt="Create Instance" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /></p>
+<h2><a id="connecting-ec2">Connecting to EC2</a></h2>
+
+<p>Use the <code class="highlighter-rouge">Actions</code> button to get the exact SSH string to reach the instance:</p>
+
+<p style="text-align:center">
+<img src="img/connect_ssh.png" alt="Create Instance" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+And select <code class="highlighter-rouge">Connect</code>:</p>
+
+<p style="text-align:center">
+<img src="img/connect_to_your_instance.png" alt="Connect to Instance" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Read the instruction on the pop-up box. The last line states your connection string: <code class="highlighter-rouge">ssh -i "demo.pem" ec2-user@52.88.115.167</code>. To use it on the Mac, open your terminal and navigate to your Downloads folder (or wherever you moved your pem key-pair file). As per instructions, apply <code class="highlighter-rouge">chmod 400 demo.pem</code> and copy the example string.
+<br /><br />
+<strong><em>SSH</em></strong></p>
+
+<p>Paste it into the terminal and follow the instructions to log into your EC2 instance:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">ssh</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="s2">"demo.pem"</span><span class="w"> </span><span class="n">ec2</span><span class="o">-</span><span class="n">user</span><span class="o">@</span><span class="m">52.88.115.167</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Your terminal should confirm the EC2:</p>
+
+<p style="text-align:center">
+<img src="img/terminal.png" alt="Termninal Window" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /></p>
+<h2><a id="installing-spark">Installing Spark</a></h2>
+
+<p>This instance will be used to launch our Master and Dependent clusters. Let’s get the download URL path for <b>Spark</b> (<a href="http://spark.apache.org/downloads.html" target="_blank">from the downloads page for the latest version</a>):</p>
+
+<p style="text-align:center">
+<img src="img/spark_downloads.png" alt="Spark Downloads" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+We’ll use <code class="highlighter-rouge">wget</code> to download Spark directly into our instance, paste the following commands into the terminal:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># download spark
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">wget</span><span class="w"> </span><span class="n">http</span><span class="o">://</span><span class="n">d</span><span class="m">3</span><span class="n">kbcqa49mib13.cloudfront.net</span><span class="o">/</span><span class="n">spark</span><span class="m">-1.5.0</span><span class="o">-</span><span class="n">bin</span><span class="o">-</span><span class="n">hadoop2.6.tgz</span><span class="w">
+
+</span><span class="c1"># unpack spark tgz file
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">tar</span><span class="w"> </span><span class="n">zxvf</span><span class="w">  </span><span class="n">spark</span><span class="m">-1.5.0</span><span class="o">-</span><span class="n">bin</span><span class="o">-</span><span class="n">hadoop2.6.tgz</span><span class="w">
+
+</span></code></pre>
+</div>
+<p><br /><br />
+Now we need to download our <code class="highlighter-rouge">PEM</code> key-pair file over to the instance as well. Exit out of the EC2 session and use the <code class="highlighter-rouge">scp command</code> (Secure Copy):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># get out of current session and back to local machine
+</span><span class="n">exit</span><span class="w">
+
+</span><span class="c1"># upload pem file in same directory on the EC2 instance (swap the dashed IP with your instance's) 
+</span><span class="n">scp</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w">  </span><span class="n">demo.pem</span><span class="w"> </span><span class="n">demo.pem</span><span class="w"> </span><span class="n">ec2</span><span class="o">-</span><span class="n">user</span><span class="o">@</span><span class="n">ec2</span><span class="m">-52-88-115-167</span><span class="n">.us</span><span class="o">-</span><span class="n">west</span><span class="m">-2</span><span class="n">.compute.amazonaws.com</span><span class="o">:/</span><span class="n">home</span><span class="o">/</span><span class="n">ec2</span><span class="o">-</span><span class="n">user</span><span class="o">/</span><span class="n">spark</span><span class="m">-1.5.0</span><span class="o">-</span><span class="n">bin</span><span class="o">-</span><span class="n">hadoop2.6</span><span class="o">/</span><span class="n">ec2</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Now we go back to the EC2 box:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">ssh</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="s2">"demo.pem"</span><span class="w"> </span><span class="n">ec2</span><span class="o">-</span><span class="n">user</span><span class="o">@</span><span class="m">52.88.115.167</span><span class="w">
+
+</span><span class="c1"># navigate to the ec2 folder:
+</span><span class="n">cd</span><span class="w"> </span><span class="n">spark</span><span class="m">-1.5.0</span><span class="o">-</span><span class="n">bin</span><span class="o">-</span><span class="n">hadoop2.6</span><span class="o">/</span><span class="n">ec2</span><span class="w">
+
+</span><span class="c1"># change file permissions
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">chmod</span><span class="w"> </span><span class="m">400</span><span class="w"> </span><span class="n">demo.pem</span><span class="w">
+
+</span></code></pre>
+</div>
+<p><br /><br />
+We also need to export our access keys:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">Set</span><span class="w"> </span><span class="n">access</span><span class="w"> </span><span class="n">keys</span><span class="o">:</span><span class="w">
+</span><span class="n">export</span><span class="w"> </span><span class="n">AWS_ACCESS_KEY_ID</span><span class="o">=</span><span class="n">...yours</span><span class="w"> </span><span class="n">here...</span><span class="w"> 
+</span><span class="n">export</span><span class="w"> </span><span class="n">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span><span class="n">...yours</span><span class="w"> </span><span class="n">here...</span><span class="w"> 
+</span></code></pre>
+</div>
+<p><br /><br /></p>
+<h2><a id="creating-clusters">Creating Clusters</a></h2>
+
+<p>Now, let’s get our clusters up and running. This will call the script to launch 3 clusters, 1 master and 2 dependents in the <code class="highlighter-rouge">us-west</code> zone. <code class="highlighter-rouge">-k</code> is your PEM name, <code class="highlighter-rouge">-i</code> is the path to the PEM file, <code class="highlighter-rouge">-s</code> is the number of instances needed and <code class="highlighter-rouge">-t</code> is the server type:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># launch clusters
+</span><span class="n">.</span><span class="o">/</span><span class="n">spark</span><span class="o">-</span><span class="n">ec2</span><span class="w"> </span><span class="o">-</span><span class="n">k</span><span class="w"> </span><span class="n">demo</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="n">demo.pem</span><span class="w"> </span><span class="o">-</span><span class="n">r</span><span class="w"> </span><span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="m">-2</span><span class="w"> </span><span class="o">-</span><span class="n">s</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">-</span><span class="n">t</span><span class="w"> </span><span class="n">m</span><span class="m">1</span><span class="n">.small</span><span class="w"> </span><span class="n">launch</span><span class="w"> </span><span class="o">--</span><span class="n">copy</span><span class="o">-</span><span class="n">aws</span><span class="o">-</span><span class="n">credentials</span><span class="w"> </span><span class="n">my</span><span class="o">-</span><span class="n">spark</span><span class="o">-</span><span class="n">cluster</span><span class="w">
+
+</span></code></pre>
+</div>
+<p><br /><br />
+Building the clusters takes about 15 minutes. The terminal window may spit out some <code class="highlighter-rouge">waiting</code>, <code class="highlighter-rouge">disconnected</code>, or <code class="highlighter-rouge">connection refused</code> messages but as long as it doesn’t return the prompt, let it do its thing as it needs to set up each instance and install a lot of software on all of them.</p>
+
+<p style="text-align:center">
+<img src="img/creating_clusters.png" alt="Spark Downloads" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /></p>
+<h2><a id="connecting-to-the-master-cluster">Connecting to the Master Cluster</a></h2>
+
+<p>One of the last lines in the terminal window will be the master IP address - but you can also get it from the instance viewer on the AWS website.</p>
+
+<p>The master cluster is where we need to run RStudio. It is automatically installed for us (nice!). To check that our clusters are up and running, connect to the <code class="highlighter-rouge">Spark Master</code> window (swap the master IP address with yours):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">http</span><span class="o">://</span><span class="m">52.13.38.224</span><span class="o">:</span><span class="m">8080</span><span class="o">/</span><span class="w">
+</span></code></pre>
+</div>
+
+<p style="text-align:center">
+<img src="img/spark_master.png" alt="Spark Master" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /></p>
+
+<p>We confirm that we have two dependent clusters with status <code class="highlighter-rouge">Alive</code>. In order to log into RStudio, we need to first SSH into the instance and create a new user.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># log into master instance
+</span><span class="n">ssh</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="s2">"demo.pem"</span><span class="w"> </span><span class="n">ec2</span><span class="m">-52-13-38-224</span><span class="n">.us</span><span class="o">-</span><span class="n">west</span><span class="m">-2</span><span class="n">.compute.amazonaws.com</span><span class="w">
+
+</span><span class="c1"># add new user (and you don't have to use my name) and set a passwd
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">useradd</span><span class="w"> </span><span class="n">manuel</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">passwd</span><span class="w"> </span><span class="n">manuel</span><span class="w">
+
+</span></code></pre>
+</div>
+<p><br /><br /></p>
+<h2><a id="rstudio">Working with RStudio</a></h2>
+
+<p>The credentials we just created are what we’ll use to log into <code class="highlighter-rouge">RStudio Server</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># log into r studio
+</span><span class="n">http</span><span class="o">://</span><span class="m">52.13.38.224</span><span class="o">:</span><span class="m">8787</span><span class="o">/</span><span class="w">
+</span></code></pre>
+</div>
+<p style="text-align:center">
+<img src="img/rstudio.png" alt="Spark Master" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /></p>
+
+<p><strong><em>Let’s get some data through these clusters</em></strong></p>
+
+<p>Just a quick <a href="https://spark.apache.org/docs/latest/sparkr.html" target="_blank">example from the 1.5 Spark documentation</a> to show that this works. Paste the following code into RStudio running on your master cluster:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># from blog: http://blog.godatadriven.com/sparkr-just-got-better.html
+</span><span class="n">.libPaths</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">.libPaths</span><span class="p">(),</span><span class="w"> </span><span class="s1">'/root/spark/R/lib'</span><span class="p">))</span><span class="w">
+</span><span class="n">Sys.setenv</span><span class="p">(</span><span class="n">SPARK_HOME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'/root/spark'</span><span class="p">)</span><span class="w">
+</span><span class="n">Sys.setenv</span><span class="p">(</span><span class="n">PATH</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="n">Sys.getenv</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s1">'PATH'</span><span class="p">)),</span><span class="w"> </span><span class="s1">'/root/spark/bin'</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s1">':'</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">SparkR</span><span class="p">)</span><span class="w">
+</span><span class="c1"># initialize the Spark Context
+</span><span class="n">sc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sparkR.init</span><span class="p">()</span><span class="w">
+</span><span class="n">sqlContext</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sparkRSQL.init</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># create a data frame using the createDataFrame object
+</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">sqlContext</span><span class="p">,</span><span class="w"> </span><span class="n">faithful</span><span class="p">)</span><span class="w"> 
+</span><span class="n">head</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1">##   eruptions waiting
+## 1     3.600      79
+## 2     1.800      54
+## 3     3.333      74
+## 4     2.283      62
+## 5     4.533      85
+## 6     2.883      55
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># try simple generalized linear model 
+</span><span class="n">model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">glm</span><span class="p">(</span><span class="n">waiting</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">eruptions</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gaussian"</span><span class="p">)</span><span class="w">
+</span><span class="n">summary</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1">## $coefficients
+##             Estimate
+## (Intercept) 33.47440
+## eruptions   10.72964
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># see how well it predicts
+</span><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">newData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span><span class="w"> </span><span class="s2">"waiting"</span><span class="p">,</span><span class="w"> </span><span class="s2">"prediction"</span><span class="p">))</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1">##   waiting prediction
+## 1      79   72.10111
+## 2      54   52.78775
+## 3      74   69.23629
+## 4      62   57.97017
+## 5      85   82.11186
+## 6      55   64.40795
+</span></code></pre>
+</div>
+
+<p><br /><br />
+And to prove that all clusters went to work, check out the <code class="highlighter-rouge">Spark Master</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">http</span><span class="o">://</span><span class="m">52.13.38.224</span><span class="o">:</span><span class="m">8080</span><span class="o">/</span><span class="w">
+</span></code></pre>
+</div>
+
+<p style="text-align:center">
+<img src="img/clusters_working.png" alt="Spark Master" style="padding:1px; border:1px solid #021a40;" /></p>
+
+<p><br /><br />
+K- we’re done for now. Don’t forget to terminate all your EC2 instances you created!</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># handy command to kill all Spark clusters part of my-spark-cluster 
+</span><span class="n">.</span><span class="o">/</span><span class="n">spark</span><span class="o">-</span><span class="n">ec2</span><span class="w"> </span><span class="o">-</span><span class="n">k</span><span class="w"> </span><span class="n">demo</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="n">demo.pem</span><span class="w"> </span><span class="o">-</span><span class="n">r</span><span class="w"> </span><span class="n">us</span><span class="o">-</span><span class="n">west</span><span class="m">-2</span><span class="w">  </span><span class="n">destroy</span><span class="w"> </span><span class="n">my</span><span class="o">-</span><span class="n">spark</span><span class="o">-</span><span class="n">cluster</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<p><br /><br />
+In the next walk-through, we’ll dig deeper by using distributed data frames along with regression and classification modeling examples.</p>
+
+<p>Cheers!</p>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

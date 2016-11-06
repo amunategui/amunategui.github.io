@@ -1,0 +1,342 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Bagging  / Bootstrap Aggregation with R</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Bagging  / Bootstrap Aggregation with R</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+
+ 
+<strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=6q63Fwx33sg&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br />
+<strong>Packages/Functions Used in this Walkthrough</strong></p>
+
+<ul>
+        <li type="square"><a href="http://cran.r-project.org/web/packages/RCurl/index.html" targer="_blank">{RCurl}</a> - General network (HTTP/FTP/...) client interface for R</li>
+        <li type="square"><a href="http://cran.r-project.org/web/packages/pROC/index.html" targer="_blank">{pROC}</a> - Display and analyze ROC curves</li>
+        <li type="square"><a href="http://www.inside-r.org/r-doc/stats/lm" targer="_blank">{stats} lm</a> - Fitting Linear Models</li>
+        <li type="square"><a href="http://cran.r-project.org/web/packages/foreach/index.html" targer="_blank">{foreach}</a> - Foreach looping construct for R</li>
+        <li type="square"><a href="http://cran.r-project.org/web/packages/doParallel/index.html" targer="_blank">{doParallel}</a> - Foreach parallel adaptor for the parallel package</li>
+       
+</ul>
+
+<p><br /><br />
+In simple terms, bagging irons out variance from a data set. If, after splitting your data into multiple chunks and training them, you find that your predictions are different, then your data has variance. Bagging can turn a bad thing into a competitive advantage. For more theory behind the magic, check out <a href="http://en.wikipedia.org/wiki/Bootstrap_aggregating" targer="_blank">Bootstrap Aggregating</a> on Wikipedia. Bagging was invented by <a href="http://arxiv.org/pdf/1101.0923.pdf" target="_blank">Leo Breiman</a> at the University of California. He is also one of the grandfathers of <a href="http://en.wikipedia.org/wiki/Boosting_%28machine_learning%29" targer="_blank">Boosting</a> and <a href="https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm" target="_blank">Random Forests</a>.</p>
+
+<p><br /><br />
+<strong>Stability and Accuracy</strong></p>
+
+<p>By saving each prediction set and averaging them together, you not only <a href="http://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff" targer="_blank">lower variance without affecting bias</a>, but your accuracy may be improved! In essence, you are creating many slightly different models and ensembling them together; this avoids over-fitting, stabilizes your predictions and increases your accuracy. Mind you, this assumes your data has variance, if it doesn’t, bagging won’t help.</p>
+
+<p><br /><br />
+<strong>Let’s Code!</strong></p>
+
+<p>We’ll be using a great healthcare data set on historical readmissions of patients with diabetes - <a href="https://archive.ics.uci.edu/ml/machine-learning-databases/00296/" target="_blank">Diabetes 130-US hospitals for years 1999-2008</a> Data Set. Readmissions is a big deal for hospitals in the US as Medicare/Medicaid will scrutinize those bills and, in some cases, only reimburse a percentage of them. We’ll use code to automate the download and unzipping of the data directly from the <a href="https://archive.ics.uci.edu/ml/index.html" target="_blank">UC Irvine Machine Learning Repository</a>.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">require</span><span class="p">(</span><span class="n">RCurl</span><span class="p">)</span><span class="w">
+</span><span class="n">binData</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getBinaryURL</span><span class="p">(</span><span class="s2">"https://archive.ics.uci.edu/ml/machine-learning-databases/00296/dataset_diabetes.zip"</span><span class="p">,</span><span class="w">
+                    </span><span class="n">ssl.verifypeer</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+
+</span><span class="n">conObj</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">file</span><span class="p">(</span><span class="s2">"dataset_diabetes.zip"</span><span class="p">,</span><span class="w"> </span><span class="n">open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"wb"</span><span class="p">)</span><span class="w">
+</span><span class="n">writeBin</span><span class="p">(</span><span class="n">binData</span><span class="p">,</span><span class="w"> </span><span class="n">conObj</span><span class="p">)</span><span class="w">
+</span><span class="c1"># don't forget to close it
+</span><span class="n">close</span><span class="p">(</span><span class="n">conObj</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># open diabetes file
+</span><span class="n">files</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unzip</span><span class="p">(</span><span class="s2">"dataset_diabetes.zip"</span><span class="p">)</span><span class="w">
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Let’s clean it up the data set and drop a few columns to keep things simple:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># drop useless variables
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="n">select</span><span class="o">=-</span><span class="nf">c</span><span class="p">(</span><span class="n">encounter_id</span><span class="p">,</span><span class="w"> </span><span class="n">patient_nbr</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># transform all "?" to 0s
+</span><span class="n">diabetes</span><span class="p">[</span><span class="n">diabetes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"?"</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+
+</span><span class="c1"># remove zero variance - ty James http://stackoverflow.com/questions/8805298/quickly-remove-zero-variance-variables-from-a-data-frame
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes</span><span class="p">[</span><span class="n">sapply</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">levels</span><span class="p">(</span><span class="n">factor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">exclude</span><span class="o">=</span><span class="kc">NULL</span><span class="p">)))</span><span class="o">&gt;</span><span class="m">1</span><span class="p">)]</span><span class="w">
+
+</span><span class="c1"># prep outcome variable to those readmitted under 30 days
+</span><span class="n">diabetes</span><span class="o">$</span><span class="n">readmitted</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">diabetes</span><span class="o">$</span><span class="n">readmitted</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"&lt;30"</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># generalize outcome name
+</span><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'readmitted'</span><span class="w">
+
+</span><span class="c1"># drop large factors
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="w"> </span><span class="n">select</span><span class="o">=-</span><span class="nf">c</span><span class="p">(</span><span class="n">diag_1</span><span class="p">,</span><span class="w"> </span><span class="n">diag_2</span><span class="p">,</span><span class="w"> </span><span class="n">diag_3</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Let’s binarize all factor, character, and un-ordered categorical numerical values. The code below will print out what needs to be transformed and how many unique columns need to be created. We aren’t using <a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">full rank</a> here.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># binarize data
+</span><span class="n">charcolumns</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">diabetes</span><span class="p">[</span><span class="n">sapply</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="w"> </span><span class="n">is.character</span><span class="p">)])</span><span class="w">
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">colname</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">charcolumns</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="n">colname</span><span class="p">,</span><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">diabetes</span><span class="p">[,</span><span class="n">colname</span><span class="p">]))))</span><span class="w">
+     </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">newcol</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">unique</span><span class="p">(</span><span class="n">diabetes</span><span class="p">[,</span><span class="n">colname</span><span class="p">]))</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">newcol</span><span class="p">))</span><span class="w">
+               </span><span class="n">diabetes</span><span class="p">[,</span><span class="n">paste0</span><span class="p">(</span><span class="n">colname</span><span class="p">,</span><span class="s2">"_"</span><span class="p">,</span><span class="n">newcol</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">diabetes</span><span class="p">[,</span><span class="n">colname</span><span class="p">]</span><span class="o">==</span><span class="n">newcol</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w">
+     </span><span class="p">}</span><span class="w">
+     </span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes</span><span class="p">[,</span><span class="n">setdiff</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">diabetes</span><span class="p">),</span><span class="n">colname</span><span class="p">)]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "race 6"
+## [1] "gender 3"
+## [1] "age 10"
+## [1] "weight 10"
+## [1] "payer_code 18"
+## [1] "medical_specialty 73"
+## [1] "max_glu_serum 4"
+## [1] "A1Cresult 4"
+## [1] "metformin 4"
+## [1] "repaglinide 4"
+## [1] "nateglinide 4"
+## [1] "chlorpropamide 4"
+## [1] "glimepiride 4"
+## [1] "acetohexamide 2"
+## [1] "glipizide 4"
+## [1] "glyburide 4"
+## [1] "tolbutamide 2"
+## [1] "pioglitazone 4"
+## [1] "rosiglitazone 4"
+## [1] "acarbose 4"
+## [1] "miglitol 4"
+## [1] "troglitazone 2"
+## [1] "tolazamide 3"
+## [1] "insulin 4"
+## [1] "glyburide.metformin 4"
+## [1] "glipizide.metformin 2"
+## [1] "glimepiride.pioglitazone 2"
+## [1] "metformin.rosiglitazone 2"
+## [1] "metformin.pioglitazone 2"
+## [1] "change 2"
+## [1] "diabetesMed 2"
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># remove all punctuation characters in column names after binarization that could trip R
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">diabetes</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="n">colnames</span><span class="p">(</span><span class="n">diabetes</span><span class="p">),</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s2">"[[:punct:]]"</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_"</span><span class="w"> </span><span class="p">)</span><span class="w">
+ 
+</span><span class="c1"># check for zero variance - ty James http://stackoverflow.com/questions/8805298/quickly-remove-zero-variance-variables-from-a-data-frame
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes</span><span class="p">[</span><span class="n">sapply</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">levels</span><span class="p">(</span><span class="n">factor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">exclude</span><span class="o">=</span><span class="kc">NULL</span><span class="p">)))</span><span class="o">&gt;</span><span class="m">1</span><span class="p">)]</span><span class="w">
+
+</span><span class="c1"># transform all NAs into 0
+</span><span class="n">diabetes</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">diabetes</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w"> 
+</span></code></pre>
+</div>
+<p><br /><br />
+<strong>A Simple Bag-Free Model for Comparison</strong></p>
+
+<p>We’re going to use the base function <a href="http://www.inside-r.org/r-doc/stats/lm" targer="_blank">lm (linear models)</a> to model our training split:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># split data set into training and testing
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">split</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">diabetes</span><span class="p">),</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="m">0.5</span><span class="o">*</span><span class="n">nrow</span><span class="p">(</span><span class="n">diabetes</span><span class="p">)))</span><span class="w">
+</span><span class="n">traindf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes</span><span class="p">[</span><span class="n">split</span><span class="p">,]</span><span class="w">
+</span><span class="n">testdf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="n">diabetes</span><span class="p">[</span><span class="o">-</span><span class="n">split</span><span class="p">,]</span><span class="w">
+
+</span><span class="n">predictorNames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">setdiff</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">traindf</span><span class="p">),</span><span class="w"> </span><span class="n">outcomeName</span><span class="p">)</span><span class="w">
+</span><span class="n">fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lm</span><span class="p">(</span><span class="n">readmitted</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">traindf</span><span class="p">)</span><span class="w">
+</span><span class="n">preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span><span class="w"> </span><span class="n">testdf</span><span class="p">[,</span><span class="n">predictorNames</span><span class="p">],</span><span class="w"> </span><span class="n">se.fit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="p">(</span><span class="n">testdf</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">preds</span><span class="o">$</span><span class="n">fit</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>## Area under the curve: 0.6408224
+</code></pre>
+</div>
+<p><br /><br />
+The <code class="highlighter-rouge">AUC</code> score (Area Under the Curve) of our simple <code class="highlighter-rouge">lm</code> model is <b>0.6408224</b>. The score itself doesn’t really matter as we’re only interested in it as a comparative benchmark.</p>
+
+<p><br /><br />
+<strong>Let’s Bag It!</strong></p>
+
+<p>Now we’re going to bag this data using the same <code class="highlighter-rouge">lm</code> model. To make things go faster, we’re going to parallelize the loop and spread the task to <code class="highlighter-rouge">8</code> processors; you’ll need to tweak the <code class="highlighter-rouge">makeCluster</code> parameter for your hardware. The <code class="highlighter-rouge">length_divisor</code> parameter sets the size of how many rows to use in each sample, while <code class="highlighter-rouge">m</code> in the <code class="highlighter-rouge">foreach</code> loop sets how many times to run samples. Note that the <code class="highlighter-rouge">sample</code> function doesn’t use a <code class="highlighter-rouge">seed</code>, this is important as we want each new sample to be made from the full set of rows available, regardless if a row has already been used.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># parallel   ---------------------------------------------------------
+</span><span class="n">library</span><span class="p">(</span><span class="n">foreach</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">doParallel</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#setup parallel back end to use 8 processors
+</span><span class="n">cl</span><span class="o">&lt;-</span><span class="n">makeCluster</span><span class="p">(</span><span class="m">8</span><span class="p">)</span><span class="w">
+</span><span class="n">registerDoParallel</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># divide row size by 20, sample data 400 times 
+</span><span class="n">length_divisor</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">20</span><span class="w">
+</span><span class="n">predictions</span><span class="o">&lt;-</span><span class="n">foreach</span><span class="p">(</span><span class="n">m</span><span class="o">=</span><span class="m">1</span><span class="o">:</span><span class="m">400</span><span class="p">,</span><span class="n">.combine</span><span class="o">=</span><span class="n">cbind</span><span class="p">)</span><span class="w"> </span><span class="o">%dopar%</span><span class="w"> </span><span class="p">{</span><span class="w"> 
+        </span><span class="c1"># using sample function without seed
+</span><span class="w">     </span><span class="n">sampleRows</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">traindf</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="o">=</span><span class="nf">floor</span><span class="p">((</span><span class="n">nrow</span><span class="p">(</span><span class="n">traindf</span><span class="p">)</span><span class="o">/</span><span class="n">length_divisor</span><span class="p">)))</span><span class="w">
+     </span><span class="n">fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lm</span><span class="p">(</span><span class="n">readmitted</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">traindf</span><span class="p">[</span><span class="n">sampleRows</span><span class="p">,])</span><span class="w">
+     </span><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">fit</span><span class="p">,</span><span class="w"> </span><span class="n">testdf</span><span class="p">[,</span><span class="n">predictorNames</span><span class="p">],</span><span class="w"> </span><span class="n">se.fit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)[[</span><span class="m">1</span><span class="p">]])</span><span class="w">
+</span><span class="p">}</span><span class="w"> 
+</span><span class="n">stopCluster</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">auc</span><span class="p">(</span><span class="n">testdf</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">rowMeans</span><span class="p">(</span><span class="n">predictions</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>## Area under the curve: 0.6422938
+</code></pre>
+</div>
+<p><br /><br />
+Our final <code class="highlighter-rouge">AUC</code> score of <b>0.6422938</b> is a small improvement over the simple model’s <code class="highlighter-rouge">AUC</code> of 0.6408224. Even though this may not feel like a huge improvement, its that kind of little push that will place you above other players in data science competitions. This does require trial and error to find the right mix of sample size and number of runs.</p>
+
+<p><br /><br />
+<strong>Conclusion</strong></p>
+
+<p>Bagging is very common in competitions. I don’t think I have ever seen anybody win without using it. But, in order for this to work, your data must have variance, otherwise you’re just adding levels after levels of additional iterations with little benefit to your score and a big headache for those maintaining your modeling pipeline in production. Even when it does improve things, you have to asked yourself if its worth all that extra work…</p>
+
+<p>This walkthrough was inspired by Vik Paruchuri and his blog entry: <a href="http://www.vikparuchuri.com/blog/build-your-own-bagging-function-in-r/" target="_blank">Improve Predictive Performance in R with Bagging</a>.</p>
+
+<p><br /><br />      <br />
+<a id="sourcecode">Full source code (<a href="https://github.com/amunategui/bagging-in-R" target="_blank">also on GitHub</a>)</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">require</span><span class="p">(</span><span class="n">RCurl</span><span class="p">)</span><span class="w">
+</span><span class="n">binData</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getBinaryURL</span><span class="p">(</span><span class="s2">"https://archive.ics.uci.edu/ml/machine-learning-databases/00296/dataset_diabetes.zip"</span><span class="p">,</span><span class="w">
+                    </span><span class="n">ssl.verifypeer</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+
+</span><span class="n">conObj</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">file</span><span class="p">(</span><span class="s2">"dataset_diabetes.zip"</span><span class="p">,</span><span class="w"> </span><span class="n">open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"wb"</span><span class="p">)</span><span class="w">
+</span><span class="n">writeBin</span><span class="p">(</span><span class="n">binData</span><span class="p">,</span><span class="w"> </span><span class="n">conObj</span><span class="p">)</span><span class="w">
+</span><span class="c1"># don't forget to close it
+</span><span class="n">close</span><span class="p">(</span><span class="n">conObj</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># open diabetes file
+</span><span class="n">files</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unzip</span><span class="p">(</span><span class="s2">"dataset_diabetes.zip"</span><span class="p">)</span><span class="w">
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># drop useless variables
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="n">select</span><span class="o">=-</span><span class="nf">c</span><span class="p">(</span><span class="n">encounter_id</span><span class="p">,</span><span class="w"> </span><span class="n">patient_nbr</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># transform all "?" to 0s
+</span><span class="n">diabetes</span><span class="p">[</span><span class="n">diabetes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"?"</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+
+</span><span class="c1"># remove zero variance - ty James http://stackoverflow.com/questions/8805298/quickly-remove-zero-variance-variables-from-a-data-frame
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes</span><span class="p">[</span><span class="n">sapply</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">levels</span><span class="p">(</span><span class="n">factor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">exclude</span><span class="o">=</span><span class="kc">NULL</span><span class="p">)))</span><span class="o">&gt;</span><span class="m">1</span><span class="p">)]</span><span class="w">
+
+</span><span class="c1"># prep outcome variable to those readmitted under 30 days
+</span><span class="n">diabetes</span><span class="o">$</span><span class="n">readmitted</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">diabetes</span><span class="o">$</span><span class="n">readmitted</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"&lt;30"</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># generalize outcome name
+</span><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'readmitted'</span><span class="w">
+
+</span><span class="c1"># drop large factors
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="w"> </span><span class="n">select</span><span class="o">=-</span><span class="nf">c</span><span class="p">(</span><span class="n">diag_1</span><span class="p">,</span><span class="w"> </span><span class="n">diag_2</span><span class="p">,</span><span class="w"> </span><span class="n">diag_3</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># binarize data
+</span><span class="n">charcolumns</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">diabetes</span><span class="p">[</span><span class="n">sapply</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="w"> </span><span class="n">is.character</span><span class="p">)])</span><span class="w">
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">colname</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">charcolumns</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="n">colname</span><span class="p">,</span><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">diabetes</span><span class="p">[,</span><span class="n">colname</span><span class="p">]))))</span><span class="w">
+     </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">newcol</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">unique</span><span class="p">(</span><span class="n">diabetes</span><span class="p">[,</span><span class="n">colname</span><span class="p">]))</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">newcol</span><span class="p">))</span><span class="w">
+               </span><span class="n">diabetes</span><span class="p">[,</span><span class="n">paste0</span><span class="p">(</span><span class="n">colname</span><span class="p">,</span><span class="s2">"_"</span><span class="p">,</span><span class="n">newcol</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">diabetes</span><span class="p">[,</span><span class="n">colname</span><span class="p">]</span><span class="o">==</span><span class="n">newcol</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w">
+     </span><span class="p">}</span><span class="w">
+     </span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes</span><span class="p">[,</span><span class="n">setdiff</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">diabetes</span><span class="p">),</span><span class="n">colname</span><span class="p">)]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="c1"># remove all punctuation characters in column names after binarization that could trip R
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">diabetes</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="n">colnames</span><span class="p">(</span><span class="n">diabetes</span><span class="p">),</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s2">"[[:punct:]]"</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_"</span><span class="w"> </span><span class="p">)</span><span class="w">
+ 
+</span><span class="c1"># check for zero variance - ty James http://stackoverflow.com/questions/8805298/quickly-remove-zero-variance-variables-from-a-data-frame
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes</span><span class="p">[</span><span class="n">sapply</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">levels</span><span class="p">(</span><span class="n">factor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">exclude</span><span class="o">=</span><span class="kc">NULL</span><span class="p">)))</span><span class="o">&gt;</span><span class="m">1</span><span class="p">)]</span><span class="w">
+
+</span><span class="c1"># transform all NAs into 0
+</span><span class="n">diabetes</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">diabetes</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w"> 
+
+</span><span class="c1"># split data set into training and testing
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">split</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">diabetes</span><span class="p">),</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="m">0.5</span><span class="o">*</span><span class="n">nrow</span><span class="p">(</span><span class="n">diabetes</span><span class="p">)))</span><span class="w">
+</span><span class="n">traindf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes</span><span class="p">[</span><span class="n">split</span><span class="p">,]</span><span class="w">
+</span><span class="n">testdf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="n">diabetes</span><span class="p">[</span><span class="o">-</span><span class="n">split</span><span class="p">,]</span><span class="w">
+
+</span><span class="n">predictorNames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">setdiff</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">traindf</span><span class="p">),</span><span class="w"> </span><span class="n">outcomeName</span><span class="p">)</span><span class="w">
+</span><span class="n">fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lm</span><span class="p">(</span><span class="n">readmitted</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">traindf</span><span class="p">)</span><span class="w">
+</span><span class="n">preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span><span class="w"> </span><span class="n">testdf</span><span class="p">[,</span><span class="n">predictorNames</span><span class="p">],</span><span class="w"> </span><span class="n">se.fit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="p">(</span><span class="n">testdf</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">preds</span><span class="o">$</span><span class="n">fit</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># parallel   ---------------------------------------------------------
+</span><span class="n">library</span><span class="p">(</span><span class="n">foreach</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">doParallel</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#setup parallel back end to use 8 processors
+</span><span class="n">cl</span><span class="o">&lt;-</span><span class="n">makeCluster</span><span class="p">(</span><span class="m">8</span><span class="p">)</span><span class="w">
+</span><span class="n">registerDoParallel</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># divide row size by 20, sample data 400 times 
+# code based on Vik Paruchuri's blog entry: http://www.vikparuchuri.com/blog/build-your-own-bagging-function-in-r/
+</span><span class="n">length_divisor</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">20</span><span class="w">
+</span><span class="n">predictions</span><span class="o">&lt;-</span><span class="n">foreach</span><span class="p">(</span><span class="n">m</span><span class="o">=</span><span class="m">1</span><span class="o">:</span><span class="m">400</span><span class="p">,</span><span class="n">.combine</span><span class="o">=</span><span class="n">cbind</span><span class="p">)</span><span class="w"> </span><span class="o">%dopar%</span><span class="w"> </span><span class="p">{</span><span class="w"> 
+        </span><span class="c1"># using sample function without seed
+</span><span class="w">     </span><span class="n">sampleRows</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">traindf</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="o">=</span><span class="nf">floor</span><span class="p">((</span><span class="n">nrow</span><span class="p">(</span><span class="n">traindf</span><span class="p">)</span><span class="o">/</span><span class="n">length_divisor</span><span class="p">)))</span><span class="w">
+     </span><span class="n">fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lm</span><span class="p">(</span><span class="n">readmitted</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">traindf</span><span class="p">[</span><span class="n">sampleRows</span><span class="p">,])</span><span class="w">
+     </span><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">fit</span><span class="p">,</span><span class="w"> </span><span class="n">testdf</span><span class="p">[,</span><span class="n">predictorNames</span><span class="p">],</span><span class="w"> </span><span class="n">se.fit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)[[</span><span class="m">1</span><span class="p">]])</span><span class="w">
+</span><span class="p">}</span><span class="w"> 
+</span><span class="n">stopCluster</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="p">(</span><span class="n">testdf</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">rowMeans</span><span class="p">(</span><span class="n">predictions</span><span class="p">)))</span><span class="w">
+
+</span></code></pre>
+</div>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

@@ -1,0 +1,154 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Brief Guide On Running RStudio Server On Amazon Web Services</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Brief Guide On Running RStudio Server On Amazon Web Services</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=NQu3ugUkYTk&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<p><br /><br /></p>
+
+<p>There are a lot of great resources on the web, but I didn’t find one that covered my needs from end to end, and figured others could benefit from a walkthrough.  Here, I’ll show how to select, install and run RStudio Server, customize security settings to use the RStudio’s web interface, and upload and download data between your local machine and the server.</p>
+
+<p>If you like Kaggle competitions, like I do, then this is a great way of quickly adding all sorts of computing configurations to satiate your needs. Our first stop is at <a href="http://www.louisaslett.com/RStudio_AMI/" target="_blank">Louis Aslet’s web page</a>. Louis curates a series of Amazon Machine Images (referred as AMIs):</p>
+
+<p align="center"><img src="img/amilist.png" /></p>
+<p><br /><br />
+These are pre-configured images that will install RStudio and common R packages onto a computing instance. This is a huge time and money saver as it automatically installs a whole slew of software under two minutes - and when you’re charged by the minute, every minute counts.</p>
+
+<p>Louis also has a video, albeit short, on how to setup RStudio and lots of additional resources. So explore them if you have unanswered questions. 
+We’re interested in the upper right-hand box where you need to select the AMI closest to your location and click on it. This will take you to the Amazon Web Services page. If you do not have an AWS account, it will prompt you to set one up:</p>
+
+<p align="center"><img src="img/amzlogin.png" /></p>
+<p><br /><br />
+Otherwise it will take you to <strong>Step 2</strong>. This is the fun part. Its like going to the store and picking up a brand new computer. Here you get to choose how much computing muscle you want. The AMI image you selected earlier will get applied to whatever setup you choose. You can go for more GPU, memory, storage, etc. Unfortunately, throwing more memory at a problem is not a guarantee to make it go away - and I’m talking from personal experience here.</p>
+
+<p align="center"><img src="img/instance.png" /></p>
+<p><br /><br />
+I recommend starting small as it is easy to upgrade an existing instance to something bigger.</p>
+
+<p><strong>Security</strong></p>
+
+<p>You need to have two open ports and a key-pair to communicate with your instance. 
+<code class="highlighter-rouge">Port 22</code> should be opened by default and you’ll need to add <code class="highlighter-rouge">port 80</code>.</p>
+
+<p><code class="highlighter-rouge">Port 22</code> is used to connect a command line terminal tool using SSH. I will not be showing that today. Instead, we’ll be using <code class="highlighter-rouge">port 80</code> which allows access to the web interface of RStudio. So add another rule, choose <code class="highlighter-rouge">HTTP</code>, enter the value <strong>80</strong>, and leave the rest as is:</p>
+
+<p align="center"><img src="img/security.png" /></p>
+<p><br /><br />
+After you hit <b>Launch</b>, a key-pair pop-up box will appear. This is what authenticates your computer’s identity and allows you to communicate securely to your AWS instance. If this is your first time using EC2 you’ll want to create and download a new key pair:</p>
+
+<p align="center"><img src="img/key.png" /></p>
+<p><br /><br />
+<strong>View Instance</strong></p>
+
+<p>After launching your instance, once the <b>instance state</b> goes from <code class="highlighter-rouge">initializing</code> to <code class="highlighter-rouge">running</code>, the public DNS string is the official link to your instance’s RStudio web interface:</p>
+
+<p align="center"><img src="img/runninginstance.png" /></p>
+
+<li>Remember where you save this key-pair as you cannot communicate to your instance without it.</li>
+<li>If security is a big concern, there are plenty of additional settings and customizations available, please refer to the online RStudio server and Amazon EC2 help files regarding your options.</li>
+
+<p>Once your instance is running (green light), click on it, copy the Public DNS URL and paste it in your browser:</p>
+
+<p align="center"><img src="img/url.png" /></p>
+<p><br /><br />
+<strong>Using RStudio Server</strong></p>
+
+<p>You will be prompted for your credentials. By default, the initial <strong>account</strong> and <strong>password</strong> for these AMIs is <code class="highlighter-rouge">rstudio</code>, <code class="highlighter-rouge">rstudio</code>, all lower case:</p>
+
+<p align="center"><img src="img/rstudiologin.png" /></p>
+<p><br /><br />
+Once in RStudio, the first thing you need to do is run the loaded script and change the password (minimum length required is 8 characters).  Replace the <strong>mypassword</strong> with your new password and hit the <code class="highlighter-rouge">run</code> script button. Then log out and back in with the new password:</p>
+
+<p align="center"><img src="img/changepassword.png" /></p>
+<p><br /><br />
+<strong>Uploading and Downloading Files</strong></p>
+
+<p>The last thing I want to cover is how to upload and download files to and from your EC2 instance.</p>
+
+<p><strong>Uploading Files (i.e. copying files from your local machine to your EC2 Instance):</strong></p>
+
+<ul><li>Switch to the <b>Files</b> pane</li>
+<li>Navigate to the directory you wish to upload files into</li>
+<li>Click the <b>Upload</b> toolbar button. A menu box will open and select the file you want to upload</li>
+<li>Choose the file you wish to upload and press <b>OK</b></li></ul>
+<p><b>Note:</b> you can upload several files or even an entire folder at once, you just need to compress everything into a zip file and upload it (when RStudio receives an uploaded zip file it will automatically uncompresses it).</p>
+
+<p align="center"><img src="img/upload.png" /></p>
+<p><br /><br />
+<strong>Downloading Files (i.e. copying files from your EC2 instance to your local machine):</strong></p>
+
+<ul><li>Switch to the directory you want to download files from the <b>Files</b> pane</li>
+<li>Select the file(s) and/or folder(s) you want to download</li>
+<li>Click <b>More</b> and <b>Export</b> on the toolbar</li>
+<li>You'll then be prompted with a default file name for the download. Either accept the default or specify a custom name then press <b>OK</b></li></ul>
+
+<p align="center"><img src="img/download.png" /></p>
+<p><br /><br />
+<strong>Important</strong>
+Don’t forget to shut down the server or terminate it completely - otherwise the meter will keep running and you will keep being charged!</p>
+
+<p><strong>Additional Resources (PDFs)</strong></p>
+
+<p><a href="https://s3.amazonaws.com/rstudio-server/rstudio-server-pro-0.98.501-admin-guide.pdf" target="_blank">RStudio Server Administrator’s Guide</a></p>
+
+<p><a href="http://www-personal.umich.edu/~agong/docs/Using%20RStudio%20on%20Amazon%20EC2%20under%20the%20Free%20Usage%20Tier.pdf" target="_blank">Using RStudio on Amazon EC2 under the Free Usage Tier</a></p>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 	
+  </body>
+</html>

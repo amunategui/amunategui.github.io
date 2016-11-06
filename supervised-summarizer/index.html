@@ -1,0 +1,673 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Quantifying the Spread: Measuring Strength and Direction of Predictors with the Summary Function</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Quantifying the Spread: Measuring Strength and Direction of Predictors with the Summary Function</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=UBZ6I4dJpiE&amp;index=1&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br />
+<strong>Packages Used in this Walkthrough</strong></p>
+
+<ul>
+        <li type="square"><b>{caret}</b> - dummyVars function</li>
+        <li type="square"><b>{ggplot2}</b> - Graphics/Grammar of Graphics</li>
+        <li type="square"><b>{grid}</b> - Grid Graphics Package</li>
+</ul>
+
+<p><br /><br />
+You’re probably familiar within the <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/summary.html" target="_blank">summary()</a> function in <b>R</b>. It’s an essential function, used all the time, that can reveal so much about your data. Yet, by extending it just a tad, we can quickly highlight top predictors, even on extremely large data sets.</p>
+
+<p><img src="img/two-predictors.png" alt="plot of chunk two-predictors" />
+<br /><br /></p>
+
+<p>The idea is not to summarize the variable in of itself, but to split the data into two sets, one for each outcome and summarize each. Comparing the results from both sets will tell you how well you predictor behaves towards your outcome variable. The above plots shows the summary of two predictors and their individual spreads - clearly, this first plot is a powerful predictor as the spread between the green and red line is large, while the second one isn’t.</p>
+
+<p>Let’s first measure a single predictor to see how this works, then we’ll quantify this technique to it can be applied to entire data sets.</p>
+
+<p>We’ll pull in the classic <b>Titanic</b> data set that I’ve already used in many of my walkthroughs. The code below will download the data from the <b>University of Colorado</b>, clean it up and yield a numeric-only, modeling-ready data frame:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># using dataset from the UCI Machine Learning Repository (http://archive.ics.uci.edu/ml/)
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'http://math.ucdenver.edu/RTutorial/titanic.txt'</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s1">'\t'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># creating new title feature
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mr '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mr'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mrs '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mrs'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Miss'</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Miss'</span><span class="p">,</span><span class="s1">'Nothing'</span><span class="p">)))</span><span class="w">
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># impute age to remove NAs
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">median</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># reorder data set so target is last column
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'PClass'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Age'</span><span class="p">,</span><span class="w">    </span><span class="s1">'Sex'</span><span class="p">,</span><span class="w">   </span><span class="s1">'Title'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Survived'</span><span class="p">)]</span><span class="w">
+
+</span><span class="c1"># binarize all factors
+</span><span class="n">require</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDummy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dummyVars</span><span class="p">(</span><span class="s2">"~."</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="n">fullRank</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">titanicDummy</span><span class="p">,</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Let’s call <code class="highlighter-rouge">head</code> on our variables to see what we are dealing with. <code class="highlighter-rouge">Survived</code> is our <b>outcome</b> variable:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">head</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##   PClass.1st PClass.2nd PClass.3rd Age Sex.female Sex.male Title.Miss
+## 1          1          0          0  29          1        0          1
+## 2          1          0          0   2          1        0          1
+## 3          1          0          0  30          0        1          0
+##   Title.Mr Title.Mrs Title.Nothing Survived
+## 1        0         0             0        1
+## 2        0         0             0        0
+## 3        1         0             0        0
+</code></pre>
+</div>
+<p><br /><br />
+Calling the <code class="highlighter-rouge">summary</code> function or the <a href="https://stat.ethz.ch/R-manual/R-devel/library/utils/html/str.html" target="_blank">str</a> function on an entire data frame is a great way of getting acquainted with it:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">summary</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##    PClass.1st      PClass.2nd      PClass.3rd         Age       
+##  Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   : 0.17  
+##  1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:26.00  
+##  Median :0.000   Median :0.000   Median :1.000   Median :28.00  
+##  Mean   :0.245   Mean   :0.213   Mean   :0.541   Mean   :29.38  
+##  3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:1.000   3rd Qu.:30.00  
+##  Max.   :1.000   Max.   :1.000   Max.   :1.000   Max.   :71.00  
+##    Sex.female       Sex.male       Title.Miss      Title.Mr    
+##  Min.   :0.000   Min.   :0.000   Min.   :0.00   Min.   :0.000  
+##  1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.00   1st Qu.:0.000  
+##  Median :0.000   Median :1.000   Median :0.00   Median :1.000  
+##  Mean   :0.352   Mean   :0.648   Mean   :0.18   Mean   :0.572  
+##  3rd Qu.:1.000   3rd Qu.:1.000   3rd Qu.:0.00   3rd Qu.:1.000  
+##  Max.   :1.000   Max.   :1.000   Max.   :1.00   Max.   :1.000  
+##    Title.Mrs     Title.Nothing      Survived    
+##  Min.   :0.000   Min.   :0.000   Min.   :0.000  
+##  1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000  
+##  Median :0.000   Median :0.000   Median :0.000  
+##  Mean   :0.152   Mean   :0.096   Mean   :0.343  
+##  3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:1.000  
+##  Max.   :1.000   Max.   :1.000   Max.   :1.000
+</code></pre>
+</div>
+<p><br /><br />
+As you can see, this yields a version of the <a href="http://en.wikipedia.org/wiki/Five-number_summary" target="_blank">five-number summary</a> displaying the <b>min, max, 1st &amp; 3rd quantile, mean, medium</b> of each variable.
+<br /><br />
+Though extremely useful, this doesn’t help us understand how our outcome variable interacts with its predictors. To remedy this, we split the data into two separate data sets, an outcome-positive data set, and an outcome-negative data set. Let’s look at <code class="highlighter-rouge">Sex.female</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">df_survived_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="n">Survived</span><span class="o">==</span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">df_survived_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="n">Survived</span><span class="o">==</span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_1</span><span class="o">$</span><span class="n">Sex.female</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   0.000   1.000   0.684   1.000   1.000
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_0</span><span class="o">$</span><span class="n">Sex.female</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   0.000   0.000   0.178   0.000   1.000
+</code></pre>
+</div>
+<p><br /><br />
+Now, a much clearer picture emerges regarding that variable when using an outcome-specific perspective. We learn that almost 70% of those that survived were females, and that only 18% of those that died were females. I think you can see where I am going with this.
+<br /><br />
+Let’s see how we can graph this information in an intuitive way. The idea is to create a vector of summary information for both outcomes, overlaying them together and measuring the spread. We’ll continue with the <code class="highlighter-rouge">Sex.female</code> variable as it should already be apparent how strong of a predictor it is.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">Sex.Female_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_0</span><span class="o">$</span><span class="n">Sex.female</span><span class="p">))</span><span class="w">
+</span><span class="n">Sex.Female_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Sex.Female_0</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+</span><span class="n">Sex.Female_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_1</span><span class="o">$</span><span class="n">Sex.female</span><span class="p">))</span><span class="w">
+</span><span class="n">Sex.Female_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+</span><span class="n">stats</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'ind'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">),</span><span class="w"> 
+                    </span><span class="s1">'Sex.Female_1'</span><span class="o">=</span><span class="n">Sex.Female_1</span><span class="p">,</span><span class="w">
+                    </span><span class="s1">'Sex.Female_0'</span><span class="o">=</span><span class="n">Sex.Female_0</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+<code class="highlighter-rouge">stats</code> is the data frame holding the summary data for <code class="highlighter-rouge">Sex.female</code> for both outcomes. This data frame holds three variables, an index column, a predictor column where the outcome is positive and another where the outcome is negative, and 6 rows, one for each summary output:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">head</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span><span class="m">6</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##         ind Sex.Female_1 Sex.Female_0
+## Min.      1        0.000        0.000
+## 1st Qu.   2        0.000        0.000
+## Median    3        1.000        0.000
+## Mean      4        0.684        0.178
+## 3rd Qu.   5        1.000        0.000
+## Max.      6        1.000        1.000
+</code></pre>
+</div>
+<p><br /><br />
+The logical next step is to plot it (that’s how the plots were generated in the start of the walkthrough):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">require</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ggplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+               </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sex.Female_1</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sex.Female_1"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+               </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sex.Female_0"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+               </span><span class="n">scale_x_discrete</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">,</span><span class="w">
+                                </span><span class="n">labels</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"min"</span><span class="p">,</span><span class="s2">"1q"</span><span class="p">,</span><span class="s2">"median"</span><span class="p">,</span><span class="s2">"mean"</span><span class="p">,</span><span class="s2">"3q"</span><span class="p">,</span><span class="s2">"max"</span><span class="p">))</span><span class="w">
+</span><span class="n">p</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/sex.female-predictor.png" alt="plot of chunk sex.female-predictor" />
+<br /><br />
+Obviously, we’re going to generalize this into a neat function, but, by doing it by hand for a single variable you should start seeing the power of looking at summary data is such manner. By using <a href="http://ggplot2.org/" target="_blank">ggplot2</a>, it is easy to display the summary measures on the <code class="highlighter-rouge">x</code> axis. The green line represents the females that survived and the red one, those that didn’t. As you can see both lines are far apart, the green line is well above the red one, and this means that the variable is a powerful predictor for survivability (i.e. we have a positive spread).
+<br /><br />
+If we generalize this spread into a single number, we’ll be able to bypass the graphing phase and apply this to huge data sets.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">spread</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">((</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+             </span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">2</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">2</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+             </span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">3</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">3</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+             </span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">4</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">4</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+             </span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">5</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+             </span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">6</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">6</span><span class="p">]]))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">spread</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 2.506
+</code></pre>
+</div>
+<p><br /><br />
+<b>2.56</b> is a large spread, let’s compare it with the weaker variable <code class="highlighter-rouge">Title.Nothing</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">Title.Nothing_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_0</span><span class="o">$</span><span class="n">Title.Nothing</span><span class="p">))</span><span class="w">
+</span><span class="n">Title.Nothing_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Title.Nothing_0</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+</span><span class="n">Title.Nothing_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_1</span><span class="o">$</span><span class="n">Title.Nothing</span><span class="p">))</span><span class="w">
+</span><span class="n">Title.Nothing_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+</span><span class="n">stats</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'ind'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">),</span><span class="w"> </span><span class="s1">'stats1'</span><span class="o">=</span><span class="n">Title.Nothing_1</span><span class="p">,</span><span class="s1">'stats0'</span><span class="o">=</span><span class="n">Title.Nothing_0</span><span class="p">)</span><span class="w">
+</span><span class="n">spread</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">((</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+             </span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">2</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">2</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+             </span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">3</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">3</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+             </span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">4</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">4</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+             </span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">5</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+             </span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">6</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">6</span><span class="p">]]))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">spread</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 0.0366
+</code></pre>
+</div>
+<p><br /><br />
+There you go, <b>0.0366</b> is a much smaller spread than <b>2.56</b>! This quantative value will allow us to cycle through any number of variables without having to plot them individually:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ggplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+               </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stats1</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stats1"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+               </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stats0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stats0"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+               </span><span class="n">scale_x_discrete</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">,</span><span class="w">
+                                </span><span class="n">labels</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"min"</span><span class="p">,</span><span class="s2">"1q"</span><span class="p">,</span><span class="s2">"median"</span><span class="p">,</span><span class="s2">"mean"</span><span class="p">,</span><span class="s2">"3q"</span><span class="p">,</span><span class="s2">"max"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+                </span><span class="n">ylab</span><span class="p">(</span><span class="s1">'Title.Nothing'</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">xlab</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Spread:'</span><span class="p">,</span><span class="n">spread</span><span class="p">))</span><span class="w">
+</span><span class="n">p</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/unnamed-chunk-10.png" alt="plot of chunk unnamed-chunk-10" />
+<br /></p>
+
+<p><strong>Let’s Generalize</strong></p>
+
+<p>It is time to generalize all this so we don’t have to tediously type each variable name every time we want to measure these relationships.
+<br /><br />
+We’ll create a function called <code class="highlighter-rouge">GetSummaryAndPlots()</code>. It takes a scaled data set of each outcome, the <code class="highlighter-rouge">predictorName</code> variable, and whether we want it to be plotted. If we don’t want it plotted, it will return the spread value:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">GetSummaryPlot</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">objdfscaled0</span><span class="p">,</span><span class="w"> </span><span class="n">objdfscaled1</span><span class="p">,</span><span class="w"> </span><span class="n">predictorName</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="n">require</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
+    
+     </span><span class="n">stats0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">objdfscaled0</span><span class="p">[,</span><span class="n">predictorName</span><span class="p">]))</span><span class="w">
+     </span><span class="n">stats0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">stats0</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+     </span><span class="n">stats1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">objdfscaled1</span><span class="p">[,</span><span class="n">predictorName</span><span class="p">]))</span><span class="w">
+     </span><span class="n">stats1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">stats1</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+     </span><span class="n">stats</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'ind'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">),</span><span class="w"> </span><span class="s1">'stats1'</span><span class="o">=</span><span class="n">stats1</span><span class="p">,</span><span class="s1">'stats0'</span><span class="o">=</span><span class="n">stats0</span><span class="p">)</span><span class="w">
+    
+     </span><span class="n">spread</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">((</span><span class="n">stats1</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+                     </span><span class="p">(</span><span class="n">stats1</span><span class="p">[[</span><span class="m">2</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">2</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+                     </span><span class="p">(</span><span class="n">stats1</span><span class="p">[[</span><span class="m">3</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">3</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+                     </span><span class="p">(</span><span class="n">stats1</span><span class="p">[[</span><span class="m">4</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">4</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+                     </span><span class="p">(</span><span class="n">stats1</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">5</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+                     </span><span class="p">(</span><span class="n">stats1</span><span class="p">[[</span><span class="m">6</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">6</span><span class="p">]]))</span><span class="w">
+    
+     </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">plotit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Scaled spread:'</span><span class="p">,</span><span class="n">spread</span><span class="p">))</span><span class="w">
+          </span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ggplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+               </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stats1</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stats1"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+               </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stats0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stats0"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+               </span><span class="n">scale_x_discrete</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">,</span><span class="w">
+                                </span><span class="n">labels</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"min"</span><span class="p">,</span><span class="s2">"1q"</span><span class="p">,</span><span class="s2">"median"</span><span class="p">,</span><span class="s2">"mean"</span><span class="p">,</span><span class="s2">"3q"</span><span class="p">,</span><span class="s2">"max"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+               </span><span class="n">ylab</span><span class="p">(</span><span class="n">predictorName</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">xlab</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Spread:'</span><span class="p">,</span><span class="n">spread</span><span class="p">))</span><span class="w">
+          </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w">
+     </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">spread</span><span class="p">)</span><span class="w">
+     </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Let’s look at another piece of code that will allow us to generalize this further. By using the <code class="highlighter-rouge">scale</code> function and scaling the entire data set into a standard unit of measurement, we can easily compare the spread between each predictor. Let’s give it a whirl on the entire data set…</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'Survived'</span><span class="w">
+</span><span class="n">predictorNames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">)[</span><span class="o">!</span><span class="nf">names</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">)</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="n">outcomeName</span><span class="p">]</span><span class="w">
+</span><span class="c1"># Temporarily remove the outcome variable before scaling the data set
+</span><span class="n">outcomeValue</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="w">
+</span><span class="c1"># scale returns a matrix so we need to tranform it back to a data frame
+</span><span class="n">scaled_titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">scale</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+</span><span class="n">scaled_titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">outcomeValue</span><span class="w">
+</span><span class="c1"># split your data sets
+</span><span class="n">scaled_titanicDF_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">scaled_titanicDF</span><span class="p">[</span><span class="n">scaled_titanicDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]</span><span class="o">==</span><span class="m">0</span><span class="p">,]</span><span class="w">
+</span><span class="n">scaled_titanicDF_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">scaled_titanicDF</span><span class="p">[</span><span class="n">scaled_titanicDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]</span><span class="o">==</span><span class="m">1</span><span class="p">,]</span><span class="w">
+    
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">predictorName</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">predictorNames</span><span class="p">)</span><span class="w">
+        </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="n">predictorName</span><span class="p">,</span><span class="s1">':'</span><span class="p">,</span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w">
+                </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="n">predictorName</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "PClass.1st : 2.969"
+## [1] "PClass.2nd : 2.6301"
+## [1] "PClass.3rd : -2.727"
+## [1] "Age : -0.2498"
+## [1] "Sex.female : 5.253"
+## [1] "Sex.male : -5.253"
+## [1] "Title.Miss : 3.119"
+## [1] "Title.Mr : -5.071"
+## [1] "Title.Mrs : 3.54"
+## [1] "Title.Nothing : 0.1241"
+</code></pre>
+</div>
+<p><br /><br />
+Pretty cool, right? With a quick glance we see that <code class="highlighter-rouge">Sex.male</code> and <code class="highlighter-rouge">Title.Mr</code> have a substantial negative effect on survivability while <code class="highlighter-rouge">Sex.female</code> has a substantial positive.
+<br /><br />
+How about plotting this efficiently? We’ll use the <code class="highlighter-rouge">multiplot</code> function from the great resource: <a href="http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/" target="_blank">Cookbook for R</a>. This enables the stacking of multiple <code class="highlighter-rouge">ggplots</code> on the same page, just like <code class="highlighter-rouge">par</code> and <code class="highlighter-rouge">mfrow</code> does for regular R plots. For more information, please visit the above link.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">multiplot</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">...</span><span class="p">,</span><span class="w"> </span><span class="n">plotlist</span><span class="o">=</span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="p">,</span><span class="w"> </span><span class="n">cols</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">layout</span><span class="o">=</span><span class="kc">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="c1">#http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
+</span><span class="w">     </span><span class="c1"># Multiple plot function
+</span><span class="w">     </span><span class="c1">#
+</span><span class="w">     </span><span class="c1"># ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+</span><span class="w">     </span><span class="c1"># - cols:   Number of columns in layout
+</span><span class="w">     </span><span class="c1"># - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+</span><span class="w">     </span><span class="c1">#
+</span><span class="w">     </span><span class="c1"># If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+</span><span class="w">     </span><span class="c1"># then plot 1 will go in the upper left, 2 will go in the upper right, and
+</span><span class="w">     </span><span class="c1"># 3 will go all the way across the bottom.
+</span><span class="w">     </span><span class="c1">#
+</span><span class="w">     </span><span class="n">require</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span><span class="w">
+    
+     </span><span class="c1"># Make a list from the ... arguments and plotlist
+</span><span class="w">     </span><span class="n">plots</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="nf">list</span><span class="p">(</span><span class="n">...</span><span class="p">),</span><span class="w"> </span><span class="n">plotlist</span><span class="p">)</span><span class="w">
+    
+     </span><span class="n">numPlots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">plots</span><span class="p">)</span><span class="w">
+    
+     </span><span class="c1"># If layout is NULL, then use 'cols' to determine layout
+</span><span class="w">     </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">is.null</span><span class="p">(</span><span class="n">layout</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="c1"># Make the panel
+</span><span class="w">          </span><span class="c1"># ncol: Number of columns of plots
+</span><span class="w">          </span><span class="c1"># nrow: Number of rows needed, calculated from # of cols
+</span><span class="w">          </span><span class="n">layout</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">matrix</span><span class="p">(</span><span class="n">seq</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">cols</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">ceiling</span><span class="p">(</span><span class="n">numPlots</span><span class="o">/</span><span class="n">cols</span><span class="p">)),</span><span class="w">
+                           </span><span class="n">ncol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cols</span><span class="p">,</span><span class="w"> </span><span class="n">nrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">ceiling</span><span class="p">(</span><span class="n">numPlots</span><span class="o">/</span><span class="n">cols</span><span class="p">))</span><span class="w">
+     </span><span class="p">}</span><span class="w">
+    
+     </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">numPlots</span><span class="o">==</span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="n">print</span><span class="p">(</span><span class="n">plots</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span><span class="w">
+         
+     </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="c1"># Set up the page
+</span><span class="w">          </span><span class="n">grid.newpage</span><span class="p">()</span><span class="w">
+          </span><span class="n">pushViewport</span><span class="p">(</span><span class="n">viewport</span><span class="p">(</span><span class="n">layout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">grid.layout</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">layout</span><span class="p">),</span><span class="w"> </span><span class="n">ncol</span><span class="p">(</span><span class="n">layout</span><span class="p">))))</span><span class="w">
+         
+          </span><span class="c1"># Make each plot, in the correct location
+</span><span class="w">          </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">numPlots</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+               </span><span class="c1"># Get the i,j matrix positions of the regions that contain this subplot
+</span><span class="w">               </span><span class="n">matchidx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">which</span><span class="p">(</span><span class="n">layout</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">arr.ind</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+              
+               </span><span class="n">print</span><span class="p">(</span><span class="n">plots</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="w"> </span><span class="n">vp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">viewport</span><span class="p">(</span><span class="n">layout.pos.row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matchidx</span><span class="o">$</span><span class="n">row</span><span class="p">,</span><span class="w">
+                                               </span><span class="n">layout.pos.col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matchidx</span><span class="o">$</span><span class="n">col</span><span class="p">))</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+     </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Now, let’s plot the 4 strongest positive predictors for survivability and the 4 strongest negative ones:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">p</span><span class="m">1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w"> </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="s1">'Sex.female'</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "Scaled spread: 5.253"
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">p</span><span class="m">2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w"> </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="s1">'Title.Mrs'</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "Scaled spread: 3.54"
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">p</span><span class="m">3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w"> </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="s1">'Sex.male'</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "Scaled spread: -5.253"
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">p</span><span class="m">4</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w"> </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="s1">'Title.Mr'</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "Scaled spread: -5.071"
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">multiplot</span><span class="p">(</span><span class="n">p</span><span class="m">1</span><span class="p">,</span><span class="n">p</span><span class="m">2</span><span class="p">,</span><span class="n">p</span><span class="m">3</span><span class="p">,</span><span class="n">p</span><span class="m">4</span><span class="p">,</span><span class="n">cols</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/unnamed-chunk-14.png" alt="plot of chunk unnamed-chunk-14" />
+<br /><br />
+And now for the final capper, let’s plot everything on a bar graph so we can easily compare the strongest predictors and the direction they affect the model:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">summaryImportance</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+</span><span class="n">variableName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">predictorName</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">predictorNames</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="n">summaryImportance</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="nf">c</span><span class="p">(</span><span class="n">summaryImportance</span><span class="p">,</span><span class="w"> </span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w"> </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="n">predictorName</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">))</span><span class="w">
+        </span><span class="n">variableName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">variableName</span><span class="p">,</span><span class="w"> </span><span class="n">predictorName</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'VariableName'</span><span class="o">=</span><span class="n">variableName</span><span class="p">,</span><span class="w"> </span><span class="s1">'Weight'</span><span class="o">=</span><span class="n">summaryImportance</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># display variable importance on a +/- scale 
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">results</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="p">),]</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">results</span><span class="p">[(</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="m">0</span><span class="p">),]</span><span class="w">
+
+</span><span class="n">par</span><span class="p">(</span><span class="n">mar</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">5</span><span class="p">,</span><span class="m">15</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">))</span><span class="w"> </span><span class="c1"># increase y-axis margin. 
+</span><span class="n">xx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">barplot</span><span class="p">(</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.85</span><span class="p">,</span><span class="w"> 
+              </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="s2">"Variable Importance - Titanic"</span><span class="p">),</span><span class="w"> </span><span class="n">horiz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w"> 
+              </span><span class="n">xlab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"&lt; (-) importance &gt;  &lt; neutral &gt;  &lt; importance (+) &gt;"</span><span class="p">,</span><span class="w"> </span><span class="n">axes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> 
+              </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ifelse</span><span class="p">((</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="p">),</span><span class="w"> </span><span class="s1">'blue'</span><span class="p">,</span><span class="w"> </span><span class="s1">'red'</span><span class="p">))</span><span class="w"> 
+</span><span class="n">axis</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">at</span><span class="o">=</span><span class="n">xx</span><span class="p">,</span><span class="w"> </span><span class="n">labels</span><span class="o">=</span><span class="n">results</span><span class="o">$</span><span class="n">VariableName</span><span class="p">,</span><span class="w"> </span><span class="n">tick</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">las</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">line</span><span class="o">=</span><span class="m">-0.3</span><span class="p">,</span><span class="w"> </span><span class="n">cex.axis</span><span class="o">=</span><span class="m">0.6</span><span class="p">)</span><span class="w">  
+</span></code></pre>
+</div>
+
+<p><img src="img/unnamed-chunk-15.png" alt="plot of chunk unnamed-chunk-15" />
+<br /><br /></p>
+
+<p><strong>Conclusion</strong></p>
+
+<p>This approach only works when attempting to predict a binary outcome and won’t work for continuous outcomes (such as linear regression models). Also, it is a naive-based variable importance calculator as it doesn’t account for interactions between predictors. Yet, it is a fast way to size up data for any supervised modeling and should handle extremely large dimensions. Happy explorations!</p>
+
+<p><br /><br />      <br />
+<a id="sourcecode">Full source code (<a href="https://github.com/amunategui/spread-summarizer" target="_blank">also on GitHub</a>)</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+
+</span><span class="c1"># using dataset from the UCI Machine Learning Repository (http://archive.ics.uci.edu/ml/)
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'http://math.ucdenver.edu/RTutorial/titanic.txt'</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s1">'\t'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># creating new title feature
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mr '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mr'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mrs '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mrs'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Miss'</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Miss'</span><span class="p">,</span><span class="s1">'Nothing'</span><span class="p">)))</span><span class="w">
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># impute age to remove NAs
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">median</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># reorder data set so target is last column
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'PClass'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Age'</span><span class="p">,</span><span class="w">    </span><span class="s1">'Sex'</span><span class="p">,</span><span class="w">   </span><span class="s1">'Title'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Survived'</span><span class="p">)]</span><span class="w">
+
+</span><span class="c1"># binarize all factors
+</span><span class="n">require</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDummy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dummyVars</span><span class="p">(</span><span class="s2">"~."</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="n">fullRank</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">titanicDummy</span><span class="p">,</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+
+</span><span class="n">head</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="w">
+
+</span><span class="n">summary</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">)</span><span class="w">
+
+</span><span class="n">df_survived_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="n">Survived</span><span class="o">==</span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">df_survived_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="n">Survived</span><span class="o">==</span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_1</span><span class="o">$</span><span class="n">Sex.female</span><span class="p">)</span><span class="w">
+
+</span><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_0</span><span class="o">$</span><span class="n">Sex.female</span><span class="p">)</span><span class="w">
+
+</span><span class="n">Sex.Female_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_0</span><span class="o">$</span><span class="n">Sex.female</span><span class="p">))</span><span class="w">
+</span><span class="n">Sex.Female_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Sex.Female_0</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+</span><span class="n">Sex.Female_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_1</span><span class="o">$</span><span class="n">Sex.female</span><span class="p">))</span><span class="w">
+</span><span class="n">Sex.Female_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+</span><span class="n">stats</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'ind'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">),</span><span class="w"> 
+                    </span><span class="s1">'Sex.Female_1'</span><span class="o">=</span><span class="n">Sex.Female_1</span><span class="p">,</span><span class="w">
+                    </span><span class="s1">'Sex.Female_0'</span><span class="o">=</span><span class="n">Sex.Female_0</span><span class="p">)</span><span class="w">
+
+</span><span class="n">head</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span><span class="m">6</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># plot Sex.Female predictor
+</span><span class="n">require</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ggplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sex.Female_1</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sex.Female_1"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sex.Female_0"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">scale_x_discrete</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">,</span><span class="w">
+        </span><span class="n">labels</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"min"</span><span class="p">,</span><span class="s2">"1q"</span><span class="p">,</span><span class="s2">"median"</span><span class="p">,</span><span class="s2">"mean"</span><span class="p">,</span><span class="s2">"3q"</span><span class="p">,</span><span class="s2">"max"</span><span class="p">))</span><span class="w">
+</span><span class="n">p</span><span class="w">
+
+</span><span class="c1"># calculate predictor's spread value
+</span><span class="n">spread</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">((</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+                </span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">2</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">2</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+                </span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">3</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">3</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+                </span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">4</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">4</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+                </span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">5</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+                </span><span class="p">(</span><span class="n">Sex.Female_1</span><span class="p">[[</span><span class="m">6</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Sex.Female_0</span><span class="p">[[</span><span class="m">6</span><span class="p">]]))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">spread</span><span class="p">)</span><span class="w">
+ 
+</span><span class="c1"># do the same thing for predictor Title.Nothing
+</span><span class="n">Title.Nothing_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_0</span><span class="o">$</span><span class="n">Title.Nothing</span><span class="p">))</span><span class="w">
+</span><span class="n">Title.Nothing_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Title.Nothing_0</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+</span><span class="n">Title.Nothing_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">df_survived_1</span><span class="o">$</span><span class="n">Title.Nothing</span><span class="p">))</span><span class="w">
+</span><span class="n">Title.Nothing_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+</span><span class="n">stats</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'ind'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">),</span><span class="w"> </span><span class="s1">'stats1'</span><span class="o">=</span><span class="n">Title.Nothing_1</span><span class="p">,</span><span class="s1">'stats0'</span><span class="o">=</span><span class="n">Title.Nothing_0</span><span class="p">)</span><span class="w">
+</span><span class="n">spread</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">((</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">2</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">2</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">3</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">3</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">4</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">4</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">5</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="p">(</span><span class="n">Title.Nothing_1</span><span class="p">[[</span><span class="m">6</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Title.Nothing_0</span><span class="p">[[</span><span class="m">6</span><span class="p">]]))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">spread</span><span class="p">)</span><span class="w">
+                                             
+</span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ggplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+</span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stats1</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stats1"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+</span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stats0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stats0"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+</span><span class="n">scale_x_discrete</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">,</span><span class="w">
+</span><span class="n">labels</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"min"</span><span class="p">,</span><span class="s2">"1q"</span><span class="p">,</span><span class="s2">"median"</span><span class="p">,</span><span class="s2">"mean"</span><span class="p">,</span><span class="s2">"3q"</span><span class="p">,</span><span class="s2">"max"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+</span><span class="n">ylab</span><span class="p">(</span><span class="s1">'Title.Nothing'</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">xlab</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Spread:'</span><span class="p">,</span><span class="n">spread</span><span class="p">))</span><span class="w">
+</span><span class="n">p</span><span class="w">
+
+</span><span class="c1"># generalize this in a handy function
+</span><span class="n">GetSummaryPlot</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">objdfscaled0</span><span class="p">,</span><span class="w"> </span><span class="n">objdfscaled1</span><span class="p">,</span><span class="w"> </span><span class="n">predictorName</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="n">require</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
+        
+        </span><span class="n">stats0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">objdfscaled0</span><span class="p">[,</span><span class="n">predictorName</span><span class="p">]))</span><span class="w">
+        </span><span class="n">stats0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">stats0</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+        </span><span class="n">stats1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">summary</span><span class="p">(</span><span class="n">objdfscaled1</span><span class="p">[,</span><span class="n">predictorName</span><span class="p">]))</span><span class="w">
+        </span><span class="n">stats1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">stats1</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">])</span><span class="w">
+        </span><span class="n">stats</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'ind'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">),</span><span class="w"> </span><span class="s1">'stats1'</span><span class="o">=</span><span class="n">stats1</span><span class="p">,</span><span class="s1">'stats0'</span><span class="o">=</span><span class="n">stats0</span><span class="p">)</span><span class="w">
+        
+        </span><span class="n">spread</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">((</span><span class="n">stats1</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="p">(</span><span class="n">stats1</span><span class="p">[[</span><span class="m">2</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">2</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="p">(</span><span class="n">stats1</span><span class="p">[[</span><span class="m">3</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">3</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="p">(</span><span class="n">stats1</span><span class="p">[[</span><span class="m">4</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">4</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="p">(</span><span class="n">stats1</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">5</span><span class="p">]])</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="p">(</span><span class="n">stats1</span><span class="p">[[</span><span class="m">6</span><span class="p">]]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stats0</span><span class="p">[[</span><span class="m">6</span><span class="p">]]))</span><span class="w">
+        
+        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">plotit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="c1"># returns a ggplot 
+</span><span class="w">                </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Scaled spread:'</span><span class="p">,</span><span class="n">spread</span><span class="p">))</span><span class="w">
+                </span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ggplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+                </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stats1</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stats1"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+                </span><span class="n">geom_line</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stats0</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"stats0"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+                </span><span class="n">scale_x_discrete</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">,</span><span class="w">
+                </span><span class="n">labels</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"min"</span><span class="p">,</span><span class="s2">"1q"</span><span class="p">,</span><span class="s2">"median"</span><span class="p">,</span><span class="s2">"mean"</span><span class="p">,</span><span class="s2">"3q"</span><span class="p">,</span><span class="s2">"max"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+                </span><span class="n">ylab</span><span class="p">(</span><span class="n">predictorName</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">xlab</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Spread:'</span><span class="p">,</span><span class="n">spread</span><span class="p">))</span><span class="w">
+                </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w">
+        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="c1"># only returns spread final value
+</span><span class="w">                </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">spread</span><span class="p">)</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+                                             
+</span><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'Survived'</span><span class="w">
+</span><span class="n">predictorNames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">)[</span><span class="o">!</span><span class="nf">names</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">)</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="n">outcomeName</span><span class="p">]</span><span class="w">
+</span><span class="c1"># Temporarily remove the outcome variable before scaling the data set
+</span><span class="n">outcomeValue</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="w">
+</span><span class="c1"># scale returns a matrix so we need to tranform it back to a data frame
+</span><span class="n">scaled_titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">scale</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+</span><span class="n">scaled_titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">outcomeValue</span><span class="w">
+</span><span class="c1"># split your data sets
+</span><span class="n">scaled_titanicDF_0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">scaled_titanicDF</span><span class="p">[</span><span class="n">scaled_titanicDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]</span><span class="o">==</span><span class="m">0</span><span class="p">,]</span><span class="w">
+</span><span class="n">scaled_titanicDF_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">scaled_titanicDF</span><span class="p">[</span><span class="n">scaled_titanicDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]</span><span class="o">==</span><span class="m">1</span><span class="p">,]</span><span class="w">
+
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">predictorName</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">predictorNames</span><span class="p">)</span><span class="w">
+        </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="n">predictorName</span><span class="p">,</span><span class="s1">':'</span><span class="p">,</span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w">
+        </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="n">predictorName</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)))</span><span class="w">
+                                             
+</span><span class="n">multiplot</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">...</span><span class="p">,</span><span class="w"> </span><span class="n">plotlist</span><span class="o">=</span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="p">,</span><span class="w"> </span><span class="n">cols</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">layout</span><span class="o">=</span><span class="kc">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="c1">#http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
+</span><span class="w">     </span><span class="c1"># Multiple plot function
+</span><span class="w">     </span><span class="c1">#
+</span><span class="w">     </span><span class="c1"># ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+</span><span class="w">     </span><span class="c1"># - cols:   Number of columns in layout
+</span><span class="w">     </span><span class="c1"># - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+</span><span class="w">     </span><span class="c1">#
+</span><span class="w">     </span><span class="c1"># If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+</span><span class="w">     </span><span class="c1"># then plot 1 will go in the upper left, 2 will go in the upper right, and
+</span><span class="w">     </span><span class="c1"># 3 will go all the way across the bottom.
+</span><span class="w">     </span><span class="c1">#
+</span><span class="w">     </span><span class="n">require</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span><span class="w">
+     
+     </span><span class="c1"># Make a list from the ... arguments and plotlist
+</span><span class="w">     </span><span class="n">plots</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="nf">list</span><span class="p">(</span><span class="n">...</span><span class="p">),</span><span class="w"> </span><span class="n">plotlist</span><span class="p">)</span><span class="w">
+     
+     </span><span class="n">numPlots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">plots</span><span class="p">)</span><span class="w">
+     
+     </span><span class="c1"># If layout is NULL, then use 'cols' to determine layout
+</span><span class="w">     </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">is.null</span><span class="p">(</span><span class="n">layout</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+             </span><span class="c1"># Make the panel
+</span><span class="w">             </span><span class="c1"># ncol: Number of columns of plots
+</span><span class="w">             </span><span class="c1"># nrow: Number of rows needed, calculated from # of cols
+</span><span class="w">             </span><span class="n">layout</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">matrix</span><span class="p">(</span><span class="n">seq</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">cols</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">ceiling</span><span class="p">(</span><span class="n">numPlots</span><span class="o">/</span><span class="n">cols</span><span class="p">)),</span><span class="w">
+                              </span><span class="n">ncol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cols</span><span class="p">,</span><span class="w"> </span><span class="n">nrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">ceiling</span><span class="p">(</span><span class="n">numPlots</span><span class="o">/</span><span class="n">cols</span><span class="p">))</span><span class="w">
+     </span><span class="p">}</span><span class="w">
+     
+     </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">numPlots</span><span class="o">==</span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+             </span><span class="n">print</span><span class="p">(</span><span class="n">plots</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span><span class="w">
+             
+     </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+             </span><span class="c1"># Set up the page
+</span><span class="w">             </span><span class="n">grid.newpage</span><span class="p">()</span><span class="w">
+             </span><span class="n">pushViewport</span><span class="p">(</span><span class="n">viewport</span><span class="p">(</span><span class="n">layout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">grid.layout</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">layout</span><span class="p">),</span><span class="w"> </span><span class="n">ncol</span><span class="p">(</span><span class="n">layout</span><span class="p">))))</span><span class="w">
+             
+             </span><span class="c1"># Make each plot, in the correct location
+</span><span class="w">             </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">numPlots</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                     </span><span class="c1"># Get the i,j matrix positions of the regions that contain this subplot
+</span><span class="w">                     </span><span class="n">matchidx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">which</span><span class="p">(</span><span class="n">layout</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">arr.ind</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+                     
+                     </span><span class="n">print</span><span class="p">(</span><span class="n">plots</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="w"> </span><span class="n">vp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">viewport</span><span class="p">(</span><span class="n">layout.pos.row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matchidx</span><span class="o">$</span><span class="n">row</span><span class="p">,</span><span class="w">
+                                                     </span><span class="n">layout.pos.col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matchidx</span><span class="o">$</span><span class="n">col</span><span class="p">))</span><span class="w">
+             </span><span class="p">}</span><span class="w">
+     </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+                                            
+</span><span class="n">p</span><span class="m">1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w"> </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="s1">'Sex.female'</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="m">2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w"> </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="s1">'Title.Mrs'</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="m">3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w"> </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="s1">'Sex.male'</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="m">4</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w"> </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="s1">'Title.Mr'</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">multiplot</span><span class="p">(</span><span class="n">p</span><span class="m">1</span><span class="p">,</span><span class="n">p</span><span class="m">2</span><span class="p">,</span><span class="n">p</span><span class="m">3</span><span class="p">,</span><span class="n">p</span><span class="m">4</span><span class="p">,</span><span class="n">cols</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+
+</span><span class="n">summaryImportance</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+</span><span class="n">variableName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">predictorName</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">predictorNames</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="n">summaryImportance</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="nf">c</span><span class="p">(</span><span class="n">summaryImportance</span><span class="p">,</span><span class="w"> </span><span class="n">GetSummaryPlot</span><span class="p">(</span><span class="n">scaled_titanicDF_0</span><span class="p">,</span><span class="w"> </span><span class="n">scaled_titanicDF_1</span><span class="p">,</span><span class="w"> </span><span class="n">predictorName</span><span class="p">,</span><span class="w"> </span><span class="n">plotit</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">))</span><span class="w">
+     </span><span class="n">variableName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">variableName</span><span class="p">,</span><span class="w"> </span><span class="n">predictorName</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'VariableName'</span><span class="o">=</span><span class="n">variableName</span><span class="p">,</span><span class="w"> </span><span class="s1">'Weight'</span><span class="o">=</span><span class="n">summaryImportance</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># display variable importance on a +/- scale 
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">results</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="p">),]</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">results</span><span class="p">[(</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="m">0</span><span class="p">),]</span><span class="w">
+
+</span><span class="n">par</span><span class="p">(</span><span class="n">mar</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">5</span><span class="p">,</span><span class="m">15</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">))</span><span class="w"> </span><span class="c1"># increase y-axis margin. 
+</span><span class="n">xx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">barplot</span><span class="p">(</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.85</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="s2">"Variable Importance - Titanic"</span><span class="p">),</span><span class="w"> </span><span class="n">horiz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">xlab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"&lt; (-) importance &gt;  &lt; neutral &gt;  &lt; importance (+) &gt;"</span><span class="p">,</span><span class="w"> </span><span class="n">axes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ifelse</span><span class="p">((</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="p">),</span><span class="w"> </span><span class="s1">'blue'</span><span class="p">,</span><span class="w"> </span><span class="s1">'red'</span><span class="p">))</span><span class="w"> 
+</span><span class="n">axis</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">at</span><span class="o">=</span><span class="n">xx</span><span class="p">,</span><span class="w"> </span><span class="n">labels</span><span class="o">=</span><span class="n">results</span><span class="o">$</span><span class="n">VariableName</span><span class="p">,</span><span class="w"> </span><span class="n">tick</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">las</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">line</span><span class="o">=</span><span class="m">-0.3</span><span class="p">,</span><span class="w"> </span><span class="n">cex.axis</span><span class="o">=</span><span class="m">0.6</span><span class="p">)</span><span class="w">  
+                                             
+                                             
+</span></code></pre>
+</div>
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

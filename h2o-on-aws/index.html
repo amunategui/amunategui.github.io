@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>H2O & RStudio Server on Amazon Web Services (AWS), the Easy Way!</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">H2O & RStudio Server on Amazon Web Services (AWS), the Easy Way!</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+ <p style="text-align:center">
+<img src="img/amzon-river.png" alt="H2o and Amazon" style="padding:0px; border:0px solid #021a40;" /></p>
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=n3oV9E4HzKE&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA&amp;index=1" target="_blank">YouTube Companion Video</a></li>
+
+</ul>
+<p><br />
+<strong>Steps</strong></p>
+<ul>
+<li type="square"><a href="#aws-instance">Setting up an AWS Instance</a></li>
+<li type="square"><a href="#vpc">Create a VPC</a></li>
+<li type="square"><a href="#ec2-instance">Create an EC2 Instance</a></li>
+<ul>
+   <li type="square"><a href="#choose-image">Step 1: Choose an Amazon Machine Image (AMI) </a></li>
+   <li type="square"><a href="#general-purpose-machine">Step 2: General Purpose Machine</a></li>
+   <li type="square"><a href="#configure-instance">Step 3: Configure Instance Details</a></li>
+   <li type="square"><a href="#advanced-details">Customize your Build - Advanced Details</a></li>
+   <li type="square"><a href="#security-groups">Step 6: Configure Security Groups</a></li>
+   <li type="square"><a href="#key-pair">Key Pair</a></li>
+   <li type="square"><a href="#connect">Connect</a></li>
+</ul>
+<li type="square"><a href="#rstudio-server">RStudio</a></li>
+<ul>
+   <li type="square"><a href="#install-h2o">Install H2O Package</a></li>
+   <li type="square"><a href="#run-demos">Run Built-in Demos</a></li>
+</ul>
+</ul>
+
+<p><br /><br /></p>
+
+<p>In this article, I will show you the easy way to install <a href="https://en.wikipedia.org/wiki/H2O_(software)" target="_blank">H2O</a> and <strong>RStudio Server</strong> on <strong>Amazon Web Services (AWS)</strong> from scratch. No need of customized AMIs or third party tools - no training wheels here. And the best part is that we can do everything from the Amazon Web Service wizard, we won’t need to terminal or putty anywhere! The key is passing all additional install commands for R, RStudio Server, and Curl in the configuration window in step 3 under <strong>‘Advanced Details’</strong>. We’ll even have it create our RStudio user account.</p>
+
+<p>For those who don’t yet know, <code class="highlighter-rouge">H2O</code> is an open-source software for machine learning and big-data analysis. It offers various models such as <strong>GLM</strong>, <strong>GBM</strong> and <strong>Random Forest</strong>, but more importantly, offers a <strong>deep learning neural network</strong> and large-scale clustering!</p>
+
+<p>For a great introduction to numerous features check out: <a href="https://h2o-release.s3.amazonaws.com/h2o/rel-slater/9/docs-website/h2o-docs/booklets/DeepLearning_Vignette.pdf" target="_blank">DeepLearning_Vignette.pdf</a>
+<br /><br /></p>
+<h3><a id="aws-instance">Setting up an AWS Instance</a></h3>
+
+<p>Some important points, first, AWS isn’t free! If you follow along with the instance from this walk-through, it won’t cost you more than a few cents an hour. Just don’t forget to stop or terminate you instance once you’re done!</p>
+
+<h3><a id="vpc">Create a VPC</a></h3>
+
+<p style="text-align:center">
+<img src="img/vpc.png" alt="Create a VPC" style="padding:1px; border:1px solid #021a40; width: 50%; height: 50%" /></p>
+<p><br /><br /></p>
+
+<h3><a id="ec2-instance">Create an EC2 Instance</a></h3>
+
+<h4><a id="choose-image">Step 1: Choose an Amazon Machine Image (AMI)</a></h4>
+
+<p><br /></p>
+<p style="text-align:center">
+<img src="img/ec2-step1.png" alt="Choose an EC2 Instance" style="padding:1px; border:1px solid #021a40; width: 75%; height: 75%" /></p>
+<p><br /><br /></p>
+
+<h4><a id="general-purpose-machine">Step 2: General Purpose Machine</a></h4>
+<p><br /></p>
+<p style="text-align:center">
+<img src="img/ec2-step2.png" alt="Choose an EC2 Instance" style="padding:1px; border:1px solid #021a40; width: 75%; height: 75%" /></p>
+<p><br /><br /></p>
+
+<h4><a id="configure-instance">Step 3: Configure Instance Details</a></h4>
+<p><br /></p>
+<p style="text-align:center">
+<img src="img/ec2-step3.png" alt="Configure Insane Details" style="padding:1px; border:1px solid #021a40; width: 75%; height: 75%" /></p>
+<p><br /><br /></p>
+
+<h4><a id="advanced-details"> Customize your Build - Advanced Details</a></h4>
+<p><br />
+<strong>Check the latest RStudio Server URL</strong></p>
+
+<p>Get the latest and greatest RStudio version - <a href="https://www.rstudio.com/products/rstudio/download-server/" target="_blank">check the RStudio site</a>.</p>
+
+<p style="text-align:center">
+<img src="img/ec2-advanced.png" alt="Advanced Details" style="padding:1px; border:1px solid #021a40; width: 75%; height: 75%" /></p>
+<p><br /><br />
+Here are the commands to enter in the <strong>Advanced Details</strong> text box (partly from <a href="https://blogs.aws.amazon.com/bigdata/post/Tx3IJSB6BMHWZE5/Running-R-on-AWS" target="_blank">AWS blog</a>):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1">#!/bin/bash
+# install R
+</span><span class="n">yum</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">y</span><span class="w"> </span><span class="n">R</span><span class="w">
+</span><span class="c1"># install RStudio-Server
+</span><span class="n">wget</span><span class="w"> </span><span class="n">https</span><span class="o">://</span><span class="n">download2.rstudio.org</span><span class="o">/</span><span class="n">rstudio</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">rhel</span><span class="m">-0.99.489</span><span class="o">-</span><span class="n">x</span><span class="m">86</span><span class="err">_</span><span class="m">64</span><span class="n">.rpm</span><span class="w">
+</span><span class="n">yum</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">y</span><span class="w"> </span><span class="o">--</span><span class="n">nogpgcheck</span><span class="w"> </span><span class="n">rstudio</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">rhel</span><span class="m">-0.99.489</span><span class="o">-</span><span class="n">x</span><span class="m">86</span><span class="err">_</span><span class="m">64</span><span class="n">.rpm</span><span class="w">
+</span><span class="n">yum</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">y</span><span class="w"> </span><span class="n">curl</span><span class="o">-</span><span class="n">devel</span><span class="w">
+</span><span class="c1"># add user
+</span><span class="n">useradd</span><span class="w"> </span><span class="n">manuel</span><span class="w">
+</span><span class="n">echo</span><span class="w"> </span><span class="n">manuel</span><span class="o">:</span><span class="n">testing</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">chpasswd</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br /></p>
+<h4><a id="security-groups">Step 6: Configure Security Groups</a></h4>
+<p><br />
+Here add a custom TCP rule and add port 8787. If you have a static IP, enter it in <strong>Source</strong> for added security.
+<br /><br /></p>
+<p style="text-align:center">
+<img src="img/ec2-step6.png" alt="Security Settings" style="padding:1px; border:1px solid #021a40; width: 75%; height: 75%" /></p>
+<p><br /><br /></p>
+
+<h4><a id="key-pair">Key Pair</a></h4>
+<p><br />
+Enter a new key pair, or choose an old one. Check the acknowledgements and click the <code class="highlighter-rouge">Launch Instances</code> button:
+<br /><br /></p>
+<p style="text-align:center">
+<img src="img/ec2-key-pair.png" alt="Security Settings" style="padding:1px; border:1px solid #021a40; width: 75%; height: 75%" /></p>
+<p><br /><br /></p>
+
+<h4><a id="connect">Connect</a></h4>
+<p><br />
+Hit the launch button and once the light is green and checks successful, hit the <strong>connect</strong> button:</p>
+
+<p style="text-align:center">
+<img src="img/ec2-connect.png" alt="Security Settings" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /></p>
+
+<h3><a id="rstudio-server">RStudio Server</a></h3>
+<p><br />
+That’s it! We’re over half-way there! Install the H2O package, initialize it and run some demos (check out the output of both demos to get familiar with some of the modeling commands)</p>
+
+<p><br /></p>
+<h4><a id="install-h2o">Install H2O</a></h4>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">install.packages</span><span class="p">(</span><span class="s2">"h2o"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br /></p>
+<h4><a id="run-demos">Run Built-in Demos</a></h4>
+<p><br />
+Load and initialize H2O, then run a few built-in demos:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">h</span><span class="m">2</span><span class="n">o</span><span class="p">)</span><span class="w">
+</span><span class="n">localH2O</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">h</span><span class="m">2</span><span class="n">o.init</span><span class="p">()</span><span class="w">
+
+</span><span class="n">demo</span><span class="p">(</span><span class="n">h</span><span class="m">2</span><span class="n">o.glm</span><span class="p">)</span><span class="w">
+</span><span class="n">demo</span><span class="p">(</span><span class="n">h</span><span class="m">2</span><span class="n">o.gbm</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+<strong>Enjoy!!</strong></p>
+
+<p><br /><br />     <br />
+<i>A special thanks to Lucas A. for the H2O &amp; Amazonian theme!</i>
+<br /></p>
+		
+</div>
+ 
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

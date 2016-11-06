@@ -1,0 +1,917 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Survival Ensembles: Survival Plus Classification for Improved Time-Based Predictions in R</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Survival Ensembles: Survival Plus Classification for Improved Time-Based Predictions in R</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+
+
+<p style="text-align:center">
+<img src="img/suviving-suvival-models.png" alt="suviving suvival models" style="padding:1px; border:1px solid #021a40; width: 30%; height: 30%" /></p>
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=6q-UFJUZK0g&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA&amp;index=1" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br /><br /></p>
+
+<p>If you need to predict a time-based event, most common models, whether regression, classification or survival, can get you there but the quality, type of answer, and path taken will vary. A regression model will return a time estimate, a classification model will return the probability of an event at x time, and a survival model will return probabilities of an event not happening over various time frames. We’ll skip the regression model here as we’re not only interested in the time estimate but also the probability of an outcome. With a regression model you would have to first model the outcome and then figure out the time estimate.</p>
+
+<p>Instead, we’ll use a survival model (<a href="https://cran.r-project.org/web/packages/ranger/index.html" target="_blank">ranger: A Fast Implementation of Random Forests</a>) that will give us an outcome probability over a time continuum (flipping the non-event to event probability), and a classification model (<a href="https://cran.r-project.org/web/packages/gbm/index.html" target="_blank">gbm: Generalized Boosted Regression Models</a>), where we’ll measure the probability of the same event happening within x periods. We’ll then look at two ways of ensembling the models and hope for synergy.</p>
+
+<p>We will use the <a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic#Area_under_curve" target="_blank">Area under the curve (AUC)</a> to measure the different approaches. We’ll compare both estimates, then average out the results from both models, and then ensemble them.</p>
+
+<p>We’ll run our tests on the <a href="https://www.umass.edu/statdata/statdata/data/actg320.txt" target="_blank">AIDS Clinical Trials Group Study 320 Data</a> from the <a href="https://www.umass.edu/" target="_blank">University of Massachusetts Amherst</a>. The data represents a double-blind, placebo-controlled trial comparing two different sets of medication in HIV-infected patients. The outcome measures the time to AIDS diagnosis or death.
+<br /><br /></p>
+<h4>
+Data Preparation
+</h4>
+<p>Let’s download the data set from <code class="highlighter-rouge">umass</code> and add them missing column headers.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">actg320_colnames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span><span class="s1">'time'</span><span class="p">,</span><span class="s1">'censor'</span><span class="p">,</span><span class="s1">'time_d'</span><span class="p">,</span><span class="s1">'censor_d'</span><span class="p">,</span><span class="s1">'treatment'</span><span class="p">,</span><span class="s1">'treatment_group'</span><span class="p">,</span><span class="w">
+                      </span><span class="s1">'strat2'</span><span class="p">,</span><span class="s1">'sex'</span><span class="p">,</span><span class="s1">'raceth'</span><span class="p">,</span><span class="s1">'ivdrug'</span><span class="p">,</span><span class="s1">'hemophil'</span><span class="p">,</span><span class="s1">'karnof'</span><span class="p">,</span><span class="s1">'cd4'</span><span class="p">,</span><span class="s1">'priorzdv'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">)</span><span class="w">
+</span><span class="n">actg320</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="s1">'https://www.umass.edu/statdata/statdata/data/actg320.dat'</span><span class="p">,</span><span class="w"> </span><span class="n">col.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">actg320_colnames</span><span class="p">)</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">actg320</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 1151   16
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">head</span><span class="p">(</span><span class="n">actg320</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##   id time censor time_d censor_d treatment treatment_group strat2 sex
+## 1  1  189      0    189        0         0               1      1   1
+## 2  2  287      0    287        0         0               1      1   2
+## 3  3  242      0    242        0         1               2      0   1
+## 4  4  199      0    199        0         0               1      1   1
+## 5  5  286      0    286        0         1               2      0   1
+## 6  6  285      0    285        0         1               2      0   1
+##   raceth ivdrug hemophil karnof   cd4 priorzdv age
+## 1      1      1        0    100 169.0       39  34
+## 2      2      1        0     90 149.5       15  34
+## 3      1      1        1    100  23.5        9  20
+## 4      1      1        0     90  46.0       53  48
+## 5      1      3        0     90  10.0       12  46
+## 6      1      1        0     70   0.0       24  51
+</code></pre>
+</div>
+
+<p><br /><br /> The data set offers two events and two time periods for survival modeling and we’ll focus on the first event (AIDS or death) as it offers a more balanced outcome.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># we're removing time_d and censor_2 as it has a rarer outcome balance
+</span><span class="n">actg320</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">actg320</span><span class="p">[,</span><span class="nf">c</span><span class="p">(</span><span class="s1">'time'</span><span class="p">,</span><span class="w"> </span><span class="s1">'censor'</span><span class="p">,</span><span class="w"> </span><span class="s1">'treatment'</span><span class="p">,</span><span class="s1">'treatment_group'</span><span class="p">,</span><span class="w">
+                                 </span><span class="s1">'strat2'</span><span class="p">,</span><span class="s1">'sex'</span><span class="p">,</span><span class="s1">'raceth'</span><span class="p">,</span><span class="s1">'ivdrug'</span><span class="p">,</span><span class="s1">'hemophil'</span><span class="p">,</span><span class="s1">'karnof'</span><span class="p">,</span><span class="s1">'cd4'</span><span class="p">,</span><span class="s1">'priorzdv'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">)]</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br /> Let’s take a quick look at the time period range in the training portion of our data set:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">sort</span><span class="p">(</span><span class="n">actg320</span><span class="o">$</span><span class="n">time</span><span class="p">),</span><span class="w"> </span><span class="n">pch</span><span class="o">=</span><span class="s1">'.'</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'o'</span><span class="p">,</span><span class="w"> 
+     </span><span class="n">col</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span><span class="w"> </span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="w"> </span><span class="p">,</span><span class="w"> 
+     </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'AIDS Clinical Trials Group Study 320 Data \nTime to AIDS diagnosis, death, or censor'</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/sorted-time-to-event.png" alt="plot of sorted time to event" />
+<br /><br /></p>
+
+<h4>
+Survival Modeling
+</h4>
+<p>For a great overview on survival analysis, I highly recommend <strong>Ani Katchova’s</strong> educational videos:</p>
+<ul>
+<li>
+<a href="https://www.youtube.com/watch?v=fTX8GghbBPc" target="_blank">Survival Analysis</a>
+</li>
+<li>
+<a href="https://www.youtube.com/watch?v=XFX6ukqHOWM" target="_blank">Survival Analysis Example</a>
+</li>
+<li>
+<a href="https://www.youtube.com/watch?v=qt2ufTPCWwI" target="_blank">Survival Analysis in R</a>
+</li>
+</ul>
+<p>A survival model needs two outcome variables: a time variable and an outcome/event variable. Every observation in the data set needs a time period. The event outcome, on the other hand, doesn’t need to be fully known, in contrast with a logistic regression or classification model which requires training on a known outcome. Instead of needing a true/false, sick/healthy, or dead/alive, a survival model uses the concept of the event, something either has happened or we don’t know. <br /><br /></p>
+<h4>
+Random Forest Survival
+</h4>
+<p>Here we will use a random forest survival model as it offers advantages like capturing non-linear effects that a traditional model cannot do and be easily distributed over multiple cores. The two models that I have used are the <a href="https://cran.r-project.org/web/packages/ranger/index.html" target="_blank">ranger</a> package and the <a href="https://cran.r-project.org/web/packages/randomForestSRC/index.html" target="_blank">randomForestSRC</a> package. We will focus on the <code class="highlighter-rouge">ranger</code> model as it doesn’t require additional steps to get it to work on multiple cores. I have been able to work on fairly wide data set using it.</p>
+
+<p>Let’s set up our formula. Survival models require two values in the <code class="highlighter-rouge">Surv</code> function, the time period followed by the outcome. After the tilde we add our predictors as it typically done with most modeling formulas.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># install.packages('ranger')
+</span><span class="n">library</span><span class="p">(</span><span class="n">ranger</span><span class="p">)</span><span class="w">
+</span><span class="c1"># install.packages('survival')
+</span><span class="n">library</span><span class="p">(</span><span class="n">survival</span><span class="p">)</span><span class="w">
+
+</span><span class="n">survival_formula</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">formula</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Surv('</span><span class="p">,</span><span class="w"> </span><span class="s1">'time'</span><span class="p">,</span><span class="w"> </span><span class="s1">','</span><span class="p">,</span><span class="w"> </span><span class="s1">'censor'</span><span class="p">,</span><span class="w"> </span><span class="s1">') ~ '</span><span class="p">,</span><span class="s1">'treatment+treatment_group'</span><span class="p">,</span><span class="w">
+                              </span><span class="s1">'+strat2+sex+raceth+ivdrug+hemophil+karnof+cd4+priorzdv+age'</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">survival_formula</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## Surv(time, censor) ~ treatment + treatment_group + strat2 + sex + 
+##     raceth + ivdrug + hemophil + karnof + cd4 + priorzdv + age
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">survival_model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ranger</span><span class="p">(</span><span class="n">survival_formula</span><span class="p">,</span><span class="w">
+               </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">actg320</span><span class="p">,</span><span class="w">  
+               </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1234</span><span class="p">,</span><span class="w">
+               </span><span class="n">importance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'permutation'</span><span class="p">,</span><span class="w">
+               </span><span class="n">mtry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w">
+               </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+               </span><span class="n">num.trees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w">
+               </span><span class="n">write.forest</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># print out coefficients
+</span><span class="n">sort</span><span class="p">(</span><span class="n">survival_model</span><span class="o">$</span><span class="n">variable.importance</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##          ivdrug             sex          raceth        priorzdv 
+##   -0.0019809410   -0.0006365012   -0.0003737668   -0.0003718928 
+##        hemophil             age       treatment treatment_group 
+##    0.0002572973    0.0013409609    0.0022120503    0.0022544933 
+##          strat2             cd4          karnof 
+##    0.0024485078    0.0041989073    0.0053592447
+</code></pre>
+</div>
+
+<p><br /><br /> Once we have our <code class="highlighter-rouge">survival_model</code> model object, we can take a look at some probabilities of survival (this is just for illustrative purposes as we haven’t split our data set yet). Let’s look at two patients - row 1 and row 56:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">survival_model</span><span class="o">$</span><span class="n">unique.death.times</span><span class="p">,</span><span class="w"> </span><span class="n">survival_model</span><span class="o">$</span><span class="n">survival</span><span class="p">[</span><span class="m">1</span><span class="p">,],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'orange'</span><span class="p">,</span><span class="w"> </span><span class="n">ylim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0.4</span><span class="p">,</span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="n">lines</span><span class="p">(</span><span class="n">survival_model</span><span class="o">$</span><span class="n">unique.death.times</span><span class="p">,</span><span class="w"> </span><span class="n">survival_model</span><span class="o">$</span><span class="n">survival</span><span class="p">[</span><span class="m">56</span><span class="p">,],</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/survival-two-patients.png" alt="plot of survival of two patients" /></p>
+
+<p>The plots represent the probability of survival/not reaching event over time. In these cases, the orange line has a much higher provability of not being diagnosed with AIDS or dying than the blue line. This can be confusing, but a survival model yields a probability of <strong>NOT</strong> reaching event.</p>
+
+<p>Let’s look at why the model may see the orange line (row 1) with a higher probability of not reaching event than the blue line (row 56):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">actg320</span><span class="p">[</span><span class="m">1</span><span class="p">,]</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##   time censor treatment treatment_group strat2 sex raceth ivdrug hemophil
+## 1  189      0         0               1      1   1      1      1        0
+##   karnof cd4 priorzdv age
+## 1    100 169       39  34
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">actg320</span><span class="p">[</span><span class="m">56</span><span class="p">,]</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##    time censor treatment treatment_group strat2 sex raceth ivdrug hemophil
+## 56  168      0         1               2      0   1      1      1        0
+##    karnof  cd4 priorzdv age
+## 56     90 16.5       10  63
+</code></pre>
+</div>
+
+<p><br /><br /> At a high level, the patient at row 1 is much younger and has a higher <a href="http://www.hospicepatients.org/karnofsky.html" target="_blank">Karnofsky Performance Scale (karnof)</a>.</p>
+
+<p>We can easily plot many other patients by creating a simple loop:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">survival_model</span><span class="o">$</span><span class="n">unique.death.times</span><span class="p">,</span><span class="w"> </span><span class="n">survival_model</span><span class="o">$</span><span class="n">survival</span><span class="p">[</span><span class="m">1</span><span class="p">,],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'orange'</span><span class="p">,</span><span class="w"> </span><span class="n">ylim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0.4</span><span class="p">,</span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="o">:</span><span class="m">100</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="n">lines</span><span class="p">(</span><span class="n">survival_model</span><span class="o">$</span><span class="n">unique.death.times</span><span class="p">,</span><span class="w"> </span><span class="n">survival_model</span><span class="o">$</span><span class="n">survival</span><span class="p">[</span><span class="n">x</span><span class="p">,],</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/survival-many-patients.png" alt="plot of survival of many patients" />
+<br /><br /></p>
+
+<h4>
+Area Under The Curve
+</h4>
+<p>In order to measure the <code class="highlighter-rouge">AUC</code> of each model we need to split the data randomly (with seed) into two equal parts:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runif</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">actg320</span><span class="p">))</span><span class="w">
+</span><span class="n">train_df_official</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">actg320</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">train_df_official</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 568  13
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">validate_df_official</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">actg320</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">validate_df_official</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 583  13
+</code></pre>
+</div>
+
+<p><br /><br /></p>
+<h4>
+Generalized Boosted Regression Model
+</h4>
+<p>So going forward, and in order to align the survival and the classification models, we will focus on the probability of reaching event over the first 82 days.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">period_choice</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">82</span><span class="w"> </span><span class="c1"># 103 
+</span><span class="n">table</span><span class="p">(</span><span class="n">train_df_official</span><span class="o">$</span><span class="n">time</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## 
+##   1   2   3   7  13  14  16  17  18  20  25  26  27  35  39  42  46  47 
+##   2   1   1   1   1   2   1   2   2   1   3   1   1   1   3   2   1   5 
+##  54  55  56  58  59  61  62  63  65  66  68  69  70  75  76  77  82  84 
+##   1   2   2   1   1   1   2   1   1   1   2   1   2   1   1   2   4   2 
+##  85  86  88  90  91  98 100 103 104 105 110 112 113 114 115 116 117 118 
+##   1   1   3   1   1   2   1   3   1   3   3   2   2   1   1   1   2   1 
+## 123 124 125 126 127 129 130 131 132 133 136 137 138 139 140 143 144 145 
+##   1   1   2   1   1   2   1   1   3   2   3   1   1   1   2   2   2   2 
+## 146 151 152 153 154 158 159 160 161 166 168 171 172 173 174 175 178 179 
+##   2   3   2   2   1   2   2   1   3   1   1   1   1   2   1   3   1   3 
+## 180 181 182 186 187 188 189 190 192 193 194 196 200 201 202 203 208 210 
+##   5   5   1   3   4   1   5   1   1   2   2   3   1   2   3   3   2   1 
+## 213 214 215 216 217 220 221 222 223 224 227 228 229 230 231 235 236 237 
+##   1   5   3   5   3   1   1   1   2   3   2   5   3   3   4   2   1   1 
+## 238 241 242 243 244 248 250 251 252 255 256 257 258 259 262 263 264 265 
+##   1   3   5   2   5   2   5   4   1   2   5   9   4   7   1   7   2   8 
+## 266 269 270 271 272 273 276 277 278 279 280 283 284 285 286 287 290 291 
+##   4   3   2   8   7   7   3   5   2   4   5   3   5   5   4   5   5   8 
+## 292 293 294 297 298 299 300 301 304 305 306 307 308 311 312 313 314 315 
+##   4   7   3   1   5   4   5   5   3   4   4   1   5   2   3   9   3   6 
+## 318 319 320 321 322 326 327 328 329 332 333 334 335 336 339 341 342 343 
+##   3   6   2   5   9   4   4   6   8   1   4   2   7   3   1   3   2   4 
+## 346 347 348 349 350 353 354 362 364 
+##   4   3   3   3   1   1   2   2   2
+</code></pre>
+</div>
+
+<p><br /><br /> We also need to create a classification-centric outcome variable. This will measure how many patients reached event or not within the chosen period. Here we look for a censor feature of 1 (i.e. the event happened) under the chosen period to set the outcome to 1, everything else is set to 0:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># classification data set
+</span><span class="n">train_df_classificaiton</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train_df_official</span><span class="w"> 
+</span><span class="n">train_df_classificaiton</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">((</span><span class="n">train_df_classificaiton</span><span class="o">$</span><span class="n">censor</span><span class="o">==</span><span class="m">1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> 
+                                                     </span><span class="n">train_df_classificaiton</span><span class="o">$</span><span class="n">time</span><span class="o">&lt;=</span><span class="n">period_choice</span><span class="p">),</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="n">summary</span><span class="p">(</span><span class="n">train_df_classificaiton</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## 0.00000 0.00000 0.00000 0.04401 0.00000 1.00000
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">validate_df_classification</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">validate_df_official</span><span class="w"> 
+</span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">((</span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">censor</span><span class="o">==</span><span class="m">1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> 
+                                                        </span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">time</span><span class="o">&lt;=</span><span class="n">period_choice</span><span class="p">),</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="n">summary</span><span class="p">(</span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## 0.00000 0.00000 0.00000 0.02916 0.00000 1.00000
+</code></pre>
+</div>
+
+<p><br />Now we can easily get an AUC score on the probability of reaching event within our allotted period choice <br /><br /></p>
+<h4>
+Classification
+</h4>
+<p>Let’s run and score our classification GBM model:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">feature_names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">setdiff</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">train_df_classificaiton</span><span class="p">),</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'ReachedEvent'</span><span class="p">,</span><span class="w"> </span><span class="s1">'time'</span><span class="p">,</span><span class="w"> </span><span class="s1">'censor'</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># isntall.packages('gbm')
+</span><span class="n">library</span><span class="p">(</span><span class="n">gbm</span><span class="p">)</span><span class="w">
+
+</span><span class="n">classification_formula</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">formula</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'ReachedEvent ~ '</span><span class="p">,</span><span class="s1">'treatment+treatment_group'</span><span class="p">,</span><span class="w">
+                                  </span><span class="s1">'+strat2+sex+raceth+ivdrug+hemophil+karnof+cd4+priorzdv+age'</span><span class="p">))</span><span class="w">
+
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">gbm_model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gbm</span><span class="p">(</span><span class="n">classification_formula</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">train_df_classificaiton</span><span class="p">,</span><span class="w">
+                </span><span class="n">distribution</span><span class="o">=</span><span class="s1">'bernoulli'</span><span class="p">,</span><span class="w">
+                </span><span class="n">n.trees</span><span class="o">=</span><span class="m">500</span><span class="p">,</span><span class="w">         
+                </span><span class="n">interaction.depth</span><span class="o">=</span><span class="m">3</span><span class="p">,</span><span class="w">
+                </span><span class="n">shrinkage</span><span class="o">=</span><span class="m">0.01</span><span class="p">,</span><span class="w">
+                </span><span class="n">bag.fraction</span><span class="o">=</span><span class="m">0.5</span><span class="p">,</span><span class="w">
+                </span><span class="n">keep.data</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+                </span><span class="n">cv.folds</span><span class="o">=</span><span class="m">5</span><span class="p">)</span><span class="w">
+
+</span><span class="n">nTrees</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gbm.perf</span><span class="p">(</span><span class="n">gbm_model</span><span class="p">)</span><span class="w">
+
+</span><span class="n">validate_predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">gbm_model</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="o">=</span><span class="n">validate_df_classification</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s2">"response"</span><span class="p">,</span><span class="w"> </span><span class="n">n.trees</span><span class="o">=</span><span class="n">nTrees</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># install.packages('pROC')
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">roc</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">,</span><span class="w"> </span><span class="n">predictor</span><span class="o">=</span><span class="n">validate_predictions</span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## 
+## Call:
+## roc.default(response = validate_df_classification$ReachedEvent,     predictor = validate_predictions)
+## 
+## Data: validate_predictions in 566 controls (validate_df_classification$ReachedEvent 0) &lt; 17 cases (validate_df_classification$ReachedEvent 1).
+## Area under the curve: 0.771
+</code></pre>
+</div>
+
+<p><br /><br /></p>
+<h4> Scoring the Random Forest Survival Model </h4>
+<p>Now let’s score our RF survival model for the period in question:
+<br /></p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">survival_model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ranger</span><span class="p">(</span><span class="n">survival_formula</span><span class="p">,</span><span class="w">
+                </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">train_df_official</span><span class="p">,</span><span class="w">
+                </span><span class="n">seed</span><span class="o">=</span><span class="m">1234</span><span class="p">,</span><span class="w">
+                </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+                </span><span class="n">num.trees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w">
+                </span><span class="n">mtry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w">
+                </span><span class="n">write.forest</span><span class="o">=</span><span class="kc">TRUE</span><span class="w"> </span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<p><br /><br /> The <code class="highlighter-rouge">survival_model</code> object can offer probabilities on periods it has trained on. In order to get that list:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">survival_model</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##   [1]   1   2   3   7  13  14  16  17  18  20  25  26  27  35  39  42  46
+##  [18]  47  54  55  56  58  59  61  62  63  65  66  68  69  70  75  76  77
+##  [35]  82  84  85  86  88  90  91  98 100 103 104 105 110 112 113 114 115
+##  [52] 116 117 118 123 124 125 126 127 129 130 131 132 133 136 137 138 139
+##  [69] 140 143 144 145 146 151 152 153 154 158 159 160 161 166 168 171 172
+##  [86] 173 174 175 178 179 180 181 182 186 187 188 189 190 192 193 194 196
+## [103] 200 201 202 203 208 210 213 214 215 216 217 220 221 222 223 224 227
+## [120] 228 229 230 231 235 236 237 238 241 242 243 244 248 250 251 252 255
+## [137] 256 257 258 259 262 263 264 265 266 269 270 271 272 273 276 277 278
+## [154] 279 280 283 284 285 286 287 290 291 292 293 294 297 298 299 300 301
+## [171] 304 305 306 307 308 311 312 313 314 315 318 319 320 321 322 326 327
+## [188] 328 329 332 333 334 335 336 339 341 342 343 346 347 348 349 350 353
+## [205] 354 362 364
+</code></pre>
+</div>
+
+<p><br /><br /> Here is the tricky part, in order to get an AUC score out of a survival model, we need to choose our period (82nd day) and reverse the probability - as we’re interested in the probability of reaching event versus the probability of not reaching event.</p>
+
+<p>First we get the basic survival prediction using our validation split set and then we flip the probability of the period of choice and get the AUC score:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">suvival_predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="w"> </span><span class="n">survival_model</span><span class="p">,</span><span class="w"> </span><span class="n">validate_df_official</span><span class="p">[,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'treatment'</span><span class="p">,</span><span class="s1">'treatment_group'</span><span class="p">,</span><span class="w">
+                                                 </span><span class="s1">'strat2'</span><span class="p">,</span><span class="s1">'sex'</span><span class="p">,</span><span class="s1">'raceth'</span><span class="p">,</span><span class="s1">'ivdrug'</span><span class="p">,</span><span class="w">
+                                                 </span><span class="s1">'hemophil'</span><span class="p">,</span><span class="s1">'karnof'</span><span class="p">,</span><span class="s1">'cd4'</span><span class="p">,</span><span class="w">
+                                                 </span><span class="s1">'priorzdv'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">)])</span><span class="w">
+
+</span><span class="n">roc</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">,</span><span class="w"> </span><span class="n">predictor</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">suvival_predictions</span><span class="o">$</span><span class="n">survival</span><span class="p">[,</span><span class="n">which</span><span class="p">(</span><span class="n">suvival_predictions</span><span class="o">$</span><span class="n">unique.death.times</span><span class="o">==</span><span class="n">period_choice</span><span class="p">)])</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## 
+## Call:
+## roc.default(response = validate_df_classification$ReachedEvent,     predictor = 1 - suvival_predictions$survival[, which(suvival_predictions$unique.death.times ==         period_choice)])
+## 
+## Data: 1 - suvival_predictions$survival[, which(suvival_predictions$unique.death.times == period_choice)] in 566 controls (validate_df_classification$ReachedEvent 0) &lt; 17 cases (validate_df_classification$ReachedEvent 1).
+## Area under the curve: 0.7534
+</code></pre>
+</div>
+
+<p><br /><br /> Now that both models can predict the same period and the probability of reaching the event, we average them together and see how they help each other (straight 50/50 here which may not be the best mix)</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+ </span><span class="c1"># blend both together 
+</span><span class="n">roc</span><span class="p">(</span><span class="n">predictor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">validate_predictions</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="m">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">suvival_predictions</span><span class="o">$</span><span class="n">survival</span><span class="p">[,</span><span class="n">which</span><span class="p">(</span><span class="n">suvival_predictions</span><span class="o">$</span><span class="n">unique.death.times</span><span class="o">==</span><span class="n">period_choice</span><span class="p">)]))</span><span class="o">/</span><span class="m">2</span><span class="p">,</span><span class="w"> 
+          </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## 
+## Call:
+## roc.default(response = validate_df_classification$ReachedEvent,     predictor = (validate_predictions + (1 - suvival_predictions$survival[,         which(suvival_predictions$unique.death.times == period_choice)]))/2)
+## 
+## Data: (validate_predictions + (1 - suvival_predictions$survival[, which(suvival_predictions$unique.death.times == period_choice)]))/2 in 566 controls (validate_df_classification$ReachedEvent 0) &lt; 17 cases (validate_df_classification$ReachedEvent 1).
+## Area under the curve: 0.7583
+</code></pre>
+</div>
+
+<p><br /><br /></p>
+<h4>
+Ensembling Survival and Classification
+</h4>
+<p>We need to split our data set into two smaller chunks. This will allow us to get a survival probability on all the data, not just our validation set. So, we split the training set into to parts, and validation into two parts, then use one training chunk to train and predict on the other training chunk and half of the validation chunk. We then train on the other half of our original training set, to predict on the first split chunk of training data and the second half of the testing data… yikes!</p>
+
+<p>But in the end we can get a survival probability on all the data without ever peeking or cheating. Hang in there!</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># split training into two datasets
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runif</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">train_df_official</span><span class="p">))</span><span class="w">
+</span><span class="n">train_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train_df_official</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">train_1</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 267  13
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">train_2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train_df_official</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">train_2</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 301  13
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># split testing set in two
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runif</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">validate_df_official</span><span class="p">))</span><span class="w">
+</span><span class="n">test_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">validate_df_official</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">test_1</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 275  13
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">test_2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">validate_df_official</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">test_2</span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 308  13
+</code></pre>
+</div>
+
+<p>Now that we have our four chunks of data, we can start predicting each chunk:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">surv_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ranger</span><span class="p">(</span><span class="n">survival_formula</span><span class="p">,</span><span class="w">
+                 </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">train_1</span><span class="p">,</span><span class="w">
+                 </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+                 </span><span class="n">seed</span><span class="o">=</span><span class="m">1234</span><span class="p">,</span><span class="w">
+                 </span><span class="n">num.trees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w">
+                 </span><span class="n">mtry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w">
+                 </span><span class="n">write.forest</span><span class="o">=</span><span class="kc">TRUE</span><span class="w"> </span><span class="p">)</span><span class="w">
+
+</span><span class="n">preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="w"> </span><span class="n">surv_1</span><span class="p">,</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">train_2</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">],</span><span class="w"> </span><span class="n">test_2</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">]))</span><span class="w">
+</span><span class="n">preds_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">preds</span><span class="o">$</span><span class="n">survival</span><span class="p">)</span><span class="w">
+
+
+</span><span class="n">surv_2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ranger</span><span class="p">(</span><span class="n">survival_formula</span><span class="p">,</span><span class="w">
+                 </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">train_2</span><span class="p">,</span><span class="w">
+                 </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+                 </span><span class="n">seed</span><span class="o">=</span><span class="m">1234</span><span class="p">,</span><span class="w">
+                 </span><span class="n">num.trees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w">
+                 </span><span class="n">mtry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w">
+                 </span><span class="n">write.forest</span><span class="o">=</span><span class="kc">TRUE</span><span class="w"> </span><span class="p">)</span><span class="w">
+
+</span><span class="n">preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="w"> </span><span class="n">surv_2</span><span class="p">,</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">train_1</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">],</span><span class="w"> </span><span class="n">test_1</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">]))</span><span class="w">
+</span><span class="n">preds_2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">preds</span><span class="o">$</span><span class="n">survival</span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<p><br /><br /> So, this is the important part, we now rebuild the data set into the orginal training and validation portions with the an added feature: the survival probablity for our period of interest.</p>
+
+<p>As an aside, in our process of splitting the data, we lost one period in the second training chunk, thus the model in preds_2 doesn’t contain our selected <code class="highlighter-rouge">period_choice</code>, so we pick the closes alternative (in this case it is 69 days as an alternative for 70).</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># NOTE: can't use period_choice here as second data set doesn't have that period
+</span><span class="n">surv_1</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w"> 
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##   [1]   1   2   3  13  14  17  20  27  35  39  42  46  47  54  55  56  62
+##  [18]  65  66  70  76  82  84  88 103 104 105 110 113 114 116 117 123 124
+##  [35] 125 126 127 129 131 132 136 137 139 143 144 145 146 151 152 153 158
+##  [52] 159 160 161 171 172 173 175 178 179 180 181 186 187 188 189 193 196
+##  [69] 200 202 203 208 214 215 217 220 222 223 224 227 228 229 230 231 236
+##  [86] 238 242 243 244 248 250 251 252 255 256 257 258 259 263 265 266 269
+## [103] 271 272 273 276 277 278 279 280 283 284 285 287 290 291 292 293 294
+## [120] 298 299 300 304 305 308 312 313 314 315 318 319 320 321 322 326 327
+## [137] 328 329 333 335 336 341 342 343 346 347 348 349 350 354
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">train_2_ensemble</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">train_2</span><span class="p">,</span><span class="w"> </span><span class="n">preds_1</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">train_2</span><span class="p">),</span><span class="n">which</span><span class="p">(</span><span class="n">surv_1</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">period_choice</span><span class="p">)])</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">train_2_ensemble</span><span class="p">)[</span><span class="n">ncol</span><span class="p">(</span><span class="n">train_2_ensemble</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'survival_probablities'</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">train_2_ensemble</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 301  14
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">names</span><span class="p">(</span><span class="n">train_2_ensemble</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##  [1] "time"                  "censor"               
+##  [3] "treatment"             "treatment_group"      
+##  [5] "strat2"                "sex"                  
+##  [7] "raceth"                "ivdrug"               
+##  [9] "hemophil"              "karnof"               
+## [11] "cd4"                   "priorzdv"             
+## [13] "age"                   "survival_probablities"
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">test_2_ensemble</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">test_2</span><span class="p">,</span><span class="w"> </span><span class="n">preds_1</span><span class="p">[((</span><span class="n">nrow</span><span class="p">(</span><span class="n">train_2_ensemble</span><span class="p">)</span><span class="m">+1</span><span class="p">)</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">preds_1</span><span class="p">)),</span><span class="n">which</span><span class="p">(</span><span class="n">surv_1</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">period_choice</span><span class="p">)])</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">test_2_ensemble</span><span class="p">)[</span><span class="n">ncol</span><span class="p">(</span><span class="n">test_2_ensemble</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'survival_probablities'</span><span class="w">
+
+
+</span><span class="n">surv_2</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##   [1]   1   7  14  16  17  18  25  26  39  42  47  56  58  59  61  62  63
+##  [18]  68  69  75  77  82  84  85  86  88  90  91  98 100 103 105 110 112
+##  [35] 113 115 117 118 125 130 132 133 136 138 140 143 144 145 146 151 152
+##  [52] 154 158 159 161 166 168 173 174 175 179 180 181 182 186 189 190 192
+##  [69] 194 196 201 203 208 210 213 214 215 216 217 221 223 228 230 231 235
+##  [86] 237 241 242 243 244 248 250 251 255 256 257 258 259 262 263 264 265
+## [103] 266 270 271 272 273 276 278 279 280 283 284 285 286 287 290 291 292
+## [120] 293 294 297 298 299 300 301 305 306 307 308 311 312 313 314 315 318
+## [137] 319 320 321 322 326 327 328 329 332 333 334 335 336 339 341 342 346
+## [154] 347 348 353 362 364
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">train_1_ensemble</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">train_1</span><span class="p">,</span><span class="w"> </span><span class="n">preds_2</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">train_1</span><span class="p">),</span><span class="n">which</span><span class="p">(</span><span class="n">surv_2</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">period_choice</span><span class="p">)])</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">train_1_ensemble</span><span class="p">)[</span><span class="n">ncol</span><span class="p">(</span><span class="n">train_1_ensemble</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'survival_probablities'</span><span class="w">
+
+</span><span class="n">test_1_ensemble</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">test_1</span><span class="p">,</span><span class="w"> </span><span class="n">preds_2</span><span class="p">[((</span><span class="n">nrow</span><span class="p">(</span><span class="n">train_1_ensemble</span><span class="p">)</span><span class="m">+1</span><span class="p">)</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">preds_2</span><span class="p">)),</span><span class="n">which</span><span class="p">(</span><span class="n">surv_2</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">period_choice</span><span class="p">)])</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">test_1_ensemble</span><span class="p">)[</span><span class="n">ncol</span><span class="p">(</span><span class="n">test_1_ensemble</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'survival_probablities'</span><span class="w"> 
+
+</span><span class="c1"># finally bring them both back together
+</span><span class="n">train_df_final</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">train_1_ensemble</span><span class="p">,</span><span class="w"> </span><span class="n">train_2_ensemble</span><span class="p">)</span><span class="w">
+</span><span class="n">validate_df_final</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">test_1_ensemble</span><span class="p">,</span><span class="w"> </span><span class="n">test_2_ensemble</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br /> We have to create our classification model outcome again on our new data set:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># enjoy fruits of our labor
+</span><span class="n">train_df_final</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">((</span><span class="n">train_df_final</span><span class="o">$</span><span class="n">censor</span><span class="o">==</span><span class="m">1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> 
+                                            </span><span class="n">train_df_final</span><span class="o">$</span><span class="n">time</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">period_choice</span><span class="p">),</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="n">summary</span><span class="p">(</span><span class="n">train_df_final</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## 0.00000 0.00000 0.00000 0.04401 0.00000 1.00000
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">validate_df_final</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">((</span><span class="n">validate_df_final</span><span class="o">$</span><span class="n">censor</span><span class="o">==</span><span class="m">1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> 
+                                               </span><span class="n">validate_df_final</span><span class="o">$</span><span class="n">time</span><span class="o">&lt;=</span><span class="w"> </span><span class="n">period_choice</span><span class="p">),</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br /> Finally, we can enjoy the fruits of our hard work by modeling our augmented data set with our GBM classification model:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">feature_names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">setdiff</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">train_df_final</span><span class="p">),</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'ReachedEvent'</span><span class="p">,</span><span class="w"> </span><span class="s1">'time'</span><span class="p">,</span><span class="w"> </span><span class="s1">'censor'</span><span class="p">))</span><span class="w">
+
+</span><span class="n">classification_formula</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">formula</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'ReachedEvent ~ '</span><span class="p">,</span><span class="s1">'treatment+treatment_group'</span><span class="p">,</span><span class="w">
+                                        </span><span class="s1">'+strat2+sex+raceth+ivdrug+hemophil+karnof+cd4+priorzdv+age+survival_probablities'</span><span class="p">))</span><span class="w">
+
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">gbm_model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gbm</span><span class="p">(</span><span class="n">classification_formula</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">train_df_final</span><span class="p">,</span><span class="w">
+                </span><span class="n">distribution</span><span class="o">=</span><span class="s1">'bernoulli'</span><span class="p">,</span><span class="w">
+                </span><span class="n">n.trees</span><span class="o">=</span><span class="m">500</span><span class="p">,</span><span class="w">         
+                </span><span class="n">interaction.depth</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w">
+                </span><span class="n">shrinkage</span><span class="o">=</span><span class="m">0.01</span><span class="p">,</span><span class="w">
+                </span><span class="n">bag.fraction</span><span class="o">=</span><span class="m">0.5</span><span class="p">,</span><span class="w">
+                </span><span class="n">keep.data</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+                </span><span class="n">cv.folds</span><span class="o">=</span><span class="m">5</span><span class="p">)</span><span class="w">
+
+</span><span class="n">nTrees</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gbm.perf</span><span class="p">(</span><span class="n">gbm_model</span><span class="p">)</span><span class="w">
+</span><span class="n">validate_predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">gbm_model</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="o">=</span><span class="n">validate_df_final</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s2">"response"</span><span class="p">,</span><span class="w"> </span><span class="n">n.trees</span><span class="o">=</span><span class="n">nTrees</span><span class="p">)</span><span class="w">
+</span><span class="n">roc</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">validate_df_final</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">,</span><span class="w"> </span><span class="n">predictor</span><span class="o">=</span><span class="n">validate_predictions</span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## 
+## Call:
+## roc.default(response = validate_df_final$ReachedEvent, predictor = validate_predictions)
+## 
+## Data: validate_predictions in 566 controls (validate_df_final$ReachedEvent 0) &lt; 17 cases (validate_df_final$ReachedEvent 1).
+## Area under the curve: 0.7971
+</code></pre>
+</div>
+
+<p><br />
+We did get a small boost from this approach. Truth be told, this data set is small that you will get different results if you change the period setting. The point here isn’t about the better score on this data set, but the concept of brining different types of models together in different manners to see if you can benefit from the synergy effect.
+<br /><br />
+And a big thanks to Thomas and Lucas for the survivalist artwork!</p>
+
+<p><br />      <br />
+<a id="sourcecode">Full source code</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+
+</span><span class="c1"># data laod ---------------------------------------------------------------
+</span><span class="w">
+
+</span><span class="c1"># download data set
+</span><span class="n">actg320_colnames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span><span class="s1">'time'</span><span class="p">,</span><span class="s1">'censor'</span><span class="p">,</span><span class="s1">'time_d'</span><span class="p">,</span><span class="s1">'censor_d'</span><span class="p">,</span><span class="s1">'treatment'</span><span class="p">,</span><span class="s1">'treatment_group'</span><span class="p">,</span><span class="w">
+                      </span><span class="s1">'strat2'</span><span class="p">,</span><span class="s1">'sex'</span><span class="p">,</span><span class="s1">'raceth'</span><span class="p">,</span><span class="s1">'ivdrug'</span><span class="p">,</span><span class="s1">'hemophil'</span><span class="p">,</span><span class="s1">'karnof'</span><span class="p">,</span><span class="s1">'cd4'</span><span class="p">,</span><span class="s1">'priorzdv'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">)</span><span class="w">
+</span><span class="n">actg320</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="s1">'https://www.umass.edu/statdata/statdata/data/actg320.dat'</span><span class="p">,</span><span class="w"> </span><span class="n">col.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">actg320_colnames</span><span class="p">)</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">actg320</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">actg320</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># we're removing time_d and censor_2 as it has a rarer outcome balance
+</span><span class="n">actg320</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">actg320</span><span class="p">[,</span><span class="nf">c</span><span class="p">(</span><span class="s1">'time'</span><span class="p">,</span><span class="w"> </span><span class="s1">'censor'</span><span class="p">,</span><span class="w"> </span><span class="s1">'treatment'</span><span class="p">,</span><span class="s1">'treatment_group'</span><span class="p">,</span><span class="w">
+                      </span><span class="s1">'strat2'</span><span class="p">,</span><span class="s1">'sex'</span><span class="p">,</span><span class="s1">'raceth'</span><span class="p">,</span><span class="s1">'ivdrug'</span><span class="p">,</span><span class="s1">'hemophil'</span><span class="p">,</span><span class="s1">'karnof'</span><span class="p">,</span><span class="s1">'cd4'</span><span class="p">,</span><span class="s1">'priorzdv'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">)]</span><span class="w">
+
+</span><span class="c1"># install.packages('ranger')
+</span><span class="n">library</span><span class="p">(</span><span class="n">ranger</span><span class="p">)</span><span class="w">
+</span><span class="c1"># install.packages('survival')
+</span><span class="n">library</span><span class="p">(</span><span class="n">survival</span><span class="p">)</span><span class="w">
+
+</span><span class="n">survival_formula</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">formula</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Surv('</span><span class="p">,</span><span class="w"> </span><span class="s1">'time'</span><span class="p">,</span><span class="w"> </span><span class="s1">','</span><span class="p">,</span><span class="w"> </span><span class="s1">'censor'</span><span class="p">,</span><span class="w"> </span><span class="s1">') ~ '</span><span class="p">,</span><span class="s1">'treatment+treatment_group'</span><span class="p">,</span><span class="w">
+                                  </span><span class="s1">'+strat2+sex+raceth+ivdrug+hemophil+karnof+cd4+priorzdv+age'</span><span class="p">))</span><span class="w">
+
+</span><span class="n">survival_formula</span><span class="w">
+
+</span><span class="n">survival_model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ranger</span><span class="p">(</span><span class="n">survival_formula</span><span class="p">,</span><span class="w">
+                         </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">actg320</span><span class="p">,</span><span class="w">  
+                         </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1234</span><span class="p">,</span><span class="w">
+                         </span><span class="n">importance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'permutation'</span><span class="p">,</span><span class="w">
+                         </span><span class="n">mtry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w">
+                         </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+                         </span><span class="n">num.trees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w">
+                         </span><span class="n">write.forest</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># print out coefficients
+</span><span class="n">sort</span><span class="p">(</span><span class="n">survival_model</span><span class="o">$</span><span class="n">variable.importance</span><span class="p">)</span><span class="w">
+
+</span><span class="n">plot</span><span class="p">(</span><span class="n">survival_model</span><span class="o">$</span><span class="n">unique.death.times</span><span class="p">,</span><span class="w"> </span><span class="n">survival_model</span><span class="o">$</span><span class="n">survival</span><span class="p">[</span><span class="m">1</span><span class="p">,],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'orange'</span><span class="p">,</span><span class="w"> </span><span class="n">ylim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0.4</span><span class="p">,</span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="n">lines</span><span class="p">(</span><span class="n">survival_model</span><span class="o">$</span><span class="n">unique.death.times</span><span class="p">,</span><span class="w"> </span><span class="n">survival_model</span><span class="o">$</span><span class="n">survival</span><span class="p">[</span><span class="m">56</span><span class="p">,],</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">)</span><span class="w">
+
+</span><span class="n">actg320</span><span class="p">[</span><span class="m">1</span><span class="p">,]</span><span class="w">
+</span><span class="n">actg320</span><span class="p">[</span><span class="m">56</span><span class="p">,]</span><span class="w">
+
+
+</span><span class="n">plot</span><span class="p">(</span><span class="n">survival_model</span><span class="o">$</span><span class="n">unique.death.times</span><span class="p">,</span><span class="w"> </span><span class="n">survival_model</span><span class="o">$</span><span class="n">survival</span><span class="p">[</span><span class="m">1</span><span class="p">,],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'orange'</span><span class="p">,</span><span class="w"> </span><span class="n">ylim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0.4</span><span class="p">,</span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="o">:</span><span class="m">100</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="n">lines</span><span class="p">(</span><span class="n">survival_model</span><span class="o">$</span><span class="n">unique.death.times</span><span class="p">,</span><span class="w"> </span><span class="n">survival_model</span><span class="o">$</span><span class="n">survival</span><span class="p">[</span><span class="n">x</span><span class="p">,],</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runif</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">actg320</span><span class="p">))</span><span class="w">
+</span><span class="n">train_df_official</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">actg320</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">train_df_official</span><span class="p">)</span><span class="w">
+</span><span class="n">validate_df_official</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">actg320</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">validate_df_official</span><span class="p">)</span><span class="w">
+
+</span><span class="n">period_choice</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">82</span><span class="w"> </span><span class="c1"># 103 
+</span><span class="n">table</span><span class="p">(</span><span class="n">train_df_official</span><span class="o">$</span><span class="n">time</span><span class="p">)</span><span class="w">
+
+
+</span><span class="c1"># classification data set
+</span><span class="n">train_df_classificaiton</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train_df_official</span><span class="w"> 
+</span><span class="n">train_df_classificaiton</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">((</span><span class="n">train_df_classificaiton</span><span class="o">$</span><span class="n">censor</span><span class="o">==</span><span class="m">1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> 
+                                                     </span><span class="n">train_df_classificaiton</span><span class="o">$</span><span class="n">time</span><span class="o">&lt;=</span><span class="n">period_choice</span><span class="p">),</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="n">summary</span><span class="p">(</span><span class="n">train_df_classificaiton</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">)</span><span class="w">
+
+</span><span class="n">validate_df_classification</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">validate_df_official</span><span class="w"> 
+</span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">((</span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">censor</span><span class="o">==</span><span class="m">1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> 
+                                                        </span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">time</span><span class="o">&lt;=</span><span class="n">period_choice</span><span class="p">),</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="n">summary</span><span class="p">(</span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">)</span><span class="w">
+
+
+
+</span><span class="n">feature_names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">setdiff</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">train_df_classificaiton</span><span class="p">),</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'ReachedEvent'</span><span class="p">,</span><span class="w"> </span><span class="s1">'time'</span><span class="p">,</span><span class="w"> </span><span class="s1">'censor'</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># isntall.packages('gbm')
+</span><span class="n">library</span><span class="p">(</span><span class="n">gbm</span><span class="p">)</span><span class="w">
+</span><span class="n">classification_formula</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">formula</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'ReachedEvent ~ '</span><span class="p">,</span><span class="s1">'treatment+treatment_group'</span><span class="p">,</span><span class="w">
+                                        </span><span class="s1">'+strat2+sex+raceth+ivdrug+hemophil+karnof+cd4+priorzdv+age'</span><span class="p">))</span><span class="w">
+
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">gbm_model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gbm</span><span class="p">(</span><span class="n">classification_formula</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">train_df_classificaiton</span><span class="p">,</span><span class="w">
+                </span><span class="n">distribution</span><span class="o">=</span><span class="s1">'bernoulli'</span><span class="p">,</span><span class="w">
+                </span><span class="n">n.trees</span><span class="o">=</span><span class="m">500</span><span class="p">,</span><span class="w">         
+                </span><span class="n">interaction.depth</span><span class="o">=</span><span class="m">3</span><span class="p">,</span><span class="w">
+                </span><span class="n">shrinkage</span><span class="o">=</span><span class="m">0.01</span><span class="p">,</span><span class="w">
+                </span><span class="n">bag.fraction</span><span class="o">=</span><span class="m">0.5</span><span class="p">,</span><span class="w">
+                </span><span class="n">keep.data</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+                </span><span class="n">cv.folds</span><span class="o">=</span><span class="m">5</span><span class="p">)</span><span class="w">
+
+</span><span class="n">nTrees</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gbm.perf</span><span class="p">(</span><span class="n">gbm_model</span><span class="p">)</span><span class="w">
+</span><span class="n">validate_predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">gbm_model</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="o">=</span><span class="n">validate_df_classification</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s2">"response"</span><span class="p">,</span><span class="w"> </span><span class="n">n.trees</span><span class="o">=</span><span class="n">nTrees</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># install.packages('pROC')
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">roc</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">,</span><span class="w"> </span><span class="n">predictor</span><span class="o">=</span><span class="n">validate_predictions</span><span class="p">)</span><span class="w">
+
+</span><span class="n">survival_model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ranger</span><span class="p">(</span><span class="n">survival_formula</span><span class="p">,</span><span class="w">
+                         </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">train_df_official</span><span class="p">,</span><span class="w">
+                         </span><span class="n">seed</span><span class="o">=</span><span class="m">1234</span><span class="p">,</span><span class="w">
+                         </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+                         </span><span class="n">num.trees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w">
+                         </span><span class="n">mtry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w">
+                         </span><span class="n">write.forest</span><span class="o">=</span><span class="kc">TRUE</span><span class="w"> </span><span class="p">)</span><span class="w">
+
+</span><span class="n">survival_model</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w">
+
+
+</span><span class="n">suvival_predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="w"> </span><span class="n">survival_model</span><span class="p">,</span><span class="w"> </span><span class="n">validate_df_official</span><span class="p">[,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'treatment'</span><span class="p">,</span><span class="s1">'treatment_group'</span><span class="p">,</span><span class="w">
+                                                                         </span><span class="s1">'strat2'</span><span class="p">,</span><span class="s1">'sex'</span><span class="p">,</span><span class="s1">'raceth'</span><span class="p">,</span><span class="s1">'ivdrug'</span><span class="p">,</span><span class="w">
+                                                                         </span><span class="s1">'hemophil'</span><span class="p">,</span><span class="s1">'karnof'</span><span class="p">,</span><span class="s1">'cd4'</span><span class="p">,</span><span class="w">
+                                                                         </span><span class="s1">'priorzdv'</span><span class="p">,</span><span class="s1">'age'</span><span class="p">)])</span><span class="w">
+
+</span><span class="n">roc</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">,</span><span class="w"> </span><span class="n">predictor</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">suvival_predictions</span><span class="o">$</span><span class="n">survival</span><span class="p">[,</span><span class="n">which</span><span class="p">(</span><span class="n">suvival_predictions</span><span class="o">$</span><span class="n">unique.death.times</span><span class="o">==</span><span class="n">period_choice</span><span class="p">)])</span><span class="w">
+
+
+
+</span><span class="c1"># blend both together -------------------------------------------------------
+</span><span class="n">roc</span><span class="p">(</span><span class="n">predictor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">validate_predictions</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="m">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">suvival_predictions</span><span class="o">$</span><span class="n">survival</span><span class="p">[,</span><span class="n">which</span><span class="p">(</span><span class="n">suvival_predictions</span><span class="o">$</span><span class="n">unique.death.times</span><span class="o">==</span><span class="n">period_choice</span><span class="p">)]))</span><span class="o">/</span><span class="m">2</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">validate_df_classification</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">)</span><span class="w">
+
+
+
+</span><span class="c1"># split training into two datasets
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runif</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">train_df_official</span><span class="p">))</span><span class="w">
+</span><span class="n">train_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train_df_official</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">train_1</span><span class="p">)</span><span class="w">
+</span><span class="n">train_2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train_df_official</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">train_2</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># split testing set in two
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runif</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">validate_df_official</span><span class="p">))</span><span class="w">
+</span><span class="n">test_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">validate_df_official</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">test_1</span><span class="p">)</span><span class="w">
+</span><span class="n">test_2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">validate_df_official</span><span class="p">[</span><span class="n">random_splits</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">.5</span><span class="p">,]</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">test_2</span><span class="p">)</span><span class="w">
+
+
+
+</span><span class="n">surv_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ranger</span><span class="p">(</span><span class="n">survival_formula</span><span class="p">,</span><span class="w">
+                 </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">train_1</span><span class="p">,</span><span class="w">
+                 </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+                 </span><span class="n">seed</span><span class="o">=</span><span class="m">1234</span><span class="p">,</span><span class="w">
+                 </span><span class="n">num.trees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w">
+                 </span><span class="n">mtry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w">
+                 </span><span class="n">write.forest</span><span class="o">=</span><span class="kc">TRUE</span><span class="w"> </span><span class="p">)</span><span class="w">
+</span><span class="n">surv_1</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w">
+
+</span><span class="n">preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="w"> </span><span class="n">surv_1</span><span class="p">,</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">train_2</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">],</span><span class="w"> </span><span class="n">test_2</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">]))</span><span class="w">
+</span><span class="n">preds_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">preds</span><span class="o">$</span><span class="n">survival</span><span class="p">)</span><span class="w">
+
+</span><span class="n">surv_2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ranger</span><span class="p">(</span><span class="n">survival_formula</span><span class="p">,</span><span class="w">
+                 </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">train_2</span><span class="p">,</span><span class="w">
+                 </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+                 </span><span class="n">seed</span><span class="o">=</span><span class="m">1234</span><span class="p">,</span><span class="w">
+                 </span><span class="n">num.trees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w">
+                 </span><span class="n">mtry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w">
+                 </span><span class="n">write.forest</span><span class="o">=</span><span class="kc">TRUE</span><span class="w"> </span><span class="p">)</span><span class="w">
+</span><span class="n">surv_2</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w">
+
+</span><span class="n">preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="w"> </span><span class="n">surv_2</span><span class="p">,</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">train_1</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">],</span><span class="w"> </span><span class="n">test_1</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">]))</span><span class="w">
+</span><span class="n">preds_2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">preds</span><span class="o">$</span><span class="n">survival</span><span class="p">)</span><span class="w">
+
+
+
+</span><span class="c1"># NOTE: can't use period_choice here as second data set doesn't have that period
+</span><span class="n">surv_1</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w"> 
+</span><span class="n">train_2_ensemble</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">train_2</span><span class="p">,</span><span class="w"> </span><span class="n">preds_1</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">train_2</span><span class="p">),</span><span class="n">which</span><span class="p">(</span><span class="n">surv_1</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">period_choice</span><span class="p">)])</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">train_2_ensemble</span><span class="p">)[</span><span class="n">ncol</span><span class="p">(</span><span class="n">train_2_ensemble</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'survival_probablities'</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">train_2_ensemble</span><span class="p">)</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">train_2_ensemble</span><span class="p">)</span><span class="w">
+
+</span><span class="n">test_2_ensemble</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">test_2</span><span class="p">,</span><span class="w"> </span><span class="n">preds_1</span><span class="p">[((</span><span class="n">nrow</span><span class="p">(</span><span class="n">train_2_ensemble</span><span class="p">)</span><span class="m">+1</span><span class="p">)</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">preds_1</span><span class="p">)),</span><span class="n">which</span><span class="p">(</span><span class="n">surv_1</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">period_choice</span><span class="p">)])</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">test_2_ensemble</span><span class="p">)[</span><span class="n">ncol</span><span class="p">(</span><span class="n">test_2_ensemble</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'survival_probablities'</span><span class="w">
+
+
+</span><span class="n">surv_2</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w">
+</span><span class="n">train_1_ensemble</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">train_1</span><span class="p">,</span><span class="w"> </span><span class="n">preds_2</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">train_1</span><span class="p">),</span><span class="n">which</span><span class="p">(</span><span class="n">surv_2</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">period_choice</span><span class="p">)])</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">train_1_ensemble</span><span class="p">)[</span><span class="n">ncol</span><span class="p">(</span><span class="n">train_1_ensemble</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'survival_probablities'</span><span class="w">
+
+</span><span class="n">test_1_ensemble</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">test_1</span><span class="p">,</span><span class="w"> </span><span class="n">preds_2</span><span class="p">[((</span><span class="n">nrow</span><span class="p">(</span><span class="n">train_1_ensemble</span><span class="p">)</span><span class="m">+1</span><span class="p">)</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">preds_2</span><span class="p">)),</span><span class="n">which</span><span class="p">(</span><span class="n">surv_2</span><span class="o">$</span><span class="n">unique.death.times</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">period_choice</span><span class="p">)])</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">test_1_ensemble</span><span class="p">)[</span><span class="n">ncol</span><span class="p">(</span><span class="n">test_1_ensemble</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'survival_probablities'</span><span class="w"> 
+
+</span><span class="c1"># finally bring them both back together
+</span><span class="n">train_df_final</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">train_1_ensemble</span><span class="p">,</span><span class="w"> </span><span class="n">train_2_ensemble</span><span class="p">)</span><span class="w">
+</span><span class="n">validate_df_final</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">test_1_ensemble</span><span class="p">,</span><span class="w"> </span><span class="n">test_2_ensemble</span><span class="p">)</span><span class="w">
+
+
+
+</span><span class="c1"># enjoy fruits of our labor
+</span><span class="n">train_df_final</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">((</span><span class="n">train_df_final</span><span class="o">$</span><span class="n">censor</span><span class="o">==</span><span class="m">1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> 
+                                            </span><span class="n">train_df_final</span><span class="o">$</span><span class="n">time</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">period_choice</span><span class="p">),</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="n">summary</span><span class="p">(</span><span class="n">train_df_final</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">)</span><span class="w">
+
+</span><span class="n">validate_df_final</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">((</span><span class="n">validate_df_final</span><span class="o">$</span><span class="n">censor</span><span class="o">==</span><span class="m">1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> 
+                                               </span><span class="n">validate_df_final</span><span class="o">$</span><span class="n">time</span><span class="o">&lt;=</span><span class="w"> </span><span class="n">period_choice</span><span class="p">),</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+
+
+</span><span class="n">feature_names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">setdiff</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">train_df_final</span><span class="p">),</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'ReachedEvent'</span><span class="p">,</span><span class="w"> </span><span class="s1">'time'</span><span class="p">,</span><span class="w"> </span><span class="s1">'censor'</span><span class="p">))</span><span class="w">
+
+</span><span class="n">classification_formula</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">formula</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'ReachedEvent ~ '</span><span class="p">,</span><span class="s1">'treatment+treatment_group'</span><span class="p">,</span><span class="w">
+                                        </span><span class="s1">'+strat2+sex+raceth+ivdrug+hemophil+karnof+cd4+priorzdv+age+survival_probablities'</span><span class="p">))</span><span class="w">
+
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">gbm_model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gbm</span><span class="p">(</span><span class="n">classification_formula</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">train_df_final</span><span class="p">,</span><span class="w">
+                </span><span class="n">distribution</span><span class="o">=</span><span class="s1">'bernoulli'</span><span class="p">,</span><span class="w">
+                </span><span class="n">n.trees</span><span class="o">=</span><span class="m">500</span><span class="p">,</span><span class="w">         
+                </span><span class="n">interaction.depth</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w">
+                </span><span class="n">shrinkage</span><span class="o">=</span><span class="m">0.01</span><span class="p">,</span><span class="w">
+                </span><span class="n">bag.fraction</span><span class="o">=</span><span class="m">0.5</span><span class="p">,</span><span class="w">
+                </span><span class="n">keep.data</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+                </span><span class="n">cv.folds</span><span class="o">=</span><span class="m">5</span><span class="p">)</span><span class="w">
+
+</span><span class="n">nTrees</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gbm.perf</span><span class="p">(</span><span class="n">gbm_model</span><span class="p">)</span><span class="w">
+</span><span class="n">validate_predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">gbm_model</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="o">=</span><span class="n">validate_df_final</span><span class="p">[,</span><span class="n">feature_names</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s2">"response"</span><span class="p">,</span><span class="w"> </span><span class="n">n.trees</span><span class="o">=</span><span class="n">nTrees</span><span class="p">)</span><span class="w">
+</span><span class="n">roc</span><span class="p">(</span><span class="n">response</span><span class="o">=</span><span class="n">validate_df_final</span><span class="o">$</span><span class="n">ReachedEvent</span><span class="p">,</span><span class="w"> </span><span class="n">predictor</span><span class="o">=</span><span class="n">validate_predictions</span><span class="p">)</span><span class="w">
+
+
+
+</span></code></pre>
+</div>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

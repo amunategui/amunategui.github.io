@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Using String Distance {stringdist} To Handle Large Text Factors, Cluster Them Into Supersets</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Using String Distance {stringdist} To Handle Large Text Factors, Cluster Them Into Supersets</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=Tq-B95qbVXg&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br />
+<strong>Packages Used in this Walkthrough</strong></p>
+
+<ul>
+        <li type="square"><b>{stringdist}</b> - feature selection for ensembles</li>
+        <li type="square"><b>{RCurl}</b> - machine learning tools</li>
+</ul>
+
+<p><br /><br />
+If you’re wondering whether you’re getting the most out of a <strong>text-based, factor variable</strong> from a large data set, then you’re not alone. There are so many ways of deconstructing text variables. If every entry is made of repeated text from a small set of possibilities, then <a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">dummifying</a> it is the easiest way to proceed. On the other hand, if every entry is unique, then resorting to <a href="http://en.wikipedia.org/wiki/Natural_language_processing" target="_blank">Natural Language Processing (NLP)</a> may be required. This article tackles the gray area in between, where the data is neither unique nor small, where dummifying won’t work yet NLP may still be avoided.</p>
+
+<p>So that we are on the same page, imagine a data set with 10 million rows with at least one feature/column being a text-based factor. It is not made up of free-text, where every entry is unique, instead, it is made up of repeated text: for example 10,000 possibilities repeated over 10 million rows. This would be hard to dummify, as it will blow up your feature space, and would take forever to group by hand.
+<br /><br />
+<strong>What Is One To Do?</strong></p>
+<ul>
+<li>We could encode the text entries as integers or binaries and hope for the best (as it is not ordinal in nature, linear models would suffer but classification models would be OK).</li>
+<li>We could take the top X most popular ones and overwrite the rest as 'other' and dummify the resulting set (I have used that method many times and will write up a post on the subject).</li>
+<li>But a more interesting approach that affords much less loss of information, is grouping them into supersets and the subject of this walkthrough.</li>
+</ul>
+<p><br /><br />
+<strong>Grouping With {stringdist}</strong></p>
+
+<p>Could those 10,000 possibilities mentioned earlier be grouped into a superset representing only a tenth or a fifth of its original size? What is close to impossible to do by hand is trivial with <a href="http://en.wikipedia.org/wiki/String_metric" target="_blank">string distance</a>:</p>
+
+<blockquote>...a metric that measures distance ("inverse similarity") between two text strings for approximate string matching or comparison and in fuzzy string searching. (Source: <a href="http://en.wikipedia.org/wiki/String_metric" target="_blank">Wikipedia</a>)
+</blockquote>
+
+<p>The <a href="http://cran.r-project.org/web/packages/stringdist/index.html" target="_blank">{strndist}</a> package offers ‘Approximate string matching and string distance functions’. It offers many algorithms but the two I found the most interesting for short sets of words are:</p>
+
+<blockquote>...the <b>Jaro–Winkler distance</b> (Winkler, 1990) is a measure of similarity between two strings. The higher the Jaro–Winkler distance for two strings is, the more similar the strings are. The Jaro–Winkler distance metric is designed and best suited for short strings such as person names. The score is normalized such that 0 equates to no similarity and 1 is an exact match. (Source: <a href="http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance" targer="_blank">Wikipedia</a>)</blockquote>
+
+<p>and</p>
+
+<blockquote>...the <b>Levenshtein distance</b> between two words is the minimum number of single-character edits (i.e. insertions, deletions or substitutions) required to change one word into the other. (Source: <a href="http://en.wikipedia.org/wiki/Levenshtein_distance" targer="_blank">Wikipedia</a>) </blockquote>
+<p><br /><br />
+<strong>Let’s Code!</strong></p>
+
+<p>Enough chitchat, let’s download the vehicles data set from <a href="https://github.com/hadley" target="_blank">Hadley Wickham hosted on Github</a>. It is a big and diverse data set, perfect for our needs:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">RCurl</span><span class="p">)</span><span class="w">
+</span><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="s1">'https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv'</span><span class="w">
+</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getURL</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">ssl.verifypeer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="n">textConnection</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># alternative way of getting the data if the above snippet doesn't work:
+# urlData &lt;- getURL('https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv')
+# vehicles &lt;- read.csv(text = urlData)
+</span></code></pre>
+</div>
+<p><br /><br />
+We’re going to focus on one single feature in the data set: <code class="highlighter-rouge">model</code>. Let’s start with some basic statistics on that feature to understand what we’re dealing with:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">nrow</span><span class="p">(</span><span class="n">vehicles</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[1] 34631
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">vehicles</span><span class="o">$</span><span class="n">model</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[1] 3234
+</code></pre>
+</div>
+<p><br /><br />
+So, we have a data set of over <b>34,631</b> vehicles, but <code class="highlighter-rouge">model</code> is comprised of only <b>3,234</b> unique model names repeated through out all the observations/rows. Let’s look at the first <b>100</b> rows so we don’t get overwhelmed with too much the data:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">vehicles_small</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">100</span><span class="p">,]</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Out of those <b>100</b> observations, <code class="highlighter-rouge">model</code> has only <b>45</b> unique model names and here is a small sample of what it holds:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[1] 45
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">head</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">)))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[1] "Spider Veloce 2000"  "Testarossa"          "Charger"            
+[4] "B150/B250 Wagon 2WD" "Legacy AWD Turbo"    "Loyale"
+</code></pre>
+</div>
+<p><br /><br />
+Let’s run some basic string distance on this subset by calling the <code class="highlighter-rouge">stringdistmatrix</code> function to see how it can help us tame the <code class="highlighter-rouge">model</code> variable into smaller supersets. In its simplest form, the function <code class="highlighter-rouge">stringdistmatrix</code> only requires a unique set of text values and the method to cluster the data:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">stringdistmatrix</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"osa"</span><span class="p">,</span><span class="w"> </span><span class="s2">"lv"</span><span class="p">,</span><span class="w"> </span><span class="s2">"dl"</span><span class="p">,</span><span class="w"> </span><span class="s2">"hamming"</span><span class="p">,</span><span class="w"> </span><span class="s2">"lcs"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"qgram"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cosine"</span><span class="p">,</span><span class="w"> </span><span class="s2">"jaccard"</span><span class="p">,</span><span class="w"> </span><span class="s2">"jw"</span><span class="p">,</span><span class="w"> </span><span class="n">useBytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+        </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">maxDist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">Inf</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w">
+        </span><span class="n">useNames</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">ncores</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+We’ll pass it the unique list of <code class="highlighter-rouge">models</code>, request the <strong>Jaro–Winkler distance</strong> algorithm (my favorite for this task), cluster the results into <b>20</b> groups with the <a href="https://stat.ethz.ch/R-manual/R-patched/library/stats/html/hclust.html" target="_blank">hclust</a> function and plot the resulting <a href="http://en.wikipedia.org/wiki/Dendrogram" target="_blank">dendrogram</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">stringdist</span><span class="p">)</span><span class="w">
+</span><span class="n">uniquemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unique</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">))</span><span class="w">
+</span><span class="n">distancemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stringdistmatrix</span><span class="p">(</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"jw"</span><span class="p">)</span><span class="w">
+</span><span class="n">rownames</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">uniquemodels</span><span class="w">
+</span><span class="n">hc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hclust</span><span class="p">(</span><span class="n">as.dist</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">))</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">hc</span><span class="p">)</span><span class="w">
+</span><span class="n">rect.hclust</span><span class="p">(</span><span class="n">hc</span><span class="p">,</span><span class="n">k</span><span class="o">=</span><span class="m">20</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/unnamed-chunk-6.png" alt="plot of chunk unnamed-chunk-6" />
+<br /><br />
+<code class="highlighter-rouge">stringdistmatrix</code> works in tandem with <code class="highlighter-rouge">hclust</code>, one creates the model, the other enforces the clusters. Our algorithm created a <strong>Wagon</strong> and <strong>Taurus</strong> group along with some number groups. So far it isn’t extremely impressive as its only using a small subset of data - wait till we open things up!
+<br /><br />
+We now look at a bigger subset of the <strong>vehicles</strong> data set. Let’s pull the first 2000 observations:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">vehicles_small</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">2000</span><span class="p">,]</span><span class="w">
+</span><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[1] 481
+</code></pre>
+</div>
+<p><br /><br />
+Out of those 2000 observations, we have 481 unique model names. Let’s ask <code class="highlighter-rouge">stringdistmatrix</code> to group those into 200 groups:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">uniquemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unique</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">))</span><span class="w">
+</span><span class="n">distancemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stringdistmatrix</span><span class="p">(</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"jw"</span><span class="p">)</span><span class="w">
+</span><span class="n">rownames</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">uniquemodels</span><span class="w">
+</span><span class="n">hc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hclust</span><span class="p">(</span><span class="n">as.dist</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">))</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">uniquemodels</span><span class="p">,</span><span class="w"> </span><span class="n">cutree</span><span class="p">(</span><span class="n">hc</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="m">200</span><span class="p">))</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">dfClust</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'modelname'</span><span class="p">,</span><span class="s1">'cluster'</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Let’s visualize the quantities of models in each group created by the <strong>Jaro–Winkler distance</strong> algorithm:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/unnamed-chunk-9.png" alt="plot of chunk unnamed-chunk-9" /></p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Average number of models per cluster:'</span><span class="p">,</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">))))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "Average number of models per cluster: 2.405"
+</code></pre>
+</div>
+<p><br /><br />
+The largest cluster contains over <b>10</b> models but the average is <b>2.4</b> models per cluster. Now, lets look at the top groups and see what the algorithm did (don’t sweat this code, it simply orders the data by cluster size):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">table</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">)</span><span class="w">
+</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">t</span><span class="o">/</span><span class="nf">length</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">))</span><span class="w">
+</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">t</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">t</span><span class="p">[,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="n">decreasing</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">),]</span><span class="w">
+</span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">factorName</span><span class="o">=</span><span class="n">rownames</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="w"> </span><span class="n">binCount</span><span class="o">=</span><span class="n">t</span><span class="p">[,</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">percentFound</span><span class="o">=</span><span class="n">t</span><span class="p">[,</span><span class="m">2</span><span class="p">])</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">dfClust</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'cluster'</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="o">=</span><span class="s1">'factorName'</span><span class="p">,</span><span class="w"> </span><span class="n">all.x</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dfClust</span><span class="p">[</span><span class="n">rev</span><span class="p">(</span><span class="n">order</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">binCount</span><span class="p">)),]</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">dfClust</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">,</span><span class="s1">'modelname'</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="w"> </span><span class="p">(</span><span class="n">dfClust</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">,</span><span class="s1">'modelname'</span><span class="p">)],</span><span class="m">50</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##     cluster              modelname
+## 192      73       K1500 Pickup 4WD
+## 191      73         S10 Pickup 2WD
+## 190      73        W250 Pickup 4WD
+## 189      73        F150 Pickup 2WD
+## 188      73         S10 Pickup 4WD
+## 187      73   D100/D150 Pickup 2WD
+## 186      73        F250 Pickup 2WD
+## 185      73       C1500 Pickup 2WD
+## 184      73        F150 Pickup 4WD
+## 183      73        D250 Pickup 2WD
+## 182      73   W100/W150 Pickup 4WD
+## 341     123 Postal Cab Chassis 2WD
+## 340     123    S10 Cab Chassis 2WD
+## 339     123 Dakota Cab Chassis 2WD
+## 338     123        Cab/Chassis 2WD
+## 337     123        Cab Chassis 2WD
+## 336     123    S15 Cab Chassis 2WD
+## 335     123  Truck Cab Chassis 2WD
+## 334     123   D250 Cab Chassis 2WD
+## 236      84         Yukon 1500 4WD
+## 235      84       Suburban C10 2WD
+## 234      84            SJ 410V 4WD
+## 233      84      Suburban 1500 2WD
+## 232      84       Suburban K10 4WD
+## 231      84        Yukon K1500 4WD
+## 230      84             SJ 410 4WD
+## 229      84      Suburban 1500 4WD
+## 365     130        900 Convertible
+## 364     130       318i Convertible
+## 363     130            Convertible
+## 362     130    XJS V12 Convertible
+## 361     130       E320 Convertible
+## 360     130       325i Convertible
+## 359     130        XJS Convertible
+## 307     107     Sidekick 2Door 2WD
+## 306     107   Sidekick Hardtop 2WD
+## 305     107     Sidekick 4Door 2WD
+## 304     107     Sidekick 2Door 4WD
+## 303     107           Sidekick 2WD
+## 302     107   Sidekick Hardtop 4WD
+## 301     107     Sidekick 4Door 4WD
+## 86       36              240 Wagon
+## 85       36             E320 Wagon
+## 84       36              940 Wagon
+## 83       36              850 Wagon
+## 82       36              960 Wagon
+## 81       36        E150 Club Wagon
+## 80       36              100 Wagon
+## 13        5       Legacy AWD Turbo
+## 12        5           Legacy Wagon
+</code></pre>
+</div>
+<p><br /><br />
+Out of the <b>200</b> clusters we requested, cluster 73 is the largest holding <b>11</b> models. Clearly, it picked up on the word <strong>pickup</strong> flanked by two words on either side with the right one being <strong>2WD</strong> or <strong>4WD</strong>. Cluster 123 looked for <strong>Cab Chassis</strong>, even picking up a <strong>Cab/Chassis</strong> in the process. You get the idea and, hopefully, are impressed with how a few lines of code reduced <b>2000</b> observations into <b>200</b> groups. The exact same process would apply to <b>20,000</b> observations or <b>20</b> million…
+<br /><br />
+<strong>Creating New Variables Through Combining Multiple Features</strong></p>
+
+<p>An offshoot of this process is to create new groups by combining existing features and running the results through <code class="highlighter-rouge">stringdistmatrix</code>. Let’s try combining <code class="highlighter-rouge">model</code> with <code class="highlighter-rouge">trany</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">vehicles_small</span><span class="o">$</span><span class="n">modelAndTrany</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">),</span><span class="s2">" "</span><span class="p">,</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">trany</span><span class="p">))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">modelAndTrany</span><span class="p">)))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 808
+</code></pre>
+</div>
+<p><br /><br />
+Our new field has <b>808</b> unique values out of our <b>2000</b> <code class="highlighter-rouge">small_vehicles</code> data frame. Let’s run it through the <strong>Jaro–Winkler distance</strong> algorithm, request <b>500</b> clusters and check out the top groups:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">uniquemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unique</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">modelAndTrany</span><span class="p">))</span><span class="w">
+</span><span class="n">distancemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stringdistmatrix</span><span class="p">(</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"jw"</span><span class="p">)</span><span class="w">
+</span><span class="n">rownames</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">uniquemodels</span><span class="w">
+</span><span class="n">hc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hclust</span><span class="p">(</span><span class="n">as.dist</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">))</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">uniquemodels</span><span class="p">,</span><span class="w"> </span><span class="n">cutree</span><span class="p">(</span><span class="n">hc</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="m">500</span><span class="p">))</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">dfClust</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'modelname'</span><span class="p">,</span><span class="s1">'cluster'</span><span class="p">)</span><span class="w">
+</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">table</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">)</span><span class="w">
+</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">t</span><span class="o">/</span><span class="nf">length</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">))</span><span class="w">
+</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">t</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">t</span><span class="p">[,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="n">decreasing</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">),]</span><span class="w">
+</span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">factorName</span><span class="o">=</span><span class="n">rownames</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="w"> </span><span class="n">binCount</span><span class="o">=</span><span class="n">t</span><span class="p">[,</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">percentFound</span><span class="o">=</span><span class="n">t</span><span class="p">[,</span><span class="m">2</span><span class="p">])</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">dfClust</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'cluster'</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="o">=</span><span class="s1">'factorName'</span><span class="p">,</span><span class="w"> </span><span class="n">all.x</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dfClust</span><span class="p">[</span><span class="n">rev</span><span class="p">(</span><span class="n">order</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">binCount</span><span class="p">)),]</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">dfClust</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">,</span><span class="s1">'modelname'</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="w"> </span><span class="p">(</span><span class="n">dfClust</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">,</span><span class="s1">'modelname'</span><span class="p">)],</span><span class="m">50</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##     cluster                           modelname
+## 38       16                 960 Automatic 4-spd
+## 37       16                  90 Automatic 4-spd
+## 36       16                 940 Automatic 4-spd
+## 35       16                 900 Automatic 4-spd
+## 34       16                E500 Automatic 4-spd
+## 33       16                 100 Automatic 4-spd
+## 32       16                9000 Automatic 4-spd
+## 31       16                 850 Automatic 4-spd
+## 27       14                 G20 Automatic 4-spd
+## 26       14                 240 Automatic 4-spd
+## 25       14                S420 Automatic 4-spd
+## 24       14               240SX Automatic 4-spd
+## 23       14                C280 Automatic 4-spd
+## 22       14                C220 Automatic 4-spd
+## 21       14                E420 Automatic 4-spd
+## 221     120           960 Wagon Automatic 4-spd
+## 220     120          E320 Wagon Automatic 4-spd
+## 219     120           850 Wagon Automatic 4-spd
+## 218     120           240 Wagon Automatic 4-spd
+## 217     120           100 Wagon Automatic 4-spd
+## 216     120           940 Wagon Automatic 4-spd
+## 185      99                     SW Manual 5-spd
+## 184      99                     S4 Manual 5-spd
+## 183      99                     S6 Manual 5-spd
+## 182      99                    NSX Manual 5-spd
+## 181      99                     SL Manual 5-spd
+## 180      99                     SC Manual 5-spd
+## 248     129    Ram 1500 Pickup 4WD Manual 5-spd
+## 247     129    Ram 2500 Pickup 2WD Manual 5-spd
+## 246     129    Ram 2500 Pickup 4WD Manual 5-spd
+## 245     129    Ram 1500 Pickup 2WD Manual 5-spd
+## 244     129      Ram 50 Pickup 2WD Manual 5-spd
+## 243     128 Ram 1500 Pickup 2WD Automatic 4-spd
+## 242     128 Ram 2500 Pickup 4WD Automatic 4-spd
+## 241     128   Ram 50 Pickup 2WD Automatic 4-spd
+## 240     128 Ram 1500 Pickup 4WD Automatic 4-spd
+## 239     128 Ram 2500 Pickup 2WD Automatic 4-spd
+## 177      97                 NSX Automatic 4-spd
+## 176      97                  SC Automatic 4-spd
+## 175      97                 SVX Automatic 4-spd
+## 174      97                  SW Automatic 4-spd
+## 173      97                  SL Automatic 4-spd
+## 154      83               SL600 Automatic 4-spd
+## 153      83              500SEL Automatic 4-spd
+## 152      83               SL500 Automatic 4-spd
+## 151      83              400SEL Automatic 4-spd
+## 150      83               500SL Automatic 4-spd
+## 47       18                540i Automatic 5-spd
+## 46       18               840ci Automatic 5-spd
+## 45       18               740il Automatic 5-spd
+</code></pre>
+</div>
+<p><br /><br />
+<strong>Conclusion</strong></p>
+
+<p><code class="highlighter-rouge">stringdistmatrix</code> is a very flexible function with many tunable features. The cluster size, the algorithm, the concatenation of text with text and/or numbers create numerous and mind-boggling possibilities. Even with all these settings it is still so much easier than creating supersets by hand! String distance matching is case sensitive so you may get better groups if you force all text to once case. Have fun with this…</p>
+
+<p><br /><br />      <br />
+<a id="sourcecode">Full source code (<a href="https://github.com/amunategui/string-distance-on-large-factors" target="_blank">also on GitHub</a>)</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="c1"># get the Hadley Wickham's vehicles data set
+</span><span class="n">library</span><span class="p">(</span><span class="n">RCurl</span><span class="p">)</span><span class="w">
+</span><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="s1">'https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv'</span><span class="w">
+</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getURL</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">ssl.verifypeer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="n">textConnection</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># size the data
+</span><span class="n">nrow</span><span class="p">(</span><span class="n">vehicles</span><span class="p">)</span><span class="w">
+</span><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">vehicles</span><span class="o">$</span><span class="n">model</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># get a small sample for starters
+</span><span class="n">vehicles_small</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">100</span><span class="p">,]</span><span class="w">
+</span><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">))</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">)))</span><span class="w">
+
+</span><span class="c1"># call the stringdistmatrix function and request 20 groups
+</span><span class="n">library</span><span class="p">(</span><span class="n">stringdist</span><span class="p">)</span><span class="w">
+</span><span class="n">uniquemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unique</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">))</span><span class="w">
+</span><span class="n">distancemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stringdistmatrix</span><span class="p">(</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"jw"</span><span class="p">)</span><span class="w">
+</span><span class="n">rownames</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">uniquemodels</span><span class="w">
+</span><span class="n">hc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hclust</span><span class="p">(</span><span class="n">as.dist</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># visualize the dendrogram
+</span><span class="n">plot</span><span class="p">(</span><span class="n">hc</span><span class="p">)</span><span class="w">
+</span><span class="n">rect.hclust</span><span class="p">(</span><span class="n">hc</span><span class="p">,</span><span class="n">k</span><span class="o">=</span><span class="m">20</span><span class="p">)</span><span class="w">
+ 
+</span><span class="c1"># get a bigger sample
+</span><span class="n">vehicles_small</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">2000</span><span class="p">,]</span><span class="w">
+</span><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># run the stringdistmatrix function and request 200 groups
+</span><span class="n">uniquemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unique</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">))</span><span class="w">
+</span><span class="n">distancemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stringdistmatrix</span><span class="p">(</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"jw"</span><span class="p">)</span><span class="w">
+</span><span class="n">rownames</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">uniquemodels</span><span class="w">
+</span><span class="n">hc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hclust</span><span class="p">(</span><span class="n">as.dist</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">))</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">uniquemodels</span><span class="p">,</span><span class="w"> </span><span class="n">cutree</span><span class="p">(</span><span class="n">hc</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="m">200</span><span class="p">))</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">dfClust</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'modelname'</span><span class="p">,</span><span class="s1">'cluster'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># visualize the groupings
+</span><span class="n">plot</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Average number of models per cluster:'</span><span class="p">,</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">))))</span><span class="w">
+
+</span><span class="c1"># lets look at the top groups and see what the algorithm did:
+</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">table</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">)</span><span class="w">
+</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">t</span><span class="o">/</span><span class="nf">length</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">))</span><span class="w">
+</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">t</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">t</span><span class="p">[,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="n">decreasing</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">),]</span><span class="w">
+</span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">factorName</span><span class="o">=</span><span class="n">rownames</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="w"> </span><span class="n">binCount</span><span class="o">=</span><span class="n">t</span><span class="p">[,</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">percentFound</span><span class="o">=</span><span class="n">t</span><span class="p">[,</span><span class="m">2</span><span class="p">])</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">dfClust</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'cluster'</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="o">=</span><span class="s1">'factorName'</span><span class="p">,</span><span class="w"> </span><span class="n">all.x</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dfClust</span><span class="p">[</span><span class="n">rev</span><span class="p">(</span><span class="n">order</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">binCount</span><span class="p">)),]</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">dfClust</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">,</span><span class="s1">'modelname'</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="w"> </span><span class="p">(</span><span class="n">dfClust</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">,</span><span class="s1">'modelname'</span><span class="p">)],</span><span class="m">50</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># try combining fields together
+</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">modelAndTrany</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">model</span><span class="p">),</span><span class="s2">" "</span><span class="p">,</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">trany</span><span class="p">))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">modelAndTrany</span><span class="p">)))</span><span class="w">
+
+</span><span class="n">uniquemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unique</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">vehicles_small</span><span class="o">$</span><span class="n">modelAndTrany</span><span class="p">))</span><span class="w">
+</span><span class="n">distancemodels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stringdistmatrix</span><span class="p">(</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">uniquemodels</span><span class="p">,</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"jw"</span><span class="p">)</span><span class="w">
+</span><span class="n">rownames</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">uniquemodels</span><span class="w">
+</span><span class="n">hc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hclust</span><span class="p">(</span><span class="n">as.dist</span><span class="p">(</span><span class="n">distancemodels</span><span class="p">))</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">uniquemodels</span><span class="p">,</span><span class="w"> </span><span class="n">cutree</span><span class="p">(</span><span class="n">hc</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="m">500</span><span class="p">))</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">dfClust</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'modelname'</span><span class="p">,</span><span class="s1">'cluster'</span><span class="p">)</span><span class="w">
+</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">table</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">)</span><span class="w">
+</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">t</span><span class="o">/</span><span class="nf">length</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">cluster</span><span class="p">))</span><span class="w">
+</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">t</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">t</span><span class="p">[,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="n">decreasing</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">),]</span><span class="w">
+</span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">factorName</span><span class="o">=</span><span class="n">rownames</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="w"> </span><span class="n">binCount</span><span class="o">=</span><span class="n">t</span><span class="p">[,</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">percentFound</span><span class="o">=</span><span class="n">t</span><span class="p">[,</span><span class="m">2</span><span class="p">])</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">dfClust</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'cluster'</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="o">=</span><span class="s1">'factorName'</span><span class="p">,</span><span class="w"> </span><span class="n">all.x</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dfClust</span><span class="p">[</span><span class="n">rev</span><span class="p">(</span><span class="n">order</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="n">binCount</span><span class="p">)),]</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">dfClust</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">,</span><span class="s1">'modelname'</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="w"> </span><span class="p">(</span><span class="n">dfClust</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">,</span><span class="s1">'modelname'</span><span class="p">)],</span><span class="m">50</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># build a convenient function to do all of the above
+</span><span class="n">GroupFactorsTogether</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">objData</span><span class="p">,</span><span class="w"> </span><span class="n">variableName</span><span class="p">,</span><span class="w"> </span><span class="n">clustersize</span><span class="o">=</span><span class="m">200</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'jw'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="c1">#      osa: Optimal string aligment, (restricted Damerau-Levenshtein distance).
+</span><span class="w">        </span><span class="c1">#      lv: Levenshtein distance (as in R's native adist).
+</span><span class="w">        </span><span class="c1">#      dl: Full Damerau-Levenshtein distance.
+</span><span class="w">        </span><span class="c1">#      hamming: Hamming distance (a and b must have same nr of characters).
+</span><span class="w">        </span><span class="c1">#      lcs: Longest common substring distance.
+</span><span class="w">        </span><span class="c1">#      qgram: q-gram distance.
+</span><span class="w">        </span><span class="c1">#      cosine: cosine distance between q-gram profiles
+</span><span class="w">        </span><span class="c1">#      jaccard: Jaccard distance between q-gram profiles
+</span><span class="w">        </span><span class="c1">#      jw: Jaro, or Jaro-Winker distance.
+</span><span class="w">        </span><span class="c1">#      soundex: Distance based on soundex encoding
+</span><span class="w">
+        </span><span class="c1">#       stringdistmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
+</span><span class="w">        </span><span class="c1">#               "qgram", "cosine", "jaccard", "jw", useBytes = FALSE,
+</span><span class="w">        </span><span class="c1">#               weight = c(d = 1, i = 1, s = 1, t = 1), maxDist = Inf, q = 1, p = 0,
+</span><span class="w">        </span><span class="c1">#               useNames = FALSE, ncores = 1, cluster = NULL)
+</span><span class="w">        </span><span class="c1">#               require(stringdist)
+</span><span class="w">
+        </span><span class="n">str</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unique</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">objData</span><span class="p">[,</span><span class="n">variableName</span><span class="p">]))</span><span class="w">
+        </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Uniques:'</span><span class="p">,</span><span class="nf">length</span><span class="p">(</span><span class="n">str</span><span class="p">)))</span><span class="w">
+
+        </span><span class="n">d</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stringdistmatrix</span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="n">str</span><span class="p">,</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">method</span><span class="p">))</span><span class="w">
+
+        </span><span class="n">rownames</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">str</span><span class="w">
+        </span><span class="n">hc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hclust</span><span class="p">(</span><span class="n">as.dist</span><span class="p">(</span><span class="n">d</span><span class="p">))</span><span class="w">
+
+        </span><span class="n">dfClust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">str</span><span class="p">,</span><span class="w"> </span><span class="n">cutree</span><span class="p">(</span><span class="n">hc</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="n">clustersize</span><span class="p">))</span><span class="w">
+
+        </span><span class="n">plot</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">dfClust</span><span class="o">$</span><span class="s1">'cutree.hc..k...k.'</span><span class="p">))</span><span class="w">
+
+        </span><span class="n">most_populated_clusters</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dfClust</span><span class="p">[</span><span class="n">dfClust</span><span class="o">$</span><span class="s1">'cutree.hc..k...k.'</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">5</span><span class="p">,]</span><span class="w">
+        </span><span class="nf">names</span><span class="p">(</span><span class="n">most_populated_clusters</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'entry'</span><span class="p">,</span><span class="s1">'cluster'</span><span class="p">)</span><span class="w">
+
+        </span><span class="c1"># sort by most frequent
+</span><span class="w">        </span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">table</span><span class="p">(</span><span class="n">most_populated_clusters</span><span class="o">$</span><span class="n">cluster</span><span class="p">)</span><span class="w">
+        </span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">t</span><span class="o">/</span><span class="nf">length</span><span class="p">(</span><span class="n">most_populated_clusters</span><span class="o">$</span><span class="n">cluster</span><span class="p">))</span><span class="w">
+        </span><span class="n">t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">t</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">t</span><span class="p">[,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="n">decreasing</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">),]</span><span class="w">
+        </span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">factorName</span><span class="o">=</span><span class="n">rownames</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="w"> </span><span class="n">binCount</span><span class="o">=</span><span class="n">t</span><span class="p">[,</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">percentFound</span><span class="o">=</span><span class="n">t</span><span class="p">[,</span><span class="m">2</span><span class="p">])</span><span class="w">
+        </span><span class="n">most_populated_clusters</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">most_populated_clusters</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">by.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'cluster'</span><span class="p">,</span><span class="w"> </span><span class="n">by.y</span><span class="o">=</span><span class="s1">'factorName'</span><span class="p">,</span><span class="w"> </span><span class="n">all.x</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+        </span><span class="n">most_populated_clusters</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">most_populated_clusters</span><span class="p">[</span><span class="n">rev</span><span class="p">(</span><span class="n">order</span><span class="p">(</span><span class="n">most_populated_clusters</span><span class="o">$</span><span class="n">binCount</span><span class="p">)),]</span><span class="w">
+        </span><span class="nf">names</span><span class="p">(</span><span class="n">most_populated_clusters</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">,</span><span class="s1">'entry'</span><span class="p">)</span><span class="w">
+        </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">most_populated_clusters</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">,</span><span class="s1">'entry'</span><span class="p">)])</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span></code></pre>
+</div>
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

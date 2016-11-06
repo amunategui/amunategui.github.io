@@ -1,0 +1,531 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Reducing High Dimensional Data with Principle Component Analysis (PCA) and prcomp</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Reducing High Dimensional Data with Principle Component Analysis (PCA) and prcomp</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=qhvkVxuwvLk&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+<li type="square"><a href="#sourcecode_gbm">Alternative GBM Source Code &lt;- for those that can't use xgboost!!!</a></li>
+</ul>
+<p><br />
+<strong>Packages Used in this Walkthrough</strong></p>
+
+<ul>
+        <li type="square"><b>{stats}</b> - prcomp and PCA</li>
+        <li type="square"><b>{xgboost}</b> - fast modeling algorithm</li>
+        <li type="square"><b>{Metrics}</b> - measuring error &amp; AUC</li>
+        <li type="square"><b>{caret}</b> - reducing zero/near-zero variance</li>
+</ul>
+<p><br /><br /></p>
+
+<p>I can’t remember the last time I worked on a data set with less than <strong>500</strong> features. This isn’t a big deal with today’s computing power, but it can become unwieldy when you need to use certain forest-based models, heavy cross-validation, grid tuning, or any ensemble work. <i>Note: the term variables, features, predictors are used throughout and mean the same thing.</i></p>
+
+<p>The 3 common ways of dealing with <strong>high-dimensionality data</strong> (i.e. having too many variables) are:</p>
+
+<ol>
+<li>get more computing muscle (like RStudio on an <a href="http://amunategui.github.io/EC2-RStudioServer/" target="_blank">Amazon Web Services EC2</a> instance),</li>
+<li>prune your data set using <a href="http://en.wikipedia.org/wiki/Feature_selection" target="_blank">feature selection</a> (measure variables effectiveness and keeps only the best - built-in feature selection - <a href="http://amunategui.github.io/fscaret-Walkthrough/" target="_blank">see fscaret</a>),</li>
+<li>and finally, the subject of this walkthrough, use <b>feature reduction</b> (also refereed as <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction">feature extraction</a>) to create new variables made of bits and pieces of the original variables.</li>
+</ol>
+
+<p>According to <a href="http://en.wikipedia.org/wiki/Dimensionality_reduction" target="_blank">wikipedia</a>:</p>
+
+<ul>"Principal component analysis (PCA) is a statistical procedure that uses an orthogonal transformation to convert a set of observations of possibly correlated variables into a set of values of linearly uncorrelated variables called principal components."</ul>
+
+<p>You’ll find reams of explanations on the web, but, in a nutshell, <strong>PCA</strong> looks for the set of related variables in your data that explain most of the variance and creates a new feature out of it. This becomes your first component. It will then keep doing so on the next set of variables unrelated to the first, and that becomes your next component, and so on and so forth. This is done in an unsupervised manner so it doesn’t care what your response variable/outcome is (but you should exclude it from your data before feeding it into <strong>PCA</strong>). <i>As a side note, this is the basis of a lot of compression software – it is that good.</i>
+<br /><br />
+<strong>Let’s code!</strong></p>
+
+<p>To get started, we need a data set with a lot of columns. We’re going to borrow a data set from <a href="http://www.nipsfsc.ecs.soton.ac.uk/" target="_blank">NIPS (Neural Information Processing Systems)</a> from a completed, 2013 competition. The meaning of the data is immaterial for our needs. Let’s download our data from the <a href="https://archive.ics.uci.edu/ml/datasets/Gisette" target="_blank">UC Irvine Machine Learning Repository</a> (<strong>warning:</strong> this is a large file):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">RCurl</span><span class="p">)</span><span class="w"> </span><span class="c1"># download https data
+</span><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data'</span><span class="w">
+</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getURL</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">ssl.verifypeer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">gisetteRaw</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="n">textConnection</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+  
+</span><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels"</span><span class="w">
+</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getURL</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">ssl.verifypeer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">g_labels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="n">textConnection</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+ 
+</span><span class="n">print</span><span class="p">(</span><span class="nf">dim</span><span class="p">(</span><span class="n">gisetteRaw</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 6000 5001
+</code></pre>
+</div>
+<p><br /><br />
+The <strong>gisetteRaw</strong> data frame has <strong>5001</strong> columns and that’s the kind of size we’re looking for. Before we can start the <strong>PCA</strong> transformation process, we need to remove the extreme near-zero variance as it won’t help us much and risks crashing the script. We load the <strong>caret</strong> package and call <code class="highlighter-rouge">nearZeroVar</code> function with <code class="highlighter-rouge">saveMetrics</code> parameter set to <strong>true</strong>. This will return a data frame with the degree of zero variance for each feature:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="n">nzv</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">nearZeroVar</span><span class="p">(</span><span class="n">gisetteRaw</span><span class="p">,</span><span class="w"> </span><span class="n">saveMetrics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Range:'</span><span class="p">,</span><span class="nf">range</span><span class="p">(</span><span class="n">nzv</span><span class="o">$</span><span class="n">percentUnique</span><span class="p">)))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "Range: 0"   "Range: 8.6"
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">print</span><span class="p">(</span><span class="n">head</span><span class="p">(</span><span class="n">nzv</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##    freqRatio percentUnique zeroVar  nzv
+## V1     48.25        5.2167   FALSE TRUE
+## V2   1180.80        1.3667   FALSE TRUE
+## V3     41.32        6.1500   FALSE TRUE
+## V4   5991.00        0.1667   FALSE TRUE
+## V5    980.00        1.5333   FALSE TRUE
+## V6    140.00        3.5167   FALSE TRUE
+</code></pre>
+</div>
+<p><br /><br />
+We remove features with less than 0.1% variance:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Column count before cutoff:'</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">gisetteRaw</span><span class="p">)))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "Column count before cutoff: 5001"
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">dim</span><span class="p">(</span><span class="n">nzv</span><span class="p">[</span><span class="n">nzv</span><span class="o">$</span><span class="n">percentUnique</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0.1</span><span class="p">,])</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 4639    4
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">gisette_nzv</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gisetteRaw</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">nzv</span><span class="p">[</span><span class="n">nzv</span><span class="o">$</span><span class="n">percentUnique</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0.1</span><span class="p">,]))</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Column count after cutoff:'</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">gisette_nzv</span><span class="p">)))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "Column count before cutoff: 4639"
+</code></pre>
+</div>
+<p><br /><br />
+The data is cleaned up and ready to go. Let’s see how well it performs without any <strong>PCA</strong> transformation. We bind the labels (response/outcome variables) to the set:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">dfEvaluate</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">gisette_nzv</span><span class="p">,</span><span class="w"> </span><span class="n">as.numeric</span><span class="p">)),</span><span class="w">
+              </span><span class="n">cluster</span><span class="o">=</span><span class="n">g_labels</span><span class="o">$</span><span class="n">V</span><span class="m">1</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+We’re going to feed the data into the following cross-validation function using the <code class="highlighter-rouge">zxgboost</code> model. This is a fast model and does great with large data sets. The repeated cross-validation will run the data 5 times, each time assigning a new chunk of data as training and testing. This not only allows us to use all the data as both train and test sets, but also stabilizes our <a href="https://www.kaggle.com/wiki/AreaUnderCurve" target="_blank">AUC (Area Under the Curve)</a> score.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">EvaluateAUC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="n">require</span><span class="p">(</span><span class="n">xgboost</span><span class="p">)</span><span class="w">
+        </span><span class="n">require</span><span class="p">(</span><span class="n">Metrics</span><span class="p">)</span><span class="w">
+        </span><span class="n">CVs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">5</span><span class="w">
+        </span><span class="n">cvDivider</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">CVs</span><span class="m">+1</span><span class="p">))</span><span class="w">
+        </span><span class="n">indexCount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="w">
+        </span><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">)</span><span class="w">
+        </span><span class="n">predictors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)[</span><span class="o">!</span><span class="nf">names</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="n">outcomeName</span><span class="p">]</span><span class="w">
+        </span><span class="n">lsErr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+        </span><span class="n">lsAUC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">cv</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="n">CVs</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'cv'</span><span class="p">,</span><span class="n">cv</span><span class="p">))</span><span class="w">
+                </span><span class="n">dataTestIndex</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">((</span><span class="n">cv</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cvDivider</span><span class="p">)</span><span class="o">:</span><span class="p">(</span><span class="n">cv</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cvDivider</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cvDivider</span><span class="p">))</span><span class="w">
+                </span><span class="n">dataTest</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dfEvaluate</span><span class="p">[</span><span class="n">dataTestIndex</span><span class="p">,]</span><span class="w">
+                </span><span class="n">dataTrain</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dfEvaluate</span><span class="p">[</span><span class="o">-</span><span class="n">dataTestIndex</span><span class="p">,]</span><span class="w">
+                
+                </span><span class="n">bst</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">xgboost</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.matrix</span><span class="p">(</span><span class="n">dataTrain</span><span class="p">[,</span><span class="n">predictors</span><span class="p">]),</span><span class="w">
+                               </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataTrain</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w">
+                               </span><span class="n">max.depth</span><span class="o">=</span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="n">eta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="w">
+                               </span><span class="n">nround</span><span class="o">=</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">nthread</span><span class="o">=</span><span class="m">4</span><span class="p">,</span><span class="w"> 
+                               </span><span class="n">objective</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"reg:linear"</span><span class="p">)</span><span class="w">
+                
+                </span><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">bst</span><span class="p">,</span><span class="w"> </span><span class="n">as.matrix</span><span class="p">(</span><span class="n">dataTest</span><span class="p">[,</span><span class="n">predictors</span><span class="p">]),</span><span class="w"> </span><span class="n">outputmargin</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+                </span><span class="n">err</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rmse</span><span class="p">(</span><span class="n">dataTest</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">predictions</span><span class="p">)</span><span class="w">
+                </span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">auc</span><span class="p">(</span><span class="n">dataTest</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="n">predictions</span><span class="p">)</span><span class="w">
+                
+                </span><span class="n">lsErr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">lsErr</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="p">)</span><span class="w">
+                </span><span class="n">lsAUC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">lsAUC</span><span class="p">,</span><span class="w"> </span><span class="n">auc</span><span class="p">)</span><span class="w">
+                </span><span class="n">gc</span><span class="p">()</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+        </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Mean Error:'</span><span class="p">,</span><span class="n">mean</span><span class="p">(</span><span class="n">lsErr</span><span class="p">)))</span><span class="w">
+        </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Mean AUC:'</span><span class="p">,</span><span class="n">mean</span><span class="p">(</span><span class="n">lsAUC</span><span class="p">)))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">EvaluateAUC</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">## [1] "cv 1"
+## [1] "cv 2"
+## [1] "cv 3"
+## [1] "cv 4"
+## [1] "cv 5"
+</span><span class="w">
+</span><span class="c1">## [1] 0.9659
+</span></code></pre>
+</div>
+<p><br /><br />
+This yields a great <strong>AUC score of 0.9659</strong> (remember, <a href="http://en.wikipedia.org/wiki/Integral" target="_blank">AUC</a> of 0.5 is random, and 1.0 is perfect). But we don’t really care how well the model did; we just want to use that AUC score as a basis of comparison against the transformed PCA variables.</p>
+
+<p>So, let’s use the same data and run it through <code class="highlighter-rouge">prcomp</code>. This will transform all the related variables that account for most of the variation - meaning that the first component variable will be the most powerful variable (<strong>Warning:</strong> this can be a very slow to process depending on your machine - it took 20 minutes on my MacBook - so do it once and store the resulting data set for later use):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">pmatrix</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">scale</span><span class="p">(</span><span class="n">gisette_nzv</span><span class="p">)</span><span class="w">
+</span><span class="n">princ</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">prcomp</span><span class="p">(</span><span class="n">pmatrix</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Let’s start by running the same cross-validation code with just the <strong>first PCA component</strong> (remember, this holds most of the variation of our data set). We need to use our princ result set and call the <code class="highlighter-rouge">predict</code> function to get our data.frame:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="w">  
+</span><span class="n">dfComponents</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">princ</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="o">=</span><span class="n">pmatrix</span><span class="p">)[,</span><span class="m">1</span><span class="o">:</span><span class="n">nComp</span><span class="p">]</span><span class="w">
+
+</span><span class="n">dfEvaluate</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">dfComponents</span><span class="p">),</span><span class="w">
+              </span><span class="n">cluster</span><span class="o">=</span><span class="n">g_labels</span><span class="o">$</span><span class="n">V</span><span class="m">1</span><span class="p">)</span><span class="w">
+
+</span><span class="n">EvaluateAUC</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">## [1] "cv 1"
+## [1] "cv 2"
+## [1] "cv 3"
+## [1] "cv 4"
+## [1] "cv 5"
+</span><span class="w">
+</span><span class="c1">## [1] 0.719
+</span></code></pre>
+</div>
+<p><br /><br />
+The resulting <strong>AUC of 0.719</strong> isn’t that good compared to the orginal, non-transformed data set. But we have to remember that this is one variable against almost 5000!! Let’s try this again with 2 components:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">2</span><span class="w">  
+</span><span class="n">...</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">lsAUC</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 0.7228
+</code></pre>
+</div>
+<p><br /><br />
+Two components give an <strong>AUC score of 0.7228</strong>, still some ways to go. Let’s jump to <strong>5</strong> components:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">5</span><span class="w">
+</span><span class="n">...</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">lsAUC</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 0.9279
+</code></pre>
+</div>
+<p><br /><br />
+Now we’re talking, <strong>0.9279</strong>!!! Let’s try <strong>10</strong> components:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">10</span><span class="w">
+</span><span class="n">...</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">lsAUC</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 0.9651
+</code></pre>
+</div>
+<p><br /><br />
+Yowza!! <strong>0.9651</strong>!! Let’s try <strong>20</strong> components:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">20</span><span class="w">
+</span><span class="n">...</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">lsAUC</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 0.9641
+</code></pre>
+</div>
+<p><br /><br />
+Hmmm, going back down… Let’s stop here and stick with the first <strong>10 PCA</strong> components. So, 10 PCA columns versus 4639 columns - not bad, right? Keep in mind that you should be able to get closer to the <strong>AUC</strong> of the original data set by adding more <strong>PCA</strong> components as <code class="highlighter-rouge">prcomp</code> accounts for all variations in the data. On the other hand, by following the steps in this walkthrough, you can get a great <strong>AUC</strong> score with very little effort and an absurdly smaller resulting data set.
+<br /><br /> <br />
+<strong>Additional Stuff</strong></p>
+
+<p>A common critique about <strong>PCA</strong> is that it is hard to analyze once transformed as many of variables get clumped together under a nondescript name. One way around this is top plot your <strong>PCA</strong> data ontop of you discrete variables, see <a href="http://cran.r-project.org/web/packages/FactoMineR/index.html" target="_blank">FactoMineR</a> for more information.</p>
+
+<p>Though out of scope for this hands-on post, there are many ways of finding the perfect amount of components to use - check out <a href="http://astrostatistics.psu.edu/su09/lecturenotes/pca.html" target="_blank">Eigen angles and vectors</a> and check out also <a href="http://www.inside-r.org/packages/cran/fpc/docs/clusterboot" target="_blank">clusterboot</a>.</p>
+
+<p><br /><br />      <br />
+<a id="sourcecode">Full source code (<a href="https://github.com/amunategui/pca-dimension-reduction" target="_blank">also on GitHub</a>)</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">require</span><span class="p">(</span><span class="n">ROCR</span><span class="p">)</span><span class="w">
+</span><span class="n">require</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="n">require</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
+
+</span><span class="n">EvaluateAUC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="n">require</span><span class="p">(</span><span class="n">xgboost</span><span class="p">)</span><span class="w">
+        </span><span class="n">require</span><span class="p">(</span><span class="n">Metrics</span><span class="p">)</span><span class="w">
+        </span><span class="n">CVs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">5</span><span class="w">
+        </span><span class="n">cvDivider</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">CVs</span><span class="m">+1</span><span class="p">))</span><span class="w">
+        </span><span class="n">indexCount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="w">
+        </span><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">)</span><span class="w">
+        </span><span class="n">predictors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)[</span><span class="o">!</span><span class="nf">names</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="n">outcomeName</span><span class="p">]</span><span class="w">
+        </span><span class="n">lsErr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+        </span><span class="n">lsAUC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">cv</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="n">CVs</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'cv'</span><span class="p">,</span><span class="n">cv</span><span class="p">))</span><span class="w">
+                </span><span class="n">dataTestIndex</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">((</span><span class="n">cv</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cvDivider</span><span class="p">)</span><span class="o">:</span><span class="p">(</span><span class="n">cv</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cvDivider</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cvDivider</span><span class="p">))</span><span class="w">
+                </span><span class="n">dataTest</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dfEvaluate</span><span class="p">[</span><span class="n">dataTestIndex</span><span class="p">,]</span><span class="w">
+                </span><span class="n">dataTrain</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dfEvaluate</span><span class="p">[</span><span class="o">-</span><span class="n">dataTestIndex</span><span class="p">,]</span><span class="w">
+                
+                </span><span class="n">bst</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">xgboost</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.matrix</span><span class="p">(</span><span class="n">dataTrain</span><span class="p">[,</span><span class="n">predictors</span><span class="p">]),</span><span class="w">
+                               </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataTrain</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w">
+                               </span><span class="n">max.depth</span><span class="o">=</span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="n">eta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="w">
+                               </span><span class="n">nround</span><span class="o">=</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">nthread</span><span class="o">=</span><span class="m">4</span><span class="p">,</span><span class="w"> 
+                               </span><span class="n">objective</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"reg:linear"</span><span class="p">)</span><span class="w">
+                
+                </span><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">bst</span><span class="p">,</span><span class="w"> </span><span class="n">as.matrix</span><span class="p">(</span><span class="n">dataTest</span><span class="p">[,</span><span class="n">predictors</span><span class="p">]),</span><span class="w"> </span><span class="n">outputmargin</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+                </span><span class="n">err</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rmse</span><span class="p">(</span><span class="n">dataTest</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">predictions</span><span class="p">)</span><span class="w">
+                </span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">auc</span><span class="p">(</span><span class="n">dataTest</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="n">predictions</span><span class="p">)</span><span class="w">
+                
+                </span><span class="n">lsErr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">lsErr</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="p">)</span><span class="w">
+                </span><span class="n">lsAUC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">lsAUC</span><span class="p">,</span><span class="w"> </span><span class="n">auc</span><span class="p">)</span><span class="w">
+                </span><span class="n">gc</span><span class="p">()</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+        </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Mean Error:'</span><span class="p">,</span><span class="n">mean</span><span class="p">(</span><span class="n">lsErr</span><span class="p">)))</span><span class="w">
+        </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Mean AUC:'</span><span class="p">,</span><span class="n">mean</span><span class="p">(</span><span class="n">lsAUC</span><span class="p">)))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="c1">##########################################################################################
+## Download data
+##########################################################################################
+</span><span class="w">
+</span><span class="c1"># https://archive.ics.uci.edu/ml/datasets/Gisette
+# http://stat.ethz.ch/R-manual/R-devel/library/stats/html/princomp.html
+</span><span class="w">
+</span><span class="c1"># word of warning, this is 20mb - slow
+</span><span class="n">library</span><span class="p">(</span><span class="n">RCurl</span><span class="p">)</span><span class="w"> </span><span class="c1"># download https data
+</span><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data'</span><span class="w">
+</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getURL</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">ssl.verifypeer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">gisetteRaw</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="n">textConnection</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+  
+</span><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels"</span><span class="w">
+</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getURL</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">ssl.verifypeer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">g_labels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="n">textConnection</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+ 
+</span><span class="c1">##########################################################################################
+## Remove zero and close to zero variance
+##########################################################################################
+</span><span class="w">
+</span><span class="n">nzv</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">nearZeroVar</span><span class="p">(</span><span class="n">gisetteRaw</span><span class="p">,</span><span class="w"> </span><span class="n">saveMetrics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="nf">range</span><span class="p">(</span><span class="n">nzv</span><span class="o">$</span><span class="n">percentUnique</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># how many have no variation at all
+</span><span class="n">print</span><span class="p">(</span><span class="nf">length</span><span class="p">(</span><span class="n">nzv</span><span class="p">[</span><span class="n">nzv</span><span class="o">$</span><span class="n">zeroVar</span><span class="o">==</span><span class="nb">T</span><span class="p">,]))</span><span class="w">
+
+</span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Column count before cutoff:'</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">gisetteRaw</span><span class="p">)))</span><span class="w">
+
+</span><span class="c1"># how many have less than 0.1 percent variance
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">nzv</span><span class="p">[</span><span class="n">nzv</span><span class="o">$</span><span class="n">percentUnique</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0.1</span><span class="p">,])</span><span class="w">
+
+</span><span class="c1"># remove zero &amp; near-zero variance from original data set
+</span><span class="n">gisette_nzv</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gisetteRaw</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">nzv</span><span class="p">[</span><span class="n">nzv</span><span class="o">$</span><span class="n">percentUnique</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0.1</span><span class="p">,]))</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Column count after cutoff:'</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">gisette_nzv</span><span class="p">)))</span><span class="w">
+
+</span><span class="c1">##########################################################################################
+# Run model on original data set
+##########################################################################################
+</span><span class="w">
+</span><span class="n">dfEvaluate</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">gisette_nzv</span><span class="p">,</span><span class="w"> </span><span class="n">as.numeric</span><span class="p">)),</span><span class="w">
+                    </span><span class="n">cluster</span><span class="o">=</span><span class="n">g_labels</span><span class="o">$</span><span class="n">V</span><span class="m">1</span><span class="p">)</span><span class="w">
+
+</span><span class="n">EvaluateAUC</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">##########################################################################################
+# Run prcomp on the data set
+##########################################################################################
+</span><span class="w">
+</span><span class="n">pmatrix</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">scale</span><span class="p">(</span><span class="n">gisette_nzv</span><span class="p">)</span><span class="w">
+</span><span class="n">princ</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">prcomp</span><span class="p">(</span><span class="n">pmatrix</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># plot the first two components
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">PC1</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">PC2</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="o">=</span><span class="n">as.factor</span><span class="p">(</span><span class="n">g_labels</span><span class="o">$</span><span class="n">V</span><span class="m">1+1</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">geom_point</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">as.factor</span><span class="p">(</span><span class="n">g_labels</span><span class="o">$</span><span class="n">V</span><span class="m">1</span><span class="p">)))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">scale_colour_hue</span><span class="p">()</span><span class="w">
+
+</span><span class="c1"># full - 0.965910574495451
+</span><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">5</span><span class="w">  
+</span><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">10</span><span class="w">  
+</span><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">90</span><span class="w">     
+</span><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">20</span><span class="w">  
+</span><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">50</span><span class="w">   
+</span><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">100</span><span class="w">   
+
+</span><span class="c1"># change nComp to try different numbers of component variables (10 works great)
+</span><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">10</span><span class="w">  </span><span class="c1"># 0.9650
+</span><span class="n">dfComponents</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">princ</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="o">=</span><span class="n">pmatrix</span><span class="p">)[,</span><span class="m">1</span><span class="o">:</span><span class="n">nComp</span><span class="p">]</span><span class="w">
+</span><span class="n">dfEvaluate</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">dfComponents</span><span class="p">),</span><span class="w">
+                    </span><span class="n">cluster</span><span class="o">=</span><span class="n">g_labels</span><span class="o">$</span><span class="n">V</span><span class="m">1</span><span class="p">)</span><span class="w">
+
+</span><span class="n">EvaluateAUC</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<p><br /><br />      <br />
+<a id="sourcecode_gbm">GBM source code</a>:
+<br /><br /></p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">require</span><span class="p">(</span><span class="n">ROCR</span><span class="p">)</span><span class="w">
+</span><span class="n">require</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="n">require</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
+  
+</span><span class="n">Evaluate_GBM_AUC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">,</span><span class="w"> </span><span class="n">CV</span><span class="o">=</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">trees</span><span class="o">=</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">depth</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">shrink</span><span class="o">=</span><span class="m">0.1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="n">require</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+     </span><span class="n">require</span><span class="p">(</span><span class="n">Metrics</span><span class="p">)</span><span class="w">
+     </span><span class="n">CVs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">CV</span><span class="w">
+     </span><span class="n">cvDivider</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">CVs</span><span class="m">+1</span><span class="p">))</span><span class="w">
+     </span><span class="n">indexCount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="w">
+     </span><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'cluster'</span><span class="p">)</span><span class="w">
+     </span><span class="n">predictors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)[</span><span class="o">!</span><span class="nf">names</span><span class="p">(</span><span class="n">dfEvaluate</span><span class="p">)</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="n">outcomeName</span><span class="p">]</span><span class="w">
+     </span><span class="n">lsErr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+     </span><span class="n">lsAUC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+     </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">cv</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="n">CVs</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'cv'</span><span class="p">,</span><span class="n">cv</span><span class="p">))</span><span class="w">
+          
+          </span><span class="n">dataTestIndex</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">((</span><span class="n">cv</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cvDivider</span><span class="p">)</span><span class="o">:</span><span class="p">(</span><span class="n">cv</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cvDivider</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cvDivider</span><span class="p">))</span><span class="w">
+          </span><span class="n">dataTest</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dfEvaluate</span><span class="p">[</span><span class="n">dataTestIndex</span><span class="p">,]</span><span class="w">
+          </span><span class="n">dataTrain</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dfEvaluate</span><span class="p">[</span><span class="o">-</span><span class="n">dataTestIndex</span><span class="p">,]</span><span class="w">
+          
+          
+          </span><span class="n">dataTrain</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">dataTrain</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]</span><span class="o">==</span><span class="m">1</span><span class="p">,</span><span class="s1">'yes'</span><span class="p">,</span><span class="s1">'nope'</span><span class="p">)</span><span class="w">
+          
+          </span><span class="c1"># create caret trainControl object to control the number of cross-validations performed
+</span><span class="w">          </span><span class="n">objControl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">'cv'</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">returnResamp</span><span class="o">=</span><span class="s1">'none'</span><span class="p">,</span><span class="w"> </span><span class="n">summaryFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">twoClassSummary</span><span class="p">,</span><span class="w"> </span><span class="n">classProbs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+          
+          </span><span class="c1"># run model
+</span><span class="w">          </span><span class="n">bst</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">dataTrain</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w">  </span><span class="n">as.factor</span><span class="p">(</span><span class="n">dataTrain</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]),</span><span class="w"> 
+                       </span><span class="n">method</span><span class="o">=</span><span class="s1">'gbm'</span><span class="p">,</span><span class="w"> 
+                       </span><span class="n">trControl</span><span class="o">=</span><span class="n">objControl</span><span class="p">,</span><span class="w">
+                       </span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ROC"</span><span class="p">,</span><span class="w">
+                       </span><span class="n">tuneGrid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">expand.grid</span><span class="p">(</span><span class="n">n.trees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trees</span><span class="p">,</span><span class="w"> </span><span class="n">interaction.depth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">depth</span><span class="p">,</span><span class="w"> </span><span class="n">shrinkage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">shrink</span><span class="p">)</span><span class="w">
+          </span><span class="p">)</span><span class="w">
+          
+          </span><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">bst</span><span class="p">,</span><span class="w"> </span><span class="n">dataTest</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'prob'</span><span class="p">)</span><span class="w">
+          </span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">auc</span><span class="p">(</span><span class="n">ifelse</span><span class="p">(</span><span class="n">dataTest</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]</span><span class="o">==</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">),</span><span class="n">predictions</span><span class="p">[[</span><span class="m">2</span><span class="p">]])</span><span class="w">
+          </span><span class="n">err</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rmse</span><span class="p">(</span><span class="n">ifelse</span><span class="p">(</span><span class="n">dataTest</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]</span><span class="o">==</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">),</span><span class="n">predictions</span><span class="p">[[</span><span class="m">2</span><span class="p">]])</span><span class="w">
+          
+          </span><span class="n">lsErr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">lsErr</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="p">)</span><span class="w">
+          </span><span class="n">lsAUC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">lsAUC</span><span class="p">,</span><span class="w"> </span><span class="n">auc</span><span class="p">)</span><span class="w">
+          </span><span class="n">gc</span><span class="p">()</span><span class="w">
+     </span><span class="p">}</span><span class="w">
+     </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Mean Error:'</span><span class="p">,</span><span class="n">mean</span><span class="p">(</span><span class="n">lsErr</span><span class="p">)))</span><span class="w">
+     </span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Mean AUC:'</span><span class="p">,</span><span class="n">mean</span><span class="p">(</span><span class="n">lsAUC</span><span class="p">)))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="c1"># https://archive.ics.uci.edu/ml/datasets/Gisette
+# http://stat.ethz.ch/R-manual/R-devel/library/stats/html/princomp.html
+</span><span class="w">
+</span><span class="c1"># word of warning, this is 20mb - slow
+</span><span class="n">library</span><span class="p">(</span><span class="n">RCurl</span><span class="p">)</span><span class="w"> </span><span class="c1"># download https data
+</span><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.data'</span><span class="w">
+</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getURL</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">ssl.verifypeer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">gisetteRaw</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="n">textConnection</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+  
+</span><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"https://archive.ics.uci.edu/ml/machine-learning-databases/gisette/GISETTE/gisette_train.labels"</span><span class="w">
+</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getURL</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">ssl.verifypeer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">g_labels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="n">textConnection</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+ 
+</span><span class="c1"># Remove zero and close to zero variance
+</span><span class="w">
+</span><span class="n">nzv</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">nearZeroVar</span><span class="p">(</span><span class="n">gisetteRaw</span><span class="p">,</span><span class="w"> </span><span class="n">saveMetrics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="nf">range</span><span class="p">(</span><span class="n">nzv</span><span class="o">$</span><span class="n">percentUnique</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># how many have no variation at all
+</span><span class="n">print</span><span class="p">(</span><span class="nf">length</span><span class="p">(</span><span class="n">nzv</span><span class="p">[</span><span class="n">nzv</span><span class="o">$</span><span class="n">zeroVar</span><span class="o">==</span><span class="nb">T</span><span class="p">,]))</span><span class="w">
+
+</span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Column count before cutoff:'</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">gisetteRaw</span><span class="p">)))</span><span class="w">
+
+</span><span class="c1"># how many have less than 0.1 percent variance
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">nzv</span><span class="p">[</span><span class="n">nzv</span><span class="o">$</span><span class="n">percentUnique</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0.1</span><span class="p">,])</span><span class="w">
+
+</span><span class="c1"># remove zero &amp; near-zero variance from original data set
+</span><span class="n">gisette_nzv</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gisetteRaw</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">nzv</span><span class="p">[</span><span class="n">nzv</span><span class="o">$</span><span class="n">percentUnique</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0.1</span><span class="p">,]))</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Column count after cutoff:'</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">gisette_nzv</span><span class="p">)))</span><span class="w">
+
+</span><span class="c1"># Run model on original data set
+</span><span class="w">
+</span><span class="n">dfEvaluateOrig</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">gisette_nzv</span><span class="p">,</span><span class="w"> </span><span class="n">as.numeric</span><span class="p">)),</span><span class="w">
+                    </span><span class="n">cluster</span><span class="o">=</span><span class="n">g_labels</span><span class="o">$</span><span class="n">V</span><span class="m">1</span><span class="p">)</span><span class="w">
+
+</span><span class="n">Evaluate_GBM_AUC</span><span class="p">(</span><span class="n">dfEvaluateOrig</span><span class="p">,</span><span class="w"> </span><span class="n">CV</span><span class="o">=</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">trees</span><span class="o">=</span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">depth</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">shrink</span><span class="o">=</span><span class="m">1</span><span class="p">)</span><span class="w"> 
+
+</span><span class="c1"># Run prcomp on the data set
+</span><span class="w">
+</span><span class="n">pmatrix</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">scale</span><span class="p">(</span><span class="n">gisette_nzv</span><span class="p">)</span><span class="w">
+</span><span class="n">princ</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">prcomp</span><span class="p">(</span><span class="n">pmatrix</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># change nComp to try different numbers of component variables
+</span><span class="n">nComp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">20</span><span class="w">  
+</span><span class="n">dfComponents</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">princ</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="o">=</span><span class="n">pmatrix</span><span class="p">)[,</span><span class="m">1</span><span class="o">:</span><span class="n">nComp</span><span class="p">]</span><span class="w">
+</span><span class="n">dfEvaluatePCA</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cbind</span><span class="p">(</span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">dfComponents</span><span class="p">),</span><span class="w">
+                    </span><span class="n">cluster</span><span class="o">=</span><span class="n">g_labels</span><span class="o">$</span><span class="n">V</span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">Evaluate_GBM_AUC</span><span class="p">(</span><span class="n">dfEvaluatePCA</span><span class="p">,</span><span class="n">CV</span><span class="o">=</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">trees</span><span class="o">=</span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">depth</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">shrink</span><span class="o">=</span><span class="m">1</span><span class="p">)</span><span class="w"> 
+
+</span></code></pre>
+</div>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

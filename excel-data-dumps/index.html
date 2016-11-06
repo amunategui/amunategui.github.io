@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>R and Excel: Making Your Data Dumps Pretty with XLConnect</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">R and Excel: Making Your Data Dumps Pretty with XLConnect</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+
+   <p><img src="img/r-and-excel.png" alt="plot of pubmed logo" />
+<br /><br /></p>
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=G3mOUbZr4HI&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA&amp;index=1" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Source Code</a></li>
+</ul>
+<p><br />
+<strong>Packages Used in this Walkthrough</strong></p>
+<ul>
+        <li type="square"><a href="http://cran.r-project.org/web/packages/XLConnect/index.html" targer="_blank">{XLConnect}</a> Excel Connector for R</li>
+</ul>
+<p><br />
+<br />
+When it comes to sharing data, results, probabilities, one has many choices in terms of deliverable media. On one end of the spectrum you have raw text files, and on the other, numerous reporting engines,  content management systems and web solutions.</p>
+
+<p>As a data scientist, I get away with working and sharing comma delimited files (.csv) all day long, but there are times when customers want more. Excel is a great tool as everybody in analytics is familiar with it and it can do some pretty cool things inexpensively.</p>
+
+<p>Instead of saving your data as a <code class="highlighter-rouge">.csv</code> or <code class="highlighter-rouge">.tab</code> file, you can leverage the <code class="highlighter-rouge">.xlsx</code> (native <b>Excel</b> format) just as easily and make a huge leap towards better looking reports.
+<br />
+<br />
+<strong><em>Case 1: Conditional Formatting</em></strong></p>
+
+<p>The key is to prepare an Excel file in advance and use it as a base form to be called, duplicated, and populated from within <b>R</b>. So fire up your <b>Excel</b> application and open a new document.
+<br /><br />
+Make the top row frozen. Go to: <code class="highlighter-rouge">Layout —&gt; Window —&gt; Freeze Top Row</code> on the <b>Mac</b> and <code class="highlighter-rouge">View -&gt; Freeze Panes -&gt; Freeze Top Row</code> on <b>Windows</b> (and this may still be different depending on your application version and operating system):
+<br /><br /></p>
+<p style="text-align:center"><img src="img/freeze-top-row.png" alt="free-top-row" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br />
+<br />
+To emphasize the difference between a straight <code class="highlighter-rouge">.csv</code> file, let’s bold the entire top row, and change the font and background colors:
+<code class="highlighter-rouge">Home —&gt; Font</code> box. Select a dark background color and light font color.
+<br /><br /></p>
+<p style="text-align:center"><img src="img/font.png" alt="free-top-row" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Finally, add the following headers, <code class="highlighter-rouge">First Name</code>, <code class="highlighter-rouge">Last Name</code>, <code class="highlighter-rouge">Income</code>:</p>
+<p style="text-align:center"><img src="img/case1_look.png" alt="headers" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Now, let’s add some conditional formatting. Go to <code class="highlighter-rouge">Home —&gt; Format —&gt; Conditional Formatting</code> and select <code class="highlighter-rouge">New Rule</code>:</p>
+<p style="text-align:center"><img src="img/new-rule.png" alt="new formatting rule" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+On the <b>Mac</b>, in the ‘New Formatting Rule’ box, select <code class="highlighter-rouge">Classic</code>:</p>
+<p style="text-align:center"><img src="img/new-formatting-rule.png" alt="new formatting rule" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Make it look like below with the following formula <code class="highlighter-rouge">$C2&gt;50000</code>, this will trigger anytime <code class="highlighter-rouge">C</code> column has a higher value than 50000:</p>
+<p style="text-align:center"><img src="img/conditional1.png" alt="conditional menu" style="padding:1px; border:1px solid #021a40;" /></p>
+<p>After you <code class="highlighter-rouge">OK</code>, fill in the <code class="highlighter-rouge">Applies to</code> section with <code class="highlighter-rouge">Sheet1!$2:$200</code>, this will apply the pink background color on rows 2-200 when the condition is met:</p>
+<p style="text-align:center"><img src="img/conditional2.png" alt="conditional menu" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /></p>
+
+<p>On <b>Windows</b>, in the <code class="highlighter-rouge">Home -&gt; Conditional Formatting -&gt; New Rule</code>, select <code class="highlighter-rouge">Use a formula to determine which cells to format on Windows</code> and enter <code class="highlighter-rouge">$C2&gt;50000</code>:</p>
+<p style="text-align:center"><img src="img/windows1-formatting-rule.png" alt="conditional menu" style="padding:1px; border:1px solid #021a40;" /></p>
+
+<p><br /><br />
+Finally, make the rule apply to the entire row by adding in the <code class="highlighter-rouge">Applies to</code> section <code class="highlighter-rouge">=$2:$200</code>, along with a color selection in the <code class="highlighter-rouge">Format</code> box:</p>
+<p style="text-align:center"><img src="img/windows2-formatting-rule.png" alt="conditional menu" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Don’t sweat the details as this isn’t a walkthrough about Excel, we’re just setting up our base file.
+<br /><br />
+Hit <code class="highlighter-rouge">Apply</code> and <code class="highlighter-rouge">OK</code>. Save the file as <code class="highlighter-rouge">sample.xlsx</code> and close it.
+<br /><br />
+<strong>Jumpint into R</strong></p>
+
+<p>Let’s create some data:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">income_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'FirstName'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'Joe'</span><span class="p">,</span><span class="s1">'Mike'</span><span class="p">,</span><span class="s1">'Liv'</span><span class="p">),</span><span class="w"> </span><span class="s1">'LastName'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'Smith'</span><span class="p">,</span><span class="s1">'Steel'</span><span class="p">,</span><span class="s1">'Storm'</span><span class="p">),</span><span class="w"> </span><span class="s1">'Income'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">100000</span><span class="p">,</span><span class="m">20000</span><span class="p">,</span><span class="m">80000</span><span class="p">))</span><span class="w">
+</span><span class="n">income_data</span><span class="o">$</span><span class="n">FirstName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">income_data</span><span class="o">$</span><span class="n">FirstName</span><span class="p">)</span><span class="w">
+</span><span class="n">income_data</span><span class="o">$</span><span class="n">LastName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">income_data</span><span class="o">$</span><span class="n">LastName</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">income_data</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+This create a basic income table:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1">##	  FirstName LastName Income
+##	1       Joe    Smith 100000
+##	2      Mike    Steel  20000
+##	3       Liv    Storm  80000
+</span></code></pre>
+</div>
+<p><br /><br />
+And let’s grab our <b>Excel</b> spreadsheet we just created:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">XLConnect</span><span class="p">)</span><span class="w">
+</span><span class="n">wb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkbook</span><span class="p">(</span><span class="s1">'sample.xlsx'</span><span class="p">)</span><span class="w">
+</span><span class="n">xldf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readWorksheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="w"> </span><span class="n">sheet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">])</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br />
+All we did above is load <code class="highlighter-rouge">XLConnect</code>, call our saved <code class="highlighter-rouge">sample.xlsx</code> and loaded the first sheet of the spreadsheet (this implies you can load and write to many sheets on a spreadsheet - cool!). <code class="highlighter-rouge">xldf</code> is an actual data frame object that only contains our headers:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">class</span><span class="p">(</span><span class="n">xldf</span><span class="p">)</span><span class="w">
+</span><span class="c1">##	[1] "data.frame"
+</span><span class="n">head</span><span class="p">(</span><span class="n">xldf</span><span class="p">)</span><span class="w">
+</span><span class="c1">##	[1] First.Name  X.Last.Name Income     
+##	&lt;0 rows&gt; (or 0-length row.names)
+</span></code></pre>
+</div>
+
+<p><br /><br />
+Don’t worry about the weird header format, it won’t show on our final output. Here comes the interesting part, we’re going to cycle through each cell of interest and update it with our <code class="highlighter-rouge">income_data</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">income_data</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+	</span><span class="n">colcount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="w">
+	</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">nm</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">xldf</span><span class="p">)){</span><span class="w">
+		</span><span class="n">xldf</span><span class="p">[</span><span class="n">id</span><span class="p">,</span><span class="n">nm</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">income_data</span><span class="p">[</span><span class="n">id</span><span class="p">,</span><span class="n">colcount</span><span class="p">]</span><span class="w">
+		</span><span class="n">colcount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">colcount</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="w">
+	</span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br />
+We can customize the sheet name with <code class="highlighter-rouge">Salaries</code>, write the sheet, and finally save it as <code class="highlighter-rouge">income_data.xlsx</code> (note <code class="highlighter-rouge">startRow=2</code>):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sheet_name</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Salaries"</span><span class="w">
+</span><span class="n">renameSheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="w"> </span><span class="n">sheet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">newName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sheet_name</span><span class="p">)</span><span class="w">
+</span><span class="n">writeWorksheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="n">xldf</span><span class="p">,</span><span class="n">sheet</span><span class="o">=</span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="n">startRow</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">saveWorkbook</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="s1">'income_data.xlsx'</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br />
+And this what the final spreadsheet looks like:</p>
+<p style="text-align:center"><img src="img/case1-final-sheet.png" alt="conditional menu" style="padding:1px; border:1px solid #021a40;" /></p>
+
+<p><br /><br />
+<strong><em>Case 2: Hidden fields and drop down cells</em></strong></p>
+
+<p>This isn’t really <b>R</b> related but it has come in handy for a recent project. We created call sheets for operators to use containing an ID, name and phone number on each row along with a drop-down list indicating how the call went. We also wanted to have the user ID on the sheet but not visible to the operator. And this is what we came up with…
+<br /><br />
+Let’s start a new spreadsheet. Here will add a drop down column for each row, every-other-row background formatting, and a hidden column for our IDs.
+<br /><br />
+First, let’s format the sheet in a visually appealing way. Highlight an area of 6 columns by 10 or 20 rows. Select <code class="highlighter-rouge">Tables -&gt; Table Styles</code> and choose a color scheme you like.</p>
+<p style="text-align:center"><img src="img/case2-style.png" alt="case 2 style" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Swap the generic header text with the following headers: <code class="highlighter-rouge">ID</code>, <code class="highlighter-rouge">First Name</code>, <code class="highlighter-rouge">Last Name</code>, <code class="highlighter-rouge">Income</code>,  <code class="highlighter-rouge">Phone</code>, <code class="highlighter-rouge">Called</code>. Also highlight the first row and format it like we did in <code class="highlighter-rouge">Case 1</code>.</p>
+<p style="text-align:center"><img src="img/case2-new-headers.png" alt="case 2 headers" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+To hide a row, simply resize it to nothing on the tool bar… that simple. To add a drop down, select the cell you want it in (F2) and navigate to <code class="highlighter-rouge">Data -&gt; Data Validation -&gt; Data Validation</code>. In <code class="highlighter-rouge">Allow:</code> select <code class="highlighter-rouge">List</code> and in <code class="highlighter-rouge">Source</code> enter <code class="highlighter-rouge">Yes, No</code> (separate both words with a comma):</p>
+<p style="text-align:center"><img src="img/drop-down-setup.png" alt="drop-down" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Copy the F2 cell with our drop down to all other cells in that column. You table should like something like this:</p>
+<p style="text-align:center"><img src="img/drop-down-action.png" alt="case2" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+Save your spreadsheet as <code class="highlighter-rouge">sample2.xlsx</code> and close it.
+<br /><br /></p>
+
+<p><strong>Jumpint into R</strong></p>
+
+<p><br /><br />
+Let’s add IDs and phone numbers to our income data set:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">income_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'ID'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">),</span><span class="w"> </span><span class="s1">'FirstName'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'Joe'</span><span class="p">,</span><span class="s1">'Mike'</span><span class="p">,</span><span class="s1">'Liv'</span><span class="p">),</span><span class="w"> </span><span class="s1">'LastName'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'Smith'</span><span class="p">,</span><span class="s1">'Steel'</span><span class="p">,</span><span class="s1">'Storm'</span><span class="p">),</span><span class="w"> </span><span class="s1">'Income'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">100000</span><span class="p">,</span><span class="m">20000</span><span class="p">,</span><span class="m">80000</span><span class="p">),</span><span class="w"> </span><span class="s1">'PhoneNumber'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'888-888-1111'</span><span class="p">,</span><span class="s1">'888-888-2222'</span><span class="p">,</span><span class="s1">'888-888-3333'</span><span class="p">))</span><span class="w">
+</span><span class="n">income_data</span><span class="o">$</span><span class="n">FirstName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">income_data</span><span class="o">$</span><span class="n">FirstName</span><span class="p">)</span><span class="w">
+</span><span class="n">income_data</span><span class="o">$</span><span class="n">LastName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">income_data</span><span class="o">$</span><span class="n">LastName</span><span class="p">)</span><span class="w">
+</span><span class="n">income_data</span><span class="o">$</span><span class="n">PhoneNumber</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">income_data</span><span class="o">$</span><span class="n">PhoneNumber</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">income_data</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1">##	  ID FirstName LastName Income  PhoneNumber
+##	1  1       Joe    Smith 100000 888-888-1111
+##	2  2      Mike    Steel  20000 888-888-2222
+##	3  3       Liv    Storm  80000 888-888-3333
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">XLConnect</span><span class="p">)</span><span class="w">
+</span><span class="n">wb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkbook</span><span class="p">(</span><span class="s1">'sample2.xlsx'</span><span class="p">)</span><span class="w">
+</span><span class="n">xldf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readWorksheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="w"> </span><span class="n">sheet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">])[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">]</span><span class="w">
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">income_data</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+	</span><span class="n">colcount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="w">
+	</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">nm</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">xldf</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">])</span><span class="w"> </span><span class="c1"># only headers 1 through 5, 6 is the Called? field
+</span><span class="w">	</span><span class="p">{</span><span class="w">
+		</span><span class="n">xldf</span><span class="p">[</span><span class="n">id</span><span class="p">,</span><span class="n">nm</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">income_data</span><span class="p">[</span><span class="n">id</span><span class="p">,</span><span class="n">colcount</span><span class="p">]</span><span class="w">
+		</span><span class="n">colcount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">colcount</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="w">
+	</span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br />
+We’ll save it as <code class="highlighter-rouge">income_data2.xlsx</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sheet_name</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Salaries"</span><span class="w">
+</span><span class="n">renameSheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="w"> </span><span class="n">sheet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">newName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sheet_name</span><span class="p">)</span><span class="w">
+</span><span class="n">writeWorksheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="n">xldf</span><span class="p">,</span><span class="n">sheet</span><span class="o">=</span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="n">startRow</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">saveWorkbook</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="s1">'income_data2.xlsx'</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Here is a look at our final spreadsheet. It is ready do be distributed with the drop downs all functional and the ID column hidden:
+<br /><br /></p>
+<p style="text-align:center"><img src="img/final-call-sheet.png" alt="final look" style="padding:1px; border:1px solid #021a40;" /></p>
+
+<p><br /><br />      <br />
+<a id="sourcecode">Full source code</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># Case 1
+</span><span class="n">income_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'FirstName'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'Joe'</span><span class="p">,</span><span class="s1">'Mike'</span><span class="p">,</span><span class="s1">'Liv'</span><span class="p">),</span><span class="w"> </span><span class="s1">'LastName'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'Smith'</span><span class="p">,</span><span class="s1">'Steel'</span><span class="p">,</span><span class="s1">'Storm'</span><span class="p">),</span><span class="w"> </span><span class="s1">'Income'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">100000</span><span class="p">,</span><span class="m">20000</span><span class="p">,</span><span class="m">80000</span><span class="p">))</span><span class="w">
+</span><span class="n">income_data</span><span class="o">$</span><span class="n">FirstName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">income_data</span><span class="o">$</span><span class="n">FirstName</span><span class="p">)</span><span class="w">
+</span><span class="n">income_data</span><span class="o">$</span><span class="n">LastName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">income_data</span><span class="o">$</span><span class="n">LastName</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">income_data</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># load XLConnect and grab a copy of sample.xlsx
+</span><span class="n">library</span><span class="p">(</span><span class="n">XLConnect</span><span class="p">)</span><span class="w">
+</span><span class="n">wb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkbook</span><span class="p">(</span><span class="s1">'sample.xlsx'</span><span class="p">)</span><span class="w">
+</span><span class="n">xldf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readWorksheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="w"> </span><span class="n">sheet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">])</span><span class="w">
+</span><span class="nf">class</span><span class="p">(</span><span class="n">xldf</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">xldf</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># replace XL cells with new content
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">income_data</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+	</span><span class="n">colcount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="w">
+	</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">nm</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">xldf</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">3</span><span class="p">]){</span><span class="w">
+		</span><span class="n">xldf</span><span class="p">[</span><span class="n">id</span><span class="p">,</span><span class="n">nm</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">income_data</span><span class="p">[</span><span class="n">id</span><span class="p">,</span><span class="n">colcount</span><span class="p">]</span><span class="w">
+		</span><span class="n">colcount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">colcount</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="w">
+	</span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="c1"># save XL sheet and file
+</span><span class="n">sheet_name</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Salaries"</span><span class="w">
+</span><span class="n">renameSheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="w"> </span><span class="n">sheet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">newName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sheet_name</span><span class="p">)</span><span class="w">
+</span><span class="n">writeWorksheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="n">xldf</span><span class="p">,</span><span class="n">sheet</span><span class="o">=</span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="n">startRow</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">saveWorkbook</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="s1">'income_data.xlsx'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Case 2
+</span><span class="n">income_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'ID'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">),</span><span class="w"> </span><span class="s1">'FirstName'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'Joe'</span><span class="p">,</span><span class="s1">'Mike'</span><span class="p">,</span><span class="s1">'Liv'</span><span class="p">),</span><span class="w"> </span><span class="s1">'LastName'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'Smith'</span><span class="p">,</span><span class="s1">'Steel'</span><span class="p">,</span><span class="s1">'Storm'</span><span class="p">),</span><span class="w"> </span><span class="s1">'Income'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">100000</span><span class="p">,</span><span class="m">20000</span><span class="p">,</span><span class="m">80000</span><span class="p">),</span><span class="w"> </span><span class="s1">'PhoneNumber'</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'888-888-1111'</span><span class="p">,</span><span class="s1">'888-888-2222'</span><span class="p">,</span><span class="s1">'888-888-3333'</span><span class="p">))</span><span class="w">
+</span><span class="n">income_data</span><span class="o">$</span><span class="n">FirstName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">income_data</span><span class="o">$</span><span class="n">FirstName</span><span class="p">)</span><span class="w">
+</span><span class="n">income_data</span><span class="o">$</span><span class="n">LastName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">income_data</span><span class="o">$</span><span class="n">LastName</span><span class="p">)</span><span class="w">
+</span><span class="n">income_data</span><span class="o">$</span><span class="n">PhoneNumber</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">income_data</span><span class="o">$</span><span class="n">PhoneNumber</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">income_data</span><span class="p">)</span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">XLConnect</span><span class="p">)</span><span class="w">
+</span><span class="n">wb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkbook</span><span class="p">(</span><span class="s1">'sample2.xlsx'</span><span class="p">)</span><span class="w">
+</span><span class="n">xldf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readWorksheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="w"> </span><span class="n">sheet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">])</span><span class="w"> 
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">income_data</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+	</span><span class="n">colcount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1</span><span class="w">
+	</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">nm</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">xldf</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">]){</span><span class="w">
+		</span><span class="n">xldf</span><span class="p">[</span><span class="n">id</span><span class="p">,</span><span class="n">nm</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">income_data</span><span class="p">[</span><span class="n">id</span><span class="p">,</span><span class="n">colcount</span><span class="p">]</span><span class="w">
+		</span><span class="n">colcount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">colcount</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="w">
+	</span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="c1"># save XL sheet and file
+</span><span class="n">sheet_name</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Salaries"</span><span class="w">
+</span><span class="n">renameSheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="w"> </span><span class="n">sheet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">newName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sheet_name</span><span class="p">)</span><span class="w">
+</span><span class="n">writeWorksheet</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="n">xldf</span><span class="p">,</span><span class="n">sheet</span><span class="o">=</span><span class="n">getSheets</span><span class="p">(</span><span class="n">wb</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="n">startRow</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">saveWorkbook</span><span class="p">(</span><span class="n">wb</span><span class="p">,</span><span class="s1">'income_data.xlsx'</span><span class="p">)</span><span class="w">
+
+
+</span></code></pre>
+</div>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+	
+  </body>
+</html>

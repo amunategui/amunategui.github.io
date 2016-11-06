@@ -1,0 +1,590 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Going from an Idea to a Pitch: Hosting your Python Application using Flask and Amazon Web Services (AWS)</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Going from an Idea to a Pitch: Hosting your Python Application using Flask and Amazon Web Services (AWS)</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+
+  
+
+    <p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=3HuYr6G2Z28&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA&amp;index=1" target="_blank">YouTube Companion Video</a></li>
+
+</ul>
+<p><br /></p>
+
+<p>In this project, I take an idea coded in <b>Python</b>, create an <b>AWS EC2</b> instance, and use <b><a href="http://flask.pocoo.org" target="_blank">Flask</a></b> to share it with the world. Even though everything here is relatively simple, there are a lot of steps and you don’t want to miss any - take you time, have fun, when in doubt start again, and, most importantly, think about the possibilities for your own work!</p>
+
+<p><br /></p>
+<ul>
+    <li type="square"><a href="#python-application">Plagiarism Defender - A Python Application</a></li>
+    <li type="square"><a href="#amazon-web-services">Amazon Web Services (AWS)</a></li>
+    <ul>
+        <li type="square"><a href="#vpc">VPC</a></li>
+        <li type="square"><a href="#ec2">EC2</a></li>
+        <li type="square"><a href="#connecting-ec2">Connecting to EC2</a></li>
+    </ul>
+    <li type="square"><a href="#installing-flask">Installing Apache &amp; Flask</a></li>
+    <li type="square"><a href="#configuring-flask">Building the Flask Site</a></li>
+    <li type="square"><a href="#running-plagiarism-defender">Running Plagiarism Defender on the Web</a></li>
+    <ul>
+        <li type="square"><a href="#web-serving-file">Main Web-Serving File</a></li>
+        <li type="square"><a href="#template-files">Template HTML Files</a></li>
+    </ul>
+     <li type="square"><a href="#twitter-bootsrap">Beautifying with Twitter’s Bootstrap</a></li>
+</ul>
+
+<p><br /><br /></p>
+<h2><a id="python-application">Plagiarism Defender - A Python Application</a></h2>
+<p><br />
+OK, so I have a Python project that I want to push out to the web. This app takes text as input, splits it into sentences using &lt;a = href=’http://www.nltk.org/’ target=’_blank’&gt;Natural Language Toolkit (NLTK)&lt;/a&gt;, and sends it to the Bing search engine for matches.</p>
+
+<p>It surrounds each sentence with quotes to <b>only</b> find exact matches. If a match is found, then that sentence is deemed plagiarized and the counter is incremented. It does so for all sentences and returns the mean counter value as a plagiarism score.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">from</span><span class="w"> </span><span class="err">__</span><span class="n">future__</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">division</span><span class="w">
+</span><span class="n">import</span><span class="w"> </span><span class="n">requests</span><span class="p">,</span><span class="w"> </span><span class="n">time</span><span class="w">
+</span><span class="c1"># sudo pip install -U nltk
+</span><span class="n">from</span><span class="w"> </span><span class="n">nltk.tokenize.punkt</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">PunktSentenceTokenizer</span><span class="p">,</span><span class="w"> </span><span class="n">PunktParameters</span><span class="w"> 
+</span><span class="n">import</span><span class="w"> </span><span class="n">urllib2</span><span class="w">
+
+</span><span class="c1"># Try it out on the first lines of Moby Dick:
+</span><span class="n">text_to_check</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Call me Ishmael. Some years ago - never mind how long precisely - having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world."</span><span class="w">
+
+</span><span class="n">punkt_param</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PunktParameters</span><span class="p">()</span><span class="w">
+</span><span class="n">sentence_splitter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PunktSentenceTokenizer</span><span class="p">(</span><span class="n">punkt_param</span><span class="p">)</span><span class="w">
+</span><span class="n">sentences</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sentence_splitter.tokenize</span><span class="p">(</span><span class="n">text_to_check</span><span class="p">)</span><span class="w">
+</span><span class="n">probability_of_plagiarism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+
+</span><span class="k">for</span><span class="w"> </span><span class="n">a_sentence</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">sentences</span><span class="o">:</span><span class="w">
+    </span><span class="n">print</span><span class="p">(</span><span class="n">a_sentence</span><span class="p">)</span><span class="w">
+    </span><span class="n">time.sleep</span><span class="p">(</span><span class="m">0.3</span><span class="p">)</span><span class="w">
+    </span><span class="n">the_term</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">urllib2.quote</span><span class="p">(</span><span class="s1">'+'</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">'"'</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a_sentence</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">'"'</span><span class="p">)</span><span class="w">
+    </span><span class="n">page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">requests.get</span><span class="p">(</span><span class="s1">'https://www.bing.com/search?q='</span><span class="o">+</span><span class="n">the_term</span><span class="p">)</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">not</span><span class="w"> </span><span class="s2">"No results found for"</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">page.text</span><span class="p">)</span><span class="o">:</span><span class="w">
+        </span><span class="n">probability_of_plagiarism</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="m">1</span><span class="p">;</span><span class="w">
+
+</span><span class="n">print</span><span class="p">(</span><span class="s1">'Probability of plagiarism: '</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">str</span><span class="p">((</span><span class="n">probability_of_plagiarism</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">len</span><span class="p">(</span><span class="n">sentences</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">'%'</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>It correctly flags the Moby Dick text as plagiarized!</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">In</span><span class="w"> </span><span class="p">[</span><span class="m">151</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="n">print</span><span class="p">(</span><span class="s1">'Probability of plagiarism: '</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">str</span><span class="p">((</span><span class="n">probability_of_plagiarism</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">len</span><span class="p">(</span><span class="n">sentences</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">'%'</span><span class="p">)</span><span class="w">
+</span><span class="n">Probability</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">plagiarism</span><span class="o">:</span><span class="w"> </span><span class="m">100</span><span class="o">%</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>This may not scale well as Bing would probably get upset from excessive automated calls, but will do fine for this demonstration. Let’s push this out onto the web and get some exposure.</p>
+
+<p><br /></p>
+<h2><a id="amazon-web-services">Amazon Web Services - Home Away from Home</a></h2>
+<p><br />
+Now that we have our application ready to go, we need the tools to serve it out to the world. We’ll start with our <a href="http://aws.amazon.com/" target="_blank">Amazon Web Service EC2 instance</a>. You will need an AWS account to access the site.
+<br /><br />
+<strong>AWS Console</strong>
+<br />
+First, log into the AWS console:
+<br /><br /></p>
+<p style="text-align:center">
+<img src="img/logging_on_AWS.png" alt="logging_on_AWS" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /></p>
+<h2><a id="vpc">VPC</a></h2>
+<p>Select VPC:
+<br /><br /></p>
+<p style="text-align:center">
+<img src="img/choosing_vpc.png" alt="choosing_vpc" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br />
+A virtual private cloud (VPC) will determine who and what gets to access the site. We will use the wizard and content ourselves with only on VPC. In an enterprise-level application, you will want at least 4, 2 to be private and run your database, and two to be public and hold your web-serving application. By duplicating the private and public VPCs you can benefit from fail-over and load balancing tools. By keeping things simple, we’ll get our instance working in just a few clicks, seriously!</p>
+
+<p>Start the wizard:
+<br /><br /></p>
+<p style="text-align:center">
+<img src="img/vpc_wizard.png" alt="vpc_wizard" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+Start the wizard and select ‘VPC with a Single Public Subnet’:
+<br /><br /></p>
+<p style="text-align:center">
+<img src="img/vpc_wizard_2.png" alt="vpc_wizard_2" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+Most of the defaults are fine except you should add a name under <code class="highlighter-rouge">VPC name</code> and under <code class="highlighter-rouge">Add endpoints for S3 to you subnets</code> select <code class="highlighter-rouge">Public subnet</code>:
+<br /><br /></p>
+<p style="text-align:center"><img src="img/vpc_wizard_3.png" alt="vpc_wizard_3" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br /></p>
+
+<h2><a id="ec2">EC2</a></h2>
+<p><br />
+VPC is done, let’s now create our EC2 instance - this is going to be our new machine. Click on the orange cube in the upper left corner of the page. From the ensuing menu, choose the first option, <code class="highlighter-rouge">EC2</code></p>
+
+<p><br /><br /></p>
+<p style="text-align:center"><img src="img/EC2.png" alt="EC2" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+In <code class="highlighter-rouge">Create Instance</code>, select <code class="highlighter-rouge">Launch Instance</code>:
+<br /><br /></p>
+<p style="text-align:center"><img src="img/EC2_create_instance.png" alt="EC2_create_instance" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+<code class="highlighter-rouge">Select</code> the free eligible tier <a href="http://www.ubuntu.com/" target="_blank">Ubuntu</a> box (may not always be free, check if it applies to you):
+<br /><br /></p>
+<p style="text-align:center"><img src="img/ec2_ubuntu.png" alt="ec2_ubuntu" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+Go with defaults and click <code class="highlighter-rouge">Next: Configure Instance Details</code>
+<br /><br /></p>
+<p style="text-align:center"><img src="img/ubuntu_defaults.png" alt="ubuntu_defaults" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+Under <code class="highlighter-rouge">Step 3</code>, make sure to enable ‘Auto-assign IP’ and leave the rest as is. Click <code class="highlighter-rouge">Review and Launch</code>
+<br /><br /></p>
+<p style="text-align:center"><img src="img/enable_public_ip.png" alt="enable_public_ip" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+And in <code class="highlighter-rouge">Step 7</code> add a new rule to the security group. Click <code class="highlighter-rouge">Edit security groups</code> and click <code class="highlighter-rouge">Add Rule</code> and choose <code class="highlighter-rouge">HTTP</code> on port 80, this will allow for Internet traffic:
+<br /><br /></p>
+<p style="text-align:center"><img src="img/step2_ec2.png" alt="step2_ec2" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+It should look like the following:
+<br /><br /></p>
+<p style="text-align:center"><img src="img/http_ec2.png" alt="http_ec2" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+Once added, select <code class="highlighter-rouge">Review and Launch</code>. We have one more step before reaching the instance - we need create a new <code class="highlighter-rouge">key pair</code>. Click <code class="highlighter-rouge">Launch</code> to get there. Key-pair is a security file that will live on your machine and is required to ‘SSH’ into the instance. I tend to create them and leave them in my downloads. What ever you decided to do, make sure you know where it is as you’ll need to pass a path to it every time you want to connect to it.
+<br /><br /></p>
+<p style="text-align:center"><img src="img/key_pair.png" alt="key_pair" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+Name it whatever you like and hit the <code class="highlighter-rouge">Download Key Pair</code>. Finally select <code class="highlighter-rouge">Launch Instances</code> or <code class="highlighter-rouge">View Instances</code> and we’re ready to go! Keep in mind that whenever you instance is running, you may be charged by Amazon - read the documentation to make sure you’re OK with it. Also, stop the instance when you don’t need to slow down the charges, and terminate it when you don’t need it anymore (i.e. delete it) to stop all charges.</p>
+
+<p>Once the instance is initialized and running, you should see a green light by it:
+<br /><br /></p>
+<p style="text-align:center"><img src="img/running_ec2.png" alt="running_ec2" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+Select the left check-box on your instance line to access the settings for that instance. It should look something like this:
+<br /><br /></p>
+<p style="text-align:center"><img src="img/instance_ec2.png" alt="instance_ec2" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br /></p>
+
+<h2><a id="connecting-ec2">Connecting to the EC2 Instance</a></h2>
+
+<p>Select the top <code class="highlighter-rouge">Connect</code> button to get the SSH connection string that enables connections. Follow the instructions if you want to use the Java terminal to connect to the instance. Here, I will be using the terminal on my Mac.
+<br /><br /></p>
+<p style="text-align:center"><img src="img/connection_instructions_ec2.png" alt="connection_instructions_ec2" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+The last line states your connection string: <code class="highlighter-rouge">ssh -i demo.pem ubuntu@52.25.53.41</code>. To use it on the Mac, open your terminal and navigate to your <code class="highlighter-rouge">Downloads</code> folder (or wherever you moved your <b>pem</b> key-pair file).
+<br /><br /></p>
+<p style="text-align:center"><img src="img/ssh.png" alt="ssh" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+That is all you need to access the instance. If you are having issues with it, follow Amazon’s advice and set the correct permissions for you <b>pem</b> file by calling <code class="highlighter-rouge">chmod 400 demo.pem</code>. Also, keep in mind, anytime you reboot your instance, your connection IP will be different.</p>
+
+<p>Once you get in, you should see something along these lines:
+<br /><br /></p>
+<p style="text-align:center"><img src="img/ssh_successful_connection.png" alt="ssh_successful_connection" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+<br /><br /></p>
+<h2><a id="installing-flask">Installing Apache &amp; Flask on EC2</a></h2>
+<p><br />
+To keep things simple, we won’t use GIT or a virtual environment - fast and cheap, remember? But in the long run, you will benefit from using those tools.</p>
+
+<p>Now, to get to Flask, we first need to install Apache:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sudo</span><span class="w"> </span><span class="n">apt</span><span class="o">-</span><span class="n">get</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">apache2</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">apt</span><span class="o">-</span><span class="n">get</span><span class="w"> </span><span class="n">update</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">apt</span><span class="o">-</span><span class="n">get</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">libapache2</span><span class="o">-</span><span class="n">mod</span><span class="o">-</span><span class="n">wsgi</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>and Flask:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sudo</span><span class="w"> </span><span class="n">apt</span><span class="o">-</span><span class="n">get</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">python</span><span class="o">-</span><span class="n">flask</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">apt</span><span class="o">-</span><span class="n">get</span><span class="w"> </span><span class="n">upgrade</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>We now have our web serving software installed. To verify that things are progressing properly, enter your I.P. address in the browser. This is what you should be seeing, the static Apache homepage:</p>
+
+<p><br /><br /></p>
+<p style="text-align:center"><img src="img/ubunutu_homepage.png" alt="ubunutu_homepage" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br />
+<br /><br /></p>
+<h2><a id="configuring-flask">Configuring the Flask Site</a></h2>
+<p><br /></p>
+
+<p>Now, lets create our file structure. We start with a <code class="highlighter-rouge">FlaskApps</code> master directory off of the <code class="highlighter-rouge">www</code> folder:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">cd</span><span class="w"> </span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="n">FlaskApps</span><span class="w">
+</span><span class="n">cd</span><span class="w"> </span><span class="n">FlaskApps</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>We create our <code class="highlighter-rouge">PlagiarismDefenderApp</code> directory and a <code class="highlighter-rouge">template</code> subdirectory:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sudo</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="n">PlagiarismDefenderApp</span><span class="w">
+</span><span class="n">cd</span><span class="w"> </span><span class="n">PlagiarismDefenderApp</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="n">templates</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>Let’s start with a simple page to confirm that Flask can serve dynamic pages. We’ll call up ‘nano’, a very simple text editor.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sudo</span><span class="w"> </span><span class="n">nano</span><span class="w"> </span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">FlaskApps</span><span class="o">/</span><span class="n">PlagiarismDefenderApp</span><span class="o">/</span><span class="n">home.py</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>and enter the following code:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">from</span><span class="w"> </span><span class="n">flask</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">Flask</span><span class="w">
+</span><span class="n">app</span><span class="o">=</span><span class="n">Flask</span><span class="p">(</span><span class="err">__</span><span class="n">name__</span><span class="p">)</span><span class="w">
+
+</span><span class="o">@</span><span class="n">app.route</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span><span class="w">
+</span><span class="n">def</span><span class="w"> </span><span class="n">home</span><span class="p">()</span><span class="o">:</span><span class="w">
+    </span><span class="n">return</span><span class="w">  </span><span class="s2">"This is from Flask!!!"</span><span class="w">
+
+</span><span class="k">if</span><span class="w"> </span><span class="err">__</span><span class="n">name__</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"__main__"</span><span class="o">:</span><span class="w">
+    </span><span class="n">app.run</span><span class="p">()</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>Save and exit (ctrl-X). Now edit the <code class="highlighter-rouge">config</code> file to point to our new Flask site:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sudo</span><span class="w"> </span><span class="n">nano</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">apache2</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">available</span><span class="o">/</span><span class="n">PlagiarismDefenderApp.conf</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>and paste the following with your OWN <code class="highlighter-rouge">ServerName</code> IP address (i.e. replace 52.25.54.241 with your own EC2 assigned IP):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="o">&lt;</span><span class="n">VirtualHost</span><span class="w"> </span><span class="o">*:</span><span class="m">80</span><span class="o">&gt;</span><span class="w">
+    </span><span class="n">ServerName</span><span class="w"> </span><span class="m">52.25.54.241</span><span class="w">
+    </span><span class="n">ServerAdmin</span><span class="w"> </span><span class="n">admin</span><span class="o">@</span><span class="n">mywebsite.com</span><span class="w"> 
+    </span><span class="n">WSGIScriptAlias</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">FlaskApps</span><span class="o">/</span><span class="n">FlaskApps.wsgi</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">Directory</span><span class="w"> </span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">FlaskApps</span><span class="o">/</span><span class="n">PlagiarismDefenderApp</span><span class="o">/&gt;</span><span class="w">
+        </span><span class="n">Order</span><span class="w"> </span><span class="n">allow</span><span class="p">,</span><span class="n">deny</span><span class="w">
+        </span><span class="n">Allow</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">all</span><span class="w">
+    </span><span class="o">&lt;/</span><span class="n">Directory</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">Directory</span><span class="w"> </span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">FlaskApps</span><span class="o">/</span><span class="n">PlagiarismDefenderApp</span><span class="o">/</span><span class="n">static</span><span class="o">/&gt;</span><span class="w">
+        </span><span class="n">Order</span><span class="w"> </span><span class="n">allow</span><span class="p">,</span><span class="n">deny</span><span class="w">
+        </span><span class="n">Allow</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">all</span><span class="w">
+    </span><span class="o">&lt;/</span><span class="n">Directory</span><span class="o">&gt;</span><span class="w">
+    </span><span class="n">ErrorLog</span><span class="w"> </span><span class="o">$</span><span class="p">{</span><span class="n">APACHE_LOG_DIR</span><span class="p">}</span><span class="o">/</span><span class="n">error.log</span><span class="w">
+    </span><span class="n">LogLevel</span><span class="w"> </span><span class="n">warn</span><span class="w">
+    </span><span class="n">CustomLog</span><span class="w"> </span><span class="o">$</span><span class="p">{</span><span class="n">APACHE_LOG_DIR</span><span class="p">}</span><span class="o">/</span><span class="n">access.log</span><span class="w"> </span><span class="n">combined</span><span class="w">
+</span><span class="o">&lt;/</span><span class="n">VirtualHost</span><span class="o">&gt;</span><span class="w">
+</span></code></pre>
+</div>
+<p>Save and exit (ctrl-X). Add our new site and restart apache:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">a</span><span class="m">2</span><span class="n">enmod</span><span class="w"> </span><span class="n">wsgi</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">apachectl</span><span class="w"> </span><span class="n">restart</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">a</span><span class="m">2</span><span class="n">ensite</span><span class="w"> </span><span class="n">PlagiarismDefenderApp</span><span class="w">
+
+</span><span class="c1"># that's a lot of reloading but it does the trick
+</span><span class="n">service</span><span class="w"> </span><span class="n">apache2</span><span class="w"> </span><span class="n">reload</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">init.d</span><span class="o">/</span><span class="n">apache2</span><span class="w"> </span><span class="n">reload</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<p>Create a Web Server Gateway Interface (WSGI) file to tell Apache how to run Flask - it’s the link and entry point for our web application:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sudo</span><span class="w"> </span><span class="n">nano</span><span class="w"> </span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">FlaskApps</span><span class="o">/</span><span class="n">FlaskApps.wsgi</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>and enter the following code:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1">#! /usr/bin/python
+</span><span class="n">import</span><span class="w"> </span><span class="n">sys</span><span class="w">
+</span><span class="n">import</span><span class="w"> </span><span class="n">logging</span><span class="w">
+</span><span class="n">logging.basicConfig</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">sys.stderr</span><span class="p">)</span><span class="w">
+</span><span class="n">sys.path.insert</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="s2">"/var/www/FlaskApps/PlagiarismDefenderApp/"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># home points to the home.py file
+</span><span class="n">from</span><span class="w"> </span><span class="n">home</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">application</span><span class="w">
+</span><span class="n">application.secret_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"somesecretsessionkey"</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>Save and exit (ctrl-X). Restart Apache:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sudo</span><span class="w"> </span><span class="n">service</span><span class="w"> </span><span class="n">apache2</span><span class="w"> </span><span class="n">restart</span><span class="w">
+</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">init.d</span><span class="o">/</span><span class="n">apache2</span><span class="w"> </span><span class="n">reload</span><span class="w"> 
+</span></code></pre>
+</div>
+
+<p>Try running this again in the browser - hopefully you should see something like:</p>
+
+<p><br /><br /></p>
+<p style="text-align:center"><img src="img/live-web-app.png" alt="live-web-app" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br /></p>
+
+<p>NOTE: If you have any errors, check the error log (scroll to the bottom of the list to see latest messages):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sudo</span><span class="w"> </span><span class="n">nano</span><span class="w"> </span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">apache2</span><span class="o">/</span><span class="n">error.log</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>NOTE 2: For more details on setting Appache/WSGI/Flask see: <a href="http://flask.pocoo.org/docs/0.10/deploying/mod_wsgi/" target="_blank">mod_wsgi (Apache)</a></p>
+
+<p><br /><br /></p>
+<h2><a id="running-plagiarism-defender">Plagiarism Defender on the Web!</a></h2>
+
+<p>Things are looking good, lets get the <b>real</b> application running on Flask and EC2 instance.</p>
+
+<p>Lets start installing some libraries on your instance:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># install lxml
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">apt</span><span class="o">-</span><span class="n">get</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">python</span><span class="o">-</span><span class="n">lxml</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">apt</span><span class="o">-</span><span class="n">get</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">python3</span><span class="o">-</span><span class="n">lxml</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">apt</span><span class="o">-</span><span class="n">get</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">libxml2</span><span class="o">-</span><span class="n">dev</span><span class="w"> </span><span class="n">libxslt</span><span class="o">-</span><span class="n">dev</span><span class="w"> </span><span class="n">python</span><span class="o">-</span><span class="n">dev</span><span class="w">
+
+</span><span class="c1"># install pip
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">apt</span><span class="o">-</span><span class="n">get</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">python</span><span class="o">-</span><span class="n">pip</span><span class="w">
+
+</span><span class="c1"># install nltk
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">U</span><span class="w"> </span><span class="n">nltk</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br /></p>
+<h2><a id="web-serving-file">Main Web-Serving File</a></h2>
+
+<p>Let’s build our main web-serving file:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sudo</span><span class="w"> </span><span class="n">nano</span><span class="w"> </span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">FlaskApps</span><span class="o">/</span><span class="n">PlagiarismDefenderApp</span><span class="o">/</span><span class="n">home.py</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">from</span><span class="w"> </span><span class="err">__</span><span class="n">future__</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">division</span><span class="w">
+</span><span class="n">from</span><span class="w"> </span><span class="n">flask</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">Flask</span><span class="p">,</span><span class="w"> </span><span class="n">render_template</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">url_for</span><span class="p">;</span><span class="w">
+</span><span class="n">import</span><span class="w"> </span><span class="n">urllib2</span><span class="p">;</span><span class="w">
+</span><span class="c1"># sudo apt-get install python3-lxml
+# sudo apt-get install python-lxml
+# apt-get install python-dev libxml2 libxml2-dev libxslt-dev
+</span><span class="n">from</span><span class="w"> </span><span class="n">lxml</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">html</span><span class="p">;</span><span class="w">
+</span><span class="n">import</span><span class="w"> </span><span class="n">requests</span><span class="p">;</span><span class="w">
+</span><span class="n">import</span><span class="w"> </span><span class="n">string</span><span class="p">;</span><span class="w">
+</span><span class="n">import</span><span class="w"> </span><span class="n">time</span><span class="p">;</span><span class="w">
+</span><span class="c1">#sudo pip install -U nltk
+</span><span class="n">from</span><span class="w"> </span><span class="n">nltk.tokenize.punkt</span><span class="w"> </span><span class="n">import</span><span class="w"> </span><span class="n">PunktSentenceTokenizer</span><span class="p">,</span><span class="w"> </span><span class="n">PunktParameters</span><span class="p">;</span><span class="w">
+
+
+</span><span class="c1"># Initialize the Flask application
+</span><span class="n">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Flask</span><span class="p">(</span><span class="err">__</span><span class="n">name__</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Define a route for the default URL, which loads the form
+</span><span class="o">@</span><span class="n">app.route</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span><span class="w">
+</span><span class="n">def</span><span class="w"> </span><span class="n">form</span><span class="p">()</span><span class="o">:</span><span class="w">
+    </span><span class="n">return</span><span class="w"> </span><span class="n">render_template</span><span class="p">(</span><span class="s1">'plagiarizer-submit.html'</span><span class="p">)</span><span class="w">
+
+
+</span><span class="o">@</span><span class="n">app.route</span><span class="p">(</span><span class="s1">'/IsItPlagiarized/'</span><span class="p">,</span><span class="w"> </span><span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'POST'</span><span class="p">])</span><span class="w">
+</span><span class="n">def</span><span class="w"> </span><span class="n">IsItPlagiarized</span><span class="p">()</span><span class="o">:</span><span class="w">
+        </span><span class="n">text_to_filter</span><span class="o">=</span><span class="n">request.form</span><span class="p">[</span><span class="s1">'text_to_check'</span><span class="p">]</span><span class="w">
+        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">text_to_filter.lstrip</span><span class="p">()</span><span class="n">.rstrip</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="o">:</span><span class="w">
+                </span><span class="n">return</span><span class="w"> </span><span class="n">render_template</span><span class="p">(</span><span class="s1">'plagiarizer-submit.html'</span><span class="p">)</span><span class="w">
+        </span><span class="n">punkt_param</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PunktParameters</span><span class="p">()</span><span class="w">
+        </span><span class="n">sentence_splitter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PunktSentenceTokenizer</span><span class="p">(</span><span class="n">punkt_param</span><span class="p">)</span><span class="w">
+        </span><span class="n">sentences</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sentence_splitter.tokenize</span><span class="p">(</span><span class="n">text_to_filter</span><span class="p">)</span><span class="w">
+        </span><span class="n">probability_of_plagiarism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+        </span><span class="k">for</span><span class="w"> </span><span class="n">a_sentence</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">sentences</span><span class="o">:</span><span class="w">
+                </span><span class="n">time.sleep</span><span class="p">(</span><span class="m">0.3</span><span class="p">)</span><span class="w">
+                </span><span class="n">content</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filter</span><span class="p">(</span><span class="n">lambda</span><span class="w"> </span><span class="n">x</span><span class="o">:</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">string.printable</span><span class="p">,</span><span class="w"> </span><span class="n">a_sentence</span><span class="p">)</span><span class="w">
+                </span><span class="n">the_term</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">urllib2.quote</span><span class="p">(</span><span class="s1">'+'</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">'"'</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">content</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">'"'</span><span class="p">)</span><span class="w">
+                </span><span class="n">page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">requests.get</span><span class="p">(</span><span class="s1">'https://www.bing.com/search?q='</span><span class="o">+</span><span class="n">the_term</span><span class="p">)</span><span class="w">
+                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">not</span><span class="w"> </span><span class="s2">"No results found for"</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">page.text</span><span class="p">)</span><span class="o">:</span><span class="w">
+                        </span><span class="n">probability_of_plagiarism</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="m">1</span><span class="p">;</span><span class="w">
+        </span><span class="n">is_it_plagiarized</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">str</span><span class="p">((</span><span class="n">probability_of_plagiarism</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">len</span><span class="p">(</span><span class="n">sentences</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">'%'</span><span class="w">
+        </span><span class="n">return</span><span class="w"> </span><span class="n">render_template</span><span class="p">(</span><span class="s1">'plagiarizer-results.html'</span><span class="p">,</span><span class="w"> </span><span class="n">text_to_filter</span><span class="o">=</span><span class="n">text_to_filter</span><span class="p">,</span><span class="w"> </span><span class="n">is_it_plagiarized</span><span class="o">=</span><span class="n">is_it_plagiarized</span><span class="p">)</span><span class="w">
+
+
+</span><span class="k">if</span><span class="w"> </span><span class="err">__</span><span class="n">name__</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"__main__"</span><span class="o">:</span><span class="w">
+    </span><span class="n">app.run</span><span class="p">()</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br /></p>
+<h2><a id="template-files">Template HTML Files</a></h2>
+<p>Let’s build our two template html files:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">cd</span><span class="w"> </span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">FlaskApps</span><span class="o">/</span><span class="n">PlagiarismDefenderApp</span><span class="o">/</span><span class="n">templates</span><span class="o">/</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">nano</span><span class="w"> </span><span class="n">plagiarizer</span><span class="o">-</span><span class="n">submit.html</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>and enter the following for <code class="highlighter-rouge">plagiarizer-submit.html</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">head</span><span class="o">&gt;</span><span class="w">
+        </span><span class="o">&lt;</span><span class="n">title</span><span class="o">&gt;</span><span class="n">Plagiarism</span><span class="w"> </span><span class="n">Defender</span><span class="o">&lt;/</span><span class="n">title</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;/</span><span class="n">head</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span><span class="w">
+        </span><span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">id</span><span class="o">=</span><span class="s2">"container"</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">class</span><span class="o">=</span><span class="s2">"title"</span><span class="o">&gt;</span><span class="w">
+                </span><span class="o">&lt;</span><span class="n">h</span><span class="m">1</span><span class="o">&gt;</span><span class="n">Check</span><span class="w"> </span><span class="n">Your</span><span class="w"> </span><span class="n">Text</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Plagiarism</span><span class="o">&lt;/</span><span class="n">h</span><span class="m">1</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">id</span><span class="o">=</span><span class="s2">"content"</span><span class="o">&gt;</span><span class="w">
+                </span><span class="o">&lt;</span><span class="n">form</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s2">"post"</span><span class="w"> </span><span class="n">action</span><span class="o">=</span><span class="s2">"{{ url_for('IsItPlagiarized') }}"</span><span class="o">&gt;</span><span class="w">
+                  </span><span class="o">&lt;</span><span class="n">label</span><span class="w"> </span><span class="k">for</span><span class="o">=</span><span class="s2">"text_to_check"</span><span class="o">&gt;</span><span class="n">Enter</span><span class="w"> </span><span class="n">text</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">check</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">plagiarism</span><span class="o">:&lt;/</span><span class="n">label</span><span class="o">&gt;</span><span class="w">
+                  </span><span class="o">&lt;</span><span class="n">BR</span><span class="o">&gt;&lt;</span><span class="n">textarea</span><span class="w"> </span><span class="n">cols</span><span class="o">=</span><span class="s2">"100"</span><span class="w"> </span><span class="n">rows</span><span class="o">=</span><span class="s2">"20"</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="s2">"text_to_check"</span><span class="o">&gt;&lt;/</span><span class="n">textarea</span><span class="o">&gt;</span><span class="w">
+                  </span><span class="o">&lt;</span><span class="n">BR</span><span class="o">&gt;&lt;</span><span class="n">input</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s2">"submit"</span><span class="w"> </span><span class="o">/&gt;</span><span class="w">
+                </span><span class="o">&lt;/</span><span class="n">form</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span><span class="w">
+        </span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span><span class="w">
+</span><span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">cd</span><span class="w">  </span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">FlaskApps</span><span class="o">/</span><span class="n">PlagiarismDefenderApp</span><span class="o">/</span><span class="n">templates</span><span class="w">
+</span><span class="n">sudo</span><span class="w"> </span><span class="n">nano</span><span class="w"> </span><span class="n">plagiarizer</span><span class="o">-</span><span class="n">results.html</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>and enter the following for <code class="highlighter-rouge">plagiarizer-results.html</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w"> </span><span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">head</span><span class="o">&gt;</span><span class="w">
+        </span><span class="o">&lt;</span><span class="n">title</span><span class="o">&gt;</span><span class="n">Plagiarism</span><span class="w"> </span><span class="n">Defender</span><span class="o">&lt;/</span><span class="n">title</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;/</span><span class="n">head</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span><span class="w">
+        </span><span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">id</span><span class="o">=</span><span class="s2">"container"</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">class</span><span class="o">=</span><span class="s2">"title"</span><span class="o">&gt;</span><span class="w">
+                </span><span class="o">&lt;</span><span class="n">h</span><span class="m">1</span><span class="o">&gt;</span><span class="n">Plagiarism</span><span class="w"> </span><span class="n">Defender</span><span class="w"> </span><span class="n">Results</span><span class="o">&lt;/</span><span class="n">h</span><span class="m">1</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">id</span><span class="o">=</span><span class="s2">"content"</span><span class="o">&gt;</span><span class="w">
+                </span><span class="n">In</span><span class="w"> </span><span class="n">our</span><span class="w"> </span><span class="n">best</span><span class="w"> </span><span class="n">opinion</span><span class="p">,</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">text</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">entered</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">is_it_plagiarized</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span><span class="w"> </span><span class="n">plagiarized</span><span class="o">!</span><span class="w">
+            </span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;</span><span class="n">BR</span><span class="o">&gt;&lt;</span><span class="n">BR</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">id</span><span class="o">=</span><span class="s2">"content"</span><span class="o">&gt;</span><span class="w">
+                </span><span class="n">Text</span><span class="w"> </span><span class="n">Entered</span><span class="o">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span><span class="p">{{</span><span class="n">text_to_filter</span><span class="p">}}</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span><span class="w">
+        </span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span><span class="w">
+</span><span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>Save and exit (ctrl-X). Restart Apache:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sudo</span><span class="w"> </span><span class="n">service</span><span class="w"> </span><span class="n">apache2</span><span class="w"> </span><span class="n">restart</span><span class="w">
+</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">init.d</span><span class="o">/</span><span class="n">apache2</span><span class="w"> </span><span class="n">reload</span><span class="w"> 
+</span></code></pre>
+</div>
+
+<p>Try it out - enter some text and hit the <code class="highlighter-rouge">submit</code> button:
+<br /></p>
+<p style="text-align:center"><img src="img/defender-in-action.png" alt="defender-in-action" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /></p>
+
+<p>And the final prognostic is:
+<br /><br /></p>
+<p style="text-align:center"><img src="img/defender-results.png" alt="defender-results" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br /></p>
+
+<h2><a id="twitter-bootsrap">Beautifying with Twitter’s Bootstrap</a></h2>
+
+<p>This is undoubtedly the most amazing part of this whole walkthrough, by just adding a few lines of code, you can magically give you site a professional look!</p>
+
+<p><a href="http://getbootstrap.com/" target="_blank">GetBootstrap.com</a> is a big menu where you can pick and choose how you want your site to look. We’re going to go with the <a href="http://getbootstrap.com/getting-started/#starter-template" target="">Starter template</a>, it is simple but leaps ahead of what we had before. You can click on any samples shown, do a <code class="highlighter-rouge">view source</code> and pick whatever part of the code you like.</p>
+
+<p>Lets update our <code class="highlighter-rouge">plagiarizer-submit.html</code> page with a few bootstrap goodies:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sudo</span><span class="w"> </span><span class="n">nano</span><span class="w"> </span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">FlaskApps</span><span class="o">/</span><span class="n">PlagiarismDefenderApp</span><span class="o">/</span><span class="n">templates</span><span class="o">/</span><span class="n">plagiarizer</span><span class="o">-</span><span class="n">submit.html</span><span class="w">
+</span></code></pre>
+</div>
+<p>And replace it with the following code:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">head</span><span class="o">&gt;</span><span class="w">
+        </span><span class="o">&lt;</span><span class="n">title</span><span class="o">&gt;</span><span class="n">Plagiarism</span><span class="w"> </span><span class="n">Defender</span><span class="o">&lt;/</span><span class="n">title</span><span class="o">&gt;</span><span class="w">
+        </span><span class="o">&lt;</span><span class="n">link</span><span class="w"> </span><span class="n">href</span><span class="o">=</span><span class="s2">"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"</span><span class="w"> </span><span class="n">rel</span><span class="o">=</span><span class="s2">"stylesheet"</span><span class="w"> </span><span class="n">media</span><span class="o">=</span><span class="s2">"screen"</span><span class="o">&gt;</span><span class="w">
+
+    </span><span class="o">&lt;/</span><span class="n">head</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">body</span><span class="w"> </span><span class="n">style</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"background-color: lightgrey; padding-top: 70px; "</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">nav</span><span class="w"> </span><span class="n">class</span><span class="o">=</span><span class="s2">"navbar navbar-inverse navbar-fixed-top"</span><span class="o">&gt;</span><span class="w">
+      </span><span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">class</span><span class="o">=</span><span class="s2">"container"</span><span class="o">&gt;</span><span class="w">
+        </span><span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">class</span><span class="o">=</span><span class="s2">"navbar-header"</span><span class="o">&gt;</span><span class="w">
+          </span><span class="o">&lt;</span><span class="n">a</span><span class="w"> </span><span class="n">class</span><span class="o">=</span><span class="s2">"navbar-brand"</span><span class="w"> </span><span class="n">href</span><span class="o">=</span><span class="s2">"#"</span><span class="o">&gt;</span><span class="n">Plagiarism</span><span class="w"> </span><span class="n">Defender</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span><span class="w">
+        </span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span><span class="w">
+      </span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;/</span><span class="n">nav</span><span class="o">&gt;</span><span class="w">
+
+     </span><span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">class</span><span class="o">=</span><span class="s2">"container"</span><span class="o">&gt;</span><span class="w">
+      </span><span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">class</span><span class="o">=</span><span class="s2">"starter-template"</span><span class="o">&gt;</span><span class="w">
+          </span><span class="o">&lt;</span><span class="n">form</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s2">"post"</span><span class="w"> </span><span class="n">action</span><span class="o">=</span><span class="s2">"{{ url_for('IsItPlagiarized') }}"</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;</span><span class="n">label</span><span class="w"> </span><span class="k">for</span><span class="o">=</span><span class="s2">"text_to_check"</span><span class="o">&gt;</span><span class="n">Enter</span><span class="w"> </span><span class="n">text</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">check</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">plagiarism</span><span class="o">:&lt;/</span><span class="n">label</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;</span><span class="n">BR</span><span class="o">&gt;&lt;</span><span class="n">textarea</span><span class="w"> </span><span class="n">cols</span><span class="o">=</span><span class="s2">"100"</span><span class="w"> </span><span class="n">rows</span><span class="o">=</span><span class="s2">"20"</span><span class="w"> </span><span class="n">name</span><span class="o">=</span><span class="s2">"text_to_check"</span><span class="o">&gt;&lt;/</span><span class="n">textarea</span><span class="o">&gt;</span><span class="w">
+            </span><span class="o">&lt;</span><span class="n">BR</span><span class="o">&gt;&lt;</span><span class="n">input</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s2">"submit"</span><span class="w"> </span><span class="o">/&gt;</span><span class="w">
+          </span><span class="o">&lt;/</span><span class="n">form</span><span class="o">&gt;</span><span class="w">
+        </span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span><span class="w">
+      </span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span><span class="w">
+
+    </span><span class="o">&lt;!--</span><span class="w"> </span><span class="n">Bootstrap</span><span class="w"> </span><span class="n">core</span><span class="w"> </span><span class="n">JavaScript</span><span class="w">
+    </span><span class="o">==================================================</span><span class="w"> </span><span class="o">--&gt;</span><span class="w">
+    </span><span class="o">&lt;!--</span><span class="w"> </span><span class="n">Placed</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">document</span><span class="w"> </span><span class="n">so</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">pages</span><span class="w"> </span><span class="n">load</span><span class="w"> </span><span class="n">faster</span><span class="w"> </span><span class="o">--&gt;</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">script</span><span class="w"> </span><span class="n">src</span><span class="o">=</span><span class="s2">"https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">script</span><span class="w"> </span><span class="n">src</span><span class="o">=</span><span class="s2">"../../dist/js/bootstrap.min.js"</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span><span class="w">
+    </span><span class="o">&lt;!--</span><span class="w"> </span><span class="n">IE10</span><span class="w"> </span><span class="n">viewport</span><span class="w"> </span><span class="n">hack</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Surface</span><span class="o">/</span><span class="n">desktop</span><span class="w"> </span><span class="n">Windows</span><span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="n">bug</span><span class="w"> </span><span class="o">--&gt;</span><span class="w">
+    </span><span class="o">&lt;</span><span class="n">script</span><span class="w"> </span><span class="n">src</span><span class="o">=</span><span class="s2">"../../assets/js/ie10-viewport-bug-workaround.js"</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;</span><span class="w">
+  </span><span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span><span class="w">
+</span><span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>The most important change is on the fourth line where we added a live link to the bootstrap CSS file. We also added the <code class="highlighter-rouge">navbar</code> class which adds a fancy title on a header. Explore the <a href="http://getbootstrap.com/getting-started/" target="_blank">GetBootstrap.com</a> to see what else it offers and how you may apply it to your projects.</p>
+
+<p>You can get the latest bootstrap link at the <a href="http://getbootstrap.com/getting-started/" target="_blank">GetBootstrap.com</a></p>
+
+<p>Here is a peek at our beautifully metamorphosed page:
+<br /><br /></p>
+<p style="text-align:center"><img src="img/defender-beautified.png" alt="defender-beautified" style="padding:1px; border:1px solid #021a40;" /></p>
+<p><br /><br /><br /></p>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

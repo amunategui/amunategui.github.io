@@ -1,0 +1,411 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Speak Like a Doctor - Use Natural Language Processing to Predict Medical Words in R</title>
+
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Speak Like a Doctor - Use Natural Language Processing to Predict Medical Words in R</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+    
+
+<p style="text-align:center">
+<img src="img/shiny-ui.png" alt="Binary Doctor" style="padding:0px; border:0px solid #021a40;" /></p>
+
+<p><br />
+<strong>Resources</strong></p>
+
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=0le0ijNVP5M&amp;index=1&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+</ul>
+
+<p><strong>Packages Used in this Walkthrough</strong></p>
+
+<ul>
+<li type="square"><a href="https://cran.r-project.org/web/packages/RISmed/index.html" target="_blank">{RISmed}</a> - RISmed: Download Content from NCBI Databases</li>
+<li type="square"><a href="https://cran.r-project.org/web/packages/ngram/index.html" target="_blank">{ngram}</a> - ngram: An n-gram Babbler</li>
+<li type="square"><a href="https://cran.r-project.org/web/packages/shiny/index.html" target="_blank">{shiny}</a> - shiny: Web Application Framework for R</li>
+</ul>
+
+<p><br /></p>
+
+<p>We’re going to bring different tools together to build a nifty natural language processing (NLP) application to predict the next word in a partial sentence. We will use <a href="http://www.ncbi.nlm.nih.gov/pubmed" target="_blank">PubMed</a> and the RISmed package to download a specialized medical corpus (see walkthrough <a href="http://amunategui.github.io/pubmed-query/" target="_blank">Getting PubMed Medical Text with R and Package {RISmed}</a>), <a href="https://en.wikipedia.org/wiki/N-gram" target="_blank">n-grams</a>, and a <a href="http://shiny.rstudio.com/" target="_blank">Shiny application</a> for interactivity.</p>
+
+<p><br />
+<strong>A Specialized Medical Corpus</strong></p>
+
+<p>Let’s get a specialized medical corpus on the subject of <strong>cardiology</strong>. I will not go into too much detail about the PubMed code as it is covered in my other walk-through <a href="http://amunategui.github.io/pubmed-query/" target="_blank">Getting PubMed Medical Text with R and Package {RISmed}</a>.</p>
+
+<p>Let’s write the <code class="highlighter-rouge">Get_PubMed_Data</code> function that takes a topic, date range, and quantity of abstracts to return. This function users the <code class="highlighter-rouge">RISmed</code> package to download medical abstracts from PubMed:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">Get_PubMed_Data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span><span class="w"> </span><span class="n">start_date</span><span class="p">,</span><span class="w"> </span><span class="n">end_date</span><span class="p">,</span><span class="w"> </span><span class="n">return_count</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="n">require</span><span class="p">(</span><span class="n">RISmed</span><span class="p">)</span><span class="w">
+        
+        </span><span class="n">search_query</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">EUtilsSummary</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span><span class="w"> </span><span class="n">retmax</span><span class="o">=</span><span class="n">return_count</span><span class="p">,</span><span class="w"> </span><span class="n">mindate</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span><span class="n">maxdate</span><span class="o">=</span><span class="n">end_date</span><span class="p">)</span><span class="w">
+        </span><span class="n">summary</span><span class="p">(</span><span class="n">search_query</span><span class="p">)</span><span class="w">
+        </span><span class="c1"># see the ids of our returned query
+</span><span class="w">        </span><span class="n">QueryId</span><span class="p">(</span><span class="n">search_query</span><span class="p">)</span><span class="w">
+        </span><span class="c1"># get actual data from PubMed
+</span><span class="w">        </span><span class="n">records</span><span class="o">&lt;-</span><span class="w"> </span><span class="n">EUtilsGet</span><span class="p">(</span><span class="n">search_query</span><span class="p">)</span><span class="w">
+        </span><span class="nf">class</span><span class="p">(</span><span class="n">records</span><span class="p">)</span><span class="w">
+        </span><span class="c1"># store it
+</span><span class="w">        </span><span class="n">pubmed_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="s1">'Title'</span><span class="o">=</span><span class="n">ArticleTitle</span><span class="p">(</span><span class="n">records</span><span class="p">),</span><span class="s1">'Abstract'</span><span class="o">=</span><span class="n">AbstractText</span><span class="p">(</span><span class="n">records</span><span class="p">))</span><span class="w">
+        </span><span class="n">head</span><span class="p">(</span><span class="n">pubmed_data</span><span class="p">,</span><span class="m">1</span><span class="p">)</span><span class="w">
+        </span><span class="n">pubmed_data</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">pubmed_data</span><span class="o">$</span><span class="n">Title</span><span class="p">)</span><span class="w">
+        </span><span class="n">pubmed_data</span><span class="o">$</span><span class="n">Abstract</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">pubmed_data</span><span class="o">$</span><span class="n">Abstract</span><span class="p">)</span><span class="w">
+        </span><span class="n">pubmed_data</span><span class="o">$</span><span class="n">Abstract</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="s2">","</span><span class="p">,</span><span class="w"> </span><span class="s2">" "</span><span class="p">,</span><span class="w"> </span><span class="n">pubmed_data</span><span class="o">$</span><span class="n">Abstract</span><span class="p">,</span><span class="w"> </span><span class="n">fixed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+        
+        </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">pubmed_data</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /></p>
+
+<p>Using the above function, we’ll request <strong>1500</strong> medical abstracts from the 2013 to 2015 on the subject of <strong>cardiology</strong>. This will endow us with highly specialized medical lingo in the form of thousands of sentences on the subject of cardiology (you can switch the topic to other subjects, even use a different non-medical corpus):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">medical_corpus</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">Get_PubMed_Data</span><span class="p">(</span><span class="s1">'cardiology'</span><span class="p">,</span><span class="w"> </span><span class="m">2013</span><span class="p">,</span><span class="w"> </span><span class="m">2015</span><span class="p">,</span><span class="w"> </span><span class="m">1500</span><span class="p">)</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">medical_corpus</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># [1] 1500    2
+</span></code></pre>
+</div>
+
+<p><br />
+<strong>N-grams</strong></p>
+
+<p><code class="highlighter-rouge">N-grams</code> are text patterns of <code class="highlighter-rouge">n</code> length that we pull out of a corpus. Let’s look at an example. Imagine the following sentence:</p>
+
+<blockquote>This is my brother</blockquote>
+
+<p>An <code class="highlighter-rouge">n-gram</code> of size <code class="highlighter-rouge">2</code> of the above sentence would comprise every word combination pairs:</p>
+
+<ul>
+  <li>This is</li>
+  <li>is my</li>
+  <li>my brother</li>
+</ul>
+<p><br /><br /></p>
+
+<p>These <code class="highlighter-rouge">n-grams</code> will help us anticipate the best next word in a sentence. Imagine that our partial word is <code class="highlighter-rouge">my</code>, then, according to the above n-gram, the best next word is <code class="highlighter-rouge">brother</code>. Here we won’t limit ourselves with n-grams of size 2, but will also use n-grams of size 3,4,5. The larger the n-gram with matching contiguous words the higher the probability that we know the next word.</p>
+
+<p>First, as with any <code class="highlighter-rouge">NLP</code> project, we need to clean up our corpus. There are many different ways to proceed but here we will only use alphabetic characters. So we need to remove anything that isn’t one of the 26 words of the alphabet but not before we mark common sentence endings. We replace the following characters <code class="highlighter-rouge">!</code>, <code class="highlighter-rouge">?</code>, <code class="highlighter-rouge">.</code>, <code class="highlighter-rouge">;</code> with an alphabet-based code: <code class="highlighter-rouge">ootoo</code>. Then we clean out all punctuation, numbers, special characters, and force everything to lower case using the below function. The last set of commands split each sentence using the <code class="highlighter-rouge">ootoo</code> code:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">Text_To_Clean_Sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">text_blob</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="c1"># swap all sentence ends with code 'ootoo'
+</span><span class="w">        </span><span class="n">text_blob</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s1">';|\\.|!|\\?'</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">text_blob</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="o">=</span><span class="s1">'ootoo'</span><span class="p">)</span><span class="w">
+        
+        </span><span class="c1"># remove all non-alpha text (numbers etc)
+</span><span class="w">        </span><span class="n">text_blob</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">"[^[:alpha:]]"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">text_blob</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">' '</span><span class="p">)</span><span class="w">
+        
+        </span><span class="c1"># force all characters to lower case
+</span><span class="w">        </span><span class="n">text_blob</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tolower</span><span class="p">(</span><span class="n">text_blob</span><span class="p">)</span><span class="w">
+        
+        </span><span class="c1"># remove any small words {size} or {min,max}
+</span><span class="w">        </span><span class="n">text_blob</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">"\\W*\\b\\w{1,2}\\b"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">text_blob</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span><span class="w">
+        
+        </span><span class="c1"># remove contiguous spaces
+</span><span class="w">        </span><span class="n">text_blob</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">"\\s+"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">text_blob</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span><span class="w">
+        
+        </span><span class="c1"># split sentences by split code
+</span><span class="w">        </span><span class="n">sentence_vector</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unlist</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">text_blob</span><span class="p">,</span><span class="w"> </span><span class="n">split</span><span class="o">=</span><span class="s1">'ootoo'</span><span class="p">,</span><span class="n">fixed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+        </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">sentence_vector</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">corpus_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">Text_To_Clean_Sentences</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="n">medical_corpus</span><span class="o">$</span><span class="n">Abstract</span><span class="p">,</span><span class="w"> </span><span class="n">collapse</span><span class="o">=</span><span class="s2">" "</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br /></p>
+
+<p><strong><em>The ngram package</em></strong>
+<br /></p>
+
+<p>To build the <code class="highlighter-rouge">n-grams</code> we use the <strong>{ngram}</strong> package (<a href="https://cran.r-project.org/web/packages/ngram/vignettes/ngram-guide.pdf" targer="_blank">click here for the PDF on cran</a>).</p>
+
+<p>Let’s see a simple example in action. Here we call for an n-gram of size 2 for the following sentence:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">test_sentence</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"this is a big sentence"</span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">ngram</span><span class="p">)</span><span class="w">
+</span><span class="n">ng_2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ngram</span><span class="p">(</span><span class="n">test_sentence</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">ng_2</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">full</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="w"> </span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## a big 
+## sentence {1} | 
+## 
+## this is 
+## a {1} | 
+## 
+## big sentence 
+## NULL {1} | 
+## 
+## is a 
+## big {1} |
+</code></pre>
+</div>
+<p><br /><br />
+        Now let’s feed our medical corpus on cardiology using a wrapper function so we can call it various times to collect the n-grams of different sizes:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">Trim</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="c1"># http://stackoverflow.com/questions/2261079/how-to-trim-leading-and-trailing-whitespace-in-r
+</span><span class="w">        </span><span class="n">gsub</span><span class="p">(</span><span class="s2">"(^[[:space:]]+|[[:space:]]+$)"</span><span class="p">,</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+ 
+
+</span><span class="n">Get_Ngrams</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">sentence_splits</span><span class="p">,</span><span class="w"> </span><span class="n">ngram_size</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="n">ngrams</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">sentence</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">sentence_splits</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="n">sentence</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">Trim</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span><span class="w">
+                </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">nchar</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">gregexpr</span><span class="p">(</span><span class="s2">"\\W+"</span><span class="p">,</span><span class="w"> </span><span class="n">sentence</span><span class="p">),</span><span class="w"> </span><span class="n">length</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">ngram_size</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="n">ngs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ngram</span><span class="p">(</span><span class="n">sentence</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="n">ngram_size</span><span class="p">)</span><span class="w">
+                        </span><span class="n">ngrams</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">ngrams</span><span class="p">,</span><span class="w"> </span><span class="n">get.ngrams</span><span class="p">(</span><span class="n">ngs</span><span class="p">))</span><span class="w">
+                </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+        </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">ngrams</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">n</span><span class="m">2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">Get_Ngrams</span><span class="p">(</span><span class="n">corpus_sentences</span><span class="p">,</span><span class="w"> </span><span class="n">ngram_size</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span><span class="n">n</span><span class="m">3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">Get_Ngrams</span><span class="p">(</span><span class="n">corpus_sentences</span><span class="p">,</span><span class="w"> </span><span class="n">ngram_size</span><span class="o">=</span><span class="m">3</span><span class="p">)</span><span class="w">
+</span><span class="n">n</span><span class="m">4</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">Get_Ngrams</span><span class="p">(</span><span class="n">corpus_sentences</span><span class="p">,</span><span class="w"> </span><span class="n">ngram_size</span><span class="o">=</span><span class="m">4</span><span class="p">)</span><span class="w">
+</span><span class="n">n</span><span class="m">5</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">Get_Ngrams</span><span class="p">(</span><span class="n">corpus_sentences</span><span class="p">,</span><span class="w"> </span><span class="n">ngram_size</span><span class="o">=</span><span class="m">5</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># consolidate all n-gram vectors into one
+</span><span class="n">n_all</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">n</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="m">5</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># save the n-grams in the same folder as your shiny code
+</span><span class="n">write.csv</span><span class="p">(</span><span class="n">n_all</span><span class="p">,</span><span class="w"> </span><span class="s1">'pubmed_cardiology_ngrams.csv'</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /></p>
+
+<p>Let’s take a peek at some of our <code class="highlighter-rouge">n-grams</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">head</span><span class="p">(</span><span class="n">n_all</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1">## [1] "myocardial dysfunction" 
+## [2] "which contributes"      
+## [3] "can cause"              
+## [4] "contributes to"         
+## [5] "high mortality"        
+## [6] "mortality of" 
+</span></code></pre>
+</div>
+<p><br /></p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">length</span><span class="p">(</span><span class="n">n_all</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1">## [1] 825486 
+</span></code></pre>
+</div>
+<p><br /></p>
+
+<p>As an intermediary step, let’s save all our n-grams to <code class="highlighter-rouge">CSV</code> so we can call it directly from our <code class="highlighter-rouge">Shiny</code> application later on.</p>
+
+<p>But before building our Shiny application, let’s first see how well our n-grams predict medical terms manually. We’ll get started with a simple but medical’ish sentence:</p>
+
+<blockquote>"infection in patients"</blockquote>
+<p><br /></p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># notice the trailing space at end to avoid picking last word
+</span><span class="n">word</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'infection '</span><span class="w">
+
+</span><span class="n">matches</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">sentence</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">n_all</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="c1"># find exact match with double backslash and escape
+</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="s1">'\\&lt;'</span><span class="p">,</span><span class="n">word</span><span class="p">),</span><span class="w"> </span><span class="n">sentence</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="n">print</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span><span class="w">
+                </span><span class="n">matches</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span><span class="w"> </span><span class="n">sentence</span><span class="p">)</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="c1"># find highest probability word
+</span><span class="n">precision_match</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+</span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">a_match</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">matches</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="c1"># how many spaces in from of search word
+</span><span class="w">        </span><span class="n">precision_match</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">precision_match</span><span class="p">,</span><span class="n">nchar</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a_match</span><span class="p">,</span><span class="w"> </span><span class="n">split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">word</span><span class="p">)[[</span><span class="m">1</span><span class="p">]][[</span><span class="m">1</span><span class="p">]]))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="c1"># use highest number and a random of highest for multiples
+</span><span class="n">best_matched_sentence</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="n">matches</span><span class="p">[</span><span class="n">precision_match</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="n">precision_match</span><span class="p">)],</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+
+</span><span class="n">print</span><span class="p">(</span><span class="n">best_matched_sentence</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># [1] "need for effective periprocedural infection control"
+</span></code></pre>
+</div>
+<p><br /></p>
+
+<p>This shows the longest match for our sentence. Now we need to extract the next word after our sentence, in this case it is the word <strong>treated</strong>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># split the best matching sentence by the search word
+</span><span class="n">best_match</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">strsplit</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">best_matched_sentence</span><span class="p">,</span><span class="w"> </span><span class="n">split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">word</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
+</span><span class="c1"># split second part by spaces and pick first word
+</span><span class="n">best_match</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="n">strsplit</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">best_match</span><span class="p">[[</span><span class="m">2</span><span class="p">]],</span><span class="w"> </span><span class="n">split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">" "</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
+</span><span class="n">best_match</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">best_match</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
+
+</span><span class="n">print</span><span class="p">(</span><span class="n">best_match</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># [1] "treated"
+</span></code></pre>
+</div>
+<p><br /><br />
+<strong><em>Building a Shiny Application</em></strong></p>
+
+<p>Shiny offers a web application framework for R. This allows you to pair your R code with a web interface for real-time interaction. This is a perfect tool for our needs. We’ll create a <strong>text box</strong> with a <strong>submit button</strong> so we can build our sentence without having to run any R code manually (if you want to learn more about this great tool, here are two short tutorials that I used here: <a href="http://rstudio.github.io/shiny/tutorial/#hello-shiny" target="_blank">hello-shiny</a> and <a href="http://shiny.rstudio.com/gallery/text-input.html" target="_blank">text-input</a>)</p>
+
+<p>Without going into too much details about Shiny, we need to create two R files: <code class="highlighter-rouge">ui.r</code> and <code class="highlighter-rouge">server.r</code>. The <strong>UI</strong> controls the front end like an HTML page would and the <strong>server</strong> gets requests and generates responses. In our case, the UI layer is very light so the code is light. On the other hand, the server code is more invovled as it contains all the code we just covered above.</p>
+
+<p>Here are the two snippets:</p>
+
+<p><code class="highlighter-rouge">ui.r</code></p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
+</span><span class="n">shinyUI</span><span class="p">(</span><span class="n">fluidPage</span><span class="p">(</span><span class="w">
+        </span><span class="n">textInput</span><span class="p">(</span><span class="s2">"text"</span><span class="p">,</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">h</span><span class="m">2</span><span class="p">(</span><span class="s2">"Cardiology Next Word Predictor"</span><span class="p">),</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"myocardial"</span><span class="p">),</span><span class="w">
+        </span><span class="n">submitButton</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Predict next word..."</span><span class="p">),</span><span class="w">
+        </span><span class="n">hr</span><span class="p">(),</span><span class="w">
+        </span><span class="n">fluidRow</span><span class="p">((</span><span class="n">verbatimTextOutput</span><span class="p">(</span><span class="s2">"value"</span><span class="p">)))</span><span class="w">
+        
+</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+<code class="highlighter-rouge">server.r</code></p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># server.R
+</span><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
+
+</span><span class="n">Trim</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="c1"># http://stackoverflow.com/questions/2261079/how-to-trim-leading-and-trailing-whitespace-in-r
+</span><span class="w">        </span><span class="n">gsub</span><span class="p">(</span><span class="s2">"(^[[:space:]]+|[[:space:]]+$)"</span><span class="p">,</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+ </span><span class="n">http</span><span class="o">://</span><span class="m">127.0.0.1</span><span class="o">:</span><span class="m">37673</span><span class="o">/</span><span class="n">rstudio</span><span class="o">/</span><span class="n">clear.cache.gif</span><span class="w">
+</span><span class="c1"># load ngram data set
+</span><span class="n">all_ngrams</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="s1">'/shiny-speak-like-a-doctor/pubmed_cardiology_ngrams.csv'</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">all_ngrams</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">all_ngrams</span><span class="o">$</span><span class="n">x</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Define server logic required to summarize and view the selected dataset
+</span><span class="n">shinyServer</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        
+        </span><span class="c1"># Return the requested dataset
+</span><span class="w">        </span><span class="n">datasetInput</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">reactive</span><span class="p">({</span><span class="w">
+                </span><span class="n">find_next_word</span><span class="p">(</span><span class="n">tolower</span><span class="p">(</span><span class="n">input</span><span class="o">$</span><span class="n">current_sentence</span><span class="p">))</span><span class="w">
+        </span><span class="p">})</span><span class="w">
+        
+        </span><span class="c1"># You can access the value of the widget with input$text, e.g.
+</span><span class="w">        </span><span class="n">output</span><span class="o">$</span><span class="n">value</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderPrint</span><span class="p">({</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="n">tolower</span><span class="p">(</span><span class="n">input</span><span class="o">$</span><span class="n">text</span><span class="p">),</span><span class="w"> </span><span class="n">find_next_word</span><span class="p">(</span><span class="n">tolower</span><span class="p">(</span><span class="n">input</span><span class="o">$</span><span class="n">text</span><span class="p">)))</span><span class="w"> </span><span class="p">})</span><span class="w">
+        
+        </span><span class="n">find_next_word</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">current_sentence</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> 
+                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nchar</span><span class="p">(</span><span class="n">Trim</span><span class="p">(</span><span class="n">current_sentence</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+                        </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="s1">''</span><span class="p">)</span><span class="w">
+                
+                </span><span class="c1"># find the best next word
+</span><span class="w">                </span><span class="c1"># trailing space at end to avoid picking last word
+</span><span class="w">                </span><span class="n">matches</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+                </span><span class="n">current_sentence</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">Trim</span><span class="p">(</span><span class="n">current_sentence</span><span class="p">),</span><span class="s2">" "</span><span class="p">)</span><span class="w">
+                </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">sentence</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">all_ngrams</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="c1"># find exact match with double backslash and escape
+</span><span class="w">                        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="s1">'\\&lt;'</span><span class="p">,</span><span class="n">current_sentence</span><span class="p">),</span><span class="w"> </span><span class="n">sentence</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+                                </span><span class="n">matches</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span><span class="w"> </span><span class="n">sentence</span><span class="p">)</span><span class="w">
+                        </span><span class="p">}</span><span class="w">
+                </span><span class="p">}</span><span class="w">
+
+                </span><span class="c1"># didn't find a match so return nothing
+</span><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">is.null</span><span class="p">(</span><span class="n">matches</span><span class="p">))</span><span class="w">
+                        </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="s1">''</span><span class="p">)</span><span class="w">
+                
+                </span><span class="c1"># find highest probability word
+</span><span class="w">                </span><span class="n">precision_match</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">()</span><span class="w">
+                </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">a_match</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">matches</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="c1"># how many spaces in from of search word
+</span><span class="w">                        </span><span class="n">precision_match</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">precision_match</span><span class="p">,</span><span class="n">nchar</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a_match</span><span class="p">,</span><span class="w"> </span><span class="n">split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">word</span><span class="p">)[[</span><span class="m">1</span><span class="p">]][[</span><span class="m">1</span><span class="p">]]))</span><span class="w">
+                </span><span class="p">}</span><span class="w">
+                
+                </span><span class="c1"># use highest number and a random of highest for multiples
+</span><span class="w">                </span><span class="n">best_matched_sentence</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="n">matches</span><span class="p">[</span><span class="n">precision_match</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="n">precision_match</span><span class="p">)],</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+                </span><span class="c1"># split the best matching sentence by the search word
+</span><span class="w">                </span><span class="n">best_match</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">strsplit</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">best_matched_sentence</span><span class="p">,</span><span class="w"> </span><span class="n">split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_sentence</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
+                </span><span class="c1"># split second part by spaces and pick first word
+</span><span class="w">                </span><span class="n">best_match</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="n">strsplit</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">best_match</span><span class="p">[[</span><span class="m">2</span><span class="p">]],</span><span class="w"> </span><span class="n">split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">" "</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
+                </span><span class="c1"># return first word
+</span><span class="w">                </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">best_match</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span><span class="w"> 
+        </span><span class="p">}</span><span class="w">
+</span><span class="p">})</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+To run the Shiny application, simply enter the following line in the R command window:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
+</span><span class="n">runApp</span><span class="p">(</span><span class="s2">"/shiny-example"</span><span class="p">,</span><span class="w"> </span><span class="n">display.mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"showcase"</span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<p>To see a screenshot example of our Shiny application in action, scroll back to the top of this walk-through.</p>
+
+<p><br /><br />      <br />
+I would like to thank Lucas A. for the artwork - thanks pal!
+<br /><br /></p>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+  </body>
+</html>

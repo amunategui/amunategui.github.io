@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+   
+    <title>Analyze Classic Works of Literature from Around the World with Project Gutenberg and R</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Analyze Classic Works of Literature from Around the World with Project Gutenberg and R</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+
+<p style="text-align:center">
+<img src="img/shakespeare.jpg" alt="shakespeare" style="padding:0px; border:0px solid #021a40;" /></p>
+<p><strong>Resources</strong>
+<br /></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=_86xB93Jen4" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br /></p>
+
+<p><a href="http://www.gutenberg.org/" target="_blank">Project Gutenberg</a> is an incredible resource for anybody interested in accessing classic works of literature from around the world in digital format. It is free and powered by thousands of volunteers (if you find it useful, there is a donation button on their landing page). From the site:</p>
+
+<blockquote>Project Gutenberg offers over 50,000 free ebooks: choose among free epub books, free kindle books, download them or read them online.</blockquote>
+
+<p>Beyond enjoying all the great classics, it’s an enormous boon to those working in <a href="https://en.wikipedia.org/wiki/Natural_language_processing" target="_blank">Natural Language Processing (NLP)</a>. It can be used to compare writing styles through the ages, vocabulary choices, gender balance, punctuation usage, etc…
+<br /><br /></p>
+
+<p><strong>The Tragedy of Romeo and Juliet</strong></p>
+
+<p>Let’s see how it works by downloading ‘The Tragedy of Romeo and Juliet’</p>
+
+<p>First go to the main page and enter ‘Shakespeare’ in the top right search box. It will return many books by and on Shakespeare. Click on <code class="highlighter-rouge">The Tragedy of Romeo and Juliet</code></p>
+
+<p style="text-align:center">
+<img src="img/front_page.png" alt="Project Gutenberg" style="padding:0px; border:0px solid #021a40;" /></p>
+
+<p>There are many file types available and if you have a preference for a particular tab, go ahead. I keep things simple and rely on the plain text format.</p>
+
+<p>Click on ‘Plain Text UTF-8’ and the entire book should be readable in plain text format in your browser.</p>
+
+<p style="text-align:center">
+<img src="img/romeo_juliet.png" alt="Project Gutenberg" style="padding:0px; border:0px solid #021a40;" /></p>
+
+<p>Now, let’s see how we can do this programmatically, copy the link in the URL address bar (http://www.gutenberg.org/cache/epub/1112/pg1112.txt). There are different ways of downloading this data, a simple way is to you the <code class="highlighter-rouge">readLines</code> that can handle URL paths and split each line on the newline character.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">romeo_juliet</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readLines</span><span class="p">(</span><span class="s2">"http://www.gutenberg.org/cache/epub/1112/pg1112.txt"</span><span class="p">)</span><span class="w"> 
+</span><span class="nf">class</span><span class="p">(</span><span class="n">romeo_juliet</span><span class="p">)</span><span class="w">
+</span><span class="c1">## [1] "character"
+</span><span class="w">
+</span><span class="nf">length</span><span class="p">(</span><span class="n">romeo_juliet</span><span class="p">)</span><span class="w">
+</span><span class="c1">## [1] 4853
+</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /></p>
+
+<p>We’ve successfully imported <code class="highlighter-rouge">4853</code> lines of text. But we need to cut off some editorial data surrounding the actual play. The easiest way to tackle this is to <code class="highlighter-rouge">print</code> the first 100 lines of text:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># not showing all lines to save space
+# head(romeo_juliet,100)
+</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">romeo_juliet</span><span class="p">[</span><span class="m">63</span><span class="o">:</span><span class="m">69</span><span class="p">])</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1">## [63] ""                                                                       
+## [64] "1595"                                                                   
+## [65] ""                                                                       
+## [66] "THE TRAGEDY OF ROMEO AND JULIET"                                        
+## [67] ""                                                                       
+## [68] "by William Shakespeare"                                                 
+## [69] ""    
+</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+So, the play really starts at line <code class="highlighter-rouge">64</code> therefore we need to remove everything before that. At the tail end, the story ends with <code class="highlighter-rouge">THE END</code> (this may be different for different books and requires manual inspection)</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">grep</span><span class="p">(</span><span class="w"> </span><span class="s2">"THE END"</span><span class="p">,</span><span class="w"> </span><span class="n">romeo_juliet</span><span class="p">)</span><span class="w">
+</span><span class="c1">## [1] 4484
+</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>Let’s prune out download to only contains data from line <code class="highlighter-rouge">64</code> to line <code class="highlighter-rouge">4484</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">romeo_juliet</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">romeo_juliet</span><span class="p">[</span><span class="m">64</span><span class="o">:</span><span class="m">4484</span><span class="p">]</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<p><br /><br />
+And that’s how you find and download books - first search for the book on the <a href="https://www.gutenberg.org/" target="_blank">Project Gutenberg</a> page, get to the text link, copy it into a <code class="highlighter-rouge">readLines</code> function in R, download it, and finally trim the editorial elements. After that… the sky is the limit.</p>
+
+<p>For example:</p>
+<ul>
+     <li>Which name is mentioned most, Romeo or Juliet?</li>
+     <li>how many sentences are there?</li>
+</ul>
+
+<p>Note: The site will track usage and may limit access if it goes beyond their accepted usage settings.
+<br /><br />
+Let’s bring all our data into one big blob of text:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">romeo_juliet_blob</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="n">romeo_juliet</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span><span class="n">collapse</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+
+<p>Let’s remove all punctuation and create a vector of words:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">romeo_juliet_words</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">romeo_juliet_blob</span><span class="p">,</span><span class="n">pattern</span><span class="o">=</span><span class="w"> </span><span class="s2">"[[:punct:]]"</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">' '</span><span class="p">)</span><span class="w">   
+</span><span class="n">romeo_juliet_words</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">strsplit</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">,</span><span class="w"> </span><span class="s1">' '</span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+<p><br /><br />
+<strong>Flyby Analysis</strong></p>
+
+<p>How many times was the word Romeo and Juliet used?</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">print</span><span class="p">(</span><span class="s1">'Romeo'</span><span class="p">)</span><span class="w">
+</span><span class="c1">## [1] "Romeo"
+</span><span class="w">
+</span><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'romeo'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+</span><span class="c1">## [1] 156
+</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="s1">'Juliet'</span><span class="p">)</span><span class="w">
+</span><span class="c1">## [1] "Juliet"
+</span><span class="w">
+</span><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'juliet'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+</span><span class="c1">## [1] 66
+</span><span class="w">
+</span></code></pre>
+</div>
+<p>Interesting, right? <code class="highlighter-rouge">Romeo</code> was mentioned over 2 times more than <code class="highlighter-rouge">Juliet</code>…</p>
+
+<p>How many times was the word <code class="highlighter-rouge">man</code> used?</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'man'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+</span><span class="c1">## [1] 176
+</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+And <code class="highlighter-rouge">woman</code>?</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'woman'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+</span><span class="c1">## [1] 9
+</span><span class="w">
+</span></code></pre>
+</div>
+<p>Really? <code class="highlighter-rouge">Man</code> was mentioned 20 times more than <code class="highlighter-rouge">woman</code>?</p>
+
+<p><br />
+But that isn’t fair, the <code class="highlighter-rouge">grepl</code> function looks for <strong>man</strong> on its own but also within words, including <strong>wo</strong><i>man</i>. Thankfully we can force the <code class="highlighter-rouge">grepl</code> function to only look for the word <strong>man</strong>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'\\&lt;man\\&gt;'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+</span><span class="c1">## [1] 77
+</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+Just like we can find words synonymous to <strong>woman</strong> by adding multiple patterns in the <code class="highlighter-rouge">grepl</code> and using the <code class="highlighter-rouge">|</code> symbol to separate them:
+<br /></p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'woman|women|lady'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+</span><span class="c1">## [1] 94
+</span><span class="w">
+</span></code></pre>
+</div>
+<p>The point here is that it’s trivially easy to run some analysis of literature using Project Gutenberg.</p>
+
+<p><br /></p>
+
+<p><strong>How many sentences are in The Tragedy of Romeo and Juliet?</strong></p>
+
+<p>The <strong>R</strong> language has some great NLP packages that can help us build a <a href="https://en.wikipedia.org/wiki/Text_segmentation#Word_segmentation" target="_blank">sentence tokenizer</a> and split our text into actual sentences.</p>
+
+<ul>
+  <li><a href="https://cran.r-project.org/web/packages/openNLP/index.html" target="_blank">openNLP: Apache OpenNLP Tools Interface</a></li>
+  <li><a href="https://cran.r-project.org/web/packages/NLP/index.html" target="_blank">NLP: Natural Language Processing Infrastructure</a></li>
+  <li><a href="https://cran.r-project.org/web/packages/tm/index.html" target="_blank">tm: Text Mining Package</a></li>
+</ul>
+<p><br /></p>
+
+<p>Instead, we’re going to cheat and use a simple trick to break our data into sentences that I used in a previous blog entry. This won’t be as precise as a real sentence tokenizer but is package-free and fast. We replace the following characters <code class="highlighter-rouge">!</code>, <code class="highlighter-rouge">?</code>, <code class="highlighter-rouge">.</code>, <code class="highlighter-rouge">;</code> with an alphabet-based code: <code class="highlighter-rouge">ootoo</code>. Then we remove all punctuation and finally split our data using the <code class="highlighter-rouge">ootoo</code> code:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># create a blob of text like we did earlier
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="n">romeo_juliet</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span><span class="n">collapse</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># swap all sentence ends with code 'ootoo'
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s1">';|\\.|!|\\?'</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">romeo_juliet_sentences</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="o">=</span><span class="s1">'ootoo'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># remove all punctuation
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">romeo_juliet_sentences</span><span class="p">,</span><span class="n">pattern</span><span class="o">=</span><span class="w"> </span><span class="s2">"[[:punct:]]"</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">' '</span><span class="p">)</span><span class="w">  
+
+</span><span class="c1"># remove contiguous spaces
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">"\\s+"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">romeo_juliet_sentences</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># split sentences by split code
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unlist</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">romeo_juliet_sentences</span><span class="p">,</span><span class="w"> </span><span class="n">split</span><span class="o">=</span><span class="s1">'ootoo'</span><span class="p">,</span><span class="n">fixed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># remove empty elements (when there are multiple points or question marks)
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">romeo_juliet_sentences</span><span class="p">[</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s2">""</span><span class="p">]</span><span class="w">
+
+</span></code></pre>
+</div>
+<p><br />
+How many sentences are in <code class="highlighter-rouge">The Tragedy of Romeo and Juliet</code>?</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">length</span><span class="p">(</span><span class="n">romeo_juliet_sentences</span><span class="p">)</span><span class="w">
+</span><span class="c1">## [1] 3751
+</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br />     <br />
+<i>A special thanks to Lucas A. for the Shakespeare portrait!</i>
+<br />      <br />
+<a id="sourcecode">Full source code</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">romeo_juliet</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readLines</span><span class="p">(</span><span class="s2">"http://www.gutenberg.org/cache/epub/1112/pg1112.txt"</span><span class="p">)</span><span class="w"> 
+</span><span class="nf">class</span><span class="p">(</span><span class="n">romeo_juliet</span><span class="p">)</span><span class="w">
+</span><span class="nf">length</span><span class="p">(</span><span class="n">romeo_juliet</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># not showing all lines to save space
+# head(romeo_juliet,100)
+</span><span class="n">print</span><span class="p">(</span><span class="n">romeo_juliet</span><span class="p">[</span><span class="m">63</span><span class="o">:</span><span class="m">69</span><span class="p">])</span><span class="w">
+</span><span class="n">grep</span><span class="p">(</span><span class="w"> </span><span class="s2">"THE END"</span><span class="p">,</span><span class="w"> </span><span class="n">romeo_juliet</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># remove unecessary text
+</span><span class="n">romeo_juliet</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">romeo_juliet</span><span class="p">[</span><span class="m">64</span><span class="o">:</span><span class="m">4484</span><span class="p">]</span><span class="w">
+
+</span><span class="c1"># create a text blob
+</span><span class="n">romeo_juliet_blob</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="n">romeo_juliet</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span><span class="n">collapse</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#remove all punctuation and create a vector of words:
+</span><span class="n">romeo_juliet_words</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">romeo_juliet_blob</span><span class="p">,</span><span class="n">pattern</span><span class="o">=</span><span class="w"> </span><span class="s2">"[[:punct:]]"</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">' '</span><span class="p">)</span><span class="w">   
+</span><span class="n">romeo_juliet_words</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">strsplit</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">,</span><span class="w"> </span><span class="s1">' '</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># How many times was the word Romeo and Juliet used:
+</span><span class="n">print</span><span class="p">(</span><span class="s1">'Romeo'</span><span class="p">)</span><span class="w">
+</span><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'romeo'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="s1">'Juliet'</span><span class="p">)</span><span class="w">
+</span><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'juliet'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># How many times was the word ``man`` used?
+</span><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'man'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># And ``woman``?
+</span><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'woman'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+
+</span><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'\\&lt;man\\&gt;'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+</span><span class="nf">sum</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="n">romeo_juliet_words</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">pattern</span><span class="o">=</span><span class="s1">'woman|women|lady'</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.case</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># create a blob of text like we did earlier
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="n">romeo_juliet</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span><span class="n">collapse</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># swap all sentence ends with code 'ootoo'
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s1">';|\\.|!|\\?'</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">romeo_juliet_sentences</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="o">=</span><span class="s1">'ootoo'</span><span class="p">)</span><span class="w">
+ 
+</span><span class="c1"># remove all punctuation
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">romeo_juliet_sentences</span><span class="p">,</span><span class="n">pattern</span><span class="o">=</span><span class="w"> </span><span class="s2">"[[:punct:]]"</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">' '</span><span class="p">)</span><span class="w">  
+
+</span><span class="c1"># remove contiguous spaces
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">"\\s+"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">romeo_juliet_sentences</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># split sentences by split code
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unlist</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">romeo_juliet_sentences</span><span class="p">,</span><span class="w"> </span><span class="n">split</span><span class="o">=</span><span class="s1">'ootoo'</span><span class="p">,</span><span class="n">fixed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># remove empty elements (when there are multple points or question marks)
+</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">romeo_juliet_sentences</span><span class="p">[</span><span class="n">romeo_juliet_sentences</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s2">""</span><span class="p">]</span><span class="w">
+
+</span><span class="c1"># How many sentences are in ``The Tragedy of Romeo and Juliet``?
+</span><span class="w">
+</span><span class="nf">length</span><span class="p">(</span><span class="n">romeo_juliet_sentences</span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

@@ -1,0 +1,603 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Modeling 101 - Predicting Binary Outcomes with R, gbm, glmnet, and {caret}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Modeling 101 - Predicting Binary Outcomes with R, gbm, glmnet, and {caret}</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=-nai4NBx5zI&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br />
+<strong>Packages Used in this Walkthrough</strong></p>
+
+<ul>
+        <li type="square"><b>{caret}</b> - modeling wrapper, functions, commands</li>
+        <li type="square"><b>{pROC}</b> - Area Under the Curve (AUC) functions</li>
+</ul>
+<p><br /><br /></p>
+
+<p>This is an introduction to modeling binary outcomes using the <a href="http://topepo.github.io/caret/index.html" target="_blank">caret library</a>. A binary outcome is a result that has two possible values - true or false, alive or dead, etc.</p>
+
+<p>We’re going to use two models: <a href="http://www.inside-r.org/packages/cran/gbm/docs/gbm" target="_blank">gbm (Generalized Boosted Models)</a> and <a href="http://www.inside-r.org/packages/glmnet" target="_blank">glmnet (Generalized Linear Models)</a>. Approaching a new data set using different models is one way of getting a handle on your data. <strong>Gbm</strong> uses boosted trees while <strong>glmnet</strong>  uses regression.
+<br /><br />
+<strong>Let’s code!</strong></p>
+
+<p>We’re going to use the <strong>Titanic</strong> data set from the <strong>University of Colorado Denver</strong>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'http://math.ucdenver.edu/RTutorial/titanic.txt'</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s1">'\t'</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">str</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## 'data.frame':	1313 obs. of  5 variables:
+##  $ Name    : Factor w/ 1310 levels "Abbing, Mr Anthony",..: 22 25 26 27 24 31 45 46 50 54 ...
+##  $ PClass  : Factor w/ 3 levels "1st","2nd","3rd": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Age     : num  29 2 30 25 0.92 47 63 39 58 71 ...
+##  $ Sex     : Factor w/ 2 levels "female","male": 1 1 2 1 2 2 1 2 1 2 ...
+##  $ Survived: int  1 0 0 0 1 1 1 0 1 0 ...
+## NULL
+</code></pre>
+</div>
+<p><br /><br />
+We need to clean up a few things as is customary with any data science project. The <code class="highlighter-rouge">Name</code> variable is mostly unique so we’re going to extract the title and throw the rest away.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mr '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mr'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mrs '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mrs'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Miss'</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Miss'</span><span class="p">,</span><span class="s1">'Nothing'</span><span class="p">)))</span><span class="w"> 
+</span></code></pre>
+</div>
+<p><br /><br />
+The <code class="highlighter-rouge">Age</code> variable has missing data (i.e. <code class="highlighter-rouge">NA</code>’s) so we’re going to impute it with the mean value of all the available ages. There are many ways of imputing missing data - we could delete those rows, set the values to 0, etc. Either way, this will neutralize the missing fields with a common value, and allow the models that can’t handle them normally to function (<strong>gbm</strong> can handle <code class="highlighter-rouge">NA</code>s but <strong>glmnet</strong> cannot):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">median</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+It is customary to have the <strong>outcome</strong> variable (also known as response variable) located in the last column of a data set:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'PClass'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Age'</span><span class="p">,</span><span class="w">    </span><span class="s1">'Sex'</span><span class="p">,</span><span class="w">   </span><span class="s1">'Title'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Survived'</span><span class="p">)]</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">str</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## 'data.frame':	1313 obs. of  5 variables:
+##  $ PClass  : Factor w/ 3 levels "1st","2nd","3rd": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Age     : num  29 2 30 25 0.92 47 63 39 58 71 ...
+##  $ Sex     : Factor w/ 2 levels "female","male": 1 1 2 1 2 2 1 2 1 2 ...
+##  $ Title   : chr  "Miss" "Miss" "Mr" "Mrs" ...
+##  $ Survived: int  1 0 0 0 1 1 1 0 1 0 ...
+## NULL
+</code></pre>
+</div>
+<p><br /><br />
+Our data is starting to look good but we have to fix the <strong>factor</strong> variables as most models only accept <strong>numeric</strong> data. Again, <strong>gbm</strong> can deal with factor variables as it will dummify them internally, but <strong>glmnet</strong> won’t. In a nutshell, dummifying factors breaks all the unique values into separate columns (<a href="http://amunategui.github.io/dummyVar-Walkthrough" target="_blank">see my post on Brief Walkthrough Of The dummyVars function from {caret}</a>). This is a <strong>caret</strong> function:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDummy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dummyVars</span><span class="p">(</span><span class="s2">"~."</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="n">fullRank</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">titanicDummy</span><span class="p">,</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##  [1] "PClass.1st"    "PClass.2nd"    "PClass.3rd"    "Age"          
+##  [5] "Sex.female"    "Sex.male"      "Title.Miss"    "Title.Mr"     
+##  [9] "Title.Mrs"     "Title.Nothing" "Survived"
+</code></pre>
+</div>
+<p><br /><br />
+As you can see, each unique factor is now separated into it’s own column. Next, we need to understand the proportion of our outcome variable:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">prop.table</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## 
+##      0      1 
+## 0.6573 0.3427
+</code></pre>
+</div>
+<p><br /><br />
+This tells us that <b>34.27%</b> of our data contains survivors of the Titanic tragedy. This is an important step because if the proportion was smaller than 15%, it would be considered a <strong>rare event</strong> and would be more challenging to model.</p>
+
+<p>I like generalizing my variables so that I can easily recycle the code for subsequent needs:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'Survived'</span><span class="w">
+</span><span class="n">predictorsNames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">)[</span><span class="nf">names</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">outcomeName</span><span class="p">]</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+<strong>Let’s model!</strong></p>
+
+<p>Even though we already know the models we’re going to use in this walkthrough, <strong>caret</strong> supports a huge number of models. Here is how to get the current list of supported models:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">names</span><span class="p">(</span><span class="n">getModelInfo</span><span class="p">())</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##   [1] "ada"                 "ANFIS"               "avNNet"             
+##   [4] "bag"                 "bagEarth"            "bagFDA"             
+##   [7] "bayesglm"            "bdk"                 "blackboost"         
+##  [10] "Boruta"              "brnn"                "bstLs"              
+##  [13] "bstSm"               "bstTree"             "C5.0"               
+##  [16] "C5.0Cost"            "C5.0Rules"           "C5.0Tree"           
+##  [19] "cforest"             "CSimca"              "ctree"              
+##  [22] "ctree2"              "cubist"              "DENFIS"             
+##  [25] "dnn"                 "earth"               "elm"                
+##  [28] "enet"                "evtree"              "extraTrees"         
+##  [31] "fda"                 "FH.GBML"             "FIR.DM"             
+##  [34] "foba"                "FRBCS.CHI"           "FRBCS.W"            
+##  [37] "FS.HGD"              "gam"                 "gamboost"           
+##  [40] "gamLoess"            "gamSpline"           "gaussprLinear"      
+##  [43] "gaussprPoly"         "gaussprRadial"       "gbm"                
+##  [46] "gcvEarth"            "GFS.FR.MOGAL"        "GFS.GCCL"           
+##  [49] "GFS.LT.RS"           "GFS.Thrift"          "glm"                
+##  [52] "glmboost"            "glmnet"              "glmStepAIC"         
+##  [55] "gpls"                "hda"                 "hdda"               
+##  [58] "HYFIS"               "icr"                 "J48"                
+##  [61] "JRip"                "kernelpls"           "kknn"               
+##  [64] "knn"                 "krlsPoly"            "krlsRadial"         
+##  [67] "lars"                "lars2"               "lasso"              
+##  [70] "lda"                 "lda2"                "leapBackward"       
+##  [73] "leapForward"         "leapSeq"             "Linda"              
+##  [76] "lm"                  "lmStepAIC"           "LMT"                
+##  [79] "logicBag"            "LogitBoost"          "logreg"             
+##  [82] "lssvmLinear"         "lssvmPoly"           "lssvmRadial"        
+##  [85] "lvq"                 "M5"                  "M5Rules"            
+##  [88] "mda"                 "Mlda"                "mlp"                
+##  [91] "mlpWeightDecay"      "multinom"            "nb"                 
+##  [94] "neuralnet"           "nnet"                "nodeHarvest"        
+##  [97] "oblique.tree"        "OneR"                "ORFlog"             
+## [100] "ORFpls"              "ORFridge"            "ORFsvm"             
+## [103] "pam"                 "parRF"               "PART"               
+## [106] "partDSA"             "pcaNNet"             "pcr"                
+## [109] "pda"                 "pda2"                "penalized"          
+## [112] "PenalizedLDA"        "plr"                 "pls"                
+## [115] "plsRglm"             "ppr"                 "protoclass"         
+## [118] "qda"                 "QdaCov"              "qrf"                
+## [121] "qrnn"                "rbf"                 "rbfDDA"             
+## [124] "rda"                 "relaxo"              "rf"                 
+## [127] "rFerns"              "RFlda"               "ridge"              
+## [130] "rknn"                "rknnBel"             "rlm"                
+## [133] "rocc"                "rpart"               "rpart2"             
+## [136] "rpartCost"           "RRF"                 "RRFglobal"          
+## [139] "rrlda"               "RSimca"              "rvmLinear"          
+## [142] "rvmPoly"             "rvmRadial"           "SBC"                
+## [145] "sda"                 "sddaLDA"             "sddaQDA"            
+## [148] "simpls"              "SLAVE"               "slda"               
+## [151] "smda"                "sparseLDA"           "spls"               
+## [154] "stepLDA"             "stepQDA"             "superpc"            
+## [157] "svmBoundrangeString" "svmExpoString"       "svmLinear"          
+## [160] "svmPoly"             "svmRadial"           "svmRadialCost"      
+## [163] "svmRadialWeights"    "svmSpectrumString"   "treebag"            
+## [166] "vbmpRadial"          "widekernelpls"       "WM"                 
+## [169] "xyf"
+</code></pre>
+</div>
+
+<p>Plenty to satisfy most needs!!
+<br /><br />
+<strong>Gbm Modeling</strong></p>
+
+<p>It is important to know what type of modeling a particular model supports. This can be done using the <strong>caret</strong> function <code class="highlighter-rouge">getModelInfo</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">getModelInfo</span><span class="p">()</span><span class="o">$</span><span class="n">gbm</span><span class="o">$</span><span class="n">type</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "Regression"     "Classification"
+</code></pre>
+</div>
+<p><br /><br />
+This tells us that <code class="highlighter-rouge">gbm</code> supports both <strong>regression</strong> and <strong>classification</strong>. As this is a binary classification, we need to force <strong>gbm</strong> into using the classification mode. We do this by changing the <strong>outcome</strong> variable to a factor (we use a copy of the outcome as we’ll need the original one for our next model):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="o">==</span><span class="m">1</span><span class="p">,</span><span class="s1">'yes'</span><span class="p">,</span><span class="s1">'nope'</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived2</span><span class="p">)</span><span class="w">
+</span><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'Survived2'</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+As with most modeling projects, we need to split our data into two portions: a <strong>training</strong> and a <strong>testing</strong> portion. By doing this, we can use one portion to teach the model how to recognize survivors on the Titanic and the other portion to evaluate the model. Setting the <strong>seed</strong> is paramount for reproducibility as <code class="highlighter-rouge">createDataPartition</code> will shuffle the data randomly before splitting it. By using the same seed you will always get the same split in subsequent runs:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">splitIndex</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">createDataPartition</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">.75</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">times</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">trainDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="w"> </span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+</span><span class="n">testDF</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="o">-</span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+<strong>Caret</strong> offers many tuning functions to help you get as much as possible out of your models; the <a href="http://www.inside-r.org/packages/cran/caret/docs/trainControl" target="_blank">trainControl</a> function allows you to control the resampling of your data. This will split the training data set internally and do it’s own train/test runs to figure out the best settings for your model. In this case, we’re going to cross-validate the data 3 times, therefore training it 3 times on different portions of the data before settling on the best tuning parameters (for <strong>gbm</strong> it is <code class="highlighter-rouge">trees</code>, <code class="highlighter-rouge">shrinkage</code>, and <code class="highlighter-rouge">interaction depth</code>). You can also set these values yourself if you don’t trust the function.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">objControl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">'cv'</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="o">=</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">returnResamp</span><span class="o">=</span><span class="s1">'none'</span><span class="p">,</span><span class="w"> </span><span class="n">summaryFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">twoClassSummary</span><span class="p">,</span><span class="w"> </span><span class="n">classProbs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+This is the heart of our modeling adventure, time to teach our model how to recognize Titanic survivors. Because this is a classification model, we’re requesting that our metrics use <a href="http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf" target="_blank">ROC</a> instead of the default <strong>RMSE</strong>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">objModel</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">trainDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">],</span><span class="w"> </span><span class="n">trainDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> 
+                  </span><span class="n">method</span><span class="o">=</span><span class="s1">'gbm'</span><span class="p">,</span><span class="w"> 
+                  </span><span class="n">trControl</span><span class="o">=</span><span class="n">objControl</span><span class="p">,</span><span class="w">  
+                  </span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ROC"</span><span class="p">,</span><span class="w">
+                  </span><span class="n">preProc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"center"</span><span class="p">,</span><span class="w"> </span><span class="s2">"scale"</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        1.2314             nan     0.1000    0.0245
+##      2        1.1948             nan     0.1000    0.0192
+##      3        1.1594             nan     0.1000    0.0158
+...
+</code></pre>
+</div>
+<p><br /><br />
+I truncated most of the lines from the training process but you get the idea. We then can call <code class="highlighter-rouge">summary()</code> function on our model to find out what variables were most important:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">summary</span><span class="p">(</span><span class="n">objModel</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><img src="img/unnamed-chunk-15.png" alt="plot of chunk unnamed-chunk-10" />
+<br /></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##                         var rel.inf
+## Title.Mr           Title.Mr 26.2756
+## PClass.3rd       PClass.3rd 20.8523
+## Sex.male           Sex.male 20.7569
+## Sex.female       Sex.female 11.4357
+## Age                     Age 10.3042
+## PClass.1st       PClass.1st  8.2905
+## Title.Mrs         Title.Mrs  1.7515
+## Title.Miss       Title.Miss  0.3332
+## PClass.2nd       PClass.2nd  0.0000
+## Title.Nothing Title.Nothing  0.0000
+</code></pre>
+</div>
+
+<p><br /><br />
+We can find out what tuning parameters were most important to the model (notice the last lines about <code class="highlighter-rouge">trees</code>, <code class="highlighter-rouge">shrinkage</code> and <code class="highlighter-rouge">interaction depth</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">print</span><span class="p">(</span><span class="n">objModel</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## Stochastic Gradient Boosting 
+## 
+## 986 samples
+##  10 predictor
+##   2 classes: 'nope', 'yes' 
+## 
+## Pre-processing: centered, scaled 
+## Resampling: Cross-Validated (3 fold) 
+...
+## Tuning parameter 'shrinkage' was held constant at a value of 0.1
+## ROC was used to select the optimal model using  the largest value.
+## The final values used for the model were n.trees = 100,
+##  interaction.depth = 1 and shrinkage = 0.1.
+</code></pre>
+</div>
+<p><br /><br />
+<strong>Evaluate gbm model</strong></p>
+
+<p>There are two types of evaluation we can do here, <code class="highlighter-rouge">raw</code> or <code class="highlighter-rouge">prob</code>. <strong>Raw</strong> gives you a class prediction, in our case <code class="highlighter-rouge">yes</code> and <code class="highlighter-rouge">nope</code>, while <strong>prob</strong> gives you the probability on how sure the model is about it’s choice. I always use <strong>prob</strong>, as I like to be in control of the threshold and also like to use <a href="https://www.kaggle.com/wiki/AreaUnderCurve" target="_blank">AUC</a> score  which requires probabilities, not classes. There are situations where having class values can come in handy, such as with multinomial models where you’re predicting more than two values.</p>
+
+<p>We now call the <code class="highlighter-rouge">predict</code> function and pass it our trained model and our testing data. Let’s start by looking at class predictions and using the <strong>caret</strong> <code class="highlighter-rouge">postResample</code> function to get an accuracy score:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">objModel</span><span class="p">,</span><span class="w"> </span><span class="n">testDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'raw'</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] yes  nope yes  nope nope nope
+## Levels: nope yes
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">print</span><span class="p">(</span><span class="n">postResample</span><span class="p">(</span><span class="n">pred</span><span class="o">=</span><span class="n">predictions</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="o">=</span><span class="n">as.factor</span><span class="p">(</span><span class="n">testDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">])))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## Accuracy    Kappa 
+##   0.8135   0.5644
+</code></pre>
+</div>
+<p><br />
+The accuracy tells us that our model is correct <strong>81.35%</strong> of the time - not bad…
+<br /><br />
+Now let’s look at probabilities:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># probabilites 
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">objModel</span><span class="p">,</span><span class="w"> </span><span class="n">testDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'prob'</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##      nope    yes
+## 1 0.07292 0.9271
+## 2 0.76058 0.2394
+## 3 0.43309 0.5669
+## 4 0.67279 0.3272
+## 5 0.67279 0.3272
+## 6 0.54616 0.4538
+</code></pre>
+</div>
+<p><br /><br />
+To get the <strong>AUC</strong> score, you need to pass the <code class="highlighter-rouge">yes</code> column to the <code class="highlighter-rouge">roc</code> function (each row adds up to 1 but we’re interested in the <code class="highlighter-rouge">yes</code>, the <strong>survivors</strong>):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">ifelse</span><span class="p">(</span><span class="n">testDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]</span><span class="o">==</span><span class="s2">"yes"</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">),</span><span class="w"> </span><span class="n">predictions</span><span class="p">[[</span><span class="m">2</span><span class="p">]])</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## Area under the curve: 0.825
+</code></pre>
+</div>
+<p>The <strong>AUC</strong> is telling us that our model has a <strong>0.825 AUC</strong> score (remember that an <strong>AUC</strong> ranges between <strong>0.5</strong> and <strong>1</strong>, where <strong>0.5</strong> is random and <strong>1</strong> is perfect).</p>
+
+<p><br /><br />
+<strong>Glmnet Modeling</strong></p>
+
+<p>Let’s change gears and try this out on a regression model. Let’s look at what modeling types <strong>glmnet</strong> supports and reset our outcome variable as we’re going to be using the numerical outcome instead of the factor.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">getModelInfo</span><span class="p">()</span><span class="o">$</span><span class="n">glmnet</span><span class="o">$</span><span class="n">type</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "Regression"     "Classification"
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'Survived'</span><span class="w">
+
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">splitIndex</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">createDataPartition</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">.75</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">times</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">trainDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="w"> </span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+</span><span class="n">testDF</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="o">-</span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+We re-run some of the basic training and prediction functions with some slight changes:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">objControl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">'cv'</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="o">=</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">returnResamp</span><span class="o">=</span><span class="s1">'none'</span><span class="p">)</span><span class="w">
+</span><span class="n">objModel</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">trainDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">],</span><span class="w"> </span><span class="n">trainDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'glmnet'</span><span class="p">,</span><span class="w">  </span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"RMSE"</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">objControl</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">objModel</span><span class="p">,</span><span class="w"> </span><span class="n">testDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">])</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">predictions</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## Area under the curve: 0.857
+</code></pre>
+</div>
+<p><br /><br />
+This is a stronger <strong>AUC</strong> score than our previous <strong>gbm</strong> model. Testing with different types of models does pay off (take it with a grain of salt as we didn’t tune our models much).</p>
+
+<p>You can also call the <strong>caret</strong> function <code class="highlighter-rouge">varImp</code> to figure out the variables that were important to the model. And this is one great feature of the <strong>glmnet</strong> model; it returns positive and negative variable importance unlike most models. This helps deepens your understanding about your variables, such that being in <code class="highlighter-rouge">PClass.1st</code> leans the probabilities in the survivor’s favor while <code class="highlighter-rouge">PClass.3rd</code> does the opposite (make sure you set <code class="highlighter-rouge">scale</code> to False):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">varImp</span><span class="p">(</span><span class="n">objModel</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="nb">F</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/unnamed-chunk-21.png" alt="plot of chunk unnamed-chunk-10" />
+<br /><br /></p>
+
+<p><a id="sourcecode">Full source code (<a href="https://github.com/amunategui/modeling-binary-outcomes" target="_blank">also on GitHub</a>)</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="c1"># load libraries
+</span><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#################################################
+# data prep
+#################################################
+</span><span class="w">
+</span><span class="c1"># load data
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'http://math.ucdenver.edu/RTutorial/titanic.txt'</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s1">'\t'</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mr '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mr'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mrs '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mrs'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Miss'</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Miss'</span><span class="p">,</span><span class="s1">'Nothing'</span><span class="p">)))</span><span class="w"> 
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">median</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># miso format
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'PClass'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Age'</span><span class="p">,</span><span class="w">    </span><span class="s1">'Sex'</span><span class="p">,</span><span class="w">   </span><span class="s1">'Title'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Survived'</span><span class="p">)]</span><span class="w">
+
+</span><span class="c1"># dummy variables for factors/characters
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDummy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dummyVars</span><span class="p">(</span><span class="s2">"~."</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="n">fullRank</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">titanicDummy</span><span class="p">,</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+
+
+</span><span class="c1"># what is the proportion of your outcome variable?
+</span><span class="n">prop.table</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># save the outcome for the glmnet model
+</span><span class="n">tempOutcome</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="w">  
+
+</span><span class="c1"># generalize outcome and predictor variables
+</span><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'Survived'</span><span class="w">
+</span><span class="n">predictorsNames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">)[</span><span class="nf">names</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">outcomeName</span><span class="p">]</span><span class="w">
+
+</span><span class="c1">#################################################
+# model it
+#################################################
+# get names of all caret supported models 
+</span><span class="nf">names</span><span class="p">(</span><span class="n">getModelInfo</span><span class="p">())</span><span class="w">
+
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="o">==</span><span class="m">1</span><span class="p">,</span><span class="s1">'yes'</span><span class="p">,</span><span class="s1">'nope'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># pick model gbm and find out what type of model it is
+</span><span class="n">getModelInfo</span><span class="p">()</span><span class="o">$</span><span class="n">gbm</span><span class="o">$</span><span class="n">type</span><span class="w">
+
+</span><span class="c1"># split data into training and testing chunks
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">splitIndex</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">createDataPartition</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">.75</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">times</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">trainDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="w"> </span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+</span><span class="n">testDF</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="o">-</span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+
+</span><span class="c1"># create caret trainControl object to control the number of cross-validations performed
+</span><span class="n">objControl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">'cv'</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="o">=</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">returnResamp</span><span class="o">=</span><span class="s1">'none'</span><span class="p">,</span><span class="w"> </span><span class="n">summaryFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">twoClassSummary</span><span class="p">,</span><span class="w"> </span><span class="n">classProbs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+
+
+</span><span class="c1"># run model
+</span><span class="n">objModel</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">trainDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">],</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">trainDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]),</span><span class="w"> 
+                  </span><span class="n">method</span><span class="o">=</span><span class="s1">'gbm'</span><span class="p">,</span><span class="w"> 
+                  </span><span class="n">trControl</span><span class="o">=</span><span class="n">objControl</span><span class="p">,</span><span class="w">  
+                  </span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ROC"</span><span class="p">,</span><span class="w">
+                  </span><span class="n">preProc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"center"</span><span class="p">,</span><span class="w"> </span><span class="s2">"scale"</span><span class="p">))</span><span class="w">
+
+
+</span><span class="c1"># find out variable importance
+</span><span class="n">summary</span><span class="p">(</span><span class="n">objModel</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># find out model details
+</span><span class="n">objModel</span><span class="w">
+
+</span><span class="c1">#################################################
+# evalutate model
+#################################################
+# get predictions on your testing data
+</span><span class="w">
+</span><span class="c1"># class prediction
+</span><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">objModel</span><span class="p">,</span><span class="w"> </span><span class="n">testDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'raw'</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span><span class="w">
+</span><span class="n">postResample</span><span class="p">(</span><span class="n">pred</span><span class="o">=</span><span class="n">predictions</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="o">=</span><span class="n">as.factor</span><span class="p">(</span><span class="n">testDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]))</span><span class="w">
+
+</span><span class="c1"># probabilities 
+</span><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">objModel</span><span class="p">,</span><span class="w"> </span><span class="n">testDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'prob'</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span><span class="w">
+</span><span class="n">postResample</span><span class="p">(</span><span class="n">pred</span><span class="o">=</span><span class="n">predictions</span><span class="p">[[</span><span class="m">2</span><span class="p">]],</span><span class="w"> </span><span class="n">obs</span><span class="o">=</span><span class="n">ifelse</span><span class="p">(</span><span class="n">testDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]</span><span class="o">==</span><span class="s1">'yes'</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">))</span><span class="w">
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">ifelse</span><span class="p">(</span><span class="n">testDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">]</span><span class="o">==</span><span class="s2">"yes"</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">),</span><span class="w"> </span><span class="n">predictions</span><span class="p">[[</span><span class="m">2</span><span class="p">]])</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w">
+
+
+</span><span class="c1">################################################
+# glmnet model
+################################################
+</span><span class="w">
+</span><span class="c1"># pick model gbm and find out what type of model it is
+</span><span class="n">getModelInfo</span><span class="p">()</span><span class="o">$</span><span class="n">glmnet</span><span class="o">$</span><span class="n">type</span><span class="w">
+
+</span><span class="c1"># save the outcome for the glmnet model
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tempOutcome</span><span class="w">
+
+</span><span class="c1"># split data into training and testing chunks
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">splitIndex</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">createDataPartition</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">.75</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">times</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">trainDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="w"> </span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+</span><span class="n">testDF</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="o">-</span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+
+</span><span class="c1"># create caret trainControl object to control the number of cross-validations performed
+</span><span class="n">objControl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">'cv'</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="o">=</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">returnResamp</span><span class="o">=</span><span class="s1">'none'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># run model
+</span><span class="n">objModel</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">trainDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">],</span><span class="w"> </span><span class="n">trainDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'glmnet'</span><span class="p">,</span><span class="w">  </span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"RMSE"</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">objControl</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># get predictions on your testing data
+</span><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">objModel</span><span class="p">,</span><span class="w"> </span><span class="n">testDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">])</span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">predictions</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w">
+
+</span><span class="n">postResample</span><span class="p">(</span><span class="n">pred</span><span class="o">=</span><span class="n">predictions</span><span class="p">,</span><span class="w"> </span><span class="n">obs</span><span class="o">=</span><span class="n">testDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">])</span><span class="w">
+ 
+</span><span class="c1"># find out variable importance
+</span><span class="n">summary</span><span class="p">(</span><span class="n">objModel</span><span class="p">)</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">varImp</span><span class="p">(</span><span class="n">objModel</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="nb">F</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># find out model details
+</span><span class="n">objModel</span><span class="w">
+
+</span><span class="c1"># display variable importance on a +/- scale 
+</span><span class="n">vimp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">varImp</span><span class="p">(</span><span class="n">objModel</span><span class="p">,</span><span class="w"> </span><span class="n">scale</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">row.names</span><span class="p">(</span><span class="n">vimp</span><span class="o">$</span><span class="n">importance</span><span class="p">),</span><span class="n">vimp</span><span class="o">$</span><span class="n">importance</span><span class="o">$</span><span class="n">Overall</span><span class="p">)</span><span class="w">
+</span><span class="n">results</span><span class="o">$</span><span class="n">VariableName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rownames</span><span class="p">(</span><span class="n">vimp</span><span class="p">)</span><span class="w">
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s1">'VariableName'</span><span class="p">,</span><span class="s1">'Weight'</span><span class="p">)</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">results</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="p">),]</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">results</span><span class="p">[(</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="m">0</span><span class="p">),]</span><span class="w">
+
+</span><span class="n">par</span><span class="p">(</span><span class="n">mar</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">5</span><span class="p">,</span><span class="m">15</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">2</span><span class="p">))</span><span class="w"> </span><span class="c1"># increase y-axis margin. 
+</span><span class="n">xx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">barplot</span><span class="p">(</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.85</span><span class="p">,</span><span class="w"> 
+              </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="s2">"Variable Importance -"</span><span class="p">,</span><span class="n">outcomeName</span><span class="p">),</span><span class="w"> </span><span class="n">horiz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w"> 
+              </span><span class="n">xlab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"&lt; (-) importance &gt;  &lt; neutral &gt;  &lt; importance (+) &gt;"</span><span class="p">,</span><span class="w"> </span><span class="n">axes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> 
+              </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ifelse</span><span class="p">((</span><span class="n">results</span><span class="o">$</span><span class="n">Weight</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="p">),</span><span class="w"> </span><span class="s1">'blue'</span><span class="p">,</span><span class="w"> </span><span class="s1">'red'</span><span class="p">))</span><span class="w"> 
+</span><span class="n">axis</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">at</span><span class="o">=</span><span class="n">xx</span><span class="p">,</span><span class="w"> </span><span class="n">labels</span><span class="o">=</span><span class="n">results</span><span class="o">$</span><span class="n">VariableName</span><span class="p">,</span><span class="w"> </span><span class="n">tick</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">las</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">line</span><span class="o">=</span><span class="m">-0.3</span><span class="p">,</span><span class="w"> </span><span class="n">cex.axis</span><span class="o">=</span><span class="m">0.6</span><span class="p">)</span><span class="w">  
+
+
+</span><span class="c1">################################################
+# advanced stuff
+################################################
+</span><span class="w">
+</span><span class="c1"># boosted tree model (gbm) adjust learning rate and and trees
+</span><span class="n">gbmGrid</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="n">expand.grid</span><span class="p">(</span><span class="n">interaction.depth</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="m">9</span><span class="p">),</span><span class="w">
+                        </span><span class="n">n.trees</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w">
+                        </span><span class="n">shrinkage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.01</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># run model
+</span><span class="n">objModel</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">trainDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">],</span><span class="w"> </span><span class="n">trainDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'gbm'</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">objControl</span><span class="p">,</span><span class="w"> </span><span class="n">tuneGrid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gbmGrid</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># get predictions on your testing data
+</span><span class="n">predictions</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">objModel</span><span class="p">,</span><span class="w"> </span><span class="n">testDF</span><span class="p">[,</span><span class="n">predictorsNames</span><span class="p">])</span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testDF</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">predictions</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+	 
+  </body>
+</html>

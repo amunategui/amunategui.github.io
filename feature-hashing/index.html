@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Feature Hashing (a.k.a. The Hashing Trick) With R</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Feature Hashing (a.k.a. The Hashing Trick) With R</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+    
+<p style="text-align:center">
+ <img src="img/factors.png" alt="plot of chunk cross-country-florist" />
+</p><br />
+<strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=oHSMZk3Ynzg&amp;index=1&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br />
+<strong>Packages Used in this Walkthrough</strong></p>
+
+<ul>
+		<li type="square"><b>{FeatureHashing}</b> - Creates a Model Matrix via Feature Hashing With a Formula Interface</li>
+        <li type="square"><b>{RCurl}</b> - General network (HTTP/FTP/...) client interface for R</li>
+        <li type="square"><b>{caret}</b> - Classification and Regression Training</li>
+        <li type="square"><b>{glmnet}</b> - Lasso and elastic-net regularized generalized linear models</li>
+       
+</ul>
+
+<p><br /><br />
+<a href="http://en.wikipedia.org/wiki/Feature_hashing" target="_blank">Feature hashing</a> is a clever way of modeling data sets containing large amounts of factor and character data. It uses less memory and requires little pre-processing. In this walkthrough, we model a large healthcare data set by first using <b>dummy variables</b> and then <b>feature hashing</b>.</p>
+
+<p>What’s the big deal? Well, normally, one would:</p>
+
+<ul>
+<li type="square"><b><a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">Dummify</a> all factor, text, and unordered categorical data</b>: This creates a new column for each unique value and tags a binary value whether or not an observation contains that particular value. For large data sets, this can drastically increase the dimensional space (adding many more columns). </li>
+
+<li type="square"><b>Drop levels</b>: For example, taking the the top x% most popular levels and neutralizing the rest, grouping levels by theme using <b><a href="http://amunategui.github.io/stringdist/" target="_blank">string distance</a></b>, or simply ignoring factors too large for a machine's memory. </li>
+
+<li type="square"><b>Use a <a href="http://amunategui.github.io/sparse-matrix-glmnet/" target="_blank">sparse matrix</a></b>:  This can mitigate the size of these dummied data sets by dropping zeros.</li>
+</ul>
+<p>But a more complete solution, especially when there are tens of thousands of unique values, is the <b>‘hashing trick’</b>.</p>
+
+<p><b>Wush Wu</b> created the <a href="https://github.com/wush978/FeatureHashing" target="_blank">FeatureHashing</a> package available on CRAN. According to the package’s introduction on CRAN:</p>
+
+<blockquote>"Feature hashing, also called the hashing trick, is a method to transform features to vector. Without looking up the indices in an associative array, it applies a hash function to the features and uses their hash values as indices directly. The method of feature hashing in this package was proposed in Weinberger et. al. (2009). The hashing algorithm is the murmurhash3 from the digest package. Please see the <a href="http://cran.r-project.org/web/packages/FeatureHashing/" target="_blank">README.md</a> for more information.” </blockquote>
+
+<p>Feature hashing has numerous advantages in modeling and machine learning. It works with address locations instead of actual data, this allows it to process data only when needed. So, the first feature found is really a column of data containing only one level (one value), when it encounters a different value, then it becomes a feature with 2 levels, and so on. It also requires no pre-processing of factor data; you just feed it your factor in its raw state. This approach takes a lot less memory than a fully scanned and processed data set. Plenty of <a href="http://en.wikipedia.org/wiki/Feature_hashing" target="_blank">theory</a> out there for those who want a deeper understanding.</p>
+
+<p>Some of its disadvantages include causing models to run slower and a certain obfuscation of the data.
+<br /><br />
+<strong>Let’s Code!</strong></p>
+
+<p>We’ll be using a great healthcare data set on historical readmissions of patients with diabetes - <a href="https://archive.ics.uci.edu/ml/machine-learning-databases/00296/" target="_blank">Diabetes 130-US hospitals for years 1999-2008</a> Data Set. Readmissions is a big deal for hospitals in the US as Medicare/Medicaid will scrutinize those bills and, in some cases, only reimburse a percentage of them. We’ll use code to automate the download and unzipping of the data directly from the <a href="https://archive.ics.uci.edu/ml/index.html" target="_blank">UC Irvine Machine Learning Repository</a>.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">require</span><span class="p">(</span><span class="n">RCurl</span><span class="p">)</span><span class="w">
+</span><span class="n">binData</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getBinaryURL</span><span class="p">(</span><span class="s2">"https://archive.ics.uci.edu/ml/machine-learning-databases/00296/dataset_diabetes.zip"</span><span class="p">,</span><span class="w">
+                    </span><span class="n">ssl.verifypeer</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+
+</span><span class="n">conObj</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">file</span><span class="p">(</span><span class="s2">"dataset_diabetes.zip"</span><span class="p">,</span><span class="w"> </span><span class="n">open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"wb"</span><span class="p">)</span><span class="w">
+</span><span class="n">writeBin</span><span class="p">(</span><span class="n">binData</span><span class="p">,</span><span class="w"> </span><span class="n">conObj</span><span class="p">)</span><span class="w">
+</span><span class="c1"># don't forget to close it
+</span><span class="n">close</span><span class="p">(</span><span class="n">conObj</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># open diabetes file
+</span><span class="n">files</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unzip</span><span class="p">(</span><span class="s2">"dataset_diabetes.zip"</span><span class="p">)</span><span class="w">
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Let’s take a quick look at the data and then clean it up.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">str</span><span class="p">(</span><span class="n">diabetes</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## 'data.frame':	101766 obs. of  50 variables:
+##  $ encounter_id            : int  2278392 149190 64410 500364 16680 35754 55842 63768 12522 15738 ...
+##  $ patient_nbr             : int  8222157 55629189 86047875 82442376 42519267 82637451 84259809 114882984 48330783 63555939 ...
+##  $ race                    : chr  "Caucasian" "Caucasian" "AfricanAmerican" "Caucasian" ...
+##  $ gender                  : chr  "Female" "Female" "Female" "Male" ...
+##  $ age                     : chr  "[0-10)" "[10-20)" "[20-30)" "[30-40)" ...
+##  $ weight                  : chr  "?" "?" "?" "?" ...
+##  $ admission_type_id       : int  6 1 1 1 1 2 3 1 2 3 ...
+##  $ discharge_disposition_id: int  25 1 1 1 1 1 1 1 1 3 ...
+##  $ admission_source_id     : int  1 7 7 7 7 2 2 7 4 4 ...
+##  $ time_in_hospital        : int  1 3 2 2 1 3 4 5 13 12 ...
+##  $ payer_code              : chr  "?" "?" "?" "?" ...
+##  $ medical_specialty       : chr  "Pediatrics-Endocrinology" "?" "?" "?" ...
+##  $ num_lab_procedures      : int  41 59 11 44 51 31 70 73 68 33 ...
+##  $ num_procedures          : int  0 0 5 1 0 6 1 0 2 3 ...
+##  $ num_medications         : int  1 18 13 16 8 16 21 12 28 18 ...
+##  $ number_outpatient       : int  0 0 2 0 0 0 0 0 0 0 ...
+##  $ number_emergency        : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ number_inpatient        : int  0 0 1 0 0 0 0 0 0 0 ...
+##  $ diag_1                  : chr  "250.83" "276" "648" "8" ...
+##  $ diag_2                  : chr  "?" "250.01" "250" "250.43" ...
+##  $ diag_3                  : chr  "?" "255" "V27" "403" ...
+##  $ number_diagnoses        : int  1 9 6 7 5 9 7 8 8 8 ...
+##  $ max_glu_serum           : chr  "None" "None" "None" "None" ...
+##  $ A1Cresult               : chr  "None" "None" "None" "None" ...
+##  $ metformin               : chr  "No" "No" "No" "No" ...
+##  $ repaglinide             : chr  "No" "No" "No" "No" ...
+##  $ nateglinide             : chr  "No" "No" "No" "No" ...
+##  $ chlorpropamide          : chr  "No" "No" "No" "No" ...
+##  $ glimepiride             : chr  "No" "No" "No" "No" ...
+##  $ acetohexamide           : chr  "No" "No" "No" "No" ...
+##  $ glipizide               : chr  "No" "No" "Steady" "No" ...
+##  $ glyburide               : chr  "No" "No" "No" "No" ...
+##  $ tolbutamide             : chr  "No" "No" "No" "No" ...
+##  $ pioglitazone            : chr  "No" "No" "No" "No" ...
+##  $ rosiglitazone           : chr  "No" "No" "No" "No" ...
+##  $ acarbose                : chr  "No" "No" "No" "No" ...
+##  $ miglitol                : chr  "No" "No" "No" "No" ...
+##  $ troglitazone            : chr  "No" "No" "No" "No" ...
+##  $ tolazamide              : chr  "No" "No" "No" "No" ...
+##  $ examide                 : chr  "No" "No" "No" "No" ...
+##  $ citoglipton             : chr  "No" "No" "No" "No" ...
+##  $ insulin                 : chr  "No" "Up" "No" "Up" ...
+##  $ glyburide.metformin     : chr  "No" "No" "No" "No" ...
+##  $ glipizide.metformin     : chr  "No" "No" "No" "No" ...
+##  $ glimepiride.pioglitazone: chr  "No" "No" "No" "No" ...
+##  $ metformin.rosiglitazone : chr  "No" "No" "No" "No" ...
+##  $ metformin.pioglitazone  : chr  "No" "No" "No" "No" ...
+##  $ change                  : chr  "No" "Ch" "No" "Ch" ...
+##  $ diabetesMed             : chr  "No" "Yes" "Yes" "Yes" ...
+##  $ readmitted              : chr  "NO" "&gt;30" "NO" "NO" ...
+</code></pre>
+</div>
+
+<p><br /><br /> 
+<strong>101766 obs. of  50 variables</strong></p>
+
+<p>Of interest are 3 fields: <code class="highlighter-rouge">diag_1</code>, <code class="highlighter-rouge">diag_2</code>, <code class="highlighter-rouge">diag_3</code>. These 3 features are numerical representations of patient diagnoses. Each patient can have up to 3 diagnoses recorded. If we sum all the unique levels for all 3 sets, we end up with a lot of levels. Remember, even though these are numerical representations of diagnoses, they are still diagnoses and cannot be model as numerical data as the distance between two diagnoses doesn’t mean anything. These all need to be dummied into there own column.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">diabetes</span><span class="o">$</span><span class="n">diag_1</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 717
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">diabetes</span><span class="o">$</span><span class="n">diag_2</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 749
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">length</span><span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">diabetes</span><span class="o">$</span><span class="n">diag_3</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 790
+</code></pre>
+</div>
+<p>The sum of all unique diagnoses is 2256. This means, in order to break out each diagnosis into its own column, we need an additional 2256 new columns on top of our original 50.</p>
+
+<p>OK, let’s finish cleaning up the data. We’re going to drop non-predictive features, replace interrogation marks with <code class="highlighter-rouge">NA</code>s and fix the outcome variable to a binary value.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># drop useless variables
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="n">select</span><span class="o">=-</span><span class="nf">c</span><span class="p">(</span><span class="n">encounter_id</span><span class="p">,</span><span class="w"> </span><span class="n">patient_nbr</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># transform all "?" to 0s
+</span><span class="n">diabetes</span><span class="p">[</span><span class="n">diabetes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"?"</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+
+</span><span class="c1"># remove zero variance - ty James http://stackoverflow.com/questions/8805298/quickly-remove-zero-variance-variables-from-a-data-frame
+</span><span class="n">diabetes</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes</span><span class="p">[</span><span class="n">sapply</span><span class="p">(</span><span class="n">diabetes</span><span class="p">,</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">levels</span><span class="p">(</span><span class="n">factor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">exclude</span><span class="o">=</span><span class="kc">NULL</span><span class="p">)))</span><span class="o">&gt;</span><span class="m">1</span><span class="p">)]</span><span class="w">
+
+</span><span class="c1"># prep outcome variable to those readmitted under 30 days
+</span><span class="n">diabetes</span><span class="o">$</span><span class="n">readmitted</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">diabetes</span><span class="o">$</span><span class="n">readmitted</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"&lt;30"</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w">
+
+</span><span class="n">outcomeName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'readmitted'</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>Now, let’s prepare the data two ways: a common approach using <b>dummy variables</b> for our factors, and another using <b>feature hashing</b>.
+<br /><br /></p>
+
+<p><strong>Using Dummy Variables</strong></p>
+
+<p>Here we use caret’s <code class="highlighter-rouge">dummyVars</code> function to make our dummy column (see my <a href="http://amunategui.github.io/dummyVar-Walkthrough/" target="_blank">walkthrough</a> for more details on this great function). <b>Be warned</b>, you will need at least 2 gigabytes of free live memory on your system for this to work!</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">diabetes_dummy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes</span><span class="w">
+</span><span class="c1"># warning will need 2GB at least free memory
+</span><span class="n">require</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="n">dmy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dummyVars</span><span class="p">(</span><span class="s2">" ~ ."</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">diabetes_dummy</span><span class="p">)</span><span class="w">
+</span><span class="n">diabetes_dummy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">dmy</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">diabetes_dummy</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+After all this preparation work, we end up with a fairly wide data space with 2462 features/columns:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">dim</span><span class="p">(</span><span class="n">diabetes_dummy</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 101766   2462
+</code></pre>
+</div>
+<p><br /><br />
+We’ll use <a href="http://www.inside-r.org/packages/cran/glmnet/docs/cv.glmnet" target="_blank">cv.glmnet</a> to model our data as it supports sparse matrices (this also works great with <a href="http://cran.r-project.org/web/packages/xgboost/index.html" target="_blank">XGBoost</a>).</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># change all NAs to 0
+</span><span class="n">diabetes_dummy</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">diabetes_dummy</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="c1"># split the data into training and testing data sets
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">split</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">diabetes_dummy</span><span class="p">),</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="m">0.5</span><span class="o">*</span><span class="n">nrow</span><span class="p">(</span><span class="n">diabetes_dummy</span><span class="p">)))</span><span class="w">
+</span><span class="n">objTrain</span><span class="w"> </span><span class="o">&lt;-</span><span class="n">diabetes_dummy</span><span class="p">[</span><span class="n">split</span><span class="p">,]</span><span class="w">
+</span><span class="n">objTest</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes_dummy</span><span class="p">[</span><span class="o">-</span><span class="n">split</span><span class="p">,]</span><span class="w">
+
+</span><span class="n">predictorNames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">setdiff</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">diabetes_dummy</span><span class="p">),</span><span class="n">outcomeName</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># cv.glmnet expects a matrix 
+</span><span class="n">library</span><span class="p">(</span><span class="n">glmnet</span><span class="p">)</span><span class="w">
+</span><span class="c1"># straight matrix model not recommended - works but very slow, go with a sparse matrix
+# glmnetModel &lt;- cv.glmnet(model.matrix(~., data=objTrain[,predictorNames]), objTrain[,outcomeName], 
+#             family = "binomial", type.measure = "auc")
+</span><span class="w">
+</span><span class="n">glmnetModel</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cv.glmnet</span><span class="p">(</span><span class="n">sparse.model.matrix</span><span class="p">(</span><span class="o">~</span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">objTrain</span><span class="p">[,</span><span class="n">predictorNames</span><span class="p">]),</span><span class="w"> </span><span class="n">objTrain</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> 
+                         </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"binomial"</span><span class="p">,</span><span class="w"> </span><span class="n">type.measure</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"auc"</span><span class="p">)</span><span class="w">
+</span><span class="n">glmnetPredict</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">glmnetModel</span><span class="p">,</span><span class="n">sparse.model.matrix</span><span class="p">(</span><span class="o">~</span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">objTest</span><span class="p">[,</span><span class="n">predictorNames</span><span class="p">]),</span><span class="w"> </span><span class="n">s</span><span class="o">=</span><span class="s2">"lambda.min"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Let’s look at the AUC (Area under the curve) so we can compare this approach with the feature-hashed one:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">auc</span><span class="p">(</span><span class="n">objTest</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">glmnetPredict</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 0.6480986
+</code></pre>
+</div>
+<p><br /><br />
+<strong>Using Feature Hashing</strong></p>
+
+<p>Now for the fun part, remember that wide data set we just modeled? Well, by using feature hashing, we don’t have to do any of that work; we just feed the data set with its factor and character features directly into the model. The code is based on both a <a href="https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173" target="_blank">kaggle competition</a> and <a href="https://github.com/wush978/FeatureHashing/blob/master/README.Rmd" target="_blank">Wush Wu’s package readme</a> on GitHub.com.</p>
+
+<p>The <code class="highlighter-rouge">hashed.model.matrix</code> function takes a <code class="highlighter-rouge">hash.size</code> value. This is a critical piece. Depending on the size of your data you may need to adjust this value. I set it here to 2^12, but if you try a larger value, it will handle more variables (i.e. unique values). On the other hand, if you try a smaller value, you risk having memory collisions and loss of data. It is something you have to experiment with.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">diabetes_hash</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes</span><span class="w">
+</span><span class="n">predictorNames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">setdiff</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">diabetes_hash</span><span class="p">),</span><span class="n">outcomeName</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># change all NAs to 0
+</span><span class="n">diabetes_hash</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">diabetes_hash</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w">
+
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">split</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">diabetes_hash</span><span class="p">),</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="m">0.5</span><span class="o">*</span><span class="n">nrow</span><span class="p">(</span><span class="n">diabetes_hash</span><span class="p">)))</span><span class="w">
+</span><span class="n">objTrain</span><span class="w"> </span><span class="o">&lt;-</span><span class="n">diabetes_hash</span><span class="p">[</span><span class="n">split</span><span class="p">,]</span><span class="w">
+</span><span class="n">objTest</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">diabetes_hash</span><span class="p">[</span><span class="o">-</span><span class="n">split</span><span class="p">,]</span><span class="w">
+ 
+</span><span class="n">library</span><span class="p">(</span><span class="n">FeatureHashing</span><span class="p">)</span><span class="w">
+</span><span class="n">objTrain_hashed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hashed.model.matrix</span><span class="p">(</span><span class="o">~</span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">objTrain</span><span class="p">[,</span><span class="n">predictorNames</span><span class="p">],</span><span class="w"> </span><span class="n">hash.size</span><span class="o">=</span><span class="m">2</span><span class="o">^</span><span class="m">12</span><span class="p">,</span><span class="w"> </span><span class="n">transpose</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">objTrain_hashed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as</span><span class="p">(</span><span class="n">objTrain_hashed</span><span class="p">,</span><span class="w"> </span><span class="s2">"dgCMatrix"</span><span class="p">)</span><span class="w">
+</span><span class="n">objTest_hashed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hashed.model.matrix</span><span class="p">(</span><span class="o">~</span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">objTest</span><span class="p">[,</span><span class="n">predictorNames</span><span class="p">],</span><span class="w"> </span><span class="n">hash.size</span><span class="o">=</span><span class="m">2</span><span class="o">^</span><span class="m">12</span><span class="p">,</span><span class="w"> </span><span class="n">transpose</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">objTest_hashed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as</span><span class="p">(</span><span class="n">objTest_hashed</span><span class="p">,</span><span class="w"> </span><span class="s2">"dgCMatrix"</span><span class="p">)</span><span class="w">
+ 
+</span><span class="n">library</span><span class="p">(</span><span class="n">glmnet</span><span class="p">)</span><span class="w">
+</span><span class="n">glmnetModel</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cv.glmnet</span><span class="p">(</span><span class="n">objTrain_hashed</span><span class="p">,</span><span class="w"> </span><span class="n">objTrain</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> 
+                     </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"binomial"</span><span class="p">,</span><span class="w"> </span><span class="n">type.measure</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"auc"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p>Let’s see how this version scored:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">glmnetPredict</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">glmnetModel</span><span class="p">,</span><span class="w"> </span><span class="n">objTest_hashed</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="o">=</span><span class="s2">"lambda.min"</span><span class="p">)</span><span class="w">
+</span><span class="n">auc</span><span class="p">(</span><span class="n">objTest</span><span class="p">[,</span><span class="n">outcomeName</span><span class="p">],</span><span class="w"> </span><span class="n">glmnetPredict</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] 0.6475847
+</code></pre>
+</div>
+<p>Practically the same score as prepping the data yourself but with half the work and a much smaller memory footprint.
+<br /><br />
+<b>Note:</b> This subject and code was inspired by a Kaggle.com competition: <a href="https://www.kaggle.com/c/avazu-ctr-prediction" target="_blank">Avazu - Click-Through Rate Prediction</a>. More precisely by the following <a href="https://www.kaggle.com/c/avazu-ctr-prediction/forums/t/11270/is-the-featurehasher-function-available-in-r/63173" target="_blank">thread</a>. I have used feature hashing in <b>Python</b> via sklearn’s <code class="highlighter-rouge">preprocessing.OneHotEncoder</code> and <code class="highlighter-rouge">feature_extraction.FeatureHasher</code> but these approaches aren’t as common in <b>R</b>. I hope this is changing with the arrival of great packages such as Wu’s. Many thanks to Wu and all Kagglers!!</p>
+
+<p><br /><br />      <br />
+<a id="sourcecode">Full source code</a>:</p>
+
+<pre><code class="language-{r}"># get data ----------------------------------------------------------------
+# UCI Diabetes 130-US hospitals for years 1999-2008 Data Set 
+# https://archive.ics.uci.edu/ml/machine-learning-databases/00296/
+require(RCurl)
+binData &lt;- getBinaryURL("https://archive.ics.uci.edu/ml/machine-learning-databases/00296/dataset_diabetes.zip",
+                    ssl.verifypeer=FALSE)
+
+conObj &lt;- file("dataset_diabetes.zip", open = "wb")
+writeBin(binData, conObj)
+# don't forget to close it
+close(conObj)
+
+# open diabetes file
+files &lt;- unzip("dataset_diabetes.zip")
+diabetes &lt;- read.csv(files[1], stringsAsFactors = FALSE)
+
+# quick look at the data
+str(diabetes)
+
+# drop useless variables
+diabetes &lt;- subset(diabetes,select=-c(encounter_id, patient_nbr))
+
+# transform all "?" to 0s
+diabetes[diabetes == "?"] &lt;- NA
+
+# remove zero variance - ty James http://stackoverflow.com/questions/8805298/quickly-remove-zero-variance-variables-from-a-data-frame
+diabetes &lt;- diabetes[sapply(diabetes, function(x) length(levels(factor(x,exclude=NULL)))&gt;1)]
+
+# prep outcome variable to those readmitted under 30 days
+diabetes$readmitted &lt;- ifelse(diabetes$readmitted == "&lt;30",1,0)
+
+# generalize outcome name
+outcomeName &lt;- 'readmitted'
+
+# large factors to deal with
+length(unique(diabetes$diag_1))
+length(unique(diabetes$diag_2))
+length(unique(diabetes$diag_3))
+
+# dummy var version -------------------------------------------------------
+diabetes_dummy &lt;- diabetes
+# alwasy a good excersize to see the length of data that will need to be transformed
+# charcolumns &lt;- names(diabetes_dummy[sapply(diabetes_dummy, is.character)])
+# for (thecol in charcolumns) 
+#         print(paste(thecol,length(unique(diabetes_dummy[,thecol]))))
+
+# warning will need 2GB at least free memory
+require(caret)
+dmy &lt;- dummyVars(" ~ .", data = diabetes_dummy)
+diabetes_dummy &lt;- data.frame(predict(dmy, newdata = diabetes_dummy))
+
+# many features
+dim(diabetes_dummy)
+
+# change all NAs to 0
+diabetes_dummy[is.na(diabetes_dummy)] &lt;- 0
+
+# split the data into training and testing data sets
+set.seed(1234)
+split &lt;- sample(nrow(diabetes_dummy), floor(0.5*nrow(diabetes_dummy)))
+objTrain &lt;-diabetes_dummy[split,]
+objTest &lt;- diabetes_dummy[-split,]
+
+predictorNames &lt;- setdiff(names(diabetes_dummy),outcomeName)
+
+# cv.glmnet expects a matrix 
+library(glmnet)
+# straight matrix model not recommended - works but very slow, go with a sparse matrix
+# glmnetModel &lt;- cv.glmnet(model.matrix(~., data=objTrain[,predictorNames]), objTrain[,outcomeName], 
+#             family = "binomial", type.measure = "auc")
+
+glmnetModel &lt;- cv.glmnet(sparse.model.matrix(~., data=objTrain[,predictorNames]), objTrain[,outcomeName], 
+                         family = "binomial", type.measure = "auc")
+glmnetPredict &lt;- predict(glmnetModel,sparse.model.matrix(~., data=objTest[,predictorNames]), s="lambda.min")
+
+# dummy version score:
+auc(objTest[,outcomeName], glmnetPredict)
+
+# feature hashed version -------------------------------------------------
+diabetes_hash &lt;- diabetes
+predictorNames &lt;- setdiff(names(diabetes_hash),outcomeName)
+
+# change all NAs to 0
+diabetes_hash[is.na(diabetes_hash)] &lt;- 0
+
+set.seed(1234)
+split &lt;- sample(nrow(diabetes_hash), floor(0.5*nrow(diabetes_hash)))
+objTrain &lt;-diabetes_hash[split,]
+objTest &lt;- diabetes_hash[-split,]
+ 
+library(FeatureHashing)
+objTrain_hashed = hashed.model.matrix(~., data=objTrain[,predictorNames], hash.size=2^12, transpose=FALSE)
+objTrain_hashed = as(objTrain_hashed, "dgCMatrix")
+objTest_hashed = hashed.model.matrix(~., data=objTest[,predictorNames], hash.size=2^12, transpose=FALSE)
+objTest_hashed = as(objTest_hashed, "dgCMatrix")
+ 
+library(glmnet)
+glmnetModel &lt;- cv.glmnet(objTrain_hashed, objTrain[,outcomeName], 
+                     family = "binomial", type.measure = "auc")
+# hashed version score:
+glmnetPredict &lt;- predict(glmnetModel, objTest_hashed, s="lambda.min")
+auc(objTest[,outcomeName], glmnetPredict)
+</code></pre>
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+
+  </body>
+</html>

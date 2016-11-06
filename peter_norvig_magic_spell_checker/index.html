@@ -1,0 +1,250 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>The Peter Norvig Magic Spell Checker in R</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div><!-- /blog-masthead -->
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">The Peter Norvig Magic Spell Checker in R</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+
+
+    <p><br /></p>
+<p style="text-align:center">
+<img src="img/wizard-spell.png" alt="peter norvig magic spell checker" style="padding:1px; border:1px solid #021a40; width: 30%; height: 30%" /></p>
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=x2Jn709rSeY&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA&amp;index=1" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<p><br /><br /></p>
+
+<p>During a recent <a href="kaggle.com">Kaggle competition</a>, I was
+introduced to
+<a href="https://en.wikipedia.org/wiki/Peter_Norvig" target="_blank">Peter
+Norvig’s</a> blog entry entitled
+<a href="http://www.norvig.com/spell-correct.html" target="blank">How to
+Write a Spelling Corrector</a>. He offers a clever way for any of us to
+create a good spell checker with nothing more than a few lines of code
+and some text data. No complex cascading grammar rules or API calls
+required! In essence, you create slight but increasing alternations for every one of your words against the
+large corpus of correctly spelled words until you find a match (or until it gives up).</p>
+
+<p>In this post, I simply translated Peter’s Python code into R as closely
+to the original as possible. I used (or tried my best) the same
+functions, variable names and constructs. This isn’t about optimization
+but clarity, and the good news is that there are plenty of ways of
+optimizing the R code.</p>
+
+<p>Before we start looking at the code, you will need to download Peter’s
+<a href="http://www.norvig.com/big.txt" target="_blank">big.txt</a> and
+save it locally. <code class="highlighter-rouge">big.txt</code> contains a million or so words from
+<a href="http://www.gutenberg.org/wiki/Main_Page" target="_blank">Project
+Gutenberg</a> and other sources.
+<br /><br />
+<strong>Coding Time</strong></p>
+
+<p>The first part is practically a verbatim copy of Peter’s Python version.
+It just loads the <code class="highlighter-rouge">big.txt</code> into memory, strips it of all non-alphabetic
+characters, applies <code class="highlighter-rouge">tolower</code>, and returns unique words and their
+frequencies.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># point to local folder containing big.txt
+setwd('/Users/manuelamunategui/Documents/spell-check')
+
+words &lt;- function(text){
+     text &lt;- gsub(x=text, pattern="[^[:alpha:]]", replacement = ' ')
+     return (trimws(tolower(text)))
+}
+
+train &lt;- function(features){
+     features &lt;- strsplit(x=features,split = ' ')
+     model &lt;- as.data.frame(table(features))
+     return(model)
+}
+
+NWORDS = train(words(readChar('big.txt', file.info('big.txt')$size)))
+NWORDS$features &lt;- as.character(NWORDS$features)
+
+head(NWORDS)
+
+##   features   Freq
+## 1          303982
+## 2        a  21155
+## 3      aah      1
+## 4    aaron      5
+## 5       ab      2
+## 6    aback      3
+</code></pre>
+</div>
+
+<p><br /><br /></p>
+
+<p>Now we get to the heart of the code - we create variations of the word
+being checked to help find the best match. We get iterations of the word
+missing a letter, two letters transpositions, sequential replacement and
+insertions with every letter of the alphabet - pheww!</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>edits1 &lt;- function(word) {
+
+     # create copies of word with one letter missing
+     deletes &lt;- c()
+     for (i in seq(1:nchar(word)))
+          deletes &lt;- c(deletes, paste0(substr(x=word,start = 0, stop=i-1), 
+                       substr(x=word,start = i+1, stop=nchar(word))))
+
+     # create copies of word with consecutive pair of letters transposed                   
+     transposes &lt;- c()
+     vec_word &lt;- strsplit(word, split = '')[[1]]
+     for (i in seq(1:(nchar(word)-1))) {
+          vec_word_tmp &lt;- vec_word
+          splice &lt;- rev(vec_word_tmp[i:(i+1)])
+          vec_word_tmp[i] &lt;- splice[1]
+          vec_word_tmp[i+1] &lt;- splice[2]
+          transposes &lt;- c(transposes, paste(vec_word_tmp, collapse = ""))
+     }
+           
+     # create copies of word with every letter swapped with entire alphabet                     
+     replaces &lt;- c()
+     for (i in seq(1:nchar(word)))
+          replaces &lt;- c(replaces, paste0(substr(x=word,start = 0, stop=i-1), 
+                                          letters, 
+                                          substr(x=word,start = i+1, stop=nchar(word))))
+ 
+     # create copies of word with entire alphabet inserted before and after every letter
+     inserts &lt;- c()
+     for (i in seq(1:(nchar(word)+1)))
+          inserts &lt;- c(inserts, paste0(substr(x=word,start = 0, stop=i-1), 
+                                          letters, 
+                                          substr(x=word,start = i, stop=nchar(word))))
+     
+     return (unique(c(deletes, transposes, replaces, inserts)))
+}
+</code></pre>
+</div>
+
+<p><br /><br /> The above code is a lot faster in Python than my <code class="highlighter-rouge">R</code>
+translation - optimization alert!</p>
+
+<p>Peter gets not only gets the custom permutations for the word being
+checked, he also gets the permutation of the permutation. That creates a
+huge amount of words, so we trim the created words by checking if they
+are actual words from our corpus:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>known_edits2 &lt;- function(word) {
+     matches &lt;- c()
+     for (edt in edits1(word)) matches &lt;- c(matches, intersect(edits1(edt),NWORDS$features))
+     return(unique(matches))
+}
+</code></pre>
+</div>
+
+<p><br /><br /> Function to check if the word exits:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>known &lt;- function(words) { 
+     return (unique(intersect(words,NWORDS$features)))
+}
+</code></pre>
+</div>
+
+<p><br /><br /> All functions are ready and we now create the public function <code class="highlighter-rouge">correct</code>. This function finds all correctly spelled words and returns the one with the least alterations and highest frequency count:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>correct &lt;- function(word){
+     correct_spelling &lt;- known(c(word))
+     if (identical(correct_spelling, character(0))) {
+          correct_spelling &lt;- known(edits1(word))
+          if (identical(correct_spelling, character(0))) {
+               correct_spelling &lt;- known_edits2(word)
+               if (identical(correct_spelling, character(0))) {
+                    correct_spelling &lt;- word
+               }
+          }
+     }
+     correct_spelling &lt;- data.frame('features'=correct_spelling)
+     correct_spelling &lt;- merge(correct_spelling, NWORDS, all.x=TRUE)
+     return(as.character(correct_spelling[order(correct_spelling$Freq, decreasing = TRUE),]$features[1]))
+}
+
+correct('spelng')
+
+## [1] "seeing"
+
+correct('speling')
+
+## [1] "spelling"
+
+correct('spelingg')
+
+## [1] "spelling"
+
+correct('spelinggg')
+
+## [1] "spelinggg"
+</code></pre>
+</div>
+
+<p><br /><br /></p>
+
+<p><strong>Conclusion</strong></p>
+
+<p>Though Peter states this isn’t as accurate as an industrial spell
+checker, the ramifications of such a simple approach are big! You can
+easily focus your spell checking to highly specialized/technical terms as
+long as you have the corpus - just as you can also localize your
+spelling to other languages with supporting corpus.</p>
+
+<p><a href="http://www.sumsar.net/blog/2014/12/peter-norvigs-spell-checker-in-two-lines-of-r/" target="_blank">And
+here is a great two-line implementation in R</a>! <br /><br /><br /> <b>Big thanks
+to Lucas for the Spelling Wizard art work!</b></p>
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

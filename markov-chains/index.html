@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Predict Stock-Market Behavior using Markov Chains and R</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Predict Stock-Market Behavior using Markov Chains and R</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+<p style="text-align:center">
+<img src="img/markov.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 75%; height: 75%" />
+</p>
+<p><br /><br /></p>
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=rE7zxbMqgNQ&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA&amp;index=1" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<p><br /><br />
+A
+<a href="https://en.wikipedia.org/wiki/Andrey_Markov" target="_blank">Markov
+Chain</a> offers a probabilistic approach in predicting the likelihood
+of an event based on previous behavior
+(<a href="http://setosa.io/blog/2014/07/26/markov-chains/" target="_blank">learn
+more about Markov Chains here</a> and <a href="http://blog.revolutionanalytics.com/2016/01/getting-started-with-markov-chains.html" target="_blank">here</a>).</p>
+
+<p><br /></p>
+<h2>
+Past Performance is no Guarantee of Future Results
+</h2>
+<p>If you want to experiment whether the stock market is influence by
+previous market events, then a Markov model is a perfect experimental
+tool.</p>
+
+<p>We’ll be using Pranab Ghosh’s methodology described in
+<a href="https://pkghosh.wordpress.com/2015/07/06/customer-conversion-prediction-with-markov-chain-classifier/" target="_blank">Customer
+Conversion Prediction with Markov Chain Classifier</a>. Even though he
+applies it to customer conversion and I apply it to the stock market,
+the point is that it doesn’t matter where it comes from as long as you
+can collect enough sequences, even of varying lengths, to find patterns
+in past behavior.</p>
+
+<p>Some notes: this is just my interpretation using the R language as
+Pranab uses pseudo code along with a Github repository with Java
+examples. I hope a am at least capturing his high-level vision as I did
+take plenty of low-level programming liberties. And, for my fine print,
+this is only for entertainment and shouldn’t be construed as financial
+nor trading advice.</p>
+
+<p><br /></p>
+<h2>
+Cataloging Patterns Using S&amp;P 500 Market Data
+</h2>
+<p>In its raw form, 10 years of S&amp;P 500 index data represents only one
+sequence of many events leading to the last quoted price. In order to
+get more sequences and, more importantly, get a better understanding of
+the market’s behavior, we need to break up the data into many samples of
+sequences leading to different price patterns. This way we can build a
+fairly rich catalog of market behaviors and attempt to match them with
+future patterns to predict future outcomes. For example, below are three
+sets of consecutive S&amp;P 500 price closes. They represent different
+periods and contain varying amounts of prices. Think of each of these
+sequences as a pattern leading to a final price expression. Let’s look
+at some examples:</p>
+
+<p><b>2012-10-18 to 2012-11-21</b></p>
+
+<p>1417.26 –&gt; 1428.39 –&gt; 1394.53 –&gt; 1377.51 –&gt; <i>Next Day Volume Up</i></p>
+
+<p><b>2016-08-12 to 2016-08-22</b></p>
+
+<p>2184.05 –&gt; 2190.15 –&gt; 2178.15 –&gt; 2182.22 –&gt; 2187.02 –&gt; <i>Next Day Volume Up</i></p>
+
+<p><b>2014-04-04 to 2014-04-10</b></p>
+
+<p>1865.09 –&gt; 1845.04 –&gt; <i>Next Day Volume Down</i></p>
+
+<p>Take the last example, imagine that past three days of the current
+market match historical behaviors of day 1, 2 and 3. You now have a
+pattern that matches current market conditions and can use the future
+price (day 4) as an indicator for tomorrow’s market direction (i.e.
+market going down). This obviously isn’t using any of Markov’s ideas and
+is just predicting future behavior on the basis of an up-down-up market
+pattern.</p>
+
+<p>If you collect thousands and thousands of these sequences, you can build
+a rich catalog of S&amp;P 500 market behavior. We won’t just compare the
+closing prices, we’ll also compare the day’s open versus the day’s
+close, the previous day’s high to the current high, the previous day’s
+low to the current low, the previous day’s volume to the current one,
+etc (this will become clearer as we work through the code).</p>
+
+<p><br /></p>
+<h2>
+Binning Values Into 3 Buckets
+</h2>
+<p>An important twist in Pranab Ghosh’s approach is to simplify each event
+within a sequence into a single feature. He splits the value into 3
+groups - Low, Medium, High. The simplification of the event into three
+bins will facilitate the subsequent matching between other sequence
+events and, hopefully, capture the story so it can be used to predict
+future behavior.</p>
+
+<p>To better generalize stock market data, for example, we can collect the
+percent difference between one day’s price and the previous day’s. Once
+we have collected all of them, we can bin them into three groups of
+equal frequency using the
+<a href="https://cran.r-project.org/web/packages/infotheo/index.html" target="_blank">InfoTheo</a>
+package. The small group is assigned ‘L’, the medium group, ‘M’ and the
+large, ‘H’.</p>
+
+<p>Here are 6 percentage differences between one close and the previous
+one:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> -0.00061281019 -0.00285190466  0.00266118835  0.00232492640  0.00530862595  0.00512213970
+</code></pre>
+</div>
+
+<p>Using equal-frequency binning we can translate the above numbers into:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> "M" "L" "M" "M" "H" "H"
+</code></pre>
+</div>
+
+<p><br /></p>
+<h2>
+Combining Event Features into a Single Event Feature
+</h2>
+<p>You then paste all the features for a particular event into a single
+feature. If we are looking at the percentage difference between closes,
+opens, highs, lows, we’ll end up with a feature containing four letters.
+Each representing the bin for that particular feature:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> "MLHL"
+</code></pre>
+</div>
+
+<p>Then we string all the feature events for the sequence and end up with
+something like this along with the observed outcome:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> "HMLL" "MHHL" "LLLH" "HMMM" "HHHL" "HHHH" --&gt; Volume Up
+</code></pre>
+</div>
+
+<p><br /></p>
+<h2>
+Creating Two Markov Chains, One for Days with Volume Jumps, and another
+for Volume Drops
+</h2>
+<p>Another twist in Pranab Ghosh’s approach is to separate sequences of
+events into separate data sets based on the outcome. As we are
+predicting volume changes, one data set will contain sequences of volume
+increases and another, decreases. This enables each data set to offer a
+probability of a directional volume move and the largest probability,
+wins.</p>
+
+<p><br /></p>
+<h2>
+First-Order Transition Matrix
+</h2>
+<p>A
+<a href="http://techeffigytutorials.blogspot.com/2015/01/markov-chains-explained.html" target="_blank">transition
+matrix</a> is the probability matrix from the Markov Chain. In its
+simplest form, you read it by choosing the current event on the y axis
+and look for the probability of the next event off the x axis. In the
+below image from
+<a href="https://en.wikipedia.org/wiki/Markov_chain#Music" target="_blank">Wikipedia</a>,
+you see that the highest probability for the next note after <code class="highlighter-rouge">A</code> is
+<code class="highlighter-rouge">C#</code>.</p>
+
+<p style="text-align:center">
+<img src="img/transition-matrix.png" alt="1st order matrix" style="padding:1px; border:1px solid #021a40; width: 30%; height: 30%" />
+</p>
+<p><br /><br /> 
+In our case, we will analyze each event pair in a sequence and catalog the market behavior. We then tally all the matching moves and create two data sets for volume action, one for up moves and another for down moves. New stock market events are then broken down into sequential pairs and tallied for both positive and negative outcomes - biggest moves win (there is a little more to this in the code, but that’s it in a nutshell).</p>
+
+<p><br /></p>
+<h2>
+Predicting Stock Market Behavior
+</h2>
+<p>And now for the final piece you’ve all waited for - let’s turn this
+thing on and see how well it predicts stock market behavior. We</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>#install.packages('quantmod)
+library(quantmod)
+#install.packages('dplyr)
+library(dplyr)
+#install.packages('infotheo)
+library(infotheo)
+#install.packages('caret')
+library(caret)
+
+# get market data
+getSymbols(c("^GSPC"))
+head(GSPC)
+tail(GSPC)
+plot(GSPC$GSPC.Volume)
+
+# transfer market data to a simple data frame
+GSPC &lt;- data.frame(GSPC)
+
+# extract the date row name into a date column
+GSPC$Close.Date &lt;- row.names(GSPC)
+
+# take random sets of sequential rows 
+new_set &lt;- c()
+for (row_set in seq(10000)) {
+     row_quant &lt;- sample(10:30, 1)
+     print(row_quant)
+     row_start &lt;- sample(1:(nrow(GSPC) - row_quant), 1)
+     market_subset &lt;- GSPC[row_start:(row_start + row_quant),]
+     market_subset &lt;- dplyr::mutate(market_subset, 
+                                    Close_Date = max(market_subset$Close.Date),
+                                    Close_Gap=(GSPC.Close - lag(GSPC.Close))/lag(GSPC.Close) ,
+                                    High_Gap=(GSPC.High - lag(GSPC.High))/lag(GSPC.High) ,
+                                    Low_Gap=(GSPC.Low - lag(GSPC.Low))/lag(GSPC.Low),
+                                    Volume_Gap=(GSPC.Volume - lag(GSPC.Volume))/lag(GSPC.Volume),
+                                    Daily_Change=(GSPC.Close - GSPC.Open)/GSPC.Open,
+                                    Outcome_Next_Day_Direction= (lead(GSPC.Volume)-GSPC.Volume)) %&gt;%
+          dplyr::select(-GSPC.Open, -GSPC.High, -GSPC.Low, -GSPC.Close, -GSPC.Volume, -GSPC.Adjusted, -Close.Date) %&gt;%
+          na.omit
+     market_subset$Sequence_ID &lt;- row_set
+     new_set &lt;- rbind(new_set, market_subset)
+}
+
+dim(new_set)
+
+# create sequences
+# simplify the data by binning values into three groups
+ 
+# Close_Gap
+range(new_set$Close_Gap)
+data_dicretized &lt;- discretize(new_set$Close_Gap, disc="equalfreq", nbins=3)
+new_set$Close_Gap &lt;- data_dicretized$X
+new_set$Close_Gap_LMH &lt;- ifelse(new_set$Close_Gap == 1, 'L', 
+                                ifelse(new_set$Close_Gap ==2, 'M','H'))
+
+
+# Volume_Gap
+range(new_set$Volume_Gap)
+data_dicretized &lt;- discretize(new_set$Volume_Gap, disc="equalfreq", nbins=3)
+new_set$Volume_Gap &lt;- data_dicretized$X
+new_set$Volume_Gap_LMH &lt;- ifelse(new_set$Volume_Gap == 1, 'L', 
+                                 ifelse(new_set$Volume_Gap ==2, 'M','H'))
+
+# Daily_Change
+range(new_set$Daily_Change)
+data_dicretized &lt;- discretize(new_set$Daily_Change, disc="equalfreq", nbins=3)
+new_set$Daily_Change &lt;- data_dicretized$X
+new_set$Daily_Change_LMH &lt;- ifelse(new_set$Daily_Change == 1, 'L', 
+                                   ifelse(new_set$Daily_Change ==2, 'M','H'))
+
+# new set
+new_set &lt;- new_set[,c("Sequence_ID", "Close_Date", "Close_Gap_LMH", "Volume_Gap_LMH", "Daily_Change_LMH", "Outcome_Next_Day_Direction")]
+
+new_set$Event_Pattern &lt;- paste0(new_set$Close_Gap_LMH,      
+                                new_set$Volume_Gap_LMH, 
+                                new_set$Daily_Change_LMH) 
+
+# reduce set 
+compressed_set &lt;- dplyr::group_by(new_set, Sequence_ID, Close_Date) %&gt;%
+     dplyr::summarize(Event_Pattern = paste(Event_Pattern, collapse = ",")) %&gt;%
+     data.frame
+compressed_set &lt;- merge(x=compressed_set,y=dplyr::select(new_set, Sequence_ID, Outcome_Next_Day_Direction) %&gt;%
+                             dplyr::group_by(Sequence_ID) %&gt;% 
+                             dplyr::slice(n()) %&gt;%
+                             dplyr::distinct(Sequence_ID), by='Sequence_ID')
+
+
+
+# use last x days of data for validation
+library(dplyr)
+compressed_set_validation &lt;- dplyr::filter(compressed_set, Close_Date &gt;= Sys.Date()-90)
+dim(compressed_set_validation)
+compressed_set &lt;- dplyr::filter(compressed_set, Close_Date &lt; Sys.Date()-90)
+dim(compressed_set)
+
+compressed_set &lt;- dplyr::select(compressed_set, -Close_Date)
+compressed_set_validation &lt;- dplyr::select(compressed_set_validation, -Close_Date)
+
+# only keep big moves
+summary(compressed_set$Outcome_Next_Day_Direction)
+compressed_set &lt;- compressed_set[abs(compressed_set$Outcome_Next_Day_Direction) &gt; 5260500,]
+compressed_set$Outcome_Next_Day_Direction &lt;- ifelse(compressed_set$Outcome_Next_Day_Direction &gt; 0, 1, 0)
+summary(compressed_set$Outcome_Next_Day_Direction)
+dim(compressed_set)
+compressed_set_validation$Outcome_Next_Day_Direction &lt;- ifelse(compressed_set_validation$Outcome_Next_Day_Direction &gt; 0, 1, 0)
+
+# create two data sets - won/not won
+compressed_set_pos &lt;- dplyr::filter(compressed_set, Outcome_Next_Day_Direction==1) %&gt;% dplyr::select(-Outcome_Next_Day_Direction)
+dim(compressed_set_pos)
+compressed_set_neg &lt;- dplyr::filter(compressed_set, Outcome_Next_Day_Direction==0) %&gt;% dplyr::select(-Outcome_Next_Day_Direction)
+dim(compressed_set_neg)
+
+# build the markov transition grid
+build_transition_grid &lt;- function(compressed_grid, unique_patterns) {
+     grids &lt;- c()
+     for (from_event in unique_patterns) {
+          print(from_event)
+          
+          # how many times 
+          for (to_event in unique_patterns) {
+               pattern &lt;- paste0(from_event, ',', to_event)
+               IDs_matches &lt;- compressed_grid[grep(pattern, compressed_grid$Event_Pattern),]
+               if (nrow(IDs_matches) &gt; 0) {
+                    Event_Pattern &lt;- paste0(IDs_matches$Event_Pattern, collapse = ',', sep='~~')
+                    found &lt;- gregexpr(pattern = pattern, text = Event_Pattern)[[1]]
+                    grid &lt;- c(pattern,  length(found))
+               } else {
+                    grid &lt;- c(pattern,  0)
+               }
+               grids &lt;- rbind(grids, grid)
+          }
+     }
+     
+     # create to/from grid
+     grid_Df &lt;- data.frame(pairs=grids[,1], counts=grids[,2])
+     grid_Df$x &lt;- sapply(strsplit(as.character(grid_Df$pairs), ","), `[`, 1)
+     grid_Df$y &lt;- sapply(strsplit(as.character(grid_Df$pairs), ","), `[`, 2)
+     head(grids)
+     
+     all_events_count &lt;- length(unique_patterns)
+     transition_matrix = t(matrix(as.numeric(as.character(grid_Df$counts)), ncol=all_events_count, nrow=all_events_count))
+     transition_dataframe &lt;- data.frame(transition_matrix)
+     names(transition_dataframe) &lt;- unique_patterns
+     row.names(transition_dataframe) &lt;- unique_patterns
+     head(transition_dataframe)
+     
+     # replace all NaN with zeros
+     transition_dataframe[is.na(transition_dataframe)] = 0
+     # transition_dataframe &lt;- opp_matrix
+     transition_dataframe &lt;- transition_dataframe/rowSums(transition_dataframe) 
+     return (transition_dataframe)
+}
+unique_patterns &lt;- unique(strsplit(x = paste0(compressed_set$Event_Pattern, collapse = ','), split = ',')[[1]])
+
+grid_pos &lt;- build_transition_grid(compressed_set_pos, unique_patterns)
+grid_neg &lt;- build_transition_grid(compressed_set_neg, unique_patterns)
+
+# predict on out of sample data
+actual = c()
+predicted = c()
+for (event_id in seq(nrow(compressed_set_validation))) {
+     patterns &lt;- strsplit(x = paste0(compressed_set_validation$Event_Pattern[event_id], collapse = ','), split = ',')[[1]]
+     pos &lt;- c()
+     neg &lt;- c()
+     log_odds &lt;- c()
+     for (id in seq(length(patterns)-1)) {
+          
+          # logOdds = log(tp(i,j) / tn(i,j)
+          log_value &lt;- log(grid_pos[patterns[id],patterns[id+1]] / grid_neg[patterns[id],patterns[id+1]])
+          if (is.na(log_value) || (length(log_value)==0) || (is.nan(log(grid_pos[patterns[id],patterns[id+1]] / grid_neg[patterns[id],patterns[id+1]]))==TRUE)) {
+               log_value &lt;- 0.0
+          } else if (log_value == -Inf) {
+               log_value &lt;- log(0.00001 / grid_neg[patterns[id],patterns[id+1]])
+          } else if (log_value == Inf) {
+               log_value &lt;- log(grid_pos[patterns[id],patterns[id+1]] / 0.00001)
+               
+          }
+          log_odds &lt;- c(log_odds, log_value)
+          
+          pos &lt;- c(pos, grid_pos[patterns[id],patterns[id+1]])
+          neg &lt;- c(neg, grid_neg[patterns[id],patterns[id+1]])
+     }
+     print(paste('outcome:', compressed_set_validation$Outcome_Next_Day_Direction[event_id]))
+     print(sum(pos)/sum(neg))
+     print(sum(log_odds))
+     
+     actual &lt;- c(actual, compressed_set_validation$Outcome_Next_Day_Direction[event_id])
+     predicted &lt;- c(predicted, sum(log_odds))
+     
+}
+
+  result &lt;- confusionMatrix(ifelse(predicted&gt;0,1,0), actual)
+result 
+</code></pre>
+</div>
+
+<p><br />
+A 55% accuracy may not sound like much, but in the world of predicting stock market behavior, anything over a flip-of-a-coin is potentially intesesting.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code> Confusion Matrix and Statistics
+ 
+           Reference
+ Prediction   0   1
+          0  83  36
+          1 110  98
+                                           
+                Accuracy : 0.5535          
+                  95% CI : (0.4978, 0.6082)
+     No Information Rate : 0.5902          
+     P-Value [Acc &gt; NIR] : 0.9196          
+                                           
+                   Kappa : 0.1488          
+  Mcnemar's Test P-Value : 1.527e-09       
+                                           
+             Sensitivity : 0.4301          
+             Specificity : 0.7313          
+          Pos Pred Value : 0.6975          
+          Neg Pred Value : 0.4712          
+              Prevalence : 0.5902          
+          Detection Rate : 0.2538          
+    Detection Prevalence : 0.3639          
+       Balanced Accuracy : 0.5807          
+                                           
+        'Positive' Class : 0  
+</code></pre>
+</div>
+
+<p><br /></p>
+<h2>
+What To Try Next?
+</h2>
+<p>You dial up or down the complexity of the pattern, predict others things than volume changes, add more or less sequences, using more bins, etc. Sky’s the limit…</p>
+
+<p><br /><br />
+Thanks Lucas A. for the Markov-Dollar-Chains artwork!
+<br /></p>
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+	 
+  
+  </body>
+</html>

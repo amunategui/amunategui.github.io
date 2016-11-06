@@ -1,4 +1,0 @@
-auto: true
-markdown: kramdown
-pygments: true
-permalink: /:title/index.html

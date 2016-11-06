@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Downloading Data from Google Trends And Analyzing It With R</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Downloading Data from Google Trends And Analyzing It With R</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=1SJkpfyY22E&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br />
+<strong>Packages Used in this Walkthrough</strong></p>
+
+<ul>
+        <li type="square"><b>{ggplot2}</b> - graphics</li>
+</ul>
+
+<p><br /><br />
+<b>Google Trends</b> has been around, in one form or another, for many years. Yet, it wasn’t until I needed free Internet sentiment data that I took a closer look at this service and have been loving it ever since. With this tool you can easily target a time or region and find out what is trending up, down, or not at all - imagine all the possibilities!</p>
+
+<blockquote>Google Trends is a public web facility of Google Inc., based on Google Search, that shows how often a particular search-term is entered relative to the total search-volume across various regions of the world, and in various languages. (Source: <a href="http://en.wikipedia.org/wiki/Google_Trends" target="_blank">Wikipedia.com</a>)</blockquote>
+
+<p>In this walkthrough, I introduce the tool by accessing it directly through a web browser to extract data and analyze it in R.
+<br /><br />
+<strong>Google Trends</strong></p>
+
+<p>Let’s start by entering the term <code class="highlighter-rouge">cycling</code> and limiting our scope to the United States. There seems to be a decline in usage for that term from 2005 to 2014 as the oscillations are constant but the overall trend is dropping.
+<br /><br />
+<img src="img/cycling.png" alt="plot of chunk cycling" />
+<br /><br /></p>
+
+<p>The highest peak is July 2014 and represents the 100% maximum search for the term. Everything else is scaled from that peak, and that is how Google Trends displays a single search term over time (i.e. nothing will be over 100 in the graph). The term also peaks with clockwork regularity every summer. This decline can mean that people’s interest in cycling is declining, that the term cycling in the English language is replaced by another more popular term, or that cyclists aren’t using Google like they used to (your theory is as good as mine).</p>
+
+<p>Let’s make things more interesting and add a second search term to our graph. Let’s add the term <code class="highlighter-rouge">snowboarding</code>.</p>
+
+<p><br />
+<img src="img/cyclingandsnowboarding.png" alt="plot of chunk cyclingandsnowboarding" />
+<br /><br /></p>
+
+<p>This creates a mirror image of <code class="highlighter-rouge">cycling</code>, where the peaks of one term are the troughs of the other. <code class="highlighter-rouge">Snowboarding</code> peaks every December, and, unlike cycling, the term hasn’t dropped over the years.</p>
+
+<p>So far, we’ve seen two interesting pieces of data using Google Trends: the term’s popularity and its seasonal effect. There is plenty more to explore and compare as trends can be narrowed by time, region and city. Here we see both terms applied to <code class="highlighter-rouge">Australia</code>. Clearly, <code class="highlighter-rouge">cycling</code> is more popular than <code class="highlighter-rouge">snowboarding</code>…</p>
+
+<p><br />
+<img src="img/cyclingandsnowboardingaustralia.png" alt="plot of chunk cyclingandsnowboardingaustralia" />
+<br /><br />
+<strong>Let’s Code!</strong></p>
+
+<p>OK, let’s pull some data and analyze it in <b>R</b>. Query <code class="highlighter-rouge">wine</code> as the first term and <code class="highlighter-rouge">beer</code> as the second one and limit it to the US:</p>
+
+<p><br />
+<img src="img/beerandwine.png" alt="plot of chunk beerandwine" />
+<br /><br /></p>
+
+<p>Download the <b>csv</b> file from the dropdown located in the upper right corner:
+<br />
+<img src="img/download.png" alt="plot of chunk download" />
+<br /><br />
+Now, let’s access the file through <b>R</b>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">filename</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"beervswine.csv"</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+If you open the csv file you will notice all sorts of information there. In order to just pull the main time series we need to loop through each line and start pulling the data at the 5th line and stop pulling as soon as we encounter empty fields.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">con</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"r"</span><span class="p">)</span><span class="w">
+</span><span class="n">linecount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">stringdata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">""</span><span class="w">
+</span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nf">length</span><span class="p">(</span><span class="n">oneLine</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readLines</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">warn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">))</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="n">linecount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">linecount</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="w">
+        
+        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">linecount</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="n">filename</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">oneLine</span><span class="p">)</span><span class="w">     
+        </span><span class="p">}</span><span class="w">
+        
+        </span><span class="c1"># get headers at line 5
+</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">linecount</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w"> </span><span class="n">rowheaders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strsplit</span><span class="p">(</span><span class="n">oneLine</span><span class="p">,</span><span class="w"> </span><span class="s2">","</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
+        
+        </span><span class="c1"># skip firt 5 lines
+</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">linecount</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="c1"># break when there is no more main data
+</span><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">oneLine</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="k">break</span><span class="w">
+                
+                </span><span class="n">stringdata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">stringdata</span><span class="p">,</span><span class="n">oneLine</span><span class="p">,</span><span class="s2">"\n"</span><span class="p">)</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="n">close</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+There are a few caveats worth talking about when working with <b>Google Trends</b> data. It can come in three time flavors: monthly, weekly, and daily. To get daily data, you need to query less than 3 months timespan. For longer term trends, you will usually get weekly data unless it is low popularity, and then you will get montly data. One more point, if you query multiple terms and some are don’t return enough data, the csv will automatically exclude them.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt; head(newData)
+                       V1 V2 V3
+1 2004-01-04 - 2004-01-10 31 57
+2 2004-01-11 - 2004-01-17 30 54
+3 2004-01-18 - 2004-01-24 31 57
+4 2004-01-25 - 2004-01-31 30 50
+5 2004-02-01 - 2004-02-07 29 47
+6 2004-02-08 - 2004-02-14 30 53
+</code></pre>
+</div>
+<p><br />
+In order to avoid the uncertainties of the final exported format, it is best to not hard code anything. To circumvent all this, we read the data line by line and store it all in one long string <code class="highlighter-rouge">stringdata</code> and add a line feed at the end of each line. We then use the <code class="highlighter-rouge">read.table</code> with <code class="highlighter-rouge">textConnection</code> to parse the <code class="highlighter-rouge">stringdata</code> into a flat file and append the dynamic column names pulled from line 5 of the csv. This allows us to get the correct header names whether Google returns <code class="highlighter-rouge">1</code> or <code class="highlighter-rouge">10</code> features/columns - this should limit surprises especially when working with multiple downloads.
+<br /></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>newData &lt;- read.table(textConnection(stringdata), sep=",", header=FALSE, stringsAsFactors = FALSE)
+names(newData) &lt;- rowheaders
+
+newData$StartDate &lt;- as.Date(sapply(strsplit(as.character(newData[,1]), " - "), `[`, 1))
+newData$EndDate &lt;- as.Date(sapply(strsplit(as.character(newData[,1]), " - "), `[`, 2))
+newData$year &lt;- sapply(strsplit(as.character(newData$StartDate), "-"), `[`, 1)
+newData&lt;- newData[c("StartDate", "EndDate", "beer", "wine", "year")]
+</code></pre>
+</div>
+<p><br /><br />
+Google Trends returns date ranges for each observations (rows), so we need to separate those into a <code class="highlighter-rouge">StartDate</code> and <code class="highlighter-rouge">EndDate</code> column. I also create a <code class="highlighter-rouge">year</code> column from the start date for use in <a href="http://stat.ethz.ch/R-manual/R-patched/library/graphics/html/boxplot.html" target="_blank">boxplots</a>.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt; head(newData)
+   StartDate    EndDate beer wine year wine_clean
+1 2004-01-04 2004-01-10   31   57 2004         57
+2 2004-01-11 2004-01-17   30   54 2004         54
+3 2004-01-18 2004-01-24   31   57 2004         57
+4 2004-01-25 2004-01-31   30   50 2004         50
+5 2004-02-01 2004-02-07   29   47 2004         47
+6 2004-02-08 2004-02-14   30   53 2004         53
+</code></pre>
+</div>
+<p><br /><br />
+<strong>Plots</strong></p>
+
+<p>Here we confirm that the data is correct and should be similar to what we saw earlier on <b>Google Trends</b>.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">newData</span><span class="o">$</span><span class="n">StartDate</span><span class="p">,</span><span class="w"> </span><span class="n">newData</span><span class="o">$</span><span class="n">beer</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'Blue'</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="o">=</span><span class="s2">"US Wine vs Beer on Google Trends"</span><span class="p">,</span><span class="w"> </span><span class="n">xlab</span><span class="o">=</span><span class="s2">"year"</span><span class="p">,</span><span class="w"> </span><span class="n">ylab</span><span class="o">=</span><span class="s2">"beverage"</span><span class="p">)</span><span class="w">
+</span><span class="n">lines</span><span class="p">(</span><span class="n">newData</span><span class="o">$</span><span class="n">StartDate</span><span class="p">,</span><span class="w"> </span><span class="n">newData</span><span class="o">$</span><span class="n">wine</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'Red'</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+<img src="img/firstplot.png" alt="plot of chunk firstplot" />
+<br /><br />
+At first glance, <code class="highlighter-rouge">beer</code> seems to be trending upwards. Let’s plot it by year in a <code class="highlighter-rouge">boxplot</code> to better view the differences:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">par</span><span class="p">(</span><span class="n">mfrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="c1"># show box plots to account for seasonal outliers and stagnant trend
+</span><span class="n">boxplot</span><span class="p">(</span><span class="n">beer</span><span class="o">~</span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">newData</span><span class="p">,</span><span class="w"> </span><span class="n">notch</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+        </span><span class="n">col</span><span class="o">=</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"gold"</span><span class="p">,</span><span class="s2">"darkgreen"</span><span class="p">)),</span><span class="w">
+        </span><span class="n">main</span><span class="o">=</span><span class="s2">"Yearly beer trend"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">boxplot</span><span class="p">(</span><span class="n">wine</span><span class="o">~</span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">newData</span><span class="p">,</span><span class="w"> </span><span class="n">notch</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+        </span><span class="n">col</span><span class="o">=</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"gold"</span><span class="p">,</span><span class="s2">"darkgreen"</span><span class="p">)),</span><span class="w">
+        </span><span class="n">main</span><span class="o">=</span><span class="s2">"Yearly wine trend"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br />
+<img src="img/boxplotraw.png" alt="plot of chunk boxplotraw" />
+<br /><br />
+<b>Outliers</b> seem to be plaguing <code class="highlighter-rouge">wine</code> - this may account for the December spikes. Let’s remove them and try plotting again:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># shamelessly borrowed from aL3xa -
+# http://stackoverflow.com/questions/4787332/how-to-remove-outliers-from-a-dataset
+</span><span class="n">remove_outliers</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">...</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="n">qnt</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">quantile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">probs</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">.25</span><span class="p">,</span><span class="w"> </span><span class="m">.75</span><span class="p">),</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">na.rm</span><span class="p">,</span><span class="w"> </span><span class="n">...</span><span class="p">)</span><span class="w">
+        </span><span class="n">H</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">IQR</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">na.rm</span><span class="p">)</span><span class="w">
+        </span><span class="n">y</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">x</span><span class="w">
+        </span><span class="n">y</span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">qnt</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">H</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+        </span><span class="n">y</span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">qnt</span><span class="p">[</span><span class="m">2</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">H</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+        </span><span class="n">y</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">par</span><span class="p">(</span><span class="n">mfrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="c1"># show box plots to account for seasonal outliers and stagnant trend
+</span><span class="n">boxplot</span><span class="p">(</span><span class="n">beer</span><span class="o">~</span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">newData</span><span class="p">,</span><span class="w"> </span><span class="n">notch</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+        </span><span class="n">col</span><span class="o">=</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"gold"</span><span class="p">,</span><span class="s2">"darkgreen"</span><span class="p">)),</span><span class="w">
+        </span><span class="n">main</span><span class="o">=</span><span class="s2">"Yearly beer trend"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">newData</span><span class="o">$</span><span class="n">wine_clean</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">remove_outliers</span><span class="p">(</span><span class="n">newData</span><span class="o">$</span><span class="n">wine</span><span class="p">)</span><span class="w">
+</span><span class="n">boxplot</span><span class="p">(</span><span class="n">wine_clean</span><span class="o">~</span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">newData</span><span class="p">,</span><span class="w"> </span><span class="n">notch</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+        </span><span class="n">col</span><span class="o">=</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"gold"</span><span class="p">,</span><span class="s2">"darkgreen"</span><span class="p">)),</span><span class="w">
+        </span><span class="n">main</span><span class="o">=</span><span class="s2">"Yearly wine trend"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br />
+<img src="img/boxplotnooutlier.png" alt="plot of chunk boxplotnooutlier" />
+<br /><br />
+Clearly, the term <code class="highlighter-rouge">beer</code> is trending upwards while <code class="highlighter-rouge">wine</code> is more erratic and range bound. <a href="http://cran.r-project.org/web/packages/ggplot2/index.html" target="_blank">{ggplot2}</a> has great plotting functions to smooth out noise and amplify trends for better understanding:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">newData</span><span class="p">,</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">StartDate</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">stat_smooth</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">beer</span><span class="p">,</span><span class="w"> </span><span class="n">group</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="o">=</span><span class="s2">"beer"</span><span class="p">),</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="n">lm</span><span class="p">,</span><span class="w"> </span><span class="n">formula</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">poly</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">level</span><span class="o">=</span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">stat_smooth</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wine_clean</span><span class="p">,</span><span class="w"> </span><span class="n">group</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="o">=</span><span class="s2">"wine"</span><span class="p">),</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="n">lm</span><span class="p">,</span><span class="w"> </span><span class="n">formula</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">poly</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="n">level</span><span class="o">=</span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">geom_point</span><span class="w"> </span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">beer</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"beer"</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="o">=</span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">geom_point</span><span class="w"> </span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wine_clean</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="s2">"wine"</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="o">=</span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">scale_colour_manual</span><span class="p">(</span><span class="s2">"Search Terms"</span><span class="p">,</span><span class="w"> </span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"beer"</span><span class="p">,</span><span class="w"> </span><span class="s2">"wine"</span><span class="p">),</span><span class="w"> </span><span class="n">values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"blue"</span><span class="p">,</span><span class="s2">"red"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">theme_bw</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">xlab</span><span class="p">(</span><span class="s2">"year"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">ylab</span><span class="p">(</span><span class="s2">"beverage"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"US Wine Versus Beer on Google Trends"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br />
+<img src="img/ggplot2.png" alt="plot of chunk ggplot2" />
+<br /><br /></p>
+
+<p><strong>Conclusion</strong></p>
+
+<p>There isn’t an easy way of concluding this - possibilities are endless. Analyze away! For more information on this tool, read this great article by Hyunyoung Choi and Hal Varian: <a href="http://static.googleusercontent.com/media/www.google.com/en/us/googleblogs/pdfs/google_predicting_the_present.pdf" target="_blank">Predicting the Present with Google Trends</a>.</p>
+
+<p><br /><br />
+<a id="sourcecode">Full source code (<a href="https://github.com/amunategui/google-trends-walkthrough" target="_blank">also on GitHub</a>)</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="w">
+</span><span class="n">setwd</span><span class="p">(</span><span class="s1">'//yourpath'</span><span class="p">)</span><span class="w">
+
+</span><span class="n">filename</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"beervswine.csv"</span><span class="w">
+</span><span class="n">con</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="n">open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"r"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">linecount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">stringdata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">""</span><span class="w">
+</span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nf">length</span><span class="p">(</span><span class="n">oneLine</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readLines</span><span class="p">(</span><span class="n">con</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">warn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">))</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="n">linecount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">linecount</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="w">
+        
+        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">linecount</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="n">filename</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">oneLine</span><span class="p">)</span><span class="w">     
+        </span><span class="p">}</span><span class="w">
+        
+        </span><span class="c1"># get headers at line 5
+</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">linecount</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w"> </span><span class="n">rowheaders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strsplit</span><span class="p">(</span><span class="n">oneLine</span><span class="p">,</span><span class="w"> </span><span class="s2">","</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
+        
+        </span><span class="c1"># skip firt 5 lines
+</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">linecount</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="c1"># break when there is no more main data
+</span><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="n">oneLine</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="k">break</span><span class="w">
+                
+                </span><span class="n">stringdata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">stringdata</span><span class="p">,</span><span class="n">oneLine</span><span class="p">,</span><span class="s2">"\n"</span><span class="p">)</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="n">close</span><span class="p">(</span><span class="n">con</span><span class="p">)</span><span class="w">
+
+</span><span class="n">newData</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="n">textConnection</span><span class="p">(</span><span class="n">stringdata</span><span class="p">),</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">newData</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rowheaders</span><span class="w">
+
+</span><span class="n">head</span><span class="p">(</span><span class="n">newData</span><span class="p">)</span><span class="w">
+
+</span><span class="n">newData</span><span class="o">$</span><span class="n">StartDate</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.Date</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">newData</span><span class="p">[,</span><span class="m">1</span><span class="p">]),</span><span class="w"> </span><span class="s2">" - "</span><span class="p">),</span><span class="w"> </span><span class="n">`[`</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="n">newData</span><span class="o">$</span><span class="n">EndDate</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.Date</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">newData</span><span class="p">[,</span><span class="m">1</span><span class="p">]),</span><span class="w"> </span><span class="s2">" - "</span><span class="p">),</span><span class="w"> </span><span class="n">`[`</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">))</span><span class="w">
+</span><span class="n">newData</span><span class="o">$</span><span class="n">year</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">newData</span><span class="o">$</span><span class="n">StartDate</span><span class="p">),</span><span class="w"> </span><span class="s2">"-"</span><span class="p">),</span><span class="w"> </span><span class="n">`[`</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">newData</span><span class="o">&lt;-</span><span class="w"> </span><span class="n">newData</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s2">"StartDate"</span><span class="p">,</span><span class="w"> </span><span class="s2">"EndDate"</span><span class="p">,</span><span class="w"> </span><span class="s2">"beer"</span><span class="p">,</span><span class="w"> </span><span class="s2">"wine"</span><span class="p">,</span><span class="w"> </span><span class="s2">"year"</span><span class="p">)]</span><span class="w">
+
+</span><span class="n">head</span><span class="p">(</span><span class="n">newData</span><span class="p">)</span><span class="w">
+
+</span><span class="n">plot</span><span class="p">(</span><span class="n">newData</span><span class="o">$</span><span class="n">StartDate</span><span class="p">,</span><span class="w"> </span><span class="n">newData</span><span class="o">$</span><span class="n">beer</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'Blue'</span><span class="p">)</span><span class="w">
+</span><span class="n">lines</span><span class="p">(</span><span class="n">newData</span><span class="o">$</span><span class="n">StartDate</span><span class="p">,</span><span class="w"> </span><span class="n">newData</span><span class="o">$</span><span class="n">wine</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'Red'</span><span class="p">)</span><span class="w">
+
+</span><span class="n">par</span><span class="p">(</span><span class="n">mfrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="c1"># show box plots to account for seasonal outliers and stagnant trend
+</span><span class="n">boxplot</span><span class="p">(</span><span class="n">beer</span><span class="o">~</span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">newData</span><span class="p">,</span><span class="w"> </span><span class="n">notch</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+        </span><span class="n">col</span><span class="o">=</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"gold"</span><span class="p">,</span><span class="s2">"darkgreen"</span><span class="p">)),</span><span class="w">
+        </span><span class="n">main</span><span class="o">=</span><span class="s2">"Yearly beer trend"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">boxplot</span><span class="p">(</span><span class="n">wine</span><span class="o">~</span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">newData</span><span class="p">,</span><span class="w"> </span><span class="n">notch</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+        </span><span class="n">col</span><span class="o">=</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"gold"</span><span class="p">,</span><span class="s2">"darkgreen"</span><span class="p">)),</span><span class="w">
+        </span><span class="n">main</span><span class="o">=</span><span class="s2">"Yearly wine trend"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># shamelessly borrowed from aL3xa -
+# http://stackoverflow.com/questions/4787332/how-to-remove-outliers-from-a-dataset
+</span><span class="n">remove_outliers</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">...</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="n">qnt</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">quantile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">probs</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">.25</span><span class="p">,</span><span class="w"> </span><span class="m">.75</span><span class="p">),</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">na.rm</span><span class="p">,</span><span class="w"> </span><span class="n">...</span><span class="p">)</span><span class="w">
+        </span><span class="n">H</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">1.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">IQR</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">na.rm</span><span class="p">)</span><span class="w">
+        </span><span class="n">y</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">x</span><span class="w">
+        </span><span class="n">y</span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">qnt</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">H</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+        </span><span class="n">y</span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">qnt</span><span class="p">[</span><span class="m">2</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">H</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+        </span><span class="n">y</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">par</span><span class="p">(</span><span class="n">mfrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="c1"># show box plots to account for seasonal outliers and stagnant trend
+</span><span class="n">boxplot</span><span class="p">(</span><span class="n">beer</span><span class="o">~</span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">newData</span><span class="p">,</span><span class="w"> </span><span class="n">notch</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+        </span><span class="n">col</span><span class="o">=</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"gold"</span><span class="p">,</span><span class="s2">"darkgreen"</span><span class="p">)),</span><span class="w">
+        </span><span class="n">main</span><span class="o">=</span><span class="s2">"Yearly beer trend"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">newData</span><span class="o">$</span><span class="n">wine_clean</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">remove_outliers</span><span class="p">(</span><span class="n">newData</span><span class="o">$</span><span class="n">wine</span><span class="p">)</span><span class="w">
+</span><span class="n">boxplot</span><span class="p">(</span><span class="n">wine_clean</span><span class="o">~</span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">newData</span><span class="p">,</span><span class="w"> </span><span class="n">notch</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+        </span><span class="n">col</span><span class="o">=</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"gold"</span><span class="p">,</span><span class="s2">"darkgreen"</span><span class="p">)),</span><span class="w">
+        </span><span class="n">main</span><span class="o">=</span><span class="s2">"Yearly wine trend"</span><span class="p">)</span><span class="w">
+
+
+</span><span class="c1"># smooth both trends and plot them together
+</span><span class="n">par</span><span class="p">(</span><span class="n">mfrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">newData</span><span class="o">$</span><span class="n">StartDate</span><span class="p">,</span><span class="w"> </span><span class="n">newData</span><span class="o">$</span><span class="n">beer</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'Blue'</span><span class="p">)</span><span class="w">
+</span><span class="n">lines</span><span class="p">(</span><span class="n">newData</span><span class="o">$</span><span class="n">StartDate</span><span class="p">,</span><span class="w"> </span><span class="n">newData</span><span class="o">$</span><span class="n">wine_clean</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s1">'Red'</span><span class="p">)</span><span class="w">
+
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">newData</span><span class="p">,</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">StartDate</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">stat_smooth</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">beer</span><span class="p">,</span><span class="w"> </span><span class="n">group</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="o">=</span><span class="s2">"beer"</span><span class="p">),</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="n">lm</span><span class="p">,</span><span class="w"> </span><span class="n">formula</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">poly</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">level</span><span class="o">=</span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">stat_smooth</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wine_clean</span><span class="p">,</span><span class="w"> </span><span class="n">group</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="o">=</span><span class="s2">"wine"</span><span class="p">),</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="n">lm</span><span class="p">,</span><span class="w"> </span><span class="n">formula</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">poly</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="n">level</span><span class="o">=</span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">geom_point</span><span class="w"> </span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">beer</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"beer"</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="o">=</span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">geom_point</span><span class="w"> </span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">wine_clean</span><span class="p">,</span><span class="w"> </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="s2">"wine"</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="o">=</span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">scale_colour_manual</span><span class="p">(</span><span class="s2">"Search Terms"</span><span class="p">,</span><span class="w"> </span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"beer"</span><span class="p">,</span><span class="w"> </span><span class="s2">"wine"</span><span class="p">),</span><span class="w"> </span><span class="n">values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"blue"</span><span class="p">,</span><span class="s2">"red"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">theme_bw</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">xlab</span><span class="p">(</span><span class="s2">"year"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">ylab</span><span class="p">(</span><span class="s2">"beverage"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+        </span><span class="n">ggtitle</span><span class="p">(</span><span class="s2">"US Wine Versus Beer on Google Trends"</span><span class="p">)</span><span class="w">
+
+
+</span></code></pre>
+</div>
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>SMOTE - Supersampling Rare Events in R</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">SMOTE - Supersampling Rare Events in R</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=1Mt7EuVJf1A&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA&amp;index=10" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br />
+<strong>Packages Used in this Walkthrough</strong></p>
+<ul>
+        <li type="square"><b>{DMwR}</b> - Functions and data for the book "Data Mining with R" and SMOTE algorithm</li>
+        <li type="square"><b>{caret}</b> - modeling wrapper, functions, commands</li>
+        <li type="square"><b>{pROC}</b> - Area Under the Curve (AUC) functions</li>
+</ul>
+
+<p><br /><br />
+The <code class="highlighter-rouge">SMOTE</code> function oversamples your rare event by using <a href="http://en.wikipedia.org/wiki/Bootstrapping" target="_blank">bootstrapping</a> and <a href="http://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm" target="_blank"><i>k</i>-nearest neighbor</a> to synthetically create additional observations of that event. The definition of <b>rare event</b> is usually attributed to any outcome/dependent/target/response variable that happens less than 15% of the time. For more details about this algorithm, read the original white paper, <a href="https://www.jair.org/media/953/live-953-2037-jair.pdf" target="_blank">SMOTE: Synthetic Minority Over-sampling Technique</a>, from its creators.</p>
+
+<p>The best way to illustrate this tool is to apply it to an actual data set suffering from this so-called <b>rare event</b>. We’ll use the <b>Thyroid Disease</b> data set from the <a href="http://archive.ics.uci.edu/ml/" target="_blank">UCI Machine Learning Repository</a> (<b>University of California, Irvine</b>) containing positive and negative cases of hyperthyroidism. This is a condition in which the thyroid gland produces too much thyroid hormone (also known as “overactive thyroid”).
+<br /><br />
+<strong>Let’s Clean Some Data</strong></p>
+
+<p>Let’s load the <b>hypothyroid</b> data, clean it up by removing the colons and periods, and appending readable column names:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">hyper</span><span class="w"> </span><span class="o">&lt;-</span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'http://archive.ics.uci.edu/ml/machine-learning-databases/thyroid-disease/hypothyroid.data'</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'http://archive.ics.uci.edu/ml/machine-learning-databases/thyroid-disease/hypothyroid.names'</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="o">=</span><span class="nb">F</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s1">'\t'</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
+</span><span class="n">names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="w"> </span><span class="o">=</span><span class="s2">":|[.]"</span><span class="p">,</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">names</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span><span class="w">
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">hyper</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">names</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+We change the target column name from <code class="highlighter-rouge">hypothyroid, negative.</code> to <code class="highlighter-rouge">target</code> and set any values of <code class="highlighter-rouge">negative</code> to <b>0</b> and everything else to <b>1</b>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">colnames</span><span class="p">(</span><span class="n">hyper</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="nf">c</span><span class="p">(</span><span class="s2">"target"</span><span class="p">,</span><span class="w"> </span><span class="s2">"age"</span><span class="p">,</span><span class="w"> </span><span class="s2">"sex"</span><span class="p">,</span><span class="w"> </span><span class="s2">"on_thyroxine"</span><span class="p">,</span><span class="w"> </span><span class="s2">"query_on_thyroxine"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"on_antithyroid_medication"</span><span class="p">,</span><span class="w"> </span><span class="s2">"thyroid_surgery"</span><span class="p">,</span><span class="w"> </span><span class="s2">"query_hypothyroid"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"query_hyperthyroid"</span><span class="p">,</span><span class="w"> </span><span class="s2">"pregnant"</span><span class="p">,</span><span class="w"> </span><span class="s2">"sick"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tumor"</span><span class="p">,</span><span class="w"> </span><span class="s2">"lithium"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"goitre"</span><span class="p">,</span><span class="w"> </span><span class="s2">"TSH_measured"</span><span class="p">,</span><span class="w"> </span><span class="s2">"TSH"</span><span class="p">,</span><span class="w"> </span><span class="s2">"T3_measured"</span><span class="p">,</span><span class="w"> </span><span class="s2">"T3"</span><span class="p">,</span><span class="w"> </span><span class="s2">"TT4_measured"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"TT4"</span><span class="p">,</span><span class="w"> </span><span class="s2">"T4U_measured"</span><span class="p">,</span><span class="w"> </span><span class="s2">"T4U"</span><span class="p">,</span><span class="w"> </span><span class="s2">"FTI_measured"</span><span class="p">,</span><span class="w"> </span><span class="s2">"FTI"</span><span class="p">,</span><span class="w"> </span><span class="s2">"TBG_measured"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"TBG"</span><span class="p">)</span><span class="w">
+</span><span class="n">hyper</span><span class="o">$</span><span class="n">target</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">hyper</span><span class="o">$</span><span class="n">target</span><span class="o">==</span><span class="s1">'negative'</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+Whether dealing with a <b>rare event</b> or not, it is a good idea to check the balance of positive versus negative outcomes:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">print</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">hyper</span><span class="o">$</span><span class="n">target</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>##    0    1 
+## 3012  151
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">print</span><span class="p">(</span><span class="n">prop.table</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">hyper</span><span class="o">$</span><span class="n">target</span><span class="p">)))</span><span class="w">
+</span></code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>##       0       1 
+## 0.95226 0.04774
+</code></pre>
+</div>
+<p>At <b>5%</b>, this is clearly a skewed data set, aka <b>rare event</b>.
+<br /><br />
+A quick peek to see where we are:</p>
+
+<pre><code class="language-{r}">head(hyper,2)
+</code></pre>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##   target age sex on_thyroxine query_on_thyroxine on_antithyroid_medication
+## 1      1  72   M            f                  f                         f
+## 2      1  15   F            t                  f                         f
+##   thyroid_surgery query_hypothyroid query_hyperthyroid pregnant sick tumor
+## 1               f                 f                  f        f    f     f
+## 2               f                 f                  f        f    f     f
+##   lithium goitre TSH_measured TSH T3_measured   T3 TT4_measured TT4
+## 1       f      f            y  30           y 0.60            y  15
+## 2       f      f            y 145           y 1.70            y  19
+##   T4U_measured  T4U FTI_measured FTI TBG_measured TBG
+## 1            y 1.48            y  10            n   ?
+## 2            y 1.13            y  17            n   ?
+</code></pre>
+</div>
+<p><br /><br />
+The data is riddled with characters. These need to binarize into numbers to facilitate modeling:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">ind</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sapply</span><span class="p">(</span><span class="n">hyper</span><span class="p">,</span><span class="w"> </span><span class="n">is.factor</span><span class="p">)</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lapply</span><span class="p">(</span><span class="n">hyper</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span><span class="w"> </span><span class="n">as.character</span><span class="p">)</span><span class="w">
+ 
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"?"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"f"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"t"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"n"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"y"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"M"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"F"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w">
+ 
+</span><span class="n">hyper</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lapply</span><span class="p">(</span><span class="n">hyper</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span><span class="w"> </span><span class="n">as.numeric</span><span class="p">)</span><span class="w">
+ 
+</span><span class="n">repalceNAsWithMean</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="n">replace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="nf">is.na</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">x</span><span class="p">)]))}</span><span class="w">
+</span><span class="n">hyper</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">repalceNAsWithMean</span><span class="p">(</span><span class="n">hyper</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br /></p>
+
+<p><strong>Reference Model</strong></p>
+
+<p>We randomly split the data set into 2 equal portions using the <code class="highlighter-rouge">createDataPartition</code> function from the <b>caret</b> package :</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">splitIndex</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">createDataPartition</span><span class="p">(</span><span class="n">hyper</span><span class="o">$</span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">.50</span><span class="p">,</span><span class="w">
+                                  </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+                                  </span><span class="n">times</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">trainSplit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+</span><span class="n">testSplit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hyper</span><span class="p">[</span><span class="o">-</span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+ 
+</span><span class="n">prop.table</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">trainSplit</span><span class="o">$</span><span class="n">target</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##       0       1 
+## 0.95006 0.04994
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">prop.table</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">testSplit</span><span class="o">$</span><span class="n">target</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##       0       1 
+## 0.95446 0.04554
+</code></pre>
+</div>
+<p>The outcome balance between both splits is still around <b>5%</b> therefore representative of the bigger set - we’re in good shape.
+<br /><br />
+We train a <a href="http://topepo.github.io/caret/Bagging.html" target="_blank">treebag</a> model using <b>caret</b> syntax on <code class="highlighter-rouge">trainSplit</code> and predict hyperthyroidism on the <code class="highlighter-rouge">testSplit</code> portion:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">ctrl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cv"</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
+</span><span class="n">tbmodel</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trainSplit</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"treebag"</span><span class="p">,</span><span class="w">
+                 </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctrl</span><span class="p">)</span><span class="w">
+
+</span><span class="n">predictors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">trainSplit</span><span class="p">)[</span><span class="nf">names</span><span class="p">(</span><span class="n">trainSplit</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s1">'target'</span><span class="p">]</span><span class="w">
+</span><span class="n">pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">tbmodel</span><span class="o">$</span><span class="n">finalModel</span><span class="p">,</span><span class="w"> </span><span class="n">testSplit</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+To evaluate the model, we call on package <b>pROC</b> for an <code class="highlighter-rouge">auc</code> score and plot:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testSplit</span><span class="o">$</span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="n">pred</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## Data: pred in 1509 controls (testSplit$target 0) &lt; 72 cases (testSplit$target 1).
+## Area under the curve: 0.985
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">auc</span><span class="p">,</span><span class="w"> </span><span class="n">ylim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">print.thres</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="o">=</span><span class="n">paste</span><span class="p">(</span><span class="s1">'AUC:'</span><span class="p">,</span><span class="nf">round</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="m">2</span><span class="p">)))</span><span class="w">
+</span><span class="n">abline</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="n">col</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span><span class="n">abline</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="n">col</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/unnamed-chunk-7.png" alt="plot of chunk unnamed-chunk-7" />
+<br />
+An <code class="highlighter-rouge">auc</code> score of <b>0.98</b> is great (remember it ranges on a scale between <b>0.5</b> and <b>1</b>, where <b>0.5</b> is random and <b>1</b> is perfect). It is hard to imagine that <code class="highlighter-rouge">SMOTE</code> can improve on this, but…
+<br /><br /></p>
+
+<p><strong>Let’s SMOTE</strong></p>
+
+<p>Let’s create extra positive observations using <code class="highlighter-rouge">SMOTE</code>. We set <code class="highlighter-rouge">perc.over = 100</code> to double the quantity of positive cases, and set <code class="highlighter-rouge">perc.under=200</code> to keep half of what was created as negative cases.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">DMwR</span><span class="p">)</span><span class="w">
+</span><span class="n">trainSplit</span><span class="o">$</span><span class="n">target</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">trainSplit</span><span class="o">$</span><span class="n">target</span><span class="p">)</span><span class="w">
+</span><span class="n">trainSplit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">SMOTE</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">trainSplit</span><span class="p">,</span><span class="w"> </span><span class="n">perc.over</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w"> </span><span class="n">perc.under</span><span class="o">=</span><span class="m">200</span><span class="p">)</span><span class="w">
+</span><span class="n">trainSplit</span><span class="o">$</span><span class="n">target</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">trainSplit</span><span class="o">$</span><span class="n">target</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+We can check the <code class="highlighter-rouge">outcome</code> balance with <code class="highlighter-rouge">prop.table</code> and confirm that we equalized the data set between positive and negative cases of hyperthyroidism.</p>
+
+<pre><code class="language-{r}">prop.table(table(trainSplit$target))
+</code></pre>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##   1   2 
+## 0.5 0.5
+</code></pre>
+</div>
+<p><br /><br />
+We then train using the <code class="highlighter-rouge">SMOTE</code>‘d training set and predict using the <b>same</b> testing set as used before on the non-<code class="highlighter-rouge">SMOTE</code>‘d training set to ensure we’re comparing apples-to-apples:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">tbmodel</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trainSplit</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"treebag"</span><span class="p">,</span><span class="w">
+                 </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctrl</span><span class="p">)</span><span class="w">
+ 
+</span><span class="n">predictors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">trainSplit</span><span class="p">)[</span><span class="nf">names</span><span class="p">(</span><span class="n">trainSplit</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s1">'target'</span><span class="p">]</span><span class="w">
+</span><span class="n">pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">tbmodel</span><span class="o">$</span><span class="n">finalModel</span><span class="p">,</span><span class="w"> </span><span class="n">testSplit</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testSplit</span><span class="o">$</span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="n">pred</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## Data: pred in 1509 controls (testSplit$target 0) &lt; 72 cases (testSplit$target 1).
+## Area under the curve: 0.991
+</code></pre>
+</div>
+<p><br /><br />
+Wow <b>0.991</b>, it managed to better the old <code class="highlighter-rouge">auc</code> score of <b>0.985</b>!</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">auc</span><span class="p">,</span><span class="w"> </span><span class="n">ylim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">print.thres</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="o">=</span><span class="n">paste</span><span class="p">(</span><span class="s1">'AUC:'</span><span class="p">,</span><span class="nf">round</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="m">2</span><span class="p">)))</span><span class="w">
+</span><span class="n">abline</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="n">col</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span><span class="n">abline</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="n">col</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="img/unnamed-chunk-9.png" alt="plot of chunk unnamed-chunk-9" /></p>
+
+<p><br /><br />
+<strong>Conclusion</strong></p>
+
+<p>Not bad - we ended up reducing the overall size and getting a better score. <code class="highlighter-rouge">SMOTE</code> works great in some situation and not-so-great in others. This definitely requires some trial-and-error but the concept is very promising when stuck with extremely skewed and, therefore, overly sensitive data.</p>
+
+<p><br /><br />      <br />
+<a id="sourcecode">Full source code (<a href="https://github.com/amunategui/SMOTE-Oversample-Rare-Events" target="_blank">also on GitHub</a>)</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># load data sets
+</span><span class="n">hyper</span><span class="w"> </span><span class="o">&lt;-</span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'http://archive.ics.uci.edu/ml/machine-learning-databases/thyroid-disease/hypothyroid.data'</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'http://archive.ics.uci.edu/ml/machine-learning-databases/thyroid-disease/hypothyroid.names'</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="o">=</span><span class="nb">F</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s1">'\t'</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
+</span><span class="n">names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="n">pattern</span><span class="w"> </span><span class="o">=</span><span class="s2">":|[.]"</span><span class="p">,</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">names</span><span class="p">,</span><span class="w"> </span><span class="n">replacement</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span><span class="w">
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">hyper</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">names</span><span class="w">
+
+</span><span class="c1"># fix variables and column headers
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">hyper</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="nf">c</span><span class="p">(</span><span class="s2">"target"</span><span class="p">,</span><span class="w"> </span><span class="s2">"age"</span><span class="p">,</span><span class="w"> </span><span class="s2">"sex"</span><span class="p">,</span><span class="w"> </span><span class="s2">"on_thyroxine"</span><span class="p">,</span><span class="w"> </span><span class="s2">"query_on_thyroxine"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"on_antithyroid_medication"</span><span class="p">,</span><span class="w"> </span><span class="s2">"thyroid_surgery"</span><span class="p">,</span><span class="w"> </span><span class="s2">"query_hypothyroid"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"query_hyperthyroid"</span><span class="p">,</span><span class="w"> </span><span class="s2">"pregnant"</span><span class="p">,</span><span class="w"> </span><span class="s2">"sick"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tumor"</span><span class="p">,</span><span class="w"> </span><span class="s2">"lithium"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"goitre"</span><span class="p">,</span><span class="w"> </span><span class="s2">"TSH_measured"</span><span class="p">,</span><span class="w"> </span><span class="s2">"TSH"</span><span class="p">,</span><span class="w"> </span><span class="s2">"T3_measured"</span><span class="p">,</span><span class="w"> </span><span class="s2">"T3"</span><span class="p">,</span><span class="w"> </span><span class="s2">"TT4_measured"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"TT4"</span><span class="p">,</span><span class="w"> </span><span class="s2">"T4U_measured"</span><span class="p">,</span><span class="w"> </span><span class="s2">"T4U"</span><span class="p">,</span><span class="w"> </span><span class="s2">"FTI_measured"</span><span class="p">,</span><span class="w"> </span><span class="s2">"FTI"</span><span class="p">,</span><span class="w"> </span><span class="s2">"TBG_measured"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"TBG"</span><span class="p">)</span><span class="w">
+</span><span class="n">hyper</span><span class="o">$</span><span class="n">target</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">hyper</span><span class="o">$</span><span class="n">target</span><span class="o">==</span><span class="s1">'negative'</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">hyper</span><span class="p">,</span><span class="m">2</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># check balance of outcome variable
+</span><span class="n">print</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">hyper</span><span class="o">$</span><span class="n">target</span><span class="p">))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">prop.table</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">hyper</span><span class="o">$</span><span class="n">target</span><span class="p">)))</span><span class="w">
+
+</span><span class="c1"># binarize all character fields
+</span><span class="n">ind</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sapply</span><span class="p">(</span><span class="n">hyper</span><span class="p">,</span><span class="w"> </span><span class="n">is.factor</span><span class="p">)</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lapply</span><span class="p">(</span><span class="n">hyper</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span><span class="w"> </span><span class="n">as.character</span><span class="p">)</span><span class="w">
+ 
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"?"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"f"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"t"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"n"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"y"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"M"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">hyper</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"F"</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w">
+ 
+</span><span class="n">hyper</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lapply</span><span class="p">(</span><span class="n">hyper</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span><span class="w"> </span><span class="n">as.numeric</span><span class="p">)</span><span class="w">
+ 
+</span><span class="n">repalceNAsWithMean</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="n">replace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="nf">is.na</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">x</span><span class="p">)]))}</span><span class="w">
+</span><span class="n">hyper</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">repalceNAsWithMean</span><span class="p">(</span><span class="n">hyper</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># split data into train and test portions
+</span><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">splitIndex</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">createDataPartition</span><span class="p">(</span><span class="n">hyper</span><span class="o">$</span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">.50</span><span class="p">,</span><span class="w">
+                                  </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+                                  </span><span class="n">times</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">trainSplit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hyper</span><span class="p">[</span><span class="w"> </span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+</span><span class="n">testSplit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hyper</span><span class="p">[</span><span class="o">-</span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+
+</span><span class="n">prop.table</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">trainSplit</span><span class="o">$</span><span class="n">target</span><span class="p">))</span><span class="w">
+</span><span class="n">prop.table</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">testSplit</span><span class="o">$</span><span class="n">target</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># model using treebag
+</span><span class="n">ctrl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cv"</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w">
+</span><span class="n">tbmodel</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trainSplit</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"treebag"</span><span class="p">,</span><span class="w">
+                 </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctrl</span><span class="p">)</span><span class="w">
+
+</span><span class="n">predictors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">trainSplit</span><span class="p">)[</span><span class="nf">names</span><span class="p">(</span><span class="n">trainSplit</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s1">'target'</span><span class="p">]</span><span class="w">
+</span><span class="n">pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">tbmodel</span><span class="o">$</span><span class="n">finalModel</span><span class="p">,</span><span class="w"> </span><span class="n">testSplit</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+
+</span><span class="c1"># evaluate the model's performance
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testSplit</span><span class="o">$</span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="n">pred</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="p">)</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">auc</span><span class="p">,</span><span class="w"> </span><span class="n">ylim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">print.thres</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="o">=</span><span class="n">paste</span><span class="p">(</span><span class="s1">'AUC:'</span><span class="p">,</span><span class="nf">round</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="m">2</span><span class="p">)))</span><span class="w">
+</span><span class="n">abline</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="n">col</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span><span class="n">abline</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="n">col</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># SMOTE more positive cases
+</span><span class="n">library</span><span class="p">(</span><span class="n">DMwR</span><span class="p">)</span><span class="w">
+</span><span class="n">trainSplit</span><span class="o">$</span><span class="n">target</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">trainSplit</span><span class="o">$</span><span class="n">target</span><span class="p">)</span><span class="w">
+</span><span class="n">trainSplit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">SMOTE</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">trainSplit</span><span class="p">,</span><span class="w"> </span><span class="n">perc.over</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w"> </span><span class="n">perc.under</span><span class="o">=</span><span class="m">200</span><span class="p">)</span><span class="w">
+</span><span class="n">trainSplit</span><span class="o">$</span><span class="n">target</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">trainSplit</span><span class="o">$</span><span class="n">target</span><span class="p">)</span><span class="w">
+
+</span><span class="n">prop.table</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">trainSplit</span><span class="o">$</span><span class="n">target</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># evaluate the SMOTE performance
+</span><span class="n">tbmodel</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trainSplit</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"treebag"</span><span class="p">,</span><span class="w">
+                 </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctrl</span><span class="p">)</span><span class="w">
+
+</span><span class="n">predictors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">trainSplit</span><span class="p">)[</span><span class="nf">names</span><span class="p">(</span><span class="n">trainSplit</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s1">'target'</span><span class="p">]</span><span class="w">
+</span><span class="n">pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">tbmodel</span><span class="o">$</span><span class="n">finalModel</span><span class="p">,</span><span class="w"> </span><span class="n">testSplit</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testSplit</span><span class="o">$</span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="n">pred</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="p">)</span><span class="w">
+
+</span><span class="n">plot</span><span class="p">(</span><span class="n">auc</span><span class="p">,</span><span class="w"> </span><span class="n">ylim</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">print.thres</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">main</span><span class="o">=</span><span class="n">paste</span><span class="p">(</span><span class="s1">'AUC:'</span><span class="p">,</span><span class="nf">round</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="m">2</span><span class="p">)))</span><span class="w">
+</span><span class="n">abline</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="n">col</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">,</span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span><span class="n">abline</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="n">col</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span><span class="n">lwd</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+
+</span></code></pre>
+</div>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

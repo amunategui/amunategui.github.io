@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Modeling Ensembles with R and {caret}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Modeling Ensembles with R and {caret}</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=k7sTiTWWCXM&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br />
+<strong>Packages Used in this Walkthrough</strong></p>
+
+<ul>
+        <li type="square"><b>{caret}</b> - modeling wrapper, functions, commands</li>
+        <li type="square"><b>{RCurl}</b> - web data downloading functions</li>
+        <li type="square"><b>{pROC}</b> - Area Under the Curve (AUC) functions</li>
+</ul>
+<p><br /><br /></p>
+
+<p>There are many reasons to ensemble models but it usually comes down to capturing a deeper understanding of high dimensionality data. The more complex a data set, the more it benefits from additional models, just like additional eyes, to capture more nuances scattered around high dimensionality data.
+<br /><br />
+<strong>Let’s code!</strong></p>
+
+<p>This walkthrough leverages the <strong>caret</strong> package for ease of coding but the concept applies to any model in any statistical programming language. <strong>Caret</strong> allows you to easily switch models in a script without having to change much of the code. You can easily write a loop and have it run through the almost 170 models that the package currently supports (<a href="http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf" target="_blank">Max Kuhn keeps adding new ones</a>) by only changing one variable.</p>
+
+<p>To get a complete list of the models supported by <strong>caret</strong> use the <code class="highlighter-rouge">getModelInfo</code> function:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">getModelInfo</span><span class="p">())</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##   [1] "ada"                 "ANFIS"               "avNNet"             
+##   [4] "bag"                 "bagEarth"            "bagFDA"             
+##   [7] "bayesglm"            "bdk"                 "blackboost"         
+##  [10] "Boruta"              "brnn"                "bstLs"              
+##  [13] "bstSm"               "bstTree"             "C5.0"               
+##  [16] "C5.0Cost"            "C5.0Rules"           "C5.0Tree"           
+##  [19] "cforest"             "CSimca"              "ctree"              
+##  [22] "ctree2"              "cubist"              "DENFIS"             
+##  [25] "dnn"                 "earth"               "elm"                
+##  [28] "enet"                "evtree"              "extraTrees"         
+##  [31] "fda"                 "FH.GBML"             "FIR.DM"             
+##  [34] "foba"                "FRBCS.CHI"           "FRBCS.W"            
+##  [37] "FS.HGD"              "gam"                 "gamboost"           
+##  [40] "gamLoess"            "gamSpline"           "gaussprLinear"      
+##  [43] "gaussprPoly"         "gaussprRadial"       "gbm"                
+##  [46] "gcvEarth"            "GFS.FR.MOGAL"        "GFS.GCCL"           
+##  [49] "GFS.LT.RS"           "GFS.Thrift"          "glm"                
+##  [52] "glmboost"            "glmnet"              "glmStepAIC"         
+##  [55] "gpls"                "hda"                 "hdda"               
+##  [58] "HYFIS"               "icr"                 "J48"                
+##  [61] "JRip"                "kernelpls"           "kknn"               
+##  [64] "knn"                 "krlsPoly"            "krlsRadial"         
+##  [67] "lars"                "lars2"               "lasso"              
+##  [70] "lda"                 "lda2"                "leapBackward"       
+##  [73] "leapForward"         "leapSeq"             "Linda"              
+##  [76] "lm"                  "lmStepAIC"           "LMT"                
+##  [79] "logicBag"            "LogitBoost"          "logreg"             
+##  [82] "lssvmLinear"         "lssvmPoly"           "lssvmRadial"        
+##  [85] "lvq"                 "M5"                  "M5Rules"            
+##  [88] "mda"                 "Mlda"                "mlp"                
+##  [91] "mlpWeightDecay"      "multinom"            "nb"                 
+##  [94] "neuralnet"           "nnet"                "nodeHarvest"        
+##  [97] "oblique.tree"        "OneR"                "ORFlog"             
+## [100] "ORFpls"              "ORFridge"            "ORFsvm"             
+## [103] "pam"                 "parRF"               "PART"               
+## [106] "partDSA"             "pcaNNet"             "pcr"                
+## [109] "pda"                 "pda2"                "penalized"          
+## [112] "PenalizedLDA"        "plr"                 "pls"                
+## [115] "plsRglm"             "ppr"                 "protoclass"         
+## [118] "qda"                 "QdaCov"              "qrf"                
+## [121] "qrnn"                "rbf"                 "rbfDDA"             
+## [124] "rda"                 "relaxo"              "rf"                 
+## [127] "rFerns"              "RFlda"               "ridge"              
+## [130] "rknn"                "rknnBel"             "rlm"                
+## [133] "rocc"                "rpart"               "rpart2"             
+## [136] "rpartCost"           "RRF"                 "RRFglobal"          
+## [139] "rrlda"               "RSimca"              "rvmLinear"          
+## [142] "rvmPoly"             "rvmRadial"           "SBC"                
+## [145] "sda"                 "sddaLDA"             "sddaQDA"            
+## [148] "simpls"              "SLAVE"               "slda"               
+## [151] "smda"                "sparseLDA"           "spls"               
+## [154] "stepLDA"             "stepQDA"             "superpc"            
+## [157] "svmBoundrangeString" "svmExpoString"       "svmLinear"          
+## [160] "svmPoly"             "svmRadial"           "svmRadialCost"      
+## [163] "svmRadialWeights"    "svmSpectrumString"   "treebag"            
+## [166] "vbmpRadial"          "widekernelpls"       "WM"                 
+## [169] "xyf"
+</code></pre>
+</div>
+<p><br /><br />
+As you can see, there are plenty of models available to satisfy most needs. Some support either <strong>dual use</strong>, while others are either <strong>classification</strong> or <strong>regression</strong> only. You can test for the type a model supports by using the same <code class="highlighter-rouge">getModelInfo</code> function:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">getModelInfo</span><span class="p">()</span><span class="o">$</span><span class="n">glm</span><span class="o">$</span><span class="n">type</span><span class="w">
+</span></code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>#  "Regression"     "Classification"
+</code></pre>
+</div>
+
+<p>In the above snippet, <code class="highlighter-rouge">glm</code> supports both <strong>regression</strong> and <strong>classification</strong>.
+<br /><br />
+We download the <strong>vehicles</strong> data set from <a href="https://github.com/hadley" target="_blank">Hadley Wickham</a> hosted on Github. To keep this simple, we attempt to predict whether a vehicle has 6 cylinders using only the first 24 columns of the data set:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">RCurl</span><span class="p">)</span><span class="w">
+</span><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="s1">'https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv'</span><span class="w">
+</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getURL</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">ssl.verifypeer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="n">textConnection</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># alternative way of getting the data if the above snippet doesn't work:
+# urlData &lt;- getURL('https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv')
+# vehicles &lt;- read.csv(text = urlData)
+</span></code></pre>
+</div>
+<p><br /><br />
+We clean the outcome variable <code class="highlighter-rouge">cyclinders</code> by assigning it <code class="highlighter-rouge">1</code> for 6 cyclinders and <code class="highlighter-rouge">0</code> for everything else:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[</span><span class="nf">names</span><span class="p">(</span><span class="n">vehicles</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">24</span><span class="p">]]</span><span class="w">
+</span><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">lapply</span><span class="p">(</span><span class="n">vehicles</span><span class="p">,</span><span class="w"> </span><span class="n">as.character</span><span class="p">),</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">lapply</span><span class="p">(</span><span class="n">vehicles</span><span class="p">,</span><span class="w"> </span><span class="n">as.numeric</span><span class="p">))</span><span class="w">
+</span><span class="n">vehicles</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">vehicles</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">vehicles</span><span class="o">$</span><span class="n">cylinders</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">vehicles</span><span class="o">$</span><span class="n">cylinders</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+We call <code class="highlighter-rouge">prop.table</code> to understand the proportions of our outcome variable:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">prop.table</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">vehicles</span><span class="o">$</span><span class="n">cylinders</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##      0      1 
+## 0.6506 0.3494
+</code></pre>
+</div>
+<p>This tells us that 35% of the data represents a vehicle with 6 cylinders. So our data isn’t perfectly balanced but it certainly isn’t skewed or considered a rare event.</p>
+
+<p>Here is the one complicated part, instead of splitting the data into 2 parts of <code class="highlighter-rouge">train</code> and <code class="highlighter-rouge">test</code>, we split the data into 3 parts: <code class="highlighter-rouge">ensembleData</code>, <code class="highlighter-rouge">blenderData</code>, and <code class="highlighter-rouge">testingData</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[</span><span class="n">sample</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">vehicles</span><span class="p">)),]</span><span class="w">
+</span><span class="n">split</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">vehicles</span><span class="p">)</span><span class="o">/</span><span class="m">3</span><span class="p">)</span><span class="w">
+</span><span class="n">ensembleData</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[</span><span class="m">0</span><span class="o">:</span><span class="n">split</span><span class="p">,]</span><span class="w">
+</span><span class="n">blenderData</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[(</span><span class="n">split</span><span class="m">+1</span><span class="p">)</span><span class="o">:</span><span class="p">(</span><span class="n">split</span><span class="o">*</span><span class="m">2</span><span class="p">),]</span><span class="w">
+</span><span class="n">testingData</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[(</span><span class="n">split</span><span class="o">*</span><span class="m">2+1</span><span class="p">)</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">vehicles</span><span class="p">),]</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+We assign the outcome name to <code class="highlighter-rouge">labelName</code> and the predictor variables to <code class="highlighter-rouge">predictors</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">labelName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'cylinders'</span><span class="w">
+</span><span class="n">predictors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">ensembleData</span><span class="p">)[</span><span class="nf">names</span><span class="p">(</span><span class="n">ensembleData</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">labelName</span><span class="p">]</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+We create a <strong>caret</strong> <code class="highlighter-rouge">trainControl</code> object to control the number of cross-validations performed (the more the better but for breivity we only require 3):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">myControl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">'cv'</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="o">=</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">returnResamp</span><span class="o">=</span><span class="s1">'none'</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+<strong>Benchmark Model</strong></p>
+
+<p>We run the data on a <code class="highlighter-rouge">gbm</code> model without any enembling to use as a comparative benchmark:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">test_model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">blenderData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w"> </span><span class="n">blenderData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'gbm'</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">myControl</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        0.2147             nan     0.1000    0.0128
+##      2        0.2044             nan     0.1000    0.0104
+##      3        0.1962             nan     0.1000    0.0084
+...
+</code></pre>
+</div>
+<p>You’ll see a series of the lines (as shown above) as it trains the<code class="highlighter-rouge">gbm</code> model.
+<br /><br />
+We then use the model to predict 6-cylinder vehicles using the <code class="highlighter-rouge">testingData</code> data set and <strong>pROC</strong>’s <code class="highlighter-rouge">auc</code> function to get the <a href="https://www.kaggle.com/wiki/AreaUnderCurve" target="_blank">Area Under the Curve (AUC)</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">test_model</span><span class="p">,</span><span class="w"> </span><span class="n">testingData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testingData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">preds</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w"> 
+</span></code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>## Area under the curve: 0.99
+</code></pre>
+</div>
+<p>It gives a fairly strong <strong>AUC</strong> score of 0.99 (remember that 0.5 is random and 1 is perfect). Hard to believe we can improve this score using an ensemble of models…
+<br /><br />
+<strong>Ensembles</strong></p>
+
+<p>But we’re going to try. We now use 3 models - <code class="highlighter-rouge">gbm</code>, <code class="highlighter-rouge">rpart</code>, and <code class="highlighter-rouge">treebag</code> as part of our <strong>ensembles</strong> of models and <code class="highlighter-rouge">train</code> them with the <code class="highlighter-rouge">ensembleData</code> data set:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">model_gbm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w"> </span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'gbm'</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">myControl</span><span class="p">)</span><span class="w">
+
+</span><span class="n">model_rpart</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w"> </span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'rpart'</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">myControl</span><span class="p">)</span><span class="w">
+
+</span><span class="n">model_treebag</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w"> </span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'treebag'</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">myControl</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+After our 3 models are trained, we use them to predict <strong>6 cylinder vehicles</strong> on the other two data sets: <code class="highlighter-rouge">blenderData</code> and <code class="highlighter-rouge">testingData</code> - <strong>yes, both!!</strong> We need to do this to harvest the predictions from both data sets as we’re going to add those predictions as new features to the same data sets. So, as we have 3 models, we’re going to add three new columns to both <code class="highlighter-rouge">blenderData</code> and <code class="highlighter-rouge">testingData</code>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">blenderData</span><span class="o">$</span><span class="n">gbm_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_gbm</span><span class="p">,</span><span class="w"> </span><span class="n">blenderData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">blenderData</span><span class="o">$</span><span class="n">rf_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_rpart</span><span class="p">,</span><span class="w"> </span><span class="n">blenderData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">blenderData</span><span class="o">$</span><span class="n">treebag_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_treebag</span><span class="p">,</span><span class="w"> </span><span class="n">blenderData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+
+</span><span class="n">testingData</span><span class="o">$</span><span class="n">gbm_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_gbm</span><span class="p">,</span><span class="w"> </span><span class="n">testingData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">testingData</span><span class="o">$</span><span class="n">rf_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_rpart</span><span class="p">,</span><span class="w"> </span><span class="n">testingData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">testingData</span><span class="o">$</span><span class="n">treebag_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_treebag</span><span class="p">,</span><span class="w"> </span><span class="n">testingData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span></code></pre>
+</div>
+<p>Please note how easy it is to add those values back to the original data set (follow where we assign the resulting predictions above).
+<br /><br />
+Now we train a final <strong>blending</strong> model on the old data and the new predictions (we use <code class="highlighter-rouge">gbm</code> but that is completely arbitrary):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">predictors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">blenderData</span><span class="p">)[</span><span class="nf">names</span><span class="p">(</span><span class="n">blenderData</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">labelName</span><span class="p">]</span><span class="w">
+</span><span class="n">final_blender_model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">blenderData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w"> </span><span class="n">blenderData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'gbm'</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">myControl</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /><br />
+And we call <code class="highlighter-rouge">predict</code> and <code class="highlighter-rouge">roc</code>/<code class="highlighter-rouge">auc</code> functions to see how our blended ensemble model fared:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">final_blender_model</span><span class="p">,</span><span class="w"> </span><span class="n">testingData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testingData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">preds</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## Area under the curve: 0.993
+</code></pre>
+</div>
+<p><br />
+There you have it, an <strong>AUC</strong> bump of 0.003. This may not seem like much (and there are many ways of improving that score) but it should easily give you that extra edge on your next data science competition!!</p>
+
+<p><br /><br /><br />
+<a id="sourcecode">Full source code (<a href="https://github.com/amunategui/SimpleEnsembleBlending" target="_blank">also on GitHub</a>)</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">getModelInfo</span><span class="p">())</span><span class="w">
+
+</span><span class="c1"># Load data from Hadley Wickham on Github - Vehicle data set and predict 6 cylinder vehicles
+</span><span class="n">library</span><span class="p">(</span><span class="n">RCurl</span><span class="p">)</span><span class="w">
+</span><span class="c1">#urlData &lt;- getURL('https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv')
+#vehicles &lt;- read.csv(text = urlData)
+</span><span class="w">
+</span><span class="c1"># alternative way of getting the data
+</span><span class="n">urlfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="s1">'https://raw.githubusercontent.com/hadley/fueleconomy/master/data-raw/vehicles.csv'</span><span class="w">
+</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getURL</span><span class="p">(</span><span class="n">urlfile</span><span class="p">,</span><span class="w"> </span><span class="n">ssl.verifypeer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="n">textConnection</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># clean up the data and only use the first 24 columns
+</span><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[</span><span class="nf">names</span><span class="p">(</span><span class="n">vehicles</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">24</span><span class="p">]]</span><span class="w">
+</span><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">lapply</span><span class="p">(</span><span class="n">vehicles</span><span class="p">,</span><span class="w"> </span><span class="n">as.character</span><span class="p">),</span><span class="w"> </span><span class="n">stringsAsFactors</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">lapply</span><span class="p">(</span><span class="n">vehicles</span><span class="p">,</span><span class="w"> </span><span class="n">as.numeric</span><span class="p">))</span><span class="w">
+</span><span class="n">vehicles</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">vehicles</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">vehicles</span><span class="o">$</span><span class="n">cylinders</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">vehicles</span><span class="o">$</span><span class="n">cylinders</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">)</span><span class="w">
+
+</span><span class="n">prop.table</span><span class="p">(</span><span class="n">table</span><span class="p">(</span><span class="n">vehicles</span><span class="o">$</span><span class="n">cylinders</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># shuffle and split the data into three parts
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">vehicles</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[</span><span class="n">sample</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">vehicles</span><span class="p">)),]</span><span class="w">
+</span><span class="n">split</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">vehicles</span><span class="p">)</span><span class="o">/</span><span class="m">3</span><span class="p">)</span><span class="w">
+</span><span class="n">ensembleData</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[</span><span class="m">0</span><span class="o">:</span><span class="n">split</span><span class="p">,]</span><span class="w">
+</span><span class="n">blenderData</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[(</span><span class="n">split</span><span class="m">+1</span><span class="p">)</span><span class="o">:</span><span class="p">(</span><span class="n">split</span><span class="o">*</span><span class="m">2</span><span class="p">),]</span><span class="w">
+</span><span class="n">testingData</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vehicles</span><span class="p">[(</span><span class="n">split</span><span class="o">*</span><span class="m">2+1</span><span class="p">)</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">vehicles</span><span class="p">),]</span><span class="w">
+
+</span><span class="c1"># set label name and predictors
+</span><span class="n">labelName</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'cylinders'</span><span class="w">
+</span><span class="n">predictors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">ensembleData</span><span class="p">)[</span><span class="nf">names</span><span class="p">(</span><span class="n">ensembleData</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">labelName</span><span class="p">]</span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="c1"># create a caret control object to control the number of cross-validations performed
+</span><span class="n">myControl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">'cv'</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="o">=</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">returnResamp</span><span class="o">=</span><span class="s1">'none'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># quick benchmark model 
+</span><span class="n">test_model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">blenderData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w"> </span><span class="n">blenderData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'gbm'</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">myControl</span><span class="p">)</span><span class="w">
+</span><span class="n">preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">test_model</span><span class="p">,</span><span class="w"> </span><span class="n">testingData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">pROC</span><span class="p">)</span><span class="w">
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testingData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">preds</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w"> </span><span class="c1"># Area under the curve: 0.9896
+</span><span class="w">
+</span><span class="c1"># train all the ensemble models with ensembleData
+</span><span class="n">model_gbm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w"> </span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'gbm'</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">myControl</span><span class="p">)</span><span class="w">
+</span><span class="n">model_rpart</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w"> </span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'rpart'</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">myControl</span><span class="p">)</span><span class="w">
+</span><span class="n">model_treebag</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w"> </span><span class="n">ensembleData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'treebag'</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">myControl</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># get predictions for each ensemble model for two last data sets
+# and add them back to themselves
+</span><span class="n">blenderData</span><span class="o">$</span><span class="n">gbm_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_gbm</span><span class="p">,</span><span class="w"> </span><span class="n">blenderData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">blenderData</span><span class="o">$</span><span class="n">rf_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_rpart</span><span class="p">,</span><span class="w"> </span><span class="n">blenderData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">blenderData</span><span class="o">$</span><span class="n">treebag_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_treebag</span><span class="p">,</span><span class="w"> </span><span class="n">blenderData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">testingData</span><span class="o">$</span><span class="n">gbm_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_gbm</span><span class="p">,</span><span class="w"> </span><span class="n">testingData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">testingData</span><span class="o">$</span><span class="n">rf_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_rpart</span><span class="p">,</span><span class="w"> </span><span class="n">testingData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">testingData</span><span class="o">$</span><span class="n">treebag_PROB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">model_treebag</span><span class="p">,</span><span class="w"> </span><span class="n">testingData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+
+</span><span class="c1"># see how each individual model performed on its own
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testingData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">testingData</span><span class="o">$</span><span class="n">gbm_PROB</span><span class="w"> </span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w"> </span><span class="c1"># Area under the curve: 0.9893
+</span><span class="w">
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testingData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">testingData</span><span class="o">$</span><span class="n">rf_PROB</span><span class="w"> </span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w"> </span><span class="c1"># Area under the curve: 0.958
+</span><span class="w">
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testingData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">testingData</span><span class="o">$</span><span class="n">treebag_PROB</span><span class="w"> </span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w"> </span><span class="c1"># Area under the curve: 0.9734
+</span><span class="w">
+</span><span class="c1"># run a final model to blend all the probabilities together
+</span><span class="n">predictors</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">blenderData</span><span class="p">)[</span><span class="nf">names</span><span class="p">(</span><span class="n">blenderData</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">labelName</span><span class="p">]</span><span class="w">
+</span><span class="n">final_blender_model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">blenderData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">],</span><span class="w"> </span><span class="n">blenderData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">method</span><span class="o">=</span><span class="s1">'gbm'</span><span class="p">,</span><span class="w"> </span><span class="n">trControl</span><span class="o">=</span><span class="n">myControl</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># See final prediction and AUC of blended ensemble
+</span><span class="n">preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">final_blender_model</span><span class="p">,</span><span class="w"> </span><span class="n">testingData</span><span class="p">[,</span><span class="n">predictors</span><span class="p">])</span><span class="w">
+</span><span class="n">auc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roc</span><span class="p">(</span><span class="n">testingData</span><span class="p">[,</span><span class="n">labelName</span><span class="p">],</span><span class="w"> </span><span class="n">preds</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">auc</span><span class="o">$</span><span class="n">auc</span><span class="p">)</span><span class="w">  </span><span class="c1"># Area under the curve: 0.9922
+</span><span class="w">
+</span></code></pre>
+</div>
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>

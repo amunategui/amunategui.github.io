@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+  
+    <title>Ensemble Feature Selection On Steroids: {fscaret} Package</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/greatlookingwebsite/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Ensemble Feature Selection On Steroids: {fscaret} Package</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+   
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=dTRDZBltCTg&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+</ul>
+<p><br />
+<strong>Packages Used in this Walkthrough</strong></p>
+
+<ul>
+        <li type="square"><b>{fscaret}</b> - feature selection for ensembles</li>
+        <li type="square"><b>{caret}</b> - machine learning tools</li>
+</ul>
+
+<p><br /><br />
+The <a href="http://cran.r-project.org/web/packages/fscaret/index.html" target="_blank">fscaret package</a>, as its name implies, is closely related to the <a href="http://cran.r-project.org/web/packages/caret/index.html" target="_blank">caret package</a>. It relies on <strong>caret</strong>, and its numerous functions, to get its job done.
+<br /><br />
+<strong>So what does this package do?</strong>
+<br />
+Well, you give it a data set and a list of models and, in return, <strong>fscaret</strong> will scale and return the importance of each variable for each model and for the ensemble of models. The tool extracts the importance of each variable by using the selected models’ VarImp or similar measuring function. For example, linear models use the absolute value of the t-statistic for each parameter and decision-tree models, total the importance of the individual trees, etc.  It returns individual and combined MSEs and RMSEs:
+<br /><br /></p>
+<li>**MSE (Mean Squared Error)**: the variance of the estimator</li>
+<li>**RMSE (Root Mean Squared Error)**: the standard deviation of the sample</li>
+<p><br />
+Now, <strong>caret</strong> is itself a wrapper sitting atop 170 models and offering many machine learning and tuning functions. I will assume you are familiar with caret, but even if you aren’t, <strong>fscaret</strong> is intuitive enough to provide lots of use on its own as an ensemble variable selection tool (but do get to know caret, you won’t regret it).
+<br /><br />
+To get a full list of all the models available with the <strong>fscaret</strong> package (which is over a third of the models supported in <strong>caret</strong>), install and load the fscaret package then type in the following:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">fscaret</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">data</span><span class="p">(</span><span class="n">funcRegPred</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">funcRegPred</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##  [1] "glm"            "glmStepAIC"     "gam"            "gamLoess"      
+##  [5] "gamSpline"      "rpart"          "rpart2"         "ctree"         
+##  [9] "ctree2"         "evtree"         "obliqueTree"    "gbm"           
+## [13] "blackboost"     "bstTree"        "glmboost"       "gamboost"      
+## [17] "bstLs"          "bstSm"          "rf"             "parRF"         
+## [21] "cforest"        "Boruta"         "RRFglobal"      "RRF"           
+## [25] "treebag"        "bag"            "logicBag"       "bagEarth"      
+## [29] "nodeHarvest"    "partDSA"        "earth"          "gcvEarth"      
+## [33] "logreg"         "glmnet"         "nnet"           "mlp"           
+## [37] "mlpWeightDecay" "pcaNNet"        "avNNet"         "rbf"           
+## [41] "pls"            "kernelpls"      "simpls"         "widekernelpls" 
+## [45] "spls"           "svmLinear"      "svmRadial"      "svmRadialCost" 
+## [49] "svmPoly"        "gaussprLinear"  "gaussprRadial"  "gaussprPoly"   
+## [53] "knn"            "xyf"            "bdk"            "lm"            
+## [57] "lmStepAIC"      "leapForward"    "leapBackward"   "leapSeq"       
+## [61] "pcr"            "icr"            "rlm"            "neuralnet"     
+## [65] "qrf"            "qrnn"           "M5Rules"        "M5"            
+## [69] "cubist"         "ppr"            "penalized"      "ridge"         
+## [73] "lars"           "lars2"          "enet"           "lasso"         
+## [77] "relaxo"         "foba"           "krlsRadial"     "krlsPoly"      
+## [81] "rvmLinear"      "rvmRadial"      "rvmPoly"        "superpc"
+</code></pre>
+</div>
+<p><br /><br />
+And compare that with the models supported in <strong>caret</strong> (install and load the <strong>caret</strong> package):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">print</span><span class="p">(</span><span class="n">paste</span><span class="p">(</span><span class="s1">'Total models in caret:'</span><span class="p">,</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">getModelInfo</span><span class="p">())))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## [1] "Total models in caret: 169"
+</code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># to get full list of supported models type:
+# names(getModelInfo())
+</span></code></pre>
+</div>
+<p><br />
+Even though <strong>caret</strong> supports a lot more than those 84 models, it should be plenty of fire power to select the best variables possible for your needs. When installing <strong>fscaret</strong>, it is recommended to install it with all its dependencies:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">install.packages</span><span class="p">(</span><span class="s2">"fscaret"</span><span class="p">,</span><span class="w"> </span><span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Depends"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Suggests"</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+This will speed things up tremendously on subsequent runs but you will have to suffer during the installation process. If I remember correctly, it took me over an hour to get all the models installed (some of the models require user confirmations).
+<br /><br />
+The input data needs to be formatted in a particular way: <strong>MISO</strong>. (Multiple Ins, Single Out). The output needs be the last column in the data frame. So you can’t have it anywhere else, nor can it predict multiple response columns at once.
+<br /><br />
+As with anything <strong>ensemble</strong> related, if you’re going to run 50 models in one shot, you better have the computing muscle to do so - there’s no free lunch. Start with a single or small set of models. If you’re going to run a large ensemble of models, fire it up before going to bed and see what you get the next day.
+<br /><br /></p>
+
+<p><img src="img/titanic.png" alt="plot of chunk cyclingandsnowboarding" />
+<br /><br /></p>
+
+<p>For the demo, we’ll use a Titanic dataset from the University of Colorado Denver. This is a classic data set often seen in online courses and walkthroughs. The outcome is passenger survivorship (i.e. can you predict who will survive based on various features). We drop the passenger names as they are all unique but keep the passenger titles. We also impute the missing ‘Age’ variables with the mean:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'http://math.ucdenver.edu/RTutorial/titanic.txt'</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s1">'\t'</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mr '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mr'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mrs '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mrs'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Miss'</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Miss'</span><span class="p">,</span><span class="s1">'Nothing'</span><span class="p">)))</span><span class="w"> 
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">median</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+We move the ‘Survived’ outcome variable to the end of the data frame to be <strong>MISO</strong> compliant:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># miso format
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'PClass'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Age'</span><span class="p">,</span><span class="w">    </span><span class="s1">'Sex'</span><span class="p">,</span><span class="w">   </span><span class="s1">'Title'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Survived'</span><span class="p">)]</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+To help us process this data, we’re going to use some of <strong>caret</strong> functions. First, we call the <strong>dummyVars</strong> function to dummify the ‘Title’ variable:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDummy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dummyVars</span><span class="p">(</span><span class="s2">"~."</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="n">fullRank</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">titanicDummy</span><span class="p">,</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##  [1] "PClass.1st"    "PClass.2nd"    "PClass.3rd"    "Age"          
+##  [5] "Sex.female"    "Sex.male"      "Title.Miss"    "Title.Mr"     
+##  [9] "Title.Mrs"     "Title.Nothing" "Survived"
+</code></pre>
+</div>
+<p><br />
+The other <strong>caret</strong> function we need is the <strong>createDataPartition</strong> to split the data set randomly using a 0.75 split. With this split we allocate three-quarters of the data to the training data set and one quarter to the testing data set:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">splitIndex</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">createDataPartition</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">.75</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">times</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">trainDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="w"> </span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+</span><span class="n">testDF</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="o">-</span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+</span></code></pre>
+</div>
+<p><br />
+Finally, we select five models to process our data and call the meat-and-potatoes function of the <strong>fscaret</strong> package, named as its package, <strong>fscaret</strong>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">fsModels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"glm"</span><span class="p">,</span><span class="w"> </span><span class="s2">"gbm"</span><span class="p">,</span><span class="w"> </span><span class="s2">"treebag"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ridge"</span><span class="p">,</span><span class="w"> </span><span class="s2">"lasso"</span><span class="p">)</span><span class="w"> 
+</span><span class="n">myFS</span><span class="o">&lt;-</span><span class="n">fscaret</span><span class="p">(</span><span class="n">trainDF</span><span class="p">,</span><span class="w"> </span><span class="n">testDF</span><span class="p">,</span><span class="w"> </span><span class="n">myTimeLimit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">preprocessData</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+              </span><span class="n">Used.funcRegPred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'gbm'</span><span class="p">,</span><span class="w"> </span><span class="n">with.labels</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+              </span><span class="n">supress.output</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">no.cores</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /> 
+If the above code ran successfully, you will see a series of log outputs (unless you set <strong>supress.output</strong> to false). Each model will run through its paces and the final <strong>fscaret</strong> output will list the number of variables each model processed:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="o">----</span><span class="n">Processing</span><span class="w"> </span><span class="n">files</span><span class="o">:----</span><span class="w">
+</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="s2">"9in_default_REGControl_VarImp_gbm.txt"</span><span class="w">     </span><span class="s2">"9in_default_REGControl_VarImp_glm.txt"</span><span class="w">     </span><span class="s2">"9in_default_REGControl_VarImp_lasso.txt"</span><span class="w">  
+</span><span class="p">[</span><span class="m">4</span><span class="p">]</span><span class="w"> </span><span class="s2">"9in_default_REGControl_VarImp_ridge.txt"</span><span class="w">   </span><span class="s2">"9in_default_REGControl_VarImp_treebag.txt"</span><span class="w">
+</span></code></pre>
+</div>
+<p><br /> 
+The <strong>myFS</strong> holds a lot of information. One of the most interesting result set is the <strong><code class="highlighter-rouge">$VarImp$matrixVarImp.MSE</code></strong>. This returns the top variables from the perspective of all models involved (the <strong>MSE</strong> is scaled to compare each model equally):</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">myFS</span><span class="o">$</span><span class="n">VarImp</span><span class="o">$</span><span class="n">matrixVarImp.MSE</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##       gbm     SUM    SUM% ImpGrad Input_no
+## 5 32.8042 32.8042 100.000    0.00        5
+## 3 25.8817 25.8817  78.898   21.10        3
+## 7 21.5655 21.5655  65.740   16.68        7
+## 4 12.0336 12.0336  36.683   44.20        4
+## 1  5.4330  5.4330  16.562   54.85        1
+## 6  1.0265  1.0265   3.129   81.11        6
+## 9  0.8386  0.8386   2.556   18.30        9
+## 8  0.4168  0.4168   1.271   50.29        8
+## 2  0.0000  0.0000   0.000  100.00        2
+</code></pre>
+</div>
+<p>We need to do a little wrangling in order to clean this up and get a nicely ordered list with the actual variable names attached:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">myFS</span><span class="o">$</span><span class="n">VarImp</span><span class="o">$</span><span class="n">matrixVarImp.MSE</span><span class="w">
+</span><span class="n">results</span><span class="o">$</span><span class="n">Input_no</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">results</span><span class="o">$</span><span class="n">Input_no</span><span class="p">)</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">results</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s2">"SUM"</span><span class="p">,</span><span class="s2">"SUM%"</span><span class="p">,</span><span class="s2">"ImpGrad"</span><span class="p">,</span><span class="s2">"Input_no"</span><span class="p">)]</span><span class="w">
+</span><span class="n">myFS</span><span class="o">$</span><span class="n">PPlabels</span><span class="o">$</span><span class="n">Input_no</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">myFS</span><span class="o">$</span><span class="n">PPlabels</span><span class="p">))</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">results</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">myFS</span><span class="o">$</span><span class="n">PPlabels</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="o">=</span><span class="s2">"Input_no"</span><span class="p">,</span><span class="w"> </span><span class="n">all.x</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">results</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'Labels'</span><span class="p">,</span><span class="w"> </span><span class="s1">'SUM'</span><span class="p">)]</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">results</span><span class="p">,</span><span class="n">results</span><span class="o">$</span><span class="n">SUM</span><span class="w"> </span><span class="o">!=</span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="n">results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">results</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="o">-</span><span class="n">results</span><span class="o">$</span><span class="n">SUM</span><span class="p">),]</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##          Labels     SUM
+## 5    Sex.female 32.8042
+## 3    PClass.3rd 25.8817
+## 7      Title.Mr 21.5655
+## 4           Age 12.0336
+## 1    PClass.1st  5.4330
+## 6    Title.Miss  1.0265
+## 9 Title.Nothing  0.8386
+## 8     Title.Mrs  0.4168
+</code></pre>
+</div>
+<p>So, according to the models chosen, ‘Sex.female’ is the most important variable to predict survivorship in the Titanic dataset, followed by ‘PClass.3rd’ and ‘Title.Mr’.</p>
+
+<p><br /><br /></p>
+
+<p><a id="sourcecode">Full source code (<a href="https://github.com/amunategui/FSCARET-Feature-Selection-On-Steroids" target="_blank">also on GitHub</a>)</a>:</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># warning: could take over an hour to install all models the first time you install the fscaret package
+# install.packages("fscaret", dependencies = c("Depends", "Suggests"))
+</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">fscaret</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># list of models fscaret supports:
+</span><span class="n">data</span><span class="p">(</span><span class="n">funcRegPred</span><span class="p">)</span><span class="w">
+</span><span class="n">funcRegPred</span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
+</span><span class="c1"># list of models caret supports:
+</span><span class="nf">names</span><span class="p">(</span><span class="n">getModelInfo</span><span class="p">())</span><span class="w">
+
+</span><span class="c1"># using dataset from the UCI Machine Learning Repository (http://archive.ics.uci.edu/ml/)
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s1">'http://math.ucdenver.edu/RTutorial/titanic.txt'</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s1">'\t'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># creating new title feature
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mr '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mr'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Mrs '</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Mrs'</span><span class="p">,</span><span class="n">ifelse</span><span class="p">(</span><span class="n">grepl</span><span class="p">(</span><span class="s1">'Miss'</span><span class="p">,</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Name</span><span class="p">),</span><span class="s1">'Miss'</span><span class="p">,</span><span class="s1">'Nothing'</span><span class="p">)))</span><span class="w">
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Title</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># impute age to remove NAs
+</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">[</span><span class="nf">is.na</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">median</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Age</span><span class="p">,</span><span class="w"> </span><span class="n">na.rm</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># reorder data set so target is last column
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="s1">'PClass'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Age'</span><span class="p">,</span><span class="w">    </span><span class="s1">'Sex'</span><span class="p">,</span><span class="w">   </span><span class="s1">'Title'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Survived'</span><span class="p">)]</span><span class="w">
+
+</span><span class="c1"># binarize all factors
+</span><span class="n">titanicDummy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dummyVars</span><span class="p">(</span><span class="s2">"~."</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="n">titanicDF</span><span class="p">,</span><span class="w"> </span><span class="n">fullRank</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">titanicDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">titanicDummy</span><span class="p">,</span><span class="n">titanicDF</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># split data set into train and test portion
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1234</span><span class="p">)</span><span class="w">
+</span><span class="n">splitIndex</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">createDataPartition</span><span class="p">(</span><span class="n">titanicDF</span><span class="o">$</span><span class="n">Survived</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">.75</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">times</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">trainDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="w"> </span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+</span><span class="n">testDF</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="o">-</span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
+
+</span><span class="c1"># limit models to use in ensemble and run fscaret
+</span><span class="n">fsModels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"glm"</span><span class="p">,</span><span class="w"> </span><span class="s2">"gbm"</span><span class="p">,</span><span class="w"> </span><span class="s2">"treebag"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ridge"</span><span class="p">,</span><span class="w"> </span><span class="s2">"lasso"</span><span class="p">)</span><span class="w">
+</span><span class="n">myFS</span><span class="o">&lt;-</span><span class="n">fscaret</span><span class="p">(</span><span class="n">trainDF</span><span class="p">,</span><span class="w"> </span><span class="n">testDF</span><span class="p">,</span><span class="w"> </span><span class="n">myTimeLimit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">preprocessData</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+              </span><span class="n">Used.funcRegPred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fsModels</span><span class="p">,</span><span class="w"> </span><span class="n">with.labels</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+              </span><span class="n">supress.output</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">no.cores</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># analyze results
+</span><span class="n">print</span><span class="p">(</span><span class="n">myFS</span><span class="o">$</span><span class="n">VarImp</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">myFS</span><span class="o">$</span><span class="n">PPlabels</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+		
+</div>
+    
+
+		</div>		 
+	 </div>   
+ 
+  </body>
+</html>
