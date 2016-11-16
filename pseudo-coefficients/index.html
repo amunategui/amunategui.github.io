@@ -11,7 +11,7 @@
     <meta name="author" content="Manuel Amunategui">
     <link rel="icon" href="../favicon.ico">
 
-    <title>Get Your "all else equal" Odds-Ratio Story for Non-Linear Models!</title>
+    <title>Get Your "all else held equal" Odds-Ratio Story for Non-Linear Models!</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -122,7 +122,7 @@ Here is a smoothed plot of the pseudo odds ratios for YearsWorked with direction
 <BR>
 <H2>Unit 4: Calculating Odds</H2>
 <p>
-Each rectangle represents the odds ratio for that area. To turn it into odds we need to apply a little math. The x-value is easy, its the right-end point of each rectangle, and, at that point, the value is the cummulative sum of the area of the rectangle. We then find the median box (the one where the median value of the feature fits best) and adjust the vertical level of the odd's line according to that box so the median sits at value 1.
+Each rectangle represents the odds ratio for that area. To turn it into odds we need to apply a little math. The x-value is easy, its the right-end point of each rectangle, and, at that point, the value is the cumulative sum of the area of the rectangle. We then find the median box (the one where the median value of the feature fits best) and adjust the vertical level of the odds line according to that box so the median sits at value 1.
 </p><p>
 Here is the chart resulting from all this work. It delivers a clear visual of varying odds at different unit points (we'll analyze this feature and another in the next section):
 </p> 
@@ -133,7 +133,7 @@ Here is the chart resulting from all this work. It delivers a clear visual of va
 <H2>Chart Analysis</H2>
 <BR>
 <p>
-The chart below is the odds ratio for 'YearsWorked'. It shows four boxes where the first is increasing fast, the second slow, the third is decreasing slow, and the last is decreasing fast. In odds ratio parlance, the first box has the odds ratio increasing updwards rapidly, and so on and so forth.
+The chart below is the odds ratio for 'YearsWorked'. It shows four boxes where the first is increasing fast, the second slow, the third is decreasing slow, and the last is decreasing fast. In odds ratio parlance, the first box has the odds ratio increasing upwards rapidly, and so on and so forth.
 </p>
 <BR><BR>
 <p style="text-align:center">
@@ -141,7 +141,7 @@ The chart below is the odds ratio for 'YearsWorked'. It shows four boxes where t
 </p>
 <BR>
 <p>
-The Pseudo Odds chart for 'YearsWorked' shows that a brand new worker is 12% less likely than a tenured worker to be a top earner. Your best odds of being a top earner are at 28 years of service - you can say they have 20% better odds at earning top salaries (or more precisley above the median salary).
+The Pseudo Odds chart for 'YearsWorked' shows that a brand new worker is 12% less likely than a tenured worker to be a top earner. Your best odds of being a top earner are at 28 years of service - you can say they have 20% better odds at earning top salaries (or more precisely above the median salary).
 </p>
 <BR><BR>
 <p style="text-align:center">
@@ -211,10 +211,9 @@ library(dplyr)
 # TMSalaries$EEOMinorityCode <- as.numeric(TMSalaries$EEOMinorityCode)
 # TMSalaries$StudentStaffFaculty <- as.numeric(TMSalaries$StudentStaffFaculty)
 # temp_df <- TMSalaries
-# dim(temp_df)
-
  
-setwd('/Users/manuelamunategui/Documents/pseudo coefficients')
+
+# text file
 temp_df <- read.csv('texas_am_salaries.csv')
 dim(temp_df)
 outcome_name <- 'AboveMedianSalary'
@@ -256,7 +255,7 @@ feature_names <- setdiff(names(temp_df),outcome_name)
 importance_matrix <- xgb.importance(feature_names=feature_names, model = xgb_model )
 print(head(importance_matrix,20))
 
-# psuedo coeffients -------------------------------------------------------
+# pseudo coefficients -------------------------------------------------------
 
 origData <- temp_df[,setdiff(names(temp_df),outcome_name)]
 origModel <- xgb_model
@@ -337,11 +336,7 @@ for (feature in feature_names) {
      
      median_mark <- 1 # median(pcSummary$smooth)
      
-
-           
      stdv <- sd(pcSummary$smooth)
-#      abline(h=median_mark + stdv, col='red')
-#      abline(h=median_mark - stdv, col='red')
      
      
      if (length(pcSummary$smooth) > 2) {
@@ -356,9 +351,7 @@ for (feature in feature_names) {
                dplyr::mutate(rowname = as.numeric(rowname)) %>%
                data.frame -> important_turns 
           
-          
-          
-          
+
           previous_row <- 1
           last_turn_x <- pcSummary$origValue[previous_row]
           last_turn_y <- pcSummary$smooth[previous_row]
@@ -426,7 +419,7 @@ for (feature in feature_names) {
 </div>
 
 <p>
-For more information on <a href='http://www.ats.ucla.edu/stat/stata/faq/oratio.htm' target='_blank'>How do I interpret odds ratios in logistic regression?</a> from UCLA's Institute for Digitial Research and Education.
+For more information on <a href='http://www.ats.ucla.edu/stat/stata/faq/oratio.htm' target='_blank'>How do I interpret odds ratios in logistic regression?</a> from UCLA's Institute for Digital Research and Education.
 </p>
       
 
