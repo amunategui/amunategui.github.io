@@ -251,9 +251,6 @@ print(head(importance_matrix,20))
 
 # pseudo coefficients -------------------------------------------------------
 
-origData <- gov_salary_df[,setdiff(names(gov_salary_df),outcome_name)]
-origModel <- xgb_model
-
 get_avg_slope <- function(original_model, original_data, feature) {
      allValues <- unique(original_data[, feature])
      allValues <- allValues[order(allValues)]
@@ -302,6 +299,12 @@ get_avg_slope <- function(original_model, original_data, feature) {
      
 }
 
+
+# get original data
+origData <- gov_salary_df[,setdiff(names(gov_salary_df),outcome_name)]
+origModel <- xgb_model
+
+# loop through each feature and get average slopes, odds ratio and odds
 for (feature in feature_names) {
      print(feature)
      rects <- c()
@@ -397,6 +400,7 @@ for (feature in feature_names) {
      lines(pcSummary$origValue, pcSummary$smooth, type = 'l', lwd=3, main=(paste0('Pseudo Odd for ', feature)))
      abline(h = 0,lwd=3,lty=2)
      
+     # build odds chart
      oddsPoints <- data.frame(xvalue=rects[,3], yvalue=cumsum((rects[,4] - rects[,2])*(rects[,3] - rects[,1])))
      oddsPoints <- rbind(data.frame(xvalue=rects[1,1], yvalue=0), oddsPoints)
      whichBox <- which((rects[,1] <= median(temp_origData[, feature])) & (rects[,3] >= median(temp_origData[, feature])))[1]
