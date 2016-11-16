@@ -1,0 +1,434 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Get Your all else equal Odds-Ratio Story for Non-Linear Models!</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Get Your all else equal Odds-Ratio Story for Non-Linear Models!</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+<p style="text-align:center">
+<img src="img/markov.png" alt="AWS" style="padding:1px; border:1px solid #021a40; width: 75%; height: 75%" />
+</p>
+<p><br /><br /></p>
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<p><br /><br />
+<p style="text-align:center">
+<img src="img/pseudo.png" alt="Pseudo Coefficients" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR><BR>
+
+On one hand we have tree-based classifiers and deep-belief networks and on the other linear regression models. What the latter lacks in terms of coolness and precision certainly makes up in transparency and actionability. People just love their coefficients and odd ratios. So, here is an approach to extract odds out of tree-based classifiers so you too can say ‘all else held equal, a one unit change in x, will result in a pseudo-coefficient change of something in y'. The bonus here is that we capture non-linear movements - this can yield a lot of intelligence out of your variables! 
+
+I didn't coin the term nor the algorithm, that came from my friend and colleague, Tristan Markwell, who agreed to share this with the world. My small contribution was to nail down the plots.
+
+<BR>
+<H3>How Does it Work?</H3>
+
+For a high-level explanation, first train a classification model and feed testing data into it to extract probabilities for a particular binary outcome. Then, one feature at a time, shift each of its points one unit up and feed that into the model. This becomes your up-one-unit probabilities for that feature. Do the same but in the opposite direction by shifting the feature data down one unit.  Finally, calculate the slope between the up-one-unit and down-one-unit probabilities. Smooth the slopes to simplify patterns and analyze away!
+
+The code is a bit more complex and experimental in nature so bear with me. It is composed of four logical units and I added charts throughout most steps from a feature called ‘YearsWorked’ off of the <a href='https://salaries.texastribune.org/texas-am-university/' target='_blank'>Texas A&M salary data set</a>. The outcome variable is whether a particular employee is above the median salary.
+<BR>
+<H3>Unit 1: Base Model</H3>
+
+We first model the data using XGBoost (but any classification model will do) and get a prediction vector using a test data set. 
+<BR>
+<H3>Unit 2: Average Slopes for each Feature Points</H3>
+
+We then loop through each feature and call the ‘get_avg_slope’ function. As its name implies, it returns average slopes for each feature by shifting the feature values up and down a unit in the testing data and returns the slopes between the shifted points. In more detail:
+
+<ol>
+<li>Pass original prediction vector</li>
+<li>Get unique values in feature</li>
+<li>Figure out jump size: take 1/20th of the number of values (if there are 100 unique values, you go 5 to the right, and 5 to left)</li> 
+<li>Shift each value in the feature up one jump size and predict this new set while all other features held constant</li>
+<li>Do the same down one jump size and predict this new set while all other featuers held constant</li>
+<li>Save the two resulting vectors of shifted predictions</li>
+<li>Take the slope between the up point and down point</li>
+<li>If you hit a wall then use half way point</li>
+<li>Return the average of all slopes per value</li>
+</ol>
+
+Here is a raw plot of the pseudo odds ratios for YearsWorked:
+
+<p style="text-align:center">
+<img src="img/raw_years_worked.png" alt="raw years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR>
+<H3>Unit 3: Odd Ratio Rectangles</H3>
+
+Calculate the odd-ratio rectangles. Each rectangle captures the speed of the move on using the smoothed odd ratio points. The rectangle is drawn by capturing each movement up one standard deviation from the median and back down one standard deviation mark. The height of the rectangle represents the speed at which the feature moves across its units.
+<BR><BR>
+Here is a plot of the smoothed pseudo odds ratios for YearsWorked with both standard deviation lines shown:
+<p style="text-align:center">
+<img src="img/standard_deviations_years_worked.png" alt="standard deviations years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<br>
+Here is a smoothed plot of the pseudo odds ratios for YearsWorked with directional boxes from the standard deviation crossovers:
+<p style="text-align:center">
+<img src="img/pseudo_odds_years_worked_portrait.png" alt="pseudo odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+
+<BR>
+<H3>Unit 4: Calculating Odds</H3>
+
+Each rectangle represents the odds ratio for that area. To turn it into odds we need to apply a little math. The x-value is easy, its the right-end point of each rectangle, and, at that point, the value is the cummulative sum of the area of the rectangle. We then find the median box (the one where the median value of the feature fits best) and adjust the vertical level of the odd's line according to that box so the median sits at value 1.
+
+Here is the chart resulting from all this work. It delivers a clear visual of varying odds at different unit points (we'll analyze this feature and another in the next section):
+
+<p style="text-align:center">
+<img src="img/odds_years_worked_portrait.png" alt="odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+
+<H2>Chart Analysis</H2>
+<BR>
+
+The chart below is the odds ratio for 'YearsWorked'. It shows four boxes where the first is increasing fast, the second slow, the third is decreasing slow, and the last is decreasing fast. In odds ratio parlance, the first box has the odds ratio increasing updwards rapidly, and so on and so forth.
+<BR><BR>
+<p style="text-align:center">
+<img src="img/pseudo_odds_years_worked.png" alt="odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR>
+The Pseudo Odds chart for 'YearsWorked' shows that a brand new worker is 12% less likely than a tenured worker to be a top earner. Your best odds of being a top earner are at 28 years of service - you can say they have 20% better odds at earning top salaries (or more precisley above the median salary).
+<BR><BR>
+<p style="text-align:center">
+<img src="img/odds_years_worked.png" alt="odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR><BR>
+The Odds Ratio chart for ‘Annual Term Months’ shows an initial moderate rise that accelerates around the middle of the chart and finally drops fast.
+<BR><BR>
+<p style="text-align:center">
+<img src="img/pseudo_odds_annual_term_months.png" alt="odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR>
+The Pseudo Odds chart for ‘Annual Term Months’ shows a 10% odds of being under the median salary for the first 7 terms, a 10% odd of hitting a peak median salary around the 9-10th term.
+<BR><BR>
+<p style="text-align:center">
+<img src="img/odds_annual_term_months.png" alt="odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+
+<H2>Full Code</H2>
+
+
+
+```{r}
+library(ggplot2)
+library(dplyr) 
+library(mlbench)
+
+# data --------------------------------------------------------------------
+
+
+library(dplyr)
+# library(XLConnect)
+# 
+# 
+# # https://salaries.texastribune.org/texas-am-university/
+# 
+# tmp = tempfile(fileext = ".xlsx")
+# download.file(url = "http://raw.texastribune.org.s3.amazonaws.com/texas_a%26m_university_system/salaries/2015-09/tamu_2015-09-09.xlsx", destfile = tmp, mode="wb")
+# 
+# TMSalaries <- readWorksheetFromFile(file = tmp, sheet = "OR SO-15-088", header = TRUE, startRow = 1) #, endRow = 151)
+# gc()
+# TMSalaries <- dplyr::select(TMSalaries, -LastName, -FirstName, -MiddleInitial, -ShortTitleDesc, -ShortAdlocDesc)
+# 
+# length(unique(TMSalaries$ShortTitleDesc))
+# dim(TMSalaries)
+# 
+# 
+# origDate <- as.Date('2015-09-01')
+# TMSalaries$CurrEmplDate <- as.Date(TMSalaries$CurrEmplDate)
+# # between dates.
+# TMSalaries$YearsWorked <- as.numeric((origDate-TMSalaries$CurrEmplDate)/365.) # Calculate the difference and divide by 365 for number of years.
+# 
+# Above_Median_Salary <- summary(TMSalaries$BudgetedSalary)[[3]]
+# 
+# # build outcome variable
+# TMSalaries$AboveMedianSalary <- ifelse(TMSalaries$BudgetedSalary > summary(TMSalaries$BudgetedSalary)[[3]], 1, 0)
+# 
+# TMSalaries$Sex <- as.numeric(as.factor(TMSalaries$Sex))
+# TMSalaries$FullorPartTime <- as.numeric(as.factor(TMSalaries$FullorPartTime))
+# dim(TMSalaries)
+# TMSalaries <- dplyr::select(TMSalaries, -CurrEmplDate, -BudgetedSalary, -MbrName)
+# outcome_name <- 'AboveMedianSalary'
+# TMSalaries$EEOMinorityCode <- as.numeric(TMSalaries$EEOMinorityCode)
+# TMSalaries$StudentStaffFaculty <- as.numeric(TMSalaries$StudentStaffFaculty)
+# temp_df <- TMSalaries
+# dim(temp_df)
+
+ 
+setwd('/Users/manuelamunategui/Documents/pseudo coefficients')
+temp_df <- read.csv('texas_am_salaries.csv')
+dim(temp_df)
+outcome_name <- 'AboveMedianSalary'
+
+for (feature in names(temp_df)){
+     print(feature)
+     temp_df[is.na(temp_df[,feature]),feature] <- median(temp_df[,feature], na.rm=T)
+}
+ 
+# model -------------------------------------------------------------------
+ 
+require(xgboost)
+require(dplyr)
+require(zoo)
+
+# xgboost model
+set.seed(1234)
+dtrain <- xgb.DMatrix(data.matrix(temp_df), label=temp_df[,outcome_name], missing=NA)
+param <- list(  objective           = "binary:logistic", 
+                eta                 = 0.002, 
+                max_depth           = 3,   
+                subsample           = 0.7, 
+                colsample_bytree    = 0.7,  
+                eval_metric         = "auc",
+                alpha = 0.0001
+)
+
+set.seed(1234)
+xgb_model <- xgb.train(   params       = param, 
+                          data                = dtrain, 
+                          nrounds             = 500,
+                          verbose             = 0, 
+                          maximize            = TRUE)
+
+
+feature_names <- setdiff(names(temp_df),outcome_name)
+
+# check top 20 most important features
+importance_matrix <- xgb.importance(feature_names=feature_names, model = xgb_model )
+print(head(importance_matrix,20))
+
+# psuedo coeffients -------------------------------------------------------
+
+origData <- temp_df[,setdiff(names(temp_df),outcome_name)]
+origModel <- xgb_model
+
+get_avg_slope <- function(original_model, original_data, feature) {
+     allValues <- unique(original_data[, feature])
+     allValues <- allValues[order(allValues)]
+     
+     curr_preds <- predict(original_model, as.matrix(original_data), missing=NaN, outputmargin=FALSE)
+     
+     pcDF <- data.frame(original = curr_preds, origValue = original_data[, feature])
+     
+     whichValue <- ifelse(is.na(original_data[, feature]), NA, match(original_data[, feature], allValues))
+     
+     # set jump size to capture effect under different units - acceptable jump size (default is 5% of # of values)
+     jumpSize <- pmax(round(length(allValues)/20, 0), 1)
+     pcDF$nextValue <- ifelse(whichValue >= length(allValues) + jumpSize, NA, allValues[whichValue + jumpSize])
+     pcDF$priorValue <- ifelse(whichValue <= jumpSize, NA, allValues[pmax(whichValue - jumpSize, 1)])
+     
+     # predict again with feature values raised one unit
+     temp <- as.matrix(original_data) #for xgboost
+     temp[, feature] <- pcDF$nextValue
+     pcDF$upOne <- predict(original_model, temp, missing=NaN, outputmargin=FALSE)
+     
+     # predict again with feature values dropped one unit
+     temp <- as.matrix(original_data) #for xgboost
+     temp[, feature] <- pcDF$priorValue
+     pcDF$downOne <- predict(original_model, temp, missing=NaN, outputmargin=FALSE)
+     
+     # get logit to extract 
+     pcDF$origLogit <- log(pcDF$original/(1-pcDF$original))
+     pcDF$priorLogit <- log(pcDF$downOne/(1-pcDF$downOne))
+     pcDF$nextLogit <- log(pcDF$upOne/(1-pcDF$upOne))
+     
+     # calculate slope
+     pcDF$slope <- (pcDF$nextLogit - pcDF$priorLogit)/
+          ifelse(is.na(pcDF$nextValue - pcDF$priorValue), mean(pcDF$nextValue - pcDF$priorValue, na.rm = TRUE), 
+                 pcDF$nextValue - pcDF$priorValue)
+     
+     if ( sum(!is.nan(pcDF$slope))==0) {
+          print('binary feature')
+          pcDF$slope <- ifelse(is.na(pcDF$priorValue), 
+                               (pcDF$nextLogit - pcDF$origLogit) / (pcDF$nextValue -  pcDF$origValue), 
+                               (pcDF$origLogit - pcDF$priorLogit) / (pcDF$origValue - pcDF$priorValue))
+          
+     }
+     pcDF %>% group_by(origValue) %>% summarize(avgSlope = mean(slope)) -> pcSummary
+     pcSummary$avgSlope <- exp(pcSummary$avgSlope)
+     return(pcSummary)
+     
+}
+
+library(ggplot2)
+for (feature in feature_names) {
+     print(feature)
+     rects <- c()
+    
+     temp_origData <- origData
+     pcSummary <- get_avg_slope(original_model = origModel, original_data=temp_origData, feature=feature)
+    
+
+     new_points <- pcSummary$avgSlope
+     
+     if (length(pcSummary$avgSlope) > 3) {
+          smoother = floor(length(pcSummary$avgSlope)/5)
+          pcSummary$smooth <- rollmean(pcSummary$avgSlope, k=smoother, fill="extend")
+          
+          print(ggplot(pcSummary, aes(x=origValue,y=avgSlope)) +
+                     labs(x = feature, y = 'Changes Odds By') + geom_hline(aes(yintercept=1)) + ggtitle(paste0('Pseudo Odds Ratio for ', feature)) +
+                     geom_line(mapping = aes(x=origValue,y=smooth), data = pcSummary[, c('origValue', 'smooth')], 
+                               size = 3, color = 'red') +
+                     geom_point())
+          
+          
+     } else {
+          pcSummary$smooth <- pcSummary$avgSlope
+     }
+     
+     median_mark <- 1 # median(pcSummary$smooth)
+     
+
+           
+     stdv <- sd(pcSummary$smooth)
+#      abline(h=median_mark + stdv, col='red')
+#      abline(h=median_mark - stdv, col='red')
+     
+     
+     if (length(pcSummary$smooth) > 2) {
+          pcSummary %>% 
+               add_rownames() %>%
+               dplyr::filter((smooth < median_mark & lead(smooth, n=1) > median_mark) |
+                                  (smooth > median_mark & lead(smooth, n=1) < median_mark) |
+                                  (smooth < median_mark + stdv & lead(smooth, n=1) > median_mark + stdv) |
+                                  (smooth > median_mark + stdv & lead(smooth, n=1) < median_mark + stdv) |
+                                  (smooth < median_mark - stdv & lead(smooth, n=1) > median_mark - stdv) |
+                                  (smooth > median_mark - stdv & lead(smooth, n=1) < median_mark - stdv)) %>% 
+               dplyr::mutate(rowname = as.numeric(rowname)) %>%
+               data.frame -> important_turns 
+          
+          
+          
+          
+          previous_row <- 1
+          last_turn_x <- pcSummary$origValue[previous_row]
+          last_turn_y <- pcSummary$smooth[previous_row]
+          
+          for (turn_idx in seq(nrow(important_turns))) {
+               # get x coordinates
+               max_x <- important_turns$origValue[turn_idx]
+               min_x <- last_turn_x
+               last_turn_x <- max_x
+               
+               current_row <- important_turns$rowname[turn_idx]
+               
+               # get y coordinates
+               vector_ys <- pcSummary$smooth[previous_row:current_row]
+               y <- mean(vector_ys) # ifelse(mean(vector_ys) > median_mark, max(vector_ys), min(vector_ys))
+               
+               rects <- rbind(rects, c(min_x, median_mark, max_x, y)) 
+               previous_row <- current_row
+               
+               if (turn_idx == nrow(important_turns)) {
+                    # last rectangle
+                    vector_ys <- pcSummary$smooth[previous_row:length(pcSummary$origValue)]
+                    y <- ifelse(mean(vector_ys) > median_mark, max(vector_ys), min(vector_ys))
+                    rects <- rbind(rects, c(last_turn_x, median_mark, pcSummary$origValue[length(pcSummary$origValue)], y))  
+               }
+          }
+     } else {
+          # only two points so create three cubes
+          rects <- rbind(rects, c( pcSummary$origValue[1], median_mark,  (pcSummary$origValue[1] + pcSummary$origValue[2]) / 2,  pcSummary$smooth[1]))  
+          rects <- rbind(rects, c( (pcSummary$origValue[1] + pcSummary$origValue[2]) / 2, median_mark,  pcSummary$origValue[2],  pcSummary$smooth[2]))  
+          
+     }
+     
+     # plot data and build rectangles for each positive and negative zones
+     plot(pcSummary$origValue,pcSummary$smooth, type='l',
+          main=(paste0('Pseudo Odds Ratio for ', feature)),
+          xlab=feature, ylab="Percent Change in Odds")
+     for (coord_id in seq(nrow(rects))) {
+          if (rects[coord_id,4] > median_mark) {
+               rect(rects[coord_id,1], rects[coord_id,2],
+                    rects[coord_id,3], rects[coord_id,4], col="lightblue", border="black")  
+          }
+          
+          if (rects[coord_id,4] < median_mark) {
+               rect(rects[coord_id,1], rects[coord_id,2],
+                    rects[coord_id,3], rects[coord_id,4], col="orange", border="black")  
+          }
+          
+     }
+     lines(pcSummary$origValue, pcSummary$smooth, type = 'l', lwd=3, main=(paste0('Pseudo Odd for ', feature)))
+     abline(h = 0,lwd=3,lty=2)
+     
+     oddsPoints <- data.frame(xvalue=rects[,3], yvalue=cumsum((rects[,4] - rects[,2])*(rects[,3] - rects[,1])))
+     oddsPoints <- rbind(data.frame(xvalue=rects[1,1], yvalue=0), oddsPoints)
+     whichBox <- which((rects[,1] <= median(temp_origData[, feature])) & (rects[,3] >= median(temp_origData[, feature])))[1]
+     alpha <- (oddsPoints[whichBox + 1, 1] - median(temp_origData[, feature]))/(oddsPoints[whichBox + 1, 1] - oddsPoints[whichBox, 1])
+     oddsPoints$yvalue <- 1 + oddsPoints$yvalue - (alpha*oddsPoints[whichBox, 2] + (1-alpha)*oddsPoints[whichBox + 1, 2])
+     
+     plot(oddsPoints$xvalue, oddsPoints$yvalue, type='l', main=(paste0('Pseudo Odds for ', feature)))
+     abline(h=1)
+     
+}
+
+
+
+
+
+
+```
+
+
+For more information on <a href='http://www.ats.ucla.edu/stat/stata/faq/oratio.htm' target='_blank'>How do I interpret odds ratios in logistic regression?</a> from UCLA's Institute for Digitial Research and Education.
+
+      
+
+
+
+
+		 		 
+</div>   
+	 
+  
+  </body>
+</html>
