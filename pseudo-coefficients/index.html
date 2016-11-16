@@ -192,21 +192,20 @@ library(zoo)
 # load locally saved text file
 gov_salary_df <- read.csv('/Users/manuelamunategui/Downloads/tamu_2015-09-09.csv', stringsAsFactors=FALSE)
 
+# clean out useless features
 gov_salary_df <- dplyr::select(gov_salary_df, -LastName, -FirstName, -MiddleInitial, -ShortTitleDesc, -ShortAdlocDesc)
-origDate <- as.Date('2015-09-01')
-gov_salary_df$CurrEmplDate <- as.Date(gov_salary_df$CurrEmplDate, format='%d-%b-%y')
 
-# Calculate the difference and divide by 365 for number of years.
+# Calculate the difference and divide by 365 for number of years
+gov_salary_df$CurrEmplDate <- as.Date(gov_salary_df$CurrEmplDate, format='%d-%b-%y')
+origDate <- as.Date('2015-09-01')
 gov_salary_df$YearsWorked <- as.numeric((origDate-gov_salary_df$CurrEmplDate)/365.) 
 
-# outcome variable
+# build outcome variable
 Above_Median_Salary <- median(gov_salary_df$BudgetedSalary, na.rm=TRUE)
 outcome_name <- 'AboveMedianSalary'
-
-# build outcome variable
 gov_salary_df$AboveMedianSalary <- ifelse(gov_salary_df$BudgetedSalary > Above_Median_Salary, 1, 0)
  
-# remove useless variables
+# clean out more useless features
 gov_salary_df <- dplyr::select(gov_salary_df, -CurrEmplDate, -BudgetedSalary, -MbrName)
 
 # force variables to numeric
