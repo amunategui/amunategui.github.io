@@ -11,7 +11,7 @@
     <meta name="author" content="Manuel Amunategui">
     <link rel="icon" href="../favicon.ico">
 
-    <title>Get Your all else equal Odds-Ratio Story for Non-Linear Models!</title>
+    <title>Get Your "all else equal" Odds-Ratio Story for Non-Linear Models!</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -66,19 +66,19 @@ On one hand we have tree-based classifiers and deep-belief networks and on the o
 I didn't coin the term nor the algorithm, that came from my friend and colleague, Tristan Markwell, who agreed to share this with the world. My small contribution was to nail down the plots.
 <p>
 <BR>
-<H3>How Does it Work?</H3>
+<h2>How Does it Work?</H2>
 <p>
 For a high-level explanation, first train a classification model and feed testing data into it to extract probabilities for a particular binary outcome. Then, one feature at a time, shift each of its points one unit up and feed that into the model. This becomes your up-one-unit probabilities for that feature. Do the same but in the opposite direction by shifting the feature data down one unit.  Finally, calculate the slope between the up-one-unit and down-one-unit probabilities. Smooth the slopes to simplify patterns and analyze away!
 </p><p>
 The code is a bit more complex and experimental in nature so bear with me. It is composed of four logical units and I added charts throughout most steps from a feature called ‘YearsWorked’ off of the <a href='https://salaries.texastribune.org/texas-am-university/' target='_blank'>Texas A&M salary data set</a>. The outcome variable is whether a particular employee is above the median salary.
 </p> 
 <BR>
-<H3>Unit 1: Base Model</H3>
+<H2>Unit 1: Base Model</H2>
 <p>
 We first model the data using XGBoost (but any classification model will do) and get a prediction vector using a test data set. 
 </p> 
 <BR>
-<H3>Unit 2: Average Slopes for each Feature Points</H3>
+<H2>Unit 2: Average Slopes for each Feature Points</H2>
 <p>
 We then loop through each feature and call the ‘get_avg_slope’ function. As its name implies, it returns average slopes for each feature by shifting the feature values up and down a unit in the testing data and returns the slopes between the shifted points. In more detail:
 </p> 
@@ -100,7 +100,7 @@ Here is a raw plot of the pseudo odds ratios for YearsWorked:
 <img src="img/raw_years_worked.png" alt="raw years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 <BR>
-<H3>Unit 3: Odd Ratio Rectangles</H3>
+<H2>Unit 3: Odd Ratio Rectangles</H2>
 <p>
 Calculate the odd-ratio rectangles. Each rectangle captures the speed of the move on using the smoothed odd ratio points. The rectangle is drawn by capturing each movement up one standard deviation from the median and back down one standard deviation mark. The height of the rectangle represents the speed at which the feature moves across its units.
 </p> 
@@ -120,7 +120,7 @@ Here is a smoothed plot of the pseudo odds ratios for YearsWorked with direction
 </p>
 
 <BR>
-<H3>Unit 4: Calculating Odds</H3>
+<H2>Unit 4: Calculating Odds</H2>
 <p>
 Each rectangle represents the odds ratio for that area. To turn it into odds we need to apply a little math. The x-value is easy, its the right-end point of each rectangle, and, at that point, the value is the cummulative sum of the area of the rectangle. We then find the median box (the one where the median value of the feature fits best) and adjust the vertical level of the odd's line according to that box so the median sits at value 1.
 </p><p>
