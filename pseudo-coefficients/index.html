@@ -67,18 +67,19 @@ I didn't coin the term nor the algorithm, that came from my friend and colleague
 <p>
 <BR>
 <h2>How Does it Work?</H2>
-<p>
+<BR>
+<p> 
 For a high-level explanation, first train a classification model and feed testing data into it to extract probabilities for a particular binary outcome. Then, one feature at a time, shift each of its points one unit up and feed that into the model. This becomes your up-one-unit probabilities for that feature. Do the same but in the opposite direction by shifting the feature data down one unit.  Finally, calculate the slope between the up-one-unit and down-one-unit probabilities. Smooth the slopes to simplify patterns and analyze away!
 </p><p>
-The code is a bit more complex and experimental in nature so bear with me. It is composed of four logical units and I added charts throughout most steps from a feature called ‘YearsWorked’ off of the <a href='https://salaries.texastribune.org/texas-am-university/' target='_blank'>Texas A&M salary data set</a>. The outcome variable is whether a particular employee is above the median salary.
+The code is a bit more complex and experimental in nature so bear with me. It is composed of four logical sections and I added charts throughout most steps from a feature called ‘YearsWorked’ off of the <a href='https://salaries.texastribune.org/texas-am-university/' target='_blank'>Texas A&M salary data set</a>. The outcome variable is whether a particular employee is above the median salary.
 </p> 
 <BR>
-<H2>Unit 1: Base Model</H2>
+<H2>Section 1: Base Model</H2>
 <p>
 We first model the data using XGBoost (but any classification model will do) and get a prediction vector using a test data set. 
 </p> 
 <BR>
-<H2>Unit 2: Average Slopes for each Feature Points</H2>
+<H2>Section 2: Average Slopes for each Feature Points</H2>
 <p>
 We then loop through each feature and call the ‘get_avg_slope’ function. As its name implies, it returns average slopes for each feature by shifting the feature values up and down a unit in the testing data and returns the slopes between the shifted points. In more detail:
 </p> 
@@ -87,7 +88,7 @@ We then loop through each feature and call the ‘get_avg_slope’ function. As 
 <li>Get unique values in feature</li>
 <li>Figure out jump size: take 1/20th of the number of values (if there are 100 unique values, you go 5 to the right, and 5 to left)</li> 
 <li>Shift each value in the feature up one jump size and predict this new set while all other features held constant</li>
-<li>Do the same down one jump size and predict this new set while all other featuers held constant</li>
+<li>Do the same down one jump size and predict this new set while all other features held constant</li>
 <li>Save the two resulting vectors of shifted predictions</li>
 <li>Take the slope between the up point and down point</li>
 <li>If you hit a wall then use half way point</li>
@@ -100,7 +101,7 @@ Here is a raw plot of the pseudo odds ratios for YearsWorked:
 <img src="img/raw_years_worked.png" alt="raw years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 <BR>
-<H2>Unit 3: Odd Ratio Rectangles</H2>
+<H2>Section 3: Odd Ratio Rectangles</H2>
 <p>
 Calculate the odd-ratio rectangles. Each rectangle captures the speed of the move on using the smoothed odd ratio points. The rectangle is drawn by capturing each movement up one standard deviation from the median and back down one standard deviation mark. The height of the rectangle represents the speed at which the feature moves across its units.
 </p> 
@@ -120,7 +121,7 @@ Here is a smoothed plot of the pseudo odds ratios for YearsWorked with direction
 </p>
 
 <BR>
-<H2>Unit 4: Calculating Odds</H2>
+<H2>Section 4: Calculating Odds</H2>
 <p>
 Each rectangle represents the odds ratio for that area. To turn it into odds we need to apply a little math. The x-value is easy, its the right-end point of each rectangle, and, at that point, the value is the cumulative sum of the area of the rectangle. We then find the median box (the one where the median value of the feature fits best) and adjust the vertical level of the odds line according to that box so the median sits at value 1.
 </p><p>
@@ -166,72 +167,65 @@ The Pseudo Odds chart for ‘Annual Term Months’ shows a 10% odds of being und
 
 <H2>Full Code</H2>
 
-
+Note: The data from from <a href='https://salaries.texastribune.org/texas-am-university/' target='_blank'>Texas Tribune - Government Salaries Explorer</a> and is in the form of an <b>xlsx</b> file. I commented out the code to download it as loats of systems seem to have issues with the <b>XLConnect</b> library. You can either uncomment the code or download the file manually at (http://raw.texastribune.org.s3.amazonaws.com/texas_a%26m_university_system/salaries/2015-09/tamu_2015-09-09.xlsx) and save it on your local machine as a <b>csv</b> file.
 
 <div class="highlighter-rouge"><pre class="highlight"><code>
+
+# libraries
 library(ggplot2)
 library(dplyr) 
 library(mlbench)
+library(xgboost)
+library(zoo)
 
 # data --------------------------------------------------------------------
 
 
-library(dplyr)
 # library(XLConnect)
-# 
 # 
 # # https://salaries.texastribune.org/texas-am-university/
 # 
 # tmp = tempfile(fileext = ".xlsx")
 # download.file(url = "http://raw.texastribune.org.s3.amazonaws.com/texas_a%26m_university_system/salaries/2015-09/tamu_2015-09-09.xlsx", destfile = tmp, mode="wb")
-# 
-# TMSalaries <- readWorksheetFromFile(file = tmp, sheet = "OR SO-15-088", header = TRUE, startRow = 1) #, endRow = 151)
-# gc()
-# TMSalaries <- dplyr::select(TMSalaries, -LastName, -FirstName, -MiddleInitial, -ShortTitleDesc, -ShortAdlocDesc)
-# 
-# length(unique(TMSalaries$ShortTitleDesc))
-# dim(TMSalaries)
-# 
-# 
-# origDate <- as.Date('2015-09-01')
-# TMSalaries$CurrEmplDate <- as.Date(TMSalaries$CurrEmplDate)
-# # between dates.
-# TMSalaries$YearsWorked <- as.numeric((origDate-TMSalaries$CurrEmplDate)/365.) # Calculate the difference and divide by 365 for number of years.
-# 
-# Above_Median_Salary <- summary(TMSalaries$BudgetedSalary)[[3]]
-# 
-# # build outcome variable
-# TMSalaries$AboveMedianSalary <- ifelse(TMSalaries$BudgetedSalary > summary(TMSalaries$BudgetedSalary)[[3]], 1, 0)
-# 
-# TMSalaries$Sex <- as.numeric(as.factor(TMSalaries$Sex))
-# TMSalaries$FullorPartTime <- as.numeric(as.factor(TMSalaries$FullorPartTime))
-# dim(TMSalaries)
-# TMSalaries <- dplyr::select(TMSalaries, -CurrEmplDate, -BudgetedSalary, -MbrName)
-# outcome_name <- 'AboveMedianSalary'
-# TMSalaries$EEOMinorityCode <- as.numeric(TMSalaries$EEOMinorityCode)
-# TMSalaries$StudentStaffFaculty <- as.numeric(TMSalaries$StudentStaffFaculty)
-# temp_df <- TMSalaries
- 
+# gov_salary_df <- readWorksheetFromFile(file = tmp, sheet = "OR SO-15-088", header = TRUE, startRow = 1)
 
-# text file
-temp_df <- read.csv('texas_am_salaries.csv')
-dim(temp_df)
+# load locally saved text file
+gov_salary_df <- read.csv('/Users/manuelamunategui/Downloads/tamu_2015-09-09.csv', stringsAsFactors=FALSE)
+
+gov_salary_df <- dplyr::select(gov_salary_df, -LastName, -FirstName, -MiddleInitial, -ShortTitleDesc, -ShortAdlocDesc)
+origDate <- as.Date('2015-09-01')
+gov_salary_df$CurrEmplDate <- as.Date(gov_salary_df$CurrEmplDate, format='%d-%b-%y')
+
+# Calculate the difference and divide by 365 for number of years.
+gov_salary_df$YearsWorked <- as.numeric((origDate-gov_salary_df$CurrEmplDate)/365.) 
+
+# outcome variable
+Above_Median_Salary <- median(gov_salary_df$BudgetedSalary, na.rm=TRUE)
 outcome_name <- 'AboveMedianSalary'
 
-for (feature in names(temp_df)){
+# build outcome variable
+gov_salary_df$AboveMedianSalary <- ifelse(gov_salary_df$BudgetedSalary > Above_Median_Salary, 1, 0)
+ 
+# remove useless variables
+gov_salary_df <- dplyr::select(gov_salary_df, -CurrEmplDate, -BudgetedSalary, -MbrName)
+
+# force variables to numeric
+gov_salary_df$Sex <- as.numeric(as.factor(gov_salary_df$Sex))
+gov_salary_df$FullorPartTime <- as.numeric(as.factor(gov_salary_df$FullorPartTime))
+gov_salary_df$EEOMinorityCode <- as.numeric(gov_salary_df$EEOMinorityCode)
+gov_salary_df$StudentStaffFaculty <- as.numeric(gov_salary_df$StudentStaffFaculty)
+
+# impute NAs with median feature value
+for (feature in names(gov_salary_df)){
      print(feature)
-     temp_df[is.na(temp_df[,feature]),feature] <- median(temp_df[,feature], na.rm=T)
+     gov_salary_df[is.na(gov_salary_df[,feature]),feature] <- median(gov_salary_df[,feature], na.rm=T)
 }
  
 # model -------------------------------------------------------------------
- 
-require(xgboost)
-require(dplyr)
-require(zoo)
 
 # xgboost model
 set.seed(1234)
-dtrain <- xgb.DMatrix(data.matrix(temp_df), label=temp_df[,outcome_name], missing=NA)
+dtrain <- xgb.DMatrix(data.matrix(gov_salary_df), label=gov_salary_df[,outcome_name], missing=NA)
 param <- list(  objective           = "binary:logistic", 
                 eta                 = 0.002, 
                 max_depth           = 3,   
@@ -249,7 +243,7 @@ xgb_model <- xgb.train(   params       = param,
                           maximize            = TRUE)
 
 
-feature_names <- setdiff(names(temp_df),outcome_name)
+feature_names <- setdiff(names(gov_salary_df),outcome_name)
 
 # check top 20 most important features
 importance_matrix <- xgb.importance(feature_names=feature_names, model = xgb_model )
@@ -257,7 +251,7 @@ print(head(importance_matrix,20))
 
 # pseudo coefficients -------------------------------------------------------
 
-origData <- temp_df[,setdiff(names(temp_df),outcome_name)]
+origData <- gov_salary_df[,setdiff(names(gov_salary_df),outcome_name)]
 origModel <- xgb_model
 
 get_avg_slope <- function(original_model, original_data, feature) {
@@ -308,7 +302,6 @@ get_avg_slope <- function(original_model, original_data, feature) {
      
 }
 
-library(ggplot2)
 for (feature in feature_names) {
      print(feature)
      rects <- c()
