@@ -60,26 +60,28 @@
 </ul>
 <p><br /><br />
  
-
+<p>
 On one hand we have tree-based classifiers and deep-belief networks and on the other linear regression models. What the latter lacks in terms of coolness and precision certainly makes up in transparency and actionability. People just love their coefficients and odd ratios. So, here is an approach to extract odds out of tree-based classifiers so you too can say ‘all else held equal, a one unit change in x, will result in a pseudo-coefficient change of something in y'. The bonus here is that we capture non-linear movements - this can yield a lot of intelligence out of your variables! 
 
 I didn't coin the term nor the algorithm, that came from my friend and colleague, Tristan Markwell, who agreed to share this with the world. My small contribution was to nail down the plots.
-
+<p>
 <BR>
 <H3>How Does it Work?</H3>
-
+<p>
 For a high-level explanation, first train a classification model and feed testing data into it to extract probabilities for a particular binary outcome. Then, one feature at a time, shift each of its points one unit up and feed that into the model. This becomes your up-one-unit probabilities for that feature. Do the same but in the opposite direction by shifting the feature data down one unit.  Finally, calculate the slope between the up-one-unit and down-one-unit probabilities. Smooth the slopes to simplify patterns and analyze away!
-
+</p><p>
 The code is a bit more complex and experimental in nature so bear with me. It is composed of four logical units and I added charts throughout most steps from a feature called ‘YearsWorked’ off of the <a href='https://salaries.texastribune.org/texas-am-university/' target='_blank'>Texas A&M salary data set</a>. The outcome variable is whether a particular employee is above the median salary.
+</p> 
 <BR>
 <H3>Unit 1: Base Model</H3>
-
+<p>
 We first model the data using XGBoost (but any classification model will do) and get a prediction vector using a test data set. 
+</p> 
 <BR>
 <H3>Unit 2: Average Slopes for each Feature Points</H3>
-
+<p>
 We then loop through each feature and call the ‘get_avg_slope’ function. As its name implies, it returns average slopes for each feature by shifting the feature values up and down a unit in the testing data and returns the slopes between the shifted points. In more detail:
-
+</p> 
 <ol>
 <li>Pass original prediction vector</li>
 <li>Get unique values in feature</li>
@@ -91,60 +93,72 @@ We then loop through each feature and call the ‘get_avg_slope’ function. As 
 <li>If you hit a wall then use half way point</li>
 <li>Return the average of all slopes per value</li>
 </ol>
-
+ <p>
 Here is a raw plot of the pseudo odds ratios for YearsWorked:
-
+</p> 
 <p style="text-align:center">
 <img src="img/raw_years_worked.png" alt="raw years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 <BR>
 <H3>Unit 3: Odd Ratio Rectangles</H3>
-
+<p>
 Calculate the odd-ratio rectangles. Each rectangle captures the speed of the move on using the smoothed odd ratio points. The rectangle is drawn by capturing each movement up one standard deviation from the median and back down one standard deviation mark. The height of the rectangle represents the speed at which the feature moves across its units.
+</p> 
 <BR><BR>
+<p>
 Here is a plot of the smoothed pseudo odds ratios for YearsWorked with both standard deviation lines shown:
+</p> 
 <p style="text-align:center">
 <img src="img/standard_deviations_years_worked.png" alt="standard deviations years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 <br>
+<p>
 Here is a smoothed plot of the pseudo odds ratios for YearsWorked with directional boxes from the standard deviation crossovers:
+</p> 
 <p style="text-align:center">
 <img src="img/pseudo_odds_years_worked_portrait.png" alt="pseudo odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 
 <BR>
 <H3>Unit 4: Calculating Odds</H3>
-
+<p>
 Each rectangle represents the odds ratio for that area. To turn it into odds we need to apply a little math. The x-value is easy, its the right-end point of each rectangle, and, at that point, the value is the cummulative sum of the area of the rectangle. We then find the median box (the one where the median value of the feature fits best) and adjust the vertical level of the odd's line according to that box so the median sits at value 1.
-
+</p><p>
 Here is the chart resulting from all this work. It delivers a clear visual of varying odds at different unit points (we'll analyze this feature and another in the next section):
-
+</p> 
 <p style="text-align:center">
 <img src="img/odds_years_worked_portrait.png" alt="odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 
 <H2>Chart Analysis</H2>
 <BR>
-
+<p>
 The chart below is the odds ratio for 'YearsWorked'. It shows four boxes where the first is increasing fast, the second slow, the third is decreasing slow, and the last is decreasing fast. In odds ratio parlance, the first box has the odds ratio increasing updwards rapidly, and so on and so forth.
+</p>
 <BR><BR>
 <p style="text-align:center">
 <img src="img/pseudo_odds_years_worked.png" alt="odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 <BR>
+<p>
 The Pseudo Odds chart for 'YearsWorked' shows that a brand new worker is 12% less likely than a tenured worker to be a top earner. Your best odds of being a top earner are at 28 years of service - you can say they have 20% better odds at earning top salaries (or more precisley above the median salary).
+</p>
 <BR><BR>
 <p style="text-align:center">
 <img src="img/odds_years_worked.png" alt="odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 <BR><BR>
+<p>
 The Odds Ratio chart for ‘Annual Term Months’ shows an initial moderate rise that accelerates around the middle of the chart and finally drops fast.
+</p>
 <BR><BR>
 <p style="text-align:center">
 <img src="img/pseudo_odds_annual_term_months.png" alt="odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 <BR>
+<p>
 The Pseudo Odds chart for ‘Annual Term Months’ shows a 10% odds of being under the median salary for the first 7 terms, a 10% odd of hitting a peak median salary around the 9-10th term.
+</p>
 <BR><BR>
 <p style="text-align:center">
 <img src="img/odds_annual_term_months.png" alt="odds years worked" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
@@ -154,7 +168,7 @@ The Pseudo Odds chart for ‘Annual Term Months’ shows a 10% odds of being und
 
 
 
-```{r}
+<xmp>
 library(ggplot2)
 library(dplyr) 
 library(mlbench)
@@ -408,16 +422,11 @@ for (feature in feature_names) {
      
 }
 
+</xmp>
 
-
-
-
-
-```
-
-
+<p>
 For more information on <a href='http://www.ats.ucla.edu/stat/stata/faq/oratio.htm' target='_blank'>How do I interpret odds ratios in logistic regression?</a> from UCLA's Institute for Digitial Research and Education.
-
+</p>
       
 
 
