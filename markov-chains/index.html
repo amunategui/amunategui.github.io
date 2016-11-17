@@ -308,7 +308,8 @@ compressed_set &lt;- merge(x=compressed_set,y=dplyr::select(new_set, Sequence_ID
                              dplyr::slice(n()) %&gt;%
                              dplyr::distinct(Sequence_ID), by='Sequence_ID')
 
-
+# if you have issues with the above dplyr line, try a workaround from reader - Dysregulation, thanks! 
+# compressed_set <- merge(x=compressed_set,y=new_set[,c(1,6)], by="Sequence_ID")
 
 # use last x days of data for validation
 library(dplyr)
