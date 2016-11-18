@@ -73,17 +73,23 @@ Sign into your account at <a href='https://studio.azureml.net/' targer='_blank'>
 </p>
 
 <BR>
+<p>
 Click <b>EXPERIMENTS</b> in the left horizontal menu bar:
- <p style="text-align:center">
+</p>
+<p style="text-align:center">
 <img src="img/menu_experiments.png" alt="experiments" style='padding:1px; border:1px solid #021a40; width: 20%; height: 20%'>
 </p>
 <BR>
+<p>
 Click <b>+ NEW</b> sign at bottom left of screen to start a new experiment
+</p>
 <p style="text-align:center">
 <img src="img/new_button-2.png" alt="new button" style='padding:1px; border:1px solid #021a40; width: 20%; height: 20%'>
 </p>
 <BR>
+<p>
 Choose <b>Blank experiment</b>:
+</p>
 <p style="text-align:center">
 <img src="img/blank-experiment-3.png" alt="blank experiment" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
@@ -94,109 +100,129 @@ Choose <b>Blank experiment</b>:
 <BR>
 <H3>Time to drag-and-drop modeling modules onto the workspace</H3>
 <BR>
+<p>
 Select <b>Saved Datasets</B> then <b>Samples</b> and drag <b>Adult Census Income Binary Classification dataset</b> onto your workspace:
-
+</p>
 <p style="text-align:center">
 <img src="img/save-datasets-4.png" alt="save datasets" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
 </p>
 <BR>
+<p>
 Your workspace should look like:
+</p>
 <p style="text-align:center">
 <img src="img/experiments-created-5.png" alt="experiments created" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
-</p> 
+</p><p>
 You can right click on the data set to visualize the data.
+</p>
 <BR>
+<p>
 Select <b>Data Transformation</B> then <b>Sample and Split</b> and drag <b>Split Datat</b> onto your workspace:
-
+</p>
 <p style="text-align:center">
 <img src="img/split-data-6.png" alt="split data" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
 </p>
 <BR>
+<p>
 And connect both rectangles together:
-
+</p>
 <p style="text-align:center">
 <img src="img/sofar-7.png" alt="so far" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
 </p> 
 
 <BR>
+<p>
 Select <b>Machine Learning</B> then <b>Train</b> and drag <b>Train Model</b> onto your workspace:
-
+</p>
 <p style="text-align:center">
 <img src="img/train-drop-8.png" alt="train" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
 </p>
 <BR>
+<p>
 And connect both rectangles as such:
-
+</p>
 <p style="text-align:center">
 <img src="img/so-far-9.png" alt="so far" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
 </p> 
 <BR>
+<p>
 You'll notice the red exclamation point in the last rectangle - this is because you need to tell it what feature is your outcome variable. So click on the red exclamation point and in the right menu pane choose 'income' as outcome:
+</p>
 <p style="text-align:center">
 <img src="img/outcome-10.png" alt="outcome" 
                     style='padding:1px; border:1px solid #021a40; width: 60%; height:60%'>
 </p>
 <BR>
- 
+<p>
 Select <b>Machine Learning</B> then <b>Initialize Model</b> then <b>Classification</b> 
 and drag <b>Two-Class Logistic Regression</b> onto your workspace:
-
+</p>
 <p style="text-align:center">
 <img src="img/classification-drop-11.png" alt="classification" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
 </p>
 <BR>
+<p>
 And connect it to the top left of <b>Train Model</b>:
-
+</p>
 <p style="text-align:center">
 <img src="img/so-far-12.png" alt="so far" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
 </p> 
  
 <BR>
- 
+<p>
 Select <b>Machine Learning</B> then <b>Score</b>
 and drag <b>Score Model</b> onto your workspace:
-
+</p>
 <p style="text-align:center">
 <img src="img/score-drop-13.png" alt="score" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
 </p>
 <BR>
+<p>
 Connect <b>Train Model</b> to top left <b>Score Model</b> and connect <b>Split Data</b> to top right of <b>Score Model</b>. Fun connecting all this, right?:
+</p>
 <p style="text-align:center">
 <img src="img/so-far-14.png" alt="so far" 
                     style='padding:1px; border:1px solid #021a40; width: 40%; height:40%'>
 </p> 
 <BR>
+<p>
 Select <b>Machine Learning</B> then <b>Evaluate</b>
 and drag <b>Evaluate Model</b> onto your workspace:
-
+</p>
 <p style="text-align:center">
 <img src="img/evaluate-drop-15.png" alt="evaluate" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
 </p>
 <BR>
+<p>
 Connect bottom <b>Score Model</b> to top left <b>Evaluate Model</b>:
+</p>
 <p style="text-align:center">
 <img src="img/so-far-16.png" alt="so far" 
                     style='padding:1px; border:1px solid #021a40; width: 40%; height:40%'>
 </p> 
 <BR>
+<p>
 Finally, hit <b>RUN</b> button at bottom middle of Azure ML Studio page:
+</p>
 <p style="text-align:center">
 <img src="img/run-it-17.png" alt="run it" 
                     style='padding:1px; border:1px solid #021a40; width: 40%; height:40%'>
 </p>
 
 <BR>
+<p>
 Right click on <b>Evaluate Model</b> and click <b>Evaluation Results - Visualize</b>
+</p>
 <p style="text-align:center">
 <img src="img/roc-18.png" alt="scores" 
                     style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
@@ -208,22 +234,24 @@ Right click on <b>Evaluate Model</b> and click <b>Evaluation Results - Visualize
 </p>
 
 <BR>
+<p>
 Pretty simple and easy to use, right? Play around with the <b>Threshold</b> slider - great to understand the flexibility and cost of the <b>AUC</b> score.
+</p>
 <BR><BR>
 <h2>A More Complex Example Using R</h2>
 <BR>
+<p>
 OK – well and done, but what about R? Let's bring in R into AzureML all the while leveraging the pipeline service. Start a new experiment and drag an <b>Execute R Script</b> into the workspace central pane:
-
+</p>
 <p style="text-align:center">
 <img src="img/languages-20.png" alt="languages" 
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
 </p>
-
+<p>
 Click on the <b>Execute R Script</b> rectangle and, in the right pane, replace the current R code with this:
-
+</p>
 <div class="highlighter-rouge"><pre class="highlight"><code>
  
-
 titanic_df <- read.csv('http://math.ucdenver.edu/RTutorial/titanic.txt',sep='\t', stringsAsFactors = FALSE)
 
 # creating new title feature
@@ -253,43 +281,55 @@ maml.mapOutputPort('titanic_df')
 </code></pre>
 </div>
  
-
+<p>
 We're going to use the R programming language to pull one of my goto favs datasets, the Titanic manifest, into AzureML programatically. We're also going to clean it up by doing some minor feature engineering (pulling the title out of the name), imputing and binarizing text files (pivoting).
+</p>
 <BR>
 <p style="text-align:center">
 <img src="img/source-code-21.png" alt="source code" 
                     style='padding:1px; border:1px solid #021a40; width: 50%; height:50%'>
 </p>
 <BR>
+<p>
 And construct the rest of the machine learing pipeline as follows:
+</p>
 <p style="text-align:center">
 <img src="img/final-setup-22.png" alt="final setup" 
                     style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
 </p>
 <BR>
+<p>
 Set the outcome variable to <b>Survived</b>:
+</p>
 <p style="text-align:center">
 <img src="img/second-outcome-23.png" alt="outcome variable" 
                     style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
 </p>
 <BR>
+<p>
 And Visualize the Evaluation results:
-Set the outcome variable to <b>Survived</b>:
+</p>
 <p style="text-align:center">
 <img src="img/results-23.png" alt="results" 
                     style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
 </p>
 <BR>
 <H3>Web Serivces</H3>
+<p>
 One more thing – one of the best parts of this tool – let’s turn this into a production pipeline where users can call a web service and predictions!
+</p>
 <BR>
+<p>
 Click on <b>SET UP WEB SERVICE</b> at the bottom of the screen and choose <b>Predictive Web Service [Recommended]</b>:
+</p>
 <p style="text-align:center">
 <img src="img/webservice-25.png" alt="web services" 
                     style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
 </p>
 <BR>
+<p>
 Run it again to push out a web service or else you’ll get a message as follows: <i>The experiment must be run so that your edits can be validated</i>. Then click on <b>Deploy Web Services</b> a second time (phew):
+</p>
 <BR><BR>
 
 <p style="text-align:center">
@@ -297,29 +337,33 @@ Run it again to push out a web service or else you’ll get a message as follows
                     style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
 </p>
 <BR>
-
+<p>
 In the left side-bar menu, select <b>WEB SERIVCES</b> 
+</p>
 <p style="text-align:center">
 <img src="img/menu_web.png" alt="web services" 
                     style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
 </p>
 <BR>
+<p>
 You should see your experiment listed there and click on it:
-
+</p>
 <p style="text-align:center">
 <img src="img/web-servives-menu.png" alt="web services menu" 
                     style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
 </p>
 <BR>
-
+<p>
 and copy the API key, and click on the <b>REQUEST/RESPONSE</b> link:
+</p>
 <p style="text-align:center">
 <img src="img/api-link-26.png" alt="web services" 
                     style='padding:1px; border:1px solid #021a40; width: 40%; height:40%'>
 </p>
 <BR>
+<p>
 At the bottom of the page, copy the R code and replace the placeholder API key with your own and run the code! That's it! 
-
+</p>
 
 
 <H2>Additional Resources</H2>
