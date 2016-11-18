@@ -1,0 +1,338 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>R and Azure ML - Your One-Stop Modeling Pipeline in The Cloud!</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">R and Azure ML - Your One-Stop Modeling Pipeline in The Cloud!</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+<p style="text-align:center">
+<img src="img/azure_and_r.jpg" alt="R and Azure ML - Cloud Pipeline" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<p><br /><br /></p>
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<p><br />
+
+<BR><BR>
+At the risk of being accused of always using Amazon Web Services, here is a look at modeling using Microsoft Azure Machine Learning Studio. It is choke-full of data munging, modeling, and delivery functions!
+
+If you want to follow along, <a href='https://azure.microsoft.com/en-us/pricing/details/machine-learning/' target='_blank'>sign up at AzureML for a free account</a>. 
+
+<BR>
+<H3>Part 1 - Simple Demo with the Adult Census Income Binary Classification Dataset</H3>
+<BR>
+Sign into your account at <a href='https://studio.azureml.net/' targer='_blank'>https://studio.azureml.net</a> and follow the following steps:
+
+<BR>
+Click <b>EXPERIMENTS</b> in the left horizontal menu bar:
+ <p style="text-align:center">
+<img src="img/menu_experiments.png" alt="experiments" style='padding:1px; border:1px solid #021a40; width: 20%; height: 20%'>
+</p>
+<BR>
+Click <b>+ NEW</b> sign at bottom left of screen to start a new experiment
+<p style="text-align:center">
+<img src="img/new_button-2.png" alt="new button" style='padding:1px; border:1px solid #021a40; width: 20%; height: 20%'>
+</p>
+<BR>
+Choose <b>Blank experiment</b>:
+<p style="text-align:center">
+<img src="img/blank-experiment-3.png" alt="blank experiment" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p>
+
+
+
+<BR>
+<H3>Time to drag-and-drop modeling modules onto the workspace</H3>
+<BR>
+Select <b>Saved Datasets</B> then <b>Samples</b> and drag <b>Adult Census Income Binary Classification dataset</b> onto your workspace:
+
+<p style="text-align:center">
+<img src="img/save-datasets-4.png" alt="save datasets" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p>
+<BR>
+Your workspace should look like:
+<p style="text-align:center">
+<img src="img/experiments-created-5.png" alt="experiments created" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p> 
+You can right click on the data set to visualize the data.
+<BR>
+Select <b>Data Transformation</B> then <b>Sample and Split</b> and drag <b>Split Datat</b> onto your workspace:
+
+<p style="text-align:center">
+<img src="img/split-data-6.png" alt="split data" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p>
+<BR>
+And connect both rectangles together:
+
+<p style="text-align:center">
+<img src="img/sofar-7.png" alt="so far" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p> 
+
+<BR>
+Select <b>Machine Learning</B> then <b>Train</b> and drag <b>Train Model</b> onto your workspace:
+
+<p style="text-align:center">
+<img src="img/train-drop-8.png" alt="train" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p>
+<BR>
+And connect both rectangles as such:
+
+<p style="text-align:center">
+<img src="img/so-far-9.png" alt="so far" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p> 
+<BR>
+You'll notice the red exclamation point in the last rectangle - this is because you need to tell it what feature is your outcome variable. So click on the red exclamation point and in the right menu pane choose 'income' as outcome:
+<p style="text-align:center">
+<img src="img/outcome-10.png" alt="outcome" 
+                    style='padding:1px; border:1px solid #021a40; width: 60%; height:60%'>
+</p>
+<BR>
+ 
+Select <b>Machine Learning</B> then <b>Initialize Model</b> then <b>Classification</b> 
+and drag <b>Two-Class Logistic Regression</b> onto your workspace:
+
+<p style="text-align:center">
+<img src="img/classification-drop-11.png" alt="classification" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p>
+<BR>
+And connect it to the top left of <b>Train Model</b>:
+
+<p style="text-align:center">
+<img src="img/so-far-12.png" alt="so far" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p> 
+ 
+<BR>
+ 
+Select <b>Machine Learning</B> then <b>Score</b>
+and drag <b>Score Model</b> onto your workspace:
+
+<p style="text-align:center">
+<img src="img/score-drop-13.png" alt="score" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p>
+<BR>
+Connect <b>Train Model</b> to top left <b>Score Model</b> and connect <b>Split Data</b> to top right of <b>Score Model</b>. Fun connecting all this, right?:
+<p style="text-align:center">
+<img src="img/so-far-14.png" alt="so far" 
+                    style='padding:1px; border:1px solid #021a40; width: 40%; height:40%'>
+</p> 
+<BR>
+Select <b>Machine Learning</B> then <b>Evaluate</b>
+and drag <b>Evaluate Model</b> onto your workspace:
+
+<p style="text-align:center">
+<img src="img/evaluate-drop-15.png" alt="evaluate" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p>
+<BR>
+Connect bottom <b>Score Model</b> to top left <b>Evaluate Model</b>:
+<p style="text-align:center">
+<img src="img/so-far-16.png" alt="so far" 
+                    style='padding:1px; border:1px solid #021a40; width: 40%; height:40%'>
+</p> 
+<BR>
+Finally, hit <b>RUN</b> button at bottom middle of Azure ML Studio page:
+<p style="text-align:center">
+<img src="img/run-it-17.png" alt="run it" 
+                    style='padding:1px; border:1px solid #021a40; width: 40%; height:40%'>
+</p>
+
+<BR>
+Right click on <b>Evaluate Model</b> and click <b>Evaluation Results - Visualize</b>
+<p style="text-align:center">
+<img src="img/roc-18.png" alt="scores" 
+                    style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
+</p>
+
+<p style="text-align:center">
+<img src="img/evaluate-19.png" alt="more scores" 
+                    style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
+</p>
+
+<BR>
+Pretty simple and easy to use, right? Play around with the <b>Threshold</b> slider - great to understand the flexibility and cost of the <b>AUC</b> score.
+<BR><BR>
+<h2>A More Complex Example Using R</h2>
+<BR>
+OK – well and done, but what about R? Let's bring in R into AzureML all the while leveraging the pipeline service. Start a new experiment and drag an <b>Execute R Script</b> into the workspace central pane:
+
+<p style="text-align:center">
+<img src="img/languages-20.png" alt="languages" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p>
+
+Click on the <b>Execute R Script</b> rectangle and, in the right pane, replace the current R code with this:
+
+<div class="highlighter-rouge"><pre class="highlight"><code>
+ 
+
+titanic_df <- read.csv('http://math.ucdenver.edu/RTutorial/titanic.txt',sep='\t', stringsAsFactors = FALSE)
+
+# creating new title feature
+titanic_df$Title <- ifelse(grepl('Mr ',titanic_df$Name),'Mr',ifelse(grepl('Mrs ',titanic_df$Name),'Mrs',ifelse(grepl('Miss',titanic_df$Name),'Miss','Nothing')))
+titanic_df$Title <- as.factor(titanic_df$Title)
+
+# impute age to remove NAs
+titanic_df$Age[is.na(titanic_df$Age)] <- median(titanic_df$Age, na.rm=T)
+
+# reorder data set so target is last column
+titanic_df <- titanic_df[c('PClass', 'Age',    'Sex',   'Title', 'Survived')]
+
+# binarize all factors
+charcolumns <- names(titanic_df[sapply(titanic_df, is.character)])
+for (colname in charcolumns) {
+     print(paste(colname,length(unique(titanic_df[,colname]))))
+     for (newcol in unique(titanic_df[,colname])) {
+          if (!is.na(newcol))
+               titanic_df[,paste0(colname,"_",newcol)] <- ifelse(titanic_df[,colname]==newcol,1,0)
+     }
+     titanic_df <- titanic_df[,setdiff(names(titanic_df),colname)]
+}
+ 
+# funnel data out the mapOutputPort so it can flow into the other AzureML pipeline objects
+maml.mapOutputPort('titanic_df')
+
+</code></pre>
+</div>
+ 
+
+We're going to use the R programming language to pull one of my goto favs datasets, the Titanic manifest, into AzureML programatically. We're also going to clean it up by doing some minor feature engineering (pulling the title out of the name), imputing and binarizing text files (pivoting).
+<BR>
+<p style="text-align:center">
+<img src="img/source-code-21.png" alt="source code" 
+                    style='padding:1px; border:1px solid #021a40; width: 50%; height:50%'>
+</p>
+<BR>
+And construct the rest of the machine learing pipeline as follows:
+<p style="text-align:center">
+<img src="img/final-setup-22.png" alt="final setup" 
+                    style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
+</p>
+<BR>
+Set the outcome variable to <b>Survived</b>:
+<p style="text-align:center">
+<img src="img/second-outcome-23.png" alt="outcome variable" 
+                    style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
+</p>
+<BR>
+And Visualize the Evaluation results:
+Set the outcome variable to <b>Survived</b>:
+<p style="text-align:center">
+<img src="img/results-23.png" alt="results" 
+                    style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
+</p>
+<BR>
+<H3>Web Serivces</H3>
+One more thing – one of the best parts of this tool – let’s turn this into a production pipeline where users can call a web service and predictions!
+<BR>
+Click on <b>SET UP WEB SERVICE</b> at the bottom of the screen and choose <b>Predictive Web Service [Recommended]</b>:
+<p style="text-align:center">
+<img src="img/webservice-25.png" alt="web services" 
+                    style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
+</p>
+<BR>
+Run it again to push out a web service or else you’ll get a message as follows: <i>The experiment must be run so that your edits can be validated</i>. Then click on <b>Deploy Web Services</b> a second time (phew):
+<BR><BR>
+
+<p style="text-align:center">
+<img src="img/deploy.png" alt="deploy" 
+                    style='padding:1px; border:1px solid #021a40; width: 20%; height:20%'>
+</p>
+<BR>
+
+In the left side-bar menu, select <b>WEB SERIVCES</b> 
+<p style="text-align:center">
+<img src="img/menu_web.png" alt="web services" 
+                    style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
+</p>
+<BR>
+You should see your experiment listed there and click on it:
+
+<p style="text-align:center">
+<img src="img/web-servives-menu.png" alt="web services menu" 
+                    style='padding:1px; border:1px solid #021a40; width: 30%; height:30%'>
+</p>
+<BR>
+
+and copy the API key, and click on the <b>REQUEST/RESPONSE</b> link:
+<p style="text-align:center">
+<img src="img/api-link-26.png" alt="web services" 
+                    style='padding:1px; border:1px solid #021a40; width: 40%; height:40%'>
+</p>
+<BR>
+At the bottom of the page, copy the R code and replace the placeholder API key with your own and run the code! That's it! 
+
+
+
+<H2>Additional Resources</H2>
+<a href='https://msdn.microsoft.com/en-us/library/azure/dn905952.aspx' target='_blank'>Execute R Script</a><br>
+<a href='https://docs.microsoft.com/en-us/azure/machine-learning/machine-learning-r-quickstart' target='_blank'>Quickstart tutorial for the R programming language for Azure Machine Learning</a>
+
+
+<br><br>
+<i>And a big thanks to Lucas for the woderful - R in the Clouds - artwork!!!</i>
+
+
+ 
+
+ 
+       
+</div>   
+</body>
+</html>
