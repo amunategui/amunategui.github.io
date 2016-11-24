@@ -66,7 +66,7 @@
 <p><br /><br />
 My colleague showed me a nifty concept to easily calculate variable importance for any model. He did not invent it, actually many forms of it abound in the literature and on the Internet. <a href="http://www.plottingsuccess.com/3-predictive-model-accuracy-tests-0114/" target="_blank">John Elder is one of the authors</a>.</p>
 
-<p><img src=".img/shuffler.png" alt="plot of chunk variable-importance-shuffler" /></p>
+<p><img src="img/shuffler.png" alt="plot of chunk variable-importance-shuffler" /></p>
 
 <p>The idea is so simple, its brilliant; you model once, predict once to get a benchmark score, and finally predict hundreds of times for each variable in the model while randomizing that variable. If the variable being randomized hurts the model’s benchmark score, then its an important variable. If, on the other hand, nothing changes, or it beats the benchmark, then its a useless variable. By running this hundreds of times for each variable, you can paint a clear picture of what variable is affecting the model and to what degree. The beauty of this approach is that it is model agnostic as everything happens after the modeling phase.</p>
 
