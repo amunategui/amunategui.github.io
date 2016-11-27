@@ -82,7 +82,7 @@ It’s called ‘naive’ because it assumes independence between the predictors
 </p>
 <BR><BR>
 <h3>Titanic Dataset</h3>
-<p>Let take a look at <a href="https://spark.apache.org/docs/latest/sparkr.html#naive-bayes-model" target="_blank">Spark’s Naive Bayes Model example</a> using a built-in frequency table of the Titanic:</p>
+<p>Lets take a look at the Titanic example from <a href="https://spark.apache.org/docs/latest/sparkr.html#naive-bayes-model" target="_blank">Spark’s documentation</a> using a built-in frequency table:</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>
 titanic <- as.data.frame(Titanic)
@@ -111,7 +111,7 @@ Class    Sex   Age Survived Freq
 32  Crew Female Adult      Yes   20
 </code></pre></div>
 <BR><BR> 
-<p>We feed the data with 1 or more frequency count in the <b>spark.naiveBayes</b> model:</p>
+<p>We feed the data with 1 or more frequency counts in the <b>spark.naiveBayes</b> model:</p>
 
 
 <div class="highlighter-rouge">
@@ -123,7 +123,7 @@ nbTestDF <- titanicDF
 nbModel <- spark.naiveBayes(nbDF, Survived ~ Class + Sex + Age)
 </code></pre></div>
 <BR><BR> 
-<p>Let’s take a look at summary output:</p>
+<p>Let’s take a look at the <b>summary</b> output:</p>
 
 
 <div class="highlighter-rouge">
@@ -142,7 +142,7 @@ Yes 0.3125    0.3125    0.3125    0.5      0.5625
 No  0.4166667 0.25      0.25      0.5      0.75 
 </code></pre></div>
 <BR><BR>
-<p>And let’s continue with the example and run some predictions:</p>
+<p>And let’s continue with the example and run the predictions:</p>
 
 <div class="highlighter-rouge">
 <pre class="highlight">
@@ -221,7 +221,7 @@ head(golf_weather)
 ## 6           normal FALSE  yes
 </code></pre></div>
 <BR><BR> 
-<p>As you can see with the data, there are two numeric fields. If we try to run it through the <b>spark.naiveBayes</b> model, it will fail and complain about continuous variables (Humidity_Numeric & Temperature_Numeric) not being supported (I imagine this will be fixed eventually, so if it works fine, be happy):</p>
+<p>As you can see with the data, there are two numeric fields. If we try to run it through the <b>spark.naiveBayes</b> model, it will fail and complain about continuous variables (Humidity_Numeric & Temperature_Numeric) not being supported (I imagine this will be fixed eventually, so if it works for you, be happy!):</p>
 
 <div class="highlighter-rouge">
 <pre class="highlight">
@@ -294,7 +294,7 @@ probability prediction
 1         yes
 </code></pre></div>
 <BR><BR> 
-<p>What about?</p>
+<p>What about if it is overcast, hot, high humidity, and windy?</p>
 
 <div class="highlighter-rouge">
 <pre class="highlight">
@@ -312,10 +312,12 @@ Outlook Temperature_Nominal Humidity_Nominal Windy            rawPrediction
 
 <h3>Wine Quality Data Set</h3>
 
-<p>A lot of <b>Naive Bayes</b> classification models in R can work with both categorical and continuous variables. These models know how to transform continuous variables in probabilities using functions such as the <b>Probability Density Function (PDF)</b>.</p>
+<p>A lot of <b>Naive Bayes</b> classification models in R can work with both categorical and continuous variables. These models know how to transform continuous variables in probabilities using functions such as the <a href="https://en.wikipedia.org/wiki/Probability_density_function" target="_blank">Probability Density Function (PDF)</a>.</p>
+
+
 <p>Here is a look using function <a href="http://ugrad.stat.ubc.ca/R/library/e1071/html/naiveBayes.html" target="_blank">naiveBayes from the e1071 library</a> and a bigger dataset to keep things interesting. We’ll use the <a href="https://archive.ics.uci.edu/ml/datasets/Wine+Quality" target="_blank">UCI Machine Learning Repository’s Wine Quality Data Set</a>. The data list various measurements for different wines along with a quality rating for each wine between 3 and 9. 
-<BR>
-Let’s start by loading in and splitting the data.</p>
+<BR><BR>
+Let’s start by loading in and splitting the data:</p>
 
 <div class="highlighter-rouge">
 <pre class="highlight">
@@ -348,7 +350,7 @@ random_splits <- runif(nrow(wine_quality))
 train_split_data <- wine_quality[random_splits < .5,]
 validate_split_data <- wine_quality[random_splits >= .5,]
 </code></pre></div>
-
+<BR><BR>
 <p>Now let’s run it through the <b>e1071 naiveBayes</b> model and take a look at what the model does with some continuous variables:
 </p>
 <div class="highlighter-rouge">
@@ -358,7 +360,7 @@ validate_split_data <- wine_quality[random_splits >= .5,]
 library(e1071)
 wine_quality_model <- naiveBayes(quality ~ ., data = train_split_data)
 </code></pre></div>
-
+<BR><BR>
 <p>If you feed your continuous variables directly into naiveBayes, it will use a <a href="https://en.wikipedia.org/wiki/Probability_density_function" target="_blank">Probability Density Function (PDF)</a> to calculate likelihood and probabilities for that variable in relation to the outcome (it assumes your data is normally distributed).</p>
 
 <p>Let’s take a closer look by focusing on one feature called <b>alcohol</b>. Alcohol is shown to be one of the more important features to predict quality. Here is a look at the transformation that takes place before feeding it through the PDF function:</p>
@@ -375,7 +377,7 @@ head(wine_quality$alcohol)
 ## [1] 9.4 9.8 9.8 9.8 9.4 9.4
 </code></pre></div>
 
-<BR><BR> 
+<BR>
 <p>and after:</p>
 
 <div class="highlighter-rouge">
@@ -398,7 +400,7 @@ head(wine_quality_model$tables$alcohol)
 </code></pre></div>
 
 <BR><BR> 
-<p>It then feeds the mean, standard deviation from continuous features along with the outcome variable in the distribution function and you will get the likelihood for each outcome possibility.</p>
+<p>It then feeds the mean and standard deviation from continuous features along with the outcome variable in the distribution function to get the likelihood for the features and each outcome.</p>
 
 <div class="highlighter-rouge">
 <pre class="highlight">
@@ -407,7 +409,7 @@ plot(wine_quality_model$tables$alcohol[,1])
 abline(lm(wine_quality_model$tables$alcohol[,1] ~ 
                seq(nrow(wine_quality_model$tables$alcohol))))
 </code></pre></div>
-
+<BR><BR> 
 <p style="text-align:center">
 <img src="img/alcholol_mean.png" alt="alcholol mean" style='padding:1px; border:1px solid #021a40; width: 40%; height: 40%'>
 </p>
@@ -443,6 +445,7 @@ table('predictied'=predict(wine_quality_model, validate_split_data[,-12]),
 ##          8   0   0   1  20  32   8   1
 ##          9   0   0   0   1   1   0   0
 </code></pre></div>
+<BR><BR> 
 <p>Unfortunately, the <b>spark.naiveBayes</b> currently only handles categorical variables so we’ll have to bin the variables manually and all the while in the <b>SparkDataFrame</b> format to preserve the ‘big data’, clustered advantage. <BR><BR> For more information and updates on this topic, go to the source, the official help files: <a href="https://spark.apache.org/docs/latest/sparkr.html#naive-bayes-model" target="_blank">SparkR (R on Spark) - Naive Bayes Model</a></p>
 <div class="highlighter-rouge">
 <pre class="highlight">
