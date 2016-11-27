@@ -1,0 +1,322 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Databricks, SparkR and Distributed Naive Bayes Modeling</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Databricks, SparkR and Distributed Naive Bayes Modeling</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+<p style="text-align:center">
+<img src="img/heads_or_tails.png" alt="Heads or tails distributed naive bayes" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<p><br /><br /></p>
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=aL6Wugb0oGI&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<p><br />
+
+
+<p>
+One of the recent additions to SparkR is the Naive Bayes classification model. In simple terms, it creates a frequency table cataloging every possible value combination from your historical data for both positive and negative outcomes. Its simpler to visualize by thinking of simple categorical features, but it normally can handle any data type. It then uses that data and Bayes theorem to yield new probabilities:
+</p>
+<p style="text-align:center">
+<img src="img/Bayes_Theorem_Wiki.png" alt="Bayes Theorem Wiki" style='padding:1px; border:1px solid #021a40; width: 20%; height: 20%'>
+</p>
+<BR><BR>
+<p>Which states that:</p>
+
+<ul>
+<li>the probability of the outcome happening given certain values <b>equals</b></li>
+<li>the probability for those values for that outcome <b>multiplied</b></li>
+<li>by the probability for that outcome regardless of the values <b>divided</b></li>
+<li>by probability for those values regardless of the outcome</li>
+</ul>
+
+<p>If this isn’t clear, check out a <a href="https://www.youtube.com/watch?v=IlVINQDk4o8" target="_blank">brief and funny video from the folks at RapidMiner</a>.</p>
+<p>
+It’s called ‘naive’ because it assumes independence between the predictors, and short of each predictor happening on a different planet, it is hard to assume with a straight face. That said, such assumption simplifies the model tremendously; it makes the model simple, fast, and transparent. It is perfect for working with large data sets in distributed environments - yup, perfect for Spark! 
+</p>
+<BR><BR>
+<h3>Titanic Dataset</h3>
+<p>Let take a look at <a href="https://spark.apache.org/docs/latest/sparkr.html#naive-bayes-model" target="_blank">Spark’s Naive Bayes Model example</a> using a built-in frequency table of the Titanic:</p>
+
+
+titanic <- as.data.frame(Titanic)
+head(titanic)
+
+<div class="highlighter-rouge"><pre class="highlight"><code>
+Class    Sex   Age Survived Freq
+1   1st   Male Child       No    0
+2   2nd   Male Child       No    0
+3   3rd   Male Child       No   35
+4  Crew   Male Child       No    0
+5   1st Female Child       No    0
+6   2nd Female Child       No    0
+</div></pre></code>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+> tail(titanic)
+   Class    Sex   Age Survived Freq
+27   3rd   Male Adult      Yes   75
+28  Crew   Male Adult      Yes  192
+29   1st Female Adult      Yes  140
+30   2nd Female Adult      Yes   80
+31   3rd Female Adult      Yes   76
+32  Crew Female Adult      Yes   20
+</div></pre></code>
+<BR><BR> 
+<p>We feed the data with 1 or more frequency count in the <b>spark.naiveBayes</b> model:</p>
+
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+titanicDF <- createDataFrame(titanic[titanic$Freq > 0, -5])
+nbDF <- titanicDF
+nbTestDF <- titanicDF
+nbModel <- spark.naiveBayes(nbDF, Survived ~ Class + Sex + Age)
+</div></pre></code>
+<BR><BR> 
+<p>Let’s take a look at summary output:</p>
+
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+summary(nbModel)
+
+(6) Spark Jobs
+$apriori
+           Yes        No
+[1,] 0.5769231 0.4230769
+
+$tables
+    Class_3rd Class_1st Class_2nd Sex_Male Age_Adult
+Yes 0.3125    0.3125    0.3125    0.5      0.5625   
+No  0.4166667 0.25      0.25      0.5      0.75 
+</div></pre></code>
+<BR><BR>
+<p>And let’s continue with the example and run some predictions:</p>
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+nbPredictions <- predict(nbModel, nbTestDF)
+showDF(nbPredictions)
+
+(1) Spark Jobs
++-----+------+-----+--------+-----+--------------------+--------------------+----------+
+|Class|   Sex|  Age|Survived|label|       rawPrediction|         probability|prediction|
++-----+------+-----+--------+-----+--------------------+--------------------+----------+
+|  3rd|  Male|Child|      No|  1.0|[-3.9824097993521...|[0.60062402496099...|       Yes|
+|  3rd|Female|Child|      No|  1.0|[-3.9824097993521...|[0.60062402496099...|       Yes|
+|  1st|  Male|Adult|      No|  1.0|[-3.7310953710712...|[0.58003280993672...|       Yes|
+|  2nd|  Male|Adult|      No|  1.0|[-3.7310953710712...|[0.58003280993672...|       Yes|
+|  3rd|  Male|Adult|      No|  1.0|[-3.7310953710712...|[0.39192399049881...|        No|
+| Crew|  Male|Adult|      No|  1.0|[-2.9426380107070...|[0.50318824507901...|       Yes|
+|  1st|Female|Adult|      No|  1.0|[-3.7310953710712...|[0.58003280993672...|       Yes|
+|  2nd|Female|Adult|      No|  1.0|[-3.7310953710712...|[0.58003280993672...|       Yes|
+|  3rd|Female|Adult|      No|  1.0|[-3.7310953710712...|[0.39192399049881...|        No|
+| Crew|Female|Adult|      No|  1.0|[-2.9426380107070...|[0.50318824507901...|       Yes|
+|  1st|  Male|Child|     Yes|  0.0|[-3.9824097993521...|[0.76318223866790...|       Yes|
+|  2nd|  Male|Child|     Yes|  0.0|[-3.9824097993521...|[0.76318223866790...|       Yes|
+|  3rd|  Male|Child|     Yes|  0.0|[-3.9824097993521...|[0.60062402496099...|       Yes|
+|  1st|Female|Child|     Yes|  0.0|[-3.9824097993521...|[0.76318223866790...|       Yes|
+|  2nd|Female|Child|     Yes|  0.0|[-3.9824097993521...|[0.76318223866790...|       Yes|
+|  3rd|Female|Child|     Yes|  0.0|[-3.9824097993521...|[0.60062402496099...|       Yes|
+|  1st|  Male|Adult|     Yes|  0.0|[-3.7310953710712...|[0.58003280993672...|       Yes|
+|  2nd|  Male|Adult|     Yes|  0.0|[-3.7310953710712...|[0.58003280993672...|       Yes|
+|  3rd|  Male|Adult|     Yes|  0.0|[-3.7310953710712...|[0.39192399049881...|        No|
+| Crew|  Male|Adult|     Yes|  0.0|[-2.9426380107070...|[0.50318824507901...|       Yes|
++-----+------+-----+--------+-----+--------------------+--------------------+----------+
+only showing top 20 rows
+</div></pre></code>
+<BR><BR>
+<h3>Golf & Weather Dataset</h3>
+
+<p>This is the classic Bayes data set - every example I encountered uses it! And here we go again: <b>Golf|Weather Data Set</b> from <a href="http://gerardnico.com/wiki/data_mining/weather" target="_blank">Gerardnico</a>:</p>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+golf_weather <- read.table(text = "Outlook  Temperature_Numeric Temperature_Nominal Humidity_Numeric    Humidity_Nominal    Windy   Play
+                  overcast  83  hot 86  high    FALSE   yes
+overcast    64  cool    65  normal  TRUE    yes
+                  overcast  72  mild    90  high    TRUE    yes
+                  overcast  81  hot 75  normal  FALSE   yes
+                  rainy 70  mild    96  high    FALSE   yes
+                  rainy 68  cool    80  normal  FALSE   yes
+                  rainy 65  cool    70  normal  TRUE    no
+                  rainy 75  mild    80  normal  FALSE   yes
+                  rainy 71  mild    91  high    TRUE    no
+                  sunny 85  hot 85  high    FALSE   no
+                  sunny 80  hot 90  high    TRUE    no
+                  sunny 72  mild    95  high    FALSE   no
+                  sunny 69  cool    70  normal  FALSE   yes
+                  sunny 75  mild    70  normal  TRUE    yes",header = TRUE,sep = "")
+
+head(golf_weather)</code></pre>
+<pre><code>##    Outlook Temperature_Numeric Temperature_Nominal Humidity_Numeric
+## 1 overcast                  83                 hot               86
+## 2 overcast                  64                cool               65
+## 3 overcast                  72                mild               90
+## 4 overcast                  81                 hot               75
+## 5    rainy                  70                mild               96
+## 6    rainy                  68                cool               80
+##   Humidity_Nominal Windy Play
+## 1             high FALSE  yes
+## 2           normal  TRUE  yes
+## 3             high  TRUE  yes
+## 4           normal FALSE  yes
+## 5             high FALSE  yes
+## 6           normal FALSE  yes</code></pre>
+<p><BR><BR> As you can see with the data, there are two numeric fields. If we try to run it through the <b>spark.naiveBayes</b> model, it will fail and complain about continuous variables (Humidity_Numeric &amp; Temperature_Numeric) not being supported (I imagine this will be fixed eventually, so if it works fine, be happy):</p>
+<pre class="r"><code>golf_weather_sparkdf <-as.DataFrame(golf_weather)
+golf_weather_model <- spark.naiveBayes(Play ~ ., data = golf_weather_sparkdf)</code></pre>
+<p><BR><BR> The good thing with this dataset is it includes binned features for the both Humidity_Numeric &amp; Temperature_Numeric: Humidity_Nominal &amp; Temperature_Nominal. Let’s remove them numeric features, split the dataset and train/validate it using Naive Bayes.</p>
+<pre class="r"><code># remove the two features using dplyr's select command
+library(dplyr)
+golf_weather %&gt;% dplyr::select(-Humidity_Numeric, -Temperature_Numeric) -&gt; golf_weather
+str(golf_weather)</code></pre>
+<pre class="r"><code>'SparkDataFrame': 5 variables:
+ $ Outlook            : chr "overcast" "overcast" "overcast" "rainy" "rainy" "rainy"
+ $ Temperature_Nominal: chr "cool" "mild" "hot" "mild" "cool" "mild"
+ $ Humidity_Nominal   : chr "normal" "high" "normal" "high" "normal" "high"
+ $ Windy              : logi TRUE TRUE FALSE FALSE FALSE TRUE
+ $ Play               : chr "yes" "yes" "yes" "yes" "yes" "no"</code></pre>
+<p><BR><BR> Split the data and run the model:</p>
+<pre class="r"><code># cast into Spark dataframes
+golf_weather_spark <-as.DataFrame(golf_weather)
+ 
+golf_weather_model <- spark.naiveBayes(Play ~ ., data = golf_weather_spark)
+summary(golf_weather_model)</code></pre>
+<pre class="r"><code>$aapriori
+       yes    no
+[1,] 0.625 0.375
+
+$tables
+    Outlook_rainy Outlook_sunny Temperature_Nominal_mild
+yes 0.3636364     0.2727273     0.4545455               
+no  0.4285714     0.5714286     0.4285714               
+    Temperature_Nominal_cool Humidity_Nominal_high Windy    
+yes 0.3636364                0.3636364             0.3636364
+no  0.2857143                0.7142857             0.5714286</code></pre>
+<p><BR><BR> How about feeding it some custom data to predict the probablity of golfing - what if it is rainy, hot, normal humidity, and windy?</p>
+<pre class="r"><code>head(predict(golf_weather_model, as.DataFrame(data.frame(Outlook = c('rainy'), Temperature_Nominal=c('hot'),  
+          Humidity_Nominal=c('normal'),  Windy=c(TRUE)))),1)</code></pre>
+<pre class="r"><code>Outlook Temperature_Nominal Humidity_Nominal Windy            rawPrediction
+1   rainy                 hot           normal  TRUE 
+               probability prediction
+1         yes</code></pre>
+<p><BR><BR> What about?</p>
+<pre class="r"><code>head(predict(golf_weather_model, as.DataFrame(data.frame(Outlook = c('overcast'), Temperature_Nominal=c('hot'),  
+       Humidity_Nominal=c('high'),  Windy=c(TRUE)))),1)</code></pre>
+<pre class="r"><code>Outlook Temperature_Nominal Humidity_Nominal Windy            rawPrediction
+1 overcast                 hot             high  TRUE 
+               probability prediction
+1          no                                            </code></pre>
+<BR><BR>
+<h3>
+Wine Quality Data Set
+</h3>
+<p>A lot of <b>Naive Bayes</b> classification models in R can work with both categorical and continuous variables. These models know how to transform continuous variables in probabilities using functions such as the <b>Probability Density Function (PDF)</b>.</p>
+<p>Here is a look using function <a href="http://ugrad.stat.ubc.ca/R/library/e1071/html/naiveBayes.html" target="_blank">naiveBayes from the e1071 library</a> and a bigger dataset to keep things interesting. We’ll use the <a href="https://archive.ics.uci.edu/ml/datasets/Wine+Quality" target="_blank">UCI Machine Learning Repository’s Wine Quality Data Set</a>. The data list various measurements for different wines along with a quality rating for each wine between 3 and 9. Let’s start by loading in and splitting the data.</p>
+<pre class="r"><code>winequality_red <- read.csv('http://mlr.cs.umass.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv', 
+                            sep = ';')
+winequality_white <- read.csv('http://mlr.cs.umass.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv', 
+                            sep = ';')
+# bind both data sets together
+wine_quality <- rbind(winequality_red, winequality_white)
+
+# replace period in column name with underscore
+names(wine_quality) <- gsub(names(wine_quality), pattern = '\\.', replacement = '_')
+
+dim(wine_quality)</code></pre>
+<pre><code>## [1] 6497   12</code></pre>
+<pre class="r"><code>wine_quality$quality <- as.factor(wine_quality$quality)
+
+
+# split it into two parts
+set.seed(1234)
+random_splits <- runif(nrow(wine_quality))
+train_split_data <- wine_quality[random_splits < .5,]
+validate_split_data <- wine_quality[random_splits &gt;= .5,]</code></pre>
+<p>Now let’s run it through the <b>e1071 naiveBayes</b> model and take a look at what the model does with some continuous variables:</p>
+<pre class="r"><code>#install.packages('e1071')
+library(e1071)
+wine_quality_model <- naiveBayes(quality ~ ., data = train_split_data)</code></pre>
+<p>If you feed your continuous variables directly into naiveBayes, it will use a <a href="https://en.wikipedia.org/wiki/Probability_density_function" target="_blank">Probability Density Function (PDF)</a> to calculate likelihood and probabilities for that variable in relation to the outcome (it assumes your data is normally distributed).</p>
+<p>Let’s take a closer look by focusing on one feature called <b>alcohol</b>. Alcohol is shown to be one of the more important features to predict quality. Here is a look at the transformation that takes place before feeding it through the PDF function:</p>
+<pre class="r"><code>head(wine_quality$alcohol)</code></pre>
+<pre><code>## [1] 9.4 9.8 9.8 9.8 9.4 9.4</code></pre>
+<p><BR><BR> and after:</p>
+<pre class="r"><code>head(wine_quality_model$tables$alcohol)</code></pre>
+<pre><code>##    alcohol
+## Y        [,1]      [,2]
+##   3 10.194118 1.2978206
+##   4 10.076293 0.8842944
+##   5  9.828416 0.8009873
+##   6 10.588285 1.1324282
+##   7 11.359167 1.2269708
+##   8 11.570526 1.2773704</code></pre>
+<p><BR><BR> It then feeds the mean, standard deviation from continuous features along with the outcome variable in the distribution function and you will get the likelihood for each outcome possibility.</p>
+
+
+
+
+
+<br><br>
+<i>And a big thanks to Lucas for the wonderful - Azure R in the Clouds - artwork!!!</i>
+
+
+ 
+
+ 
+       
+</div>   
+</body>
+</html>
