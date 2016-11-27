@@ -64,7 +64,7 @@
 One of the recent additions to SparkR is the Naive Bayes classification model. In simple terms, it creates a frequency table cataloging every possible value combination from your historical data for both positive and negative outcomes. Its simpler to visualize by thinking of simple categorical features, but it normally can handle any data type. It then uses that data and Bayes theorem to yield new probabilities:
 </p>
 <p style="text-align:center">
-<img src="img/Bayes_Theorem_Wiki.png" alt="Bayes Theorem Wiki" style='padding:1px; border:1px solid #021a40; width: 20%; height: 20%'>
+<img src="img/Bayes_Theorem_Wiki.png" alt="Bayes Theorem Wiki" style='padding:1px; border:1px solid #021a40; width: 60%; height: 60%'>
 </p>
 <BR><BR>
 <p>Which states that:</p>
@@ -199,8 +199,12 @@ overcast    64  cool    65  normal  TRUE    yes
                   sunny 69  cool    70  normal  FALSE   yes
                   sunny 75  mild    70  normal  TRUE    yes",header = TRUE,sep = "")
 
-head(golf_weather)</code></pre>
-<pre><code>##    Outlook Temperature_Numeric Temperature_Nominal Humidity_Numeric
+head(golf_weather)
+</div></pre></code>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+##    Outlook Temperature_Numeric Temperature_Nominal Humidity_Numeric
 ## 1 overcast                  83                 hot               86
 ## 2 overcast                  64                cool               65
 ## 3 overcast                  72                mild               90
@@ -213,28 +217,54 @@ head(golf_weather)</code></pre>
 ## 3             high  TRUE  yes
 ## 4           normal FALSE  yes
 ## 5             high FALSE  yes
-## 6           normal FALSE  yes</code></pre>
-<p><BR><BR> As you can see with the data, there are two numeric fields. If we try to run it through the <b>spark.naiveBayes</b> model, it will fail and complain about continuous variables (Humidity_Numeric &amp; Temperature_Numeric) not being supported (I imagine this will be fixed eventually, so if it works fine, be happy):</p>
-<pre class="r"><code>golf_weather_sparkdf <-as.DataFrame(golf_weather)
-golf_weather_model <- spark.naiveBayes(Play ~ ., data = golf_weather_sparkdf)</code></pre>
-<p><BR><BR> The good thing with this dataset is it includes binned features for the both Humidity_Numeric &amp; Temperature_Numeric: Humidity_Nominal &amp; Temperature_Nominal. Let’s remove them numeric features, split the dataset and train/validate it using Naive Bayes.</p>
-<pre class="r"><code># remove the two features using dplyr's select command
+## 6           normal FALSE  yes
+</div></pre></code>
+<BR><BR> 
+<p>As you can see with the data, there are two numeric fields. If we try to run it through the <b>spark.naiveBayes</b> model, it will fail and complain about continuous variables (Humidity_Numeric & Temperature_Numeric) not being supported (I imagine this will be fixed eventually, so if it works fine, be happy):</p>
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+golf_weather_sparkdf <-as.DataFrame(golf_weather)
+golf_weather_model <- spark.naiveBayes(Play ~ ., data = golf_weather_sparkdf)
+</div></pre></code>
+<BR><BR> 
+<p>The good thing with this dataset is it includes binned features for the both Humidity_Numeric and Temperature_Numeric: Humidity_Nominal and Temperature_Nominal. Let’s remove them numeric features, split the dataset and train/validate it using Naive Bayes.</p>
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+# remove the two features using dplyr's select command
 library(dplyr)
-golf_weather %&gt;% dplyr::select(-Humidity_Numeric, -Temperature_Numeric) -&gt; golf_weather
-str(golf_weather)</code></pre>
-<pre class="r"><code>'SparkDataFrame': 5 variables:
+golf_weather %>% dplyr::select(-Humidity_Numeric, -Temperature_Numeric) -> golf_weather
+str(golf_weather)
+</div></pre></code>
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+'SparkDataFrame': 5 variables:
  $ Outlook            : chr "overcast" "overcast" "overcast" "rainy" "rainy" "rainy"
  $ Temperature_Nominal: chr "cool" "mild" "hot" "mild" "cool" "mild"
  $ Humidity_Nominal   : chr "normal" "high" "normal" "high" "normal" "high"
  $ Windy              : logi TRUE TRUE FALSE FALSE FALSE TRUE
- $ Play               : chr "yes" "yes" "yes" "yes" "yes" "no"</code></pre>
-<p><BR><BR> Split the data and run the model:</p>
-<pre class="r"><code># cast into Spark dataframes
+ $ Play               : chr "yes" "yes" "yes" "yes" "yes" "no"
+</div></pre></code>
+<BR><BR> 
+<p>Split the data and run the model:</p>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+# cast into Spark dataframes
 golf_weather_spark <-as.DataFrame(golf_weather)
  
 golf_weather_model <- spark.naiveBayes(Play ~ ., data = golf_weather_spark)
-summary(golf_weather_model)</code></pre>
-<pre class="r"><code>$aapriori
+summary(golf_weather_model)
+</div></pre></code>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+$aapriori
        yes    no
 [1,] 0.625 0.375
 
@@ -244,25 +274,43 @@ yes 0.3636364     0.2727273     0.4545455
 no  0.4285714     0.5714286     0.4285714               
     Temperature_Nominal_cool Humidity_Nominal_high Windy    
 yes 0.3636364                0.3636364             0.3636364
-no  0.2857143                0.7142857             0.5714286</code></pre>
-<p><BR><BR> How about feeding it some custom data to predict the probablity of golfing - what if it is rainy, hot, normal humidity, and windy?</p>
-<pre class="r"><code>head(predict(golf_weather_model, as.DataFrame(data.frame(Outlook = c('rainy'), Temperature_Nominal=c('hot'),  
-          Humidity_Nominal=c('normal'),  Windy=c(TRUE)))),1)</code></pre>
-<pre class="r"><code>Outlook Temperature_Nominal Humidity_Nominal Windy            rawPrediction
+no  0.2857143                0.7142857             0.5714286
+</div></pre></code>
+<BR><BR>
+<p>How about feeding it some custom data to predict the probability of golfing - what if it is rainy, hot, normal humidity, and windy?</p>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+head(predict(golf_weather_model, as.DataFrame(data.frame(Outlook = c('rainy'), Temperature_Nominal=c('hot'), Humidity_Nominal=c('normal'),  Windy=c(TRUE)))),1)
+</div></pre></code>
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+Outlook Temperature_Nominal Humidity_Nominal Windy rawPrediction
 1   rainy                 hot           normal  TRUE 
-               probability prediction
-1         yes</code></pre>
-<p><BR><BR> What about?</p>
-<pre class="r"><code>head(predict(golf_weather_model, as.DataFrame(data.frame(Outlook = c('overcast'), Temperature_Nominal=c('hot'),  
-       Humidity_Nominal=c('high'),  Windy=c(TRUE)))),1)</code></pre>
-<pre class="r"><code>Outlook Temperature_Nominal Humidity_Nominal Windy            rawPrediction
+probability prediction
+1         yes
+</div></pre></code>
+<BR><BR> 
+<p>What about?</p>
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+head(predict(golf_weather_model, as.DataFrame(data.frame(Outlook = c('overcast'), Temperature_Nominal=c('hot'), Humidity_Nominal=c('high'),  Windy=c(TRUE)))),1)
+</div></pre></code>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+Outlook Temperature_Nominal Humidity_Nominal Windy            rawPrediction
 1 overcast                 hot             high  TRUE 
                probability prediction
-1          no                                            </code></pre>
+</div></pre></code>
 <BR><BR>
-<h3>
-Wine Quality Data Set
-</h3>
+
+<h3>Wine Quality Data Set</h3>
+
 <p>A lot of <b>Naive Bayes</b> classification models in R can work with both categorical and continuous variables. These models know how to transform continuous variables in probabilities using functions such as the <b>Probability Density Function (PDF)</b>.</p>
 <p>Here is a look using function <a href="http://ugrad.stat.ubc.ca/R/library/e1071/html/naiveBayes.html" target="_blank">naiveBayes from the e1071 library</a> and a bigger dataset to keep things interesting. We’ll use the <a href="https://archive.ics.uci.edu/ml/datasets/Wine+Quality" target="_blank">UCI Machine Learning Repository’s Wine Quality Data Set</a>. The data list various measurements for different wines along with a quality rating for each wine between 3 and 9. Let’s start by loading in and splitting the data.</p>
 <pre class="r"><code>winequality_red <- read.csv('http://mlr.cs.umass.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv', 
@@ -310,13 +358,10 @@ wine_quality_model <- naiveBayes(quality ~ ., data = train_split_data)</code></p
 
 
 <br><br>
-<i>And a big thanks to Lucas for the wonderful - Azure R in the Clouds - artwork!!!</i>
+<i>Special thanks to Lucas for the great data-brick-flip artwork!!!</i>
 
 
- 
-
- 
-       
+  
 </div>   
 </body>
 </html>
