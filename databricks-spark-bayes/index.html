@@ -422,9 +422,184 @@ table(validate_split_data[,12])
 ## 
 ##    3    4    5    6    7    8    9 
 ##   13  100 1094 1419  539   98    3
-</div></pre></code>
+</code></pre></div>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+table('predictied'=predict(wine_quality_model, validate_split_data[,-12]), 
+      'actual'=validate_split_data[,12])
+</code></pre></div>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+##           actual
+## predictied   3   4   5   6   7   8   9
+##          3   2   1  18  17   9   1   0
+##          4   3   9  22  21   3   1   0
+##          5   5  44 588 417  52  10   0
+##          6   2  32 388 572 175  26   1
+##          7   1  14  77 371 267  52   1
+##          8   0   0   1  20  32   8   1
+##          9   0   0   0   1   1   0   0
+</code></pre></div>
+<p>Unfortunately, the <b>spark.naiveBayes</b> currently only handles categorical variables so we’ll have to bin the variables manually and all the while in the <b>SparkDataFrame</b> format to preserve the ‘big data’, clustered advantage. <BR><BR> For more information and updates on this topic, go to the source, the official help files: <a href="https://spark.apache.org/docs/latest/sparkr.html#naive-bayes-model" target="_blank">SparkR (R on Spark) - Naive Bayes Model</a></p>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+train_split_data_spark <- as.DataFrame(train_split_data)
+validate_split_data_spark <- as.DataFrame(validate_split_data)
 
+# make sql temp view 
+createOrReplaceTempView(train_split_data_spark, "train_split_data_spark_table")
+createOrReplaceTempView(validate_split_data_spark, "validate_split_data_spark_table")
+</code></pre></div>
+<BR><BR> 
+<p>To do the binning, we’ll use Spark SQL and the <a href="https://spark.apache.org/docs/latest/api/R/ntile.html" target="_blank">NTILE</a> function:</p>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+collect(sql("SELECT alcohol, NTILE(4) OVER (ORDER BY alcohol) AS alcohol_quartiles FROM train_split_data_spark_table"))
+</code></pre></div>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+       alcohol alcohol_quartiles
+1     8.000000                 1
+2     8.400000                 1
+3     8.400000                 1
+4     8.400000                 1
+*** WARNING: skipped xxxx bytes of output ***
 
+          4
+3081 12.700000                 4
+3082 12.700000                 4
+3083 12.700000                 4
+3084 12.700000                 4
+3085 12.700000                 4
+</code></pre></div>
+<BR><BR>
+<p>Apply NTILE to all continuous variables:</p>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+train_split_data_spark <- sql("SELECT 
+case when NTILE(2) OVER (ORDER BY alcohol) = 1 then 'low' else 'high' end AS alcohol,
+case when NTILE(2) OVER (ORDER BY fixed_acidity) = 1 then 'low' else 'high' end AS fixed_acidity,
+case when NTILE(2) OVER (ORDER BY citric_acid) = 1 then 'low' else 'high' end AS citric_acid,
+case when NTILE(2) OVER (ORDER BY residual_sugar) = 1 then 'low' else 'high' end AS residual_sugar,
+case when NTILE(2) OVER (ORDER BY chlorides) = 1 then 'low' else 'high' end AS chlorides,
+case when NTILE(2) OVER (ORDER BY free_sulfur_dioxide) = 1 then 'low' else 'high' end AS free_sulfur_dioxide,
+case when NTILE(2) OVER (ORDER BY total_sulfur_dioxide) = 1 then 'low' else 'high' end AS total_sulfur_dioxide,
+case when NTILE(2) OVER (ORDER BY pH) = 1 then 'low' else 'high' end AS pH,
+case when NTILE(2) OVER (ORDER BY sulphates) = 1 then 'low' else 'high' end AS sulphates,
+                              quality FROM train_split_data_spark_table")
+
+validate_split_data_spark <- sql("SELECT 
+case when NTILE(2) OVER (ORDER BY alcohol) = 1 then 'low' else 'high' end AS alcohol,
+case when NTILE(2) OVER (ORDER BY fixed_acidity) = 1 then 'low' else 'high' end AS fixed_acidity,
+case when NTILE(2) OVER (ORDER BY citric_acid) = 1 then 'low' else 'high' end AS citric_acid,
+case when NTILE(2) OVER (ORDER BY residual_sugar) = 1 then 'low' else 'high' end AS residual_sugar,
+case when NTILE(2) OVER (ORDER BY chlorides) = 1 then 'low' else 'high' end AS chlorides,
+case when NTILE(2) OVER (ORDER BY free_sulfur_dioxide) = 1 then 'low' else 'high' end AS free_sulfur_dioxide,
+case when NTILE(2) OVER (ORDER BY total_sulfur_dioxide) = 1 then 'low' else 'high' end AS total_sulfur_dioxide,
+case when NTILE(2) OVER (ORDER BY pH) = 1 then 'low' else 'high' end AS pH,
+case when NTILE(2) OVER (ORDER BY sulphates) = 1 then 'low' else 'high' end AS sulphates,
+                              quality FROM validate_split_data_spark_table")
+head(validate_split_data_spark)
+
+</code></pre></div>
+ 
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+ alcohol fixed_acidity citric_acid residual_sugar chlorides
+1    high          high        high            low      high
+2    high          high        high            low      high
+3    high          high         low            low      high
+4    high           low         low            low      high
+5     low          high        high            low      high
+6    high          high        high            low      high
+  free_sulfur_dioxide total_sulfur_dioxide   pH sulphates quality
+1                 low                  low  low      high       5
+2                 low                  low  low      high       5
+3                 low                  low high      high       6
+4                 low                  low high      high       4
+5                 low                  low  low      high       6
+6                 low                  low  low      high       6
+</code></pre></div>
+<BR><BR>
+<p>We’re finally ready to run the model and predict wine quality!!</p>
+wine_quality_model <- spark.naiveBayes(quality ~ ., data = train_split_data_spark)
+summary(wine_quality_model)
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+$apriori
+             6         5         7          4          8           3
+[1,] 0.4379246 0.3227301 0.1670784 0.03613342 0.02964793 0.005558987
+                9
+[1,] 0.0009264978
+</code></pre></div>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+$tables
+  alcohol_low fixed_acidity_low citric_acid_low residual_sugar_low
+6 0.4432699   0.5285412         0.4982382       0.4926004         
+5 0.7571702   0.4521989         0.5353728       0.5047801         
+7 0.1918819   0.5147601         0.4243542       0.5129151         
+4 0.6271186   0.4661017         0.6016949       0.5423729         
+8 0.1340206   0.5979381         0.4845361       0.4329897         
+3 0.5263158   0.3684211         0.3684211       0.4736842         
+9 0.25        0.25              0.25            0.75              
+  chlorides_low free_sulfur_dioxide_low total_sulfur_dioxide_low pH_low   
+6 0.5348837     0.491191                0.5193798                0.4827343
+5 0.3565966     0.5248566               0.4464627                0.540153 
+7 0.6568266     0.4520295               0.5350554                0.4741697
+4 0.3983051     0.7711864               0.6271186                0.5      
+8 0.7731959     0.2783505               0.443299                 0.4742268
+3 0.5263158     0.6315789               0.5263158                0.5263158
+9 0.75          0.5                     0.5                      0.25     
+  sulphates_low
+6 0.4876674    
+5 0.5181644    
+7 0.4538745    
+4 0.6101695    
+8 0.5979381    
+3 0.5263158    
+9 0.75     
+</code></pre></div>
+<BR><BR>
+<p>
+Let’s check our predictions:</p>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+table(collect(validate_split_data_spark[,10]))
+</code></pre></div>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+  3    4    5    6    7    8    9 
+  13  100 1094 1419  539   98    3 
+</code></pre></div>
+<BR><BR>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+preds <- collect(select(predict(wine_quality_model, validate_split_data_spark[,-10]),'prediction'))
+actual <- collect(validate_split_data_spark[,10])
+table('predicted'=preds$prediction, 'actual'=actual$quality)
+</code></pre></div>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+          actual
+predicted   3   4   5   6   7   8   9
+         5   5  27 416 552 205  34   1
+         6   8  73 676 865 333  63   2
+         7   0   0   2   2   1   1   0
+</code></pre></div>
 <br><br>
 <i>Special thanks to Lucas for the great data-brick-flip artwork!!!</i>
 
