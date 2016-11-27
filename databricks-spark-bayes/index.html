@@ -312,8 +312,15 @@ Outlook Temperature_Nominal Humidity_Nominal Windy            rawPrediction
 <h3>Wine Quality Data Set</h3>
 
 <p>A lot of <b>Naive Bayes</b> classification models in R can work with both categorical and continuous variables. These models know how to transform continuous variables in probabilities using functions such as the <b>Probability Density Function (PDF)</b>.</p>
-<p>Here is a look using function <a href="http://ugrad.stat.ubc.ca/R/library/e1071/html/naiveBayes.html" target="_blank">naiveBayes from the e1071 library</a> and a bigger dataset to keep things interesting. We’ll use the <a href="https://archive.ics.uci.edu/ml/datasets/Wine+Quality" target="_blank">UCI Machine Learning Repository’s Wine Quality Data Set</a>. The data list various measurements for different wines along with a quality rating for each wine between 3 and 9. Let’s start by loading in and splitting the data.</p>
-<pre class="r"><code>winequality_red <- read.csv('http://mlr.cs.umass.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv', 
+<p>Here is a look using function <a href="http://ugrad.stat.ubc.ca/R/library/e1071/html/naiveBayes.html" target="_blank">naiveBayes from the e1071 library</a> and a bigger dataset to keep things interesting. We’ll use the <a href="https://archive.ics.uci.edu/ml/datasets/Wine+Quality" target="_blank">UCI Machine Learning Repository’s Wine Quality Data Set</a>. The data list various measurements for different wines along with a quality rating for each wine between 3 and 9. 
+<BR>
+Let’s start by loading in and splitting the data.</p>
+
+</div></pre></code>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+winequality_red <- read.csv('http://mlr.cs.umass.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv', 
                             sep = ';')
 winequality_white <- read.csv('http://mlr.cs.umass.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv', 
                             sep = ';')
@@ -323,38 +330,99 @@ wine_quality <- rbind(winequality_red, winequality_white)
 # replace period in column name with underscore
 names(wine_quality) <- gsub(names(wine_quality), pattern = '\\.', replacement = '_')
 
-dim(wine_quality)</code></pre>
-<pre><code>## [1] 6497   12</code></pre>
-<pre class="r"><code>wine_quality$quality <- as.factor(wine_quality$quality)
-
+dim(wine_quality)
+</div></pre></code>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+## [1] 6497   12
+</div></pre></code>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+wine_quality$quality <- as.factor(wine_quality$quality)
 
 # split it into two parts
 set.seed(1234)
 random_splits <- runif(nrow(wine_quality))
 train_split_data <- wine_quality[random_splits < .5,]
-validate_split_data <- wine_quality[random_splits &gt;= .5,]</code></pre>
-<p>Now let’s run it through the <b>e1071 naiveBayes</b> model and take a look at what the model does with some continuous variables:</p>
-<pre class="r"><code>#install.packages('e1071')
+validate_split_data <- wine_quality[random_splits >= .5,]
+</div></pre></code>
+
+<p>Now let’s run it through the <b>e1071 naiveBayes</b> model and take a look at what the model does with some continuous variables:
+</p>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+#install.packages('e1071')
 library(e1071)
-wine_quality_model <- naiveBayes(quality ~ ., data = train_split_data)</code></pre>
+wine_quality_model <- naiveBayes(quality ~ ., data = train_split_data)
+</div></pre></code>
+
 <p>If you feed your continuous variables directly into naiveBayes, it will use a <a href="https://en.wikipedia.org/wiki/Probability_density_function" target="_blank">Probability Density Function (PDF)</a> to calculate likelihood and probabilities for that variable in relation to the outcome (it assumes your data is normally distributed).</p>
+
 <p>Let’s take a closer look by focusing on one feature called <b>alcohol</b>. Alcohol is shown to be one of the more important features to predict quality. Here is a look at the transformation that takes place before feeding it through the PDF function:</p>
-<pre class="r"><code>head(wine_quality$alcohol)</code></pre>
-<pre><code>## [1] 9.4 9.8 9.8 9.8 9.4 9.4</code></pre>
-<p><BR><BR> and after:</p>
-<pre class="r"><code>head(wine_quality_model$tables$alcohol)</code></pre>
-<pre><code>##    alcohol
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+head(wine_quality$alcohol)
+</div></pre></code>
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+## [1] 9.4 9.8 9.8 9.8 9.4 9.4
+</div></pre></code>
+
+<BR><BR> 
+<p>and after:</p>
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+head(wine_quality_model$tables$alcohol)
+</div></pre></code>
+
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+##    alcohol
 ## Y        [,1]      [,2]
 ##   3 10.194118 1.2978206
 ##   4 10.076293 0.8842944
 ##   5  9.828416 0.8009873
 ##   6 10.588285 1.1324282
 ##   7 11.359167 1.2269708
-##   8 11.570526 1.2773704</code></pre>
-<p><BR><BR> It then feeds the mean, standard deviation from continuous features along with the outcome variable in the distribution function and you will get the likelihood for each outcome possibility.</p>
+##   8 11.570526 1.2773704
+</div></pre></code>
 
+<BR><BR> 
+<p>It then feeds the mean, standard deviation from continuous features along with the outcome variable in the distribution function and you will get the likelihood for each outcome possibility.</p>
 
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+plot(wine_quality_model$tables$alcohol[,1])
+abline(lm(wine_quality_model$tables$alcohol[,1] ~ 
+               seq(nrow(wine_quality_model$tables$alcohol))))
+</div></pre></code>
 
+<p style="text-align:center">
+<img src="img/alcholol_mean.png" alt="alcholol mean" style='padding:1px; border:1px solid #021a40; width: 40%; height: 40%'>
+</p>
+<div class="highlighter-rouge">
+<pre class="highlight">
+<code>
+table(validate_split_data[,12])
+</div></pre></code>
+<div class="highlighter">
+<pre class="highlight">
+<code>
+## 
+##    3    4    5    6    7    8    9 
+##   13  100 1094 1419  539   98    3
+</div></pre></code>
 
 
 <br><br>
