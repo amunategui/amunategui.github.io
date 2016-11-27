@@ -316,7 +316,6 @@ Outlook Temperature_Nominal Humidity_Nominal Windy            rawPrediction
 <BR>
 Let’s start by loading in and splitting the data.</p>
 
-</div></pre></code>
 <div class="highlighter-rouge">
 <pre class="highlight">
 <code>
@@ -331,7 +330,7 @@ wine_quality <- rbind(winequality_red, winequality_white)
 names(wine_quality) <- gsub(names(wine_quality), pattern = '\\.', replacement = '_')
 
 dim(wine_quality)
-</div></pre></code>
+</code></pre></div>
 <div class="highlighter-rouge">
 <pre class="highlight">
 <code>
@@ -415,8 +414,9 @@ abline(lm(wine_quality_model$tables$alcohol[,1] ~
 <pre class="highlight">
 <code>
 table(validate_split_data[,12])
-</div></pre></code>
-<div class="highlighter">
+</code></pre></div>
+
+<div class="highlighter-rouge">
 <pre class="highlight">
 <code>
 ## 
