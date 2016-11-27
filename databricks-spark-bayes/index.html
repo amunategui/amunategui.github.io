@@ -61,7 +61,7 @@
 
 
 <p>
-One of the recent additions to SparkR is the Naive Bayes classification model. In simple terms, it creates a frequency table cataloging every possible value combination from your historical data for both positive and negative outcomes. Its simpler to visualize by thinking of simple categorical features, but it normally can handle any data type. It then uses that data and Bayes theorem to yield new probabilities:
+One of the recent additions to SparkR is the Naive Bayes classification model. In simple terms, it creates a frequency table cataloging every possible value combination from your historical data for both positive and negative outcomes. Its simpler to visualize by thinking of simple categorical features, but it normally handles any data type. It then uses applies the data to the Bayes theorem to yield new probabilities:
 </p>
 <p style="text-align:center">
 <img src="img/Bayes_Theorem_Wiki.png" alt="Bayes Theorem Wiki" style='padding:1px; border:1px solid #021a40; width: 60%; height: 60%'>
@@ -78,15 +78,16 @@ One of the recent additions to SparkR is the Naive Bayes classification model. I
 
 <p>If this isn’t clear, check out a <a href="https://www.youtube.com/watch?v=IlVINQDk4o8" target="_blank">brief and funny video from the folks at RapidMiner</a>.</p>
 <p>
-It’s called ‘naive’ because it assumes independence between the predictors, and short of each predictor happening on a different planet, it is hard to assume with a straight face. That said, such assumption simplifies the model tremendously; it makes the model simple, fast, and transparent. It is perfect for working with large data sets in distributed environments - yup, perfect for Spark! 
+It’s called ‘naive’ because it assumes independence between the predictors, but short of each predictor happening on a different planet, it is hard to know for sure. That said, such assumption simplifies the model tremendously; it makes the model simple, fast, and transparent. It is perfect for working with large data sets in distributed environments - perfect for Spark! 
 </p>
 <BR><BR>
 <h3>Titanic Dataset</h3>
 <p>Let take a look at <a href="https://spark.apache.org/docs/latest/sparkr.html#naive-bayes-model" target="_blank">Spark’s Naive Bayes Model example</a> using a built-in frequency table of the Titanic:</p>
 
-
+<div class="highlighter-rouge"><pre class="highlight"><code>
 titanic <- as.data.frame(Titanic)
 head(titanic)
+</code></pre></div>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>
 Class    Sex   Age Survived Freq
@@ -96,7 +97,7 @@ Class    Sex   Age Survived Freq
 4  Crew   Male Child       No    0
 5   1st Female Child       No    0
 6   2nd Female Child       No    0
-</div></pre></code>
+</code></pre></div>
 <div class="highlighter-rouge">
 <pre class="highlight">
 <code>
@@ -108,7 +109,7 @@ Class    Sex   Age Survived Freq
 30   2nd Female Adult      Yes   80
 31   3rd Female Adult      Yes   76
 32  Crew Female Adult      Yes   20
-</div></pre></code>
+</code></pre></div>
 <BR><BR> 
 <p>We feed the data with 1 or more frequency count in the <b>spark.naiveBayes</b> model:</p>
 
@@ -120,7 +121,7 @@ titanicDF <- createDataFrame(titanic[titanic$Freq > 0, -5])
 nbDF <- titanicDF
 nbTestDF <- titanicDF
 nbModel <- spark.naiveBayes(nbDF, Survived ~ Class + Sex + Age)
-</div></pre></code>
+</code></pre></div>
 <BR><BR> 
 <p>Let’s take a look at summary output:</p>
 
@@ -139,7 +140,7 @@ $tables
     Class_3rd Class_1st Class_2nd Sex_Male Age_Adult
 Yes 0.3125    0.3125    0.3125    0.5      0.5625   
 No  0.4166667 0.25      0.25      0.5      0.75 
-</div></pre></code>
+</code></pre></div>
 <BR><BR>
 <p>And let’s continue with the example and run some predictions:</p>
 
@@ -175,7 +176,7 @@ showDF(nbPredictions)
 | Crew|  Male|Adult|     Yes|  0.0|[-2.9426380107070...|[0.50318824507901...|       Yes|
 +-----+------+-----+--------+-----+--------------------+--------------------+----------+
 only showing top 20 rows
-</div></pre></code>
+</code></pre></div>
 <BR><BR>
 <h3>Golf & Weather Dataset</h3>
 
@@ -200,7 +201,7 @@ overcast    64  cool    65  normal  TRUE    yes
                   sunny 75  mild    70  normal  TRUE    yes",header = TRUE,sep = "")
 
 head(golf_weather)
-</div></pre></code>
+</code></pre></div>
 <div class="highlighter-rouge">
 <pre class="highlight">
 <code>
@@ -218,7 +219,7 @@ head(golf_weather)
 ## 4           normal FALSE  yes
 ## 5             high FALSE  yes
 ## 6           normal FALSE  yes
-</div></pre></code>
+</code></pre></div>
 <BR><BR> 
 <p>As you can see with the data, there are two numeric fields. If we try to run it through the <b>spark.naiveBayes</b> model, it will fail and complain about continuous variables (Humidity_Numeric & Temperature_Numeric) not being supported (I imagine this will be fixed eventually, so if it works fine, be happy):</p>
 
@@ -227,7 +228,7 @@ head(golf_weather)
 <code>
 golf_weather_sparkdf <-as.DataFrame(golf_weather)
 golf_weather_model <- spark.naiveBayes(Play ~ ., data = golf_weather_sparkdf)
-</div></pre></code>
+</code></pre></div>
 <BR><BR> 
 <p>The good thing with this dataset is it includes binned features for the both Humidity_Numeric and Temperature_Numeric: Humidity_Nominal and Temperature_Nominal. Let’s remove them numeric features, split the dataset and train/validate it using Naive Bayes.</p>
 
@@ -238,7 +239,7 @@ golf_weather_model <- spark.naiveBayes(Play ~ ., data = golf_weather_sparkdf)
 library(dplyr)
 golf_weather %>% dplyr::select(-Humidity_Numeric, -Temperature_Numeric) -> golf_weather
 str(golf_weather)
-</div></pre></code>
+</code></pre></div>
 
 <div class="highlighter-rouge">
 <pre class="highlight">
@@ -249,7 +250,7 @@ str(golf_weather)
  $ Humidity_Nominal   : chr "normal" "high" "normal" "high" "normal" "high"
  $ Windy              : logi TRUE TRUE FALSE FALSE FALSE TRUE
  $ Play               : chr "yes" "yes" "yes" "yes" "yes" "no"
-</div></pre></code>
+</code></pre></div>
 <BR><BR> 
 <p>Split the data and run the model:</p>
 <div class="highlighter-rouge">
@@ -260,7 +261,7 @@ golf_weather_spark <-as.DataFrame(golf_weather)
  
 golf_weather_model <- spark.naiveBayes(Play ~ ., data = golf_weather_spark)
 summary(golf_weather_model)
-</div></pre></code>
+</code></pre></div>
 <div class="highlighter-rouge">
 <pre class="highlight">
 <code>
@@ -275,14 +276,14 @@ no  0.4285714     0.5714286     0.4285714
     Temperature_Nominal_cool Humidity_Nominal_high Windy    
 yes 0.3636364                0.3636364             0.3636364
 no  0.2857143                0.7142857             0.5714286
-</div></pre></code>
+</code></pre></div>
 <BR><BR>
 <p>How about feeding it some custom data to predict the probability of golfing - what if it is rainy, hot, normal humidity, and windy?</p>
 <div class="highlighter-rouge">
 <pre class="highlight">
 <code>
 head(predict(golf_weather_model, as.DataFrame(data.frame(Outlook = c('rainy'), Temperature_Nominal=c('hot'), Humidity_Nominal=c('normal'),  Windy=c(TRUE)))),1)
-</div></pre></code>
+</code></pre></div>
 
 <div class="highlighter-rouge">
 <pre class="highlight">
@@ -291,7 +292,7 @@ Outlook Temperature_Nominal Humidity_Nominal Windy rawPrediction
 1   rainy                 hot           normal  TRUE 
 probability prediction
 1         yes
-</div></pre></code>
+</code></pre></div>
 <BR><BR> 
 <p>What about?</p>
 
@@ -299,14 +300,14 @@ probability prediction
 <pre class="highlight">
 <code>
 head(predict(golf_weather_model, as.DataFrame(data.frame(Outlook = c('overcast'), Temperature_Nominal=c('hot'), Humidity_Nominal=c('high'),  Windy=c(TRUE)))),1)
-</div></pre></code>
+</code></pre></div>
 <div class="highlighter-rouge">
 <pre class="highlight">
 <code>
 Outlook Temperature_Nominal Humidity_Nominal Windy            rawPrediction
 1 overcast                 hot             high  TRUE 
                probability prediction
-</div></pre></code>
+</code></pre></div>
 <BR><BR>
 
 <h3>Wine Quality Data Set</h3>
@@ -335,7 +336,7 @@ dim(wine_quality)
 <pre class="highlight">
 <code>
 ## [1] 6497   12
-</div></pre></code>
+</code></pre></div>
 <div class="highlighter-rouge">
 <pre class="highlight">
 <code>
@@ -346,7 +347,7 @@ set.seed(1234)
 random_splits <- runif(nrow(wine_quality))
 train_split_data <- wine_quality[random_splits < .5,]
 validate_split_data <- wine_quality[random_splits >= .5,]
-</div></pre></code>
+</code></pre></div>
 
 <p>Now let’s run it through the <b>e1071 naiveBayes</b> model and take a look at what the model does with some continuous variables:
 </p>
@@ -356,7 +357,7 @@ validate_split_data <- wine_quality[random_splits >= .5,]
 #install.packages('e1071')
 library(e1071)
 wine_quality_model <- naiveBayes(quality ~ ., data = train_split_data)
-</div></pre></code>
+</code></pre></div>
 
 <p>If you feed your continuous variables directly into naiveBayes, it will use a <a href="https://en.wikipedia.org/wiki/Probability_density_function" target="_blank">Probability Density Function (PDF)</a> to calculate likelihood and probabilities for that variable in relation to the outcome (it assumes your data is normally distributed).</p>
 
@@ -366,13 +367,13 @@ wine_quality_model <- naiveBayes(quality ~ ., data = train_split_data)
 <pre class="highlight">
 <code>
 head(wine_quality$alcohol)
-</div></pre></code>
+</code></pre></div>
 
 <div class="highlighter-rouge">
 <pre class="highlight">
 <code>
 ## [1] 9.4 9.8 9.8 9.8 9.4 9.4
-</div></pre></code>
+</code></pre></div>
 
 <BR><BR> 
 <p>and after:</p>
@@ -381,7 +382,7 @@ head(wine_quality$alcohol)
 <pre class="highlight">
 <code>
 head(wine_quality_model$tables$alcohol)
-</div></pre></code>
+</code></pre></div>
 
 <div class="highlighter-rouge">
 <pre class="highlight">
@@ -394,7 +395,7 @@ head(wine_quality_model$tables$alcohol)
 ##   6 10.588285 1.1324282
 ##   7 11.359167 1.2269708
 ##   8 11.570526 1.2773704
-</div></pre></code>
+</code></pre></div>
 
 <BR><BR> 
 <p>It then feeds the mean, standard deviation from continuous features along with the outcome variable in the distribution function and you will get the likelihood for each outcome possibility.</p>
@@ -405,7 +406,7 @@ head(wine_quality_model$tables$alcohol)
 plot(wine_quality_model$tables$alcohol[,1])
 abline(lm(wine_quality_model$tables$alcohol[,1] ~ 
                seq(nrow(wine_quality_model$tables$alcohol))))
-</div></pre></code>
+</code></pre></div>
 
 <p style="text-align:center">
 <img src="img/alcholol_mean.png" alt="alcholol mean" style='padding:1px; border:1px solid #021a40; width: 40%; height: 40%'>
