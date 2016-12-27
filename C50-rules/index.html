@@ -577,28 +577,28 @@ interesting_interactions <- function(the_data_frame, outcome_name) {
 <pre class="r"><code>results &lt;- interesting_interactions(the_data_frame = churn_data, outcome_name = outcome_name)</code></pre>
 
 <pre class="r"><code>print(head(results, 10))</code></pre>
-<pre><code>##                                    uuid conditions   cover true_pos
-## 1  8a83c18e-3281-4da2-ac88-dfac99d9d5cb          1 3232.00  2811.00
-## 2  441ebe33-7688-4b12-bfc8-75fc3529f229          1 3122.00  2766.00
-## 3  de39f990-baf8-4096-a2c1-d083ac054c2d          1 3066.00  2721.00
-## 4  621127a1-dc6a-43aa-965b-2d65f1293707          1 3064.11  2206.25
-## 5  99175d48-698f-41d9-9990-56c36f4a050a          1 3010.00  2664.00
-## 6  1ec99565-84cc-4046-aea6-4cad6a984602          1 2949.38  2094.81
-## 7  2d242f4e-93db-41f2-a5cb-b3a897a0d894          1 2947.10  2149.67
-## 8  2a3a462a-8a1b-4f05-945a-20d71792beeb          1 2666.00  2322.00
-## 9  19a50248-e803-4a08-9160-164d3ecee440          1 2643.00  2391.00
-## 10 77077550-dae4-4c29-984f-eb540097c0d1          1 2115.74  1997.47
-##       lift                     attribute elts cut    result value outcome
-## 1  1.01687 number_customer_service_calls        &lt;         4         Stays
-## 2  1.03583             total_day_minutes        &lt; 264.39999         Stays
-## 3  1.03758 number_customer_service_calls        &lt;         3         Stays
-## 4  1.03639             total_day_minutes        &lt; 263.10001         Stays
-## 5  1.03474            international_plan                       no   Stays
-## 6  1.05610            international_plan                       no   Stays
-## 7  1.05180 number_customer_service_calls        &lt;         3         Stays
-## 8  1.01825              total_intl_calls        &gt;         2         Stays
-## 9  1.05761             total_day_minutes        &lt;     223.2         Stays
-## 10 1.24818              total_eve_charge        &lt; 20.049999         Stays</code></pre>
+<pre><code>##    rule_number conditions cover true_pos    lift type
+## 1            1          2    60       60 6.78932    1
+## 2            1          2    60       60 6.78932    2
+## 3            2          2    57       57 6.78366    1
+## 4            2          2    57       57 6.78366    2
+## 5            3          2    32       32 6.69766    2
+## 6            3          2    32       32 6.69766    2
+## 7            4          3    79       76 6.55985    2
+## 8            4          3    79       76 6.55985    2
+## 9            4          3    79       76 6.55985    2
+## 10           5          4    43       41 6.44058    1
+##                        attribute elts cut result value    outcome
+## 1             international_plan                   yes Does_Churn
+## 2               total_intl_calls        &lt;      2       Does_Churn
+## 3             international_plan                   yes Does_Churn
+## 4             total_intl_minutes        &gt;   13.1       Does_Churn
+## 5              total_day_minutes        &lt;  120.5       Does_Churn
+## 6  number_customer_service_calls        &gt;      3       Does_Churn
+## 7              total_day_minutes        &lt;  160.2       Does_Churn
+## 8               total_eve_charge        &lt;  19.83       Does_Churn
+## 9  number_customer_service_calls        &gt;      3       Does_Churn
+## 10            international_plan                    no Does_Churn</code></pre>
 <BR><BR>
 <p>We can take this one step further and build a report-generating function. Something that can peel the conditions apart and weave them into a sentence:</p>
 <pre class="r"><code>
