@@ -67,7 +67,7 @@ At <a href='http://www.springml.com/' target='_blank'>SpringML</a>, we are known
 The <a href='https://cran.r-project.org/web/packages/C50/index.html' targer='_blank'>C5.0 Model (C5.0 Decision Trees and Rule-Based Models)</a> is one of those tools. It is a high performing, tree-based classification model. Much like a random forest, it takes random sets of features and measures how it affects a particular outcome. C5.0 outputs a set of complex, non-linear rules describing what features and at what level provide the most lift to the model. It doesn’t even require dummy variables for your categorical data, on the contrary, the closer your features are to the spoken language, the more readable the output. With some prep-work, we can automate the reporting of C5.0 results using a structure similar to the spoken language, something that anybody can understand - no statistics degree required!
 </p>
 
-
+<BR><BR>
 <H1>Why Are Your Customers Churning?</H1>
 
 <B>Out of 523 cases, 74% churned when:
@@ -97,11 +97,51 @@ Out of 348 cases, 70% churned when:
    
 
 <BR><BR>
-<p>
-We’ll use the built-in data set supplied with the C5.0 R library, called `Customer Churn` (note: in one of the source files states that the data are "artificial based on claims similar to real world"). As the name implies, the data contains customer information and usage records from a phone company including whether the customer churned or not.
+<p>We’ll use the built-in data set supplied with the C5.0 R library, called <code>Customer Churn</code> (note: in one of the source files states that the data are “artificial based on claims similar to real world”). As the name implies, the data contains customer information and usage records from a phone company including whether the customer churned or not.</p>
+<p>This data set contains two data frames, a training (3333 entries) and testing (1667 entries). We’ll use <code>churnTrain</code> to keep things simple:</p>
+<pre class="r"><code># install.packages('C50')
+library(C50)
+data(churn)
 
-This data set contains two data frames, a training (3333 entries) and testing (1667 entries). We'll use `churnTrain` to keep things simple:
-</p>
+churn_data &lt;- churnTrain
+outcome_name &lt;- 'churn'
+
+# make the outcome variable easier to read
+churn_data[,outcome_name] &lt;- as.factor(ifelse(churn_data[,outcome_name]=='yes','Does_Churn', 'Stays'))
+
+str(churn_data)</code></pre>
+<pre><code>## 'data.frame':    3333 obs. of  20 variables:
+##  $ state                        : Factor w/ 51 levels &quot;AK&quot;,&quot;AL&quot;,&quot;AR&quot;,..: 17 36 32 36 37 2 20 25 19 50 ...
+##  $ account_length               : int  128 107 137 84 75 118 121 147 117 141 ...
+##  $ area_code                    : Factor w/ 3 levels &quot;area_code_408&quot;,..: 2 2 2 1 2 3 3 2 1 2 ...
+##  $ international_plan           : Factor w/ 2 levels &quot;no&quot;,&quot;yes&quot;: 1 1 1 2 2 2 1 2 1 2 ...
+##  $ voice_mail_plan              : Factor w/ 2 levels &quot;no&quot;,&quot;yes&quot;: 2 2 1 1 1 1 2 1 1 2 ...
+##  $ number_vmail_messages        : int  25 26 0 0 0 0 24 0 0 37 ...
+##  $ total_day_minutes            : num  265 162 243 299 167 ...
+##  $ total_day_calls              : int  110 123 114 71 113 98 88 79 97 84 ...
+##  $ total_day_charge             : num  45.1 27.5 41.4 50.9 28.3 ...
+##  $ total_eve_minutes            : num  197.4 195.5 121.2 61.9 148.3 ...
+##  $ total_eve_calls              : int  99 103 110 88 122 101 108 94 80 111 ...
+##  $ total_eve_charge             : num  16.78 16.62 10.3 5.26 12.61 ...
+##  $ total_night_minutes          : num  245 254 163 197 187 ...
+##  $ total_night_calls            : int  91 103 104 89 121 118 118 96 90 97 ...
+##  $ total_night_charge           : num  11.01 11.45 7.32 8.86 8.41 ...
+##  $ total_intl_minutes           : num  10 13.7 12.2 6.6 10.1 6.3 7.5 7.1 8.7 11.2 ...
+##  $ total_intl_calls             : int  3 3 5 7 3 6 7 6 4 5 ...
+##  $ total_intl_charge            : num  2.7 3.7 3.29 1.78 2.73 1.7 2.03 1.92 2.35 3.02 ...
+##  $ number_customer_service_calls: int  1 1 0 2 3 0 3 0 1 0 ...
+##  $ churn                        : Factor w/ 2 levels &quot;Does_Churn&quot;,&quot;Stays&quot;: 2 2 2 2 2 2 2 2 2 2 ...</code></pre>
+<p><strong>Straight up C5.0</strong></p>
+<p>Let’s first look at the default summary output from C5.0:</p>
+<pre class="r"><code>c50_model &lt;- C5.0(x=churn_data[,setdiff(names(churn_data), outcome_name)], churn_data[,outcome_name], rules = FALSE)
+summary(c50_model)</code></pre>
+
+
+
+
+
+
+
 
 
 
