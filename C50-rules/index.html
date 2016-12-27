@@ -1,0 +1,111 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Understand Where Your Customers Are Coming From And Where They're Likely Going - Reporting On Complex Customer Behavior In Plain English</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Understand Where Your Customers Are Coming From And Where They're Likely Going - Reporting On Complex Customer Behavior In Plain English</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+<p style="text-align:center">
+<img src="img/C50-globe.png" alt="C50 Globe" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<p><br /><br /></p>
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=aL6Wugb0oGI&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<p><br />
+
+
+<p>
+At SpringML, we are known for our customer-facing, colorful, interactive and informative dashboards, and we are very proud of them. As you can imagine, it takes time to build those dashboards, but it also requires a lot of research to decide what to feed into them - what will be the most empowering and pertinent to the customer. In that spirit, we are constantly evaluating new techniques and new tools to better dive into the data and unearth more patterns and bottlenecks.
+
+The C5.0 Model (C5.0 Decision Trees and Rule-Based Models) is one of those tools. It is a high performing, tree-based classification model. Much like a random forest, it takes random sets of features and measures how it affects a particular outcome. C5.0 outputs a set of complex, non-linear rules describing what features and at what level provide the most lift to the model. It doesn’t even require dummy variables for your categorical data, on the contrary, the closer your features are to the spoken language, the more readable the output. With some prep-work, we can automate the reporting of C5.0 results using a structure similar to the spoken language, something that anybody can understand - no statistics degree required!
+
+
+<B>Out of 523 cases, 74% churned when:
+<ol>
+<li>total_day_charge > 38.25</li>
+<li>total_eve_charge > 20.48</li>
+</ol>
+
+Out of 489 cases, 82% churned when:
+<ol>
+<li>total_night_minutes > 174</li>
+<li>total_eve_minutes > 241</li>
+<li>total_day_minutes > 224</li>
+</ol>
+
+Out of 416 cases, 61% churned when:
+<ol>
+<li>international_plan == yes</li>
+</ol>
+
+Out of 348 cases, 70% churned when:
+<ol>
+<li>total_day_charge < 38.25</li>
+<li>number_customer_service_calls > 3</li>
+</ol>
+</B>
+
+<BR><BR>
+<p>
+We’ll use the built-in data set supplied with the C5.0 R library, called `Customer Churn` (note: in one of the source files states that the data are "artificial based on claims similar to real world"). As the name implies, the data contains customer information and usage records from a phone company including whether the customer churned or not.
+
+This data set contains two data frames, a training (3333 entries) and testing (1667 entries). We'll use `churnTrain` to keep things simple:
+</p>
+
+
+
+
+<br><br>
+<i>Special thanks to Lucas for the great data-brick-flip artwork!!!</i>
+
+
+  
+</div>   
+</body>
+</html>
