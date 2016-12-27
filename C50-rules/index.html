@@ -55,7 +55,7 @@
 
 <p><strong>Resources</strong></p>
 <ul>
-<li type="square"><a href="https://www.youtube.com/watch?v=aL6Wugb0oGI&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target="_blank">YouTube Companion Video</a></li>
 </ul>
 <p><br />
 
@@ -68,7 +68,7 @@ The <a href='https://cran.r-project.org/web/packages/C50/index.html' targer='_bl
 </p>
 
 <BR><BR>
-<H1>Why Are Your Customers Churning?</H1>
+<H2>Why Are Your Customers Churning?</H2>
 <p>We’ll use the built-in data set supplied with the C5.0 R library, called <code>Customer Churn</code>. As the name implies, the data contains customer information and usage records from a phone company including whether the customer churned or not. Here is a brief sample of the distilled intelligence you can expect from C50 and our work here:</p>
 
 
@@ -100,8 +100,10 @@ Out of 348 cases, 70% churned when:
 
 <BR><BR>
 
-<p>This data set contains two data frames, a training (3333 entries) and testing (1667 entries). We’ll use <code>churnTrain</code> to keep things simple:</p>
-<pre class="r"><code># install.packages('C50')
+<p>This data set contains two data frames, a training (3333 entries) and testing (1667 entries). We’ll use <code>churnTrain</code> to keep things simple and fix the outcome variable <code>churn</code> to be more readable:</p>
+<pre class="r">
+
+<code># install.packages('C50')
 library(C50)
 data(churn)
 
@@ -133,7 +135,8 @@ str(churn_data)</code></pre>
 ##  $ total_intl_charge            : num  2.7 3.7 3.29 1.78 2.73 1.7 2.03 1.92 2.35 3.02 ...
 ##  $ number_customer_service_calls: int  1 1 0 2 3 0 3 0 1 0 ...
 ##  $ churn                        : Factor w/ 2 levels &quot;Does_Churn&quot;,&quot;Stays&quot;: 2 2 2 2 2 2 2 2 2 2 ...</code></pre>
-<p><strong>Straight up C5.0</strong></p>
+<BR><BR>
+<h2>Straight up C5.0</h2>
 <p>Let’s first look at the default summary output from C5.0:</p>
 <pre class="r"><code>c50_model &lt;- C5.0(x=churn_data[,setdiff(names(churn_data), outcome_name)], churn_data[,outcome_name], rules = FALSE)
 summary(c50_model)</code></pre>
@@ -240,6 +243,7 @@ summary(c50_model)</code></pre>
 ## 
 ## 
 ## Time: 0.0 secs</code></pre>
+<BR><BR>
 <p>Now, if we turn on <code>rules</code> to TRUE (see ?C5.0: A logical: should the tree be decomposed into a rule-based model?). We get the same output but in a more readable format and that is going to help us get this information into a structured format:</p>
 <pre class="r"><code>c50_model &lt;- C5.0(x=churn_data[,setdiff(names(churn_data), outcome_name)], churn_data[,outcome_name], rules = TRUE)
 summary(c50_model)</code></pre>
@@ -414,10 +418,11 @@ summary(c50_model)</code></pre>
 <p>Though the output is interesting and insightful, we need this in a data-frame format so we can build it into our reporting pipeline. Let’s see what we have to work with:</p>
 <pre class="r"><code>head(c50_model$rules)</code></pre>
 <pre><code>## [1] &quot;id=\&quot;See5/C5.0 2.07 GPL Edition 2016-12-27\&quot;\nentries=\&quot;1\&quot;\nrules=\&quot;19\&quot; default=\&quot;Stays\&quot;\nconds=\&quot;2\&quot; cover=\&quot;60\&quot; ok=\&quot;60\&quot; lift=\&quot;6.78932\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;yes\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_intl_calls\&quot; cut=\&quot;2\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;2\&quot; cover=\&quot;57\&quot; ok=\&quot;57\&quot; lift=\&quot;6.78366\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;yes\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_intl_minutes\&quot; cut=\&quot;13.1\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;2\&quot; cover=\&quot;32\&quot; ok=\&quot;32\&quot; lift=\&quot;6.69766\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;120.5\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;79\&quot; ok=\&quot;76\&quot; lift=\&quot;6.55985\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;160.2\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;19.83\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;4\&quot; cover=\&quot;43\&quot; ok=\&quot;41\&quot; lift=\&quot;6.44058\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;246.60001\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;20.5\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;4\&quot; cover=\&quot;28\&quot; ok=\&quot;26\&quot; lift=\&quot;6.21056\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;264.39999\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_calls\&quot; cut=\&quot;125\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;12.05\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;4\&quot; cover=\&quot;78\&quot; ok=\&quot;70\&quot; lift=\&quot;6.1243\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;223.2\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;20.5\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_night_minutes\&quot; cut=\&quot;174.2\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;114\&quot; ok=\&quot;90\&quot; lift=\&quot;5.41342\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;223.2\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;20.5\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;2\&quot; cover=\&quot;152\&quot; ok=\&quot;94\&quot; lift=\&quot;4.25688\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;223.2\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;20.5\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;1\&quot; cover=\&quot;211\&quot; ok=\&quot;127\&quot; lift=\&quot;4.14685\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;264.39999\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;2221\&quot; ok=\&quot;2161\&quot; lift=\&quot;1.13738\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;223.2\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;768\&quot; ok=\&quot;748\&quot; lift=\&quot;1.13758\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;yes\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;140\&quot; ok=\&quot;135\&quot; lift=\&quot;1.12006\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;2\&quot; att=\&quot;account_length\&quot; cut=\&quot;123\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_minutes\&quot; cut=\&quot;187.7\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_night_minutes\&quot; cut=\&quot;151.89999\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;45\&quot; ok=\&quot;44\&quot; lift=\&quot;1.11971\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;yes\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;264.39999\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;4\&quot; cover=\&quot;1972\&quot; ok=\&quot;1885\&quot; lift=\&quot;1.11734\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;264.39999\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_intl_minutes\&quot; cut=\&quot;13.1\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_intl_calls\&quot; cut=\&quot;2\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;197\&quot; ok=\&quot;188\&quot; lift=\&quot;1.11071\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;120.5\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;160.2\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;19.83\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;155\&quot; ok=\&quot;145\&quot; lift=\&quot;1.08754\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;277\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_night_minutes\&quot; cut=\&quot;126.9\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;1675\&quot; ok=\&quot;1490\&quot; lift=\&quot;1.03976\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;160.2\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;264.39999\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;12.05\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;1\&quot; cover=\&quot;434\&quot; ok=\&quot;385\&quot; lift=\&quot;1.03536\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;12.26\&quot; result=\&quot;&lt;\&quot;\n&quot;</code></pre>
+<BR><BR>
 <p>Yes, its a mess! But don’t despair, we’ll <code>strsplit</code> our way out of this and make it all come together:</p>
-<pre class="r"><code>rule_munger &lt;- capture.output(c50_model$rules , split = TRUE)</code></pre>
-<pre><code>## [1] &quot;id=\&quot;See5/C5.0 2.07 GPL Edition 2016-12-27\&quot;\nentries=\&quot;1\&quot;\nrules=\&quot;19\&quot; default=\&quot;Stays\&quot;\nconds=\&quot;2\&quot; cover=\&quot;60\&quot; ok=\&quot;60\&quot; lift=\&quot;6.78932\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;yes\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_intl_calls\&quot; cut=\&quot;2\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;2\&quot; cover=\&quot;57\&quot; ok=\&quot;57\&quot; lift=\&quot;6.78366\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;yes\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_intl_minutes\&quot; cut=\&quot;13.1\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;2\&quot; cover=\&quot;32\&quot; ok=\&quot;32\&quot; lift=\&quot;6.69766\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;120.5\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;79\&quot; ok=\&quot;76\&quot; lift=\&quot;6.55985\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;160.2\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;19.83\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;4\&quot; cover=\&quot;43\&quot; ok=\&quot;41\&quot; lift=\&quot;6.44058\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;246.60001\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;20.5\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;4\&quot; cover=\&quot;28\&quot; ok=\&quot;26\&quot; lift=\&quot;6.21056\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;264.39999\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_calls\&quot; cut=\&quot;125\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;12.05\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;4\&quot; cover=\&quot;78\&quot; ok=\&quot;70\&quot; lift=\&quot;6.1243\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;223.2\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;20.5\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_night_minutes\&quot; cut=\&quot;174.2\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;114\&quot; ok=\&quot;90\&quot; lift=\&quot;5.41342\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;223.2\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;20.5\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;2\&quot; cover=\&quot;152\&quot; ok=\&quot;94\&quot; lift=\&quot;4.25688\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;223.2\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;20.5\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;1\&quot; cover=\&quot;211\&quot; ok=\&quot;127\&quot; lift=\&quot;4.14685\&quot; class=\&quot;Does_Churn\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;264.39999\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;2221\&quot; ok=\&quot;2161\&quot; lift=\&quot;1.13738\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;223.2\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;768\&quot; ok=\&quot;748\&quot; lift=\&quot;1.13758\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;yes\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;140\&quot; ok=\&quot;135\&quot; lift=\&quot;1.12006\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;2\&quot; att=\&quot;account_length\&quot; cut=\&quot;123\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_minutes\&quot; cut=\&quot;187.7\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_night_minutes\&quot; cut=\&quot;151.89999\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;45\&quot; ok=\&quot;44\&quot; lift=\&quot;1.11971\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;1\&quot; att=\&quot;international_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;yes\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;264.39999\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;4\&quot; cover=\&quot;1972\&quot; ok=\&quot;1885\&quot; lift=\&quot;1.11734\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;264.39999\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_intl_minutes\&quot; cut=\&quot;13.1\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_intl_calls\&quot; cut=\&quot;2\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;number_customer_service_calls\&quot; cut=\&quot;3\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;197\&quot; ok=\&quot;188\&quot; lift=\&quot;1.11071\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;120.5\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;160.2\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;19.83\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;155\&quot; ok=\&quot;145\&quot; lift=\&quot;1.08754\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;1\&quot; att=\&quot;voice_mail_plan\&quot; val=\&quot;no\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;277\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_night_minutes\&quot; cut=\&quot;126.9\&quot; result=\&quot;&lt;\&quot;\nconds=\&quot;3\&quot; cover=\&quot;1675\&quot; ok=\&quot;1490\&quot; lift=\&quot;1.03976\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;160.2\&quot; result=\&quot;&gt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_day_minutes\&quot; cut=\&quot;264.39999\&quot; result=\&quot;&lt;\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;12.05\&quot; result=\&quot;&gt;\&quot;\nconds=\&quot;1\&quot; cover=\&quot;434\&quot; ok=\&quot;385\&quot; lift=\&quot;1.03536\&quot; class=\&quot;Stays\&quot;\ntype=\&quot;2\&quot; att=\&quot;total_eve_charge\&quot; cut=\&quot;12.26\&quot; result=\&quot;&lt;\&quot;\n&quot;</code></pre>
-<pre class="r"><code>rule_munger &lt;- strsplit(rule_munger,'\\\\n')
+<pre class="r"><code>
+rule_munger &lt;- capture.output(c50_model$rules , split = TRUE)
+rule_munger &lt;- strsplit(rule_munger,'\\\\n')
 rule_munger &lt;-  gsub(x = rule_munger[[1]], pattern = '\\\\|\&quot;', replacement = '')[-1]
 head(rule_munger,6)</code></pre>
 <pre><code>## [1] &quot;entries=1&quot;                                           
@@ -426,170 +431,148 @@ head(rule_munger,6)</code></pre>
 ## [4] &quot;type=1 att=international_plan val=yes&quot;               
 ## [5] &quot;type=2 att=total_intl_calls cut=2 result=&lt;&quot;          
 ## [6] &quot;conds=2 cover=57 ok=57 lift=6.78366 class=Does_Churn&quot;</code></pre>
+<BR><BR>
 <p>Much better, right?</p>
 <pre class="r"><code>[1] &quot;entries=1&quot;                                     &quot;rules=19 default=no&quot;                          
 [3] &quot;conds=2 cover=60 ok=60 lift=6.78932 class=yes&quot; &quot;type=1 att=international_plan val=yes&quot;        
 [5] &quot;type=2 att=total_intl_calls cut=2 result=&lt;&quot;   </code></pre>
+<BR><BR>
 <p>The output is a bit different so let’s look at it again. It states that C5.0 found 19 <code>rules</code> in total. The first rule has 2 conditions with a <code>cover</code> of 60 (60 rows found with 100% success rate) and a <code>lift</code> of 6.78932 for predicting <code>churn==yes</code>. The <code>type</code> represents the type of condition (like numeric, logical, categorical, etc). The first condition has an attribute value of <code>international_pal==yes</code> and <code>total_intl_calls &lt; 2</code>. There you have it, a rule that is practically readable.</p>
-<p><strong>Reporting Magic</strong></p>
-<p>To make this easier on all of us, we’re going to build a function that will format these automatically and return a compact data frame. And its going to do a few extra things as well. Rules with too many conditions reek of over-fitting and are hard to read. So this function will create various random samples of features and limit them to a set maximum quantity of features (customizable via function parameter). There also is a <code>feature_weight</code> parameter that can force that each set of features contain a particular variable on top of the outcome variable. <code>max_elts_length</code> truncates the values from categorical features as it can quickly overwhelm a data frame (like if a particular condition applies to all zip codes in the United States and returns them all).</p>
-<pre class="r"><code>interesting_interactions &lt;- function(the_data_frame, outcome_name, feature_weight=c(),
-                                     feature_size = 5, loop_count = 10, max_elts_length=200) {
-  # install.packages(...)
-  require(C50)
-  require(uuid)
-  require(dplyr)
-  total_rules &lt;- c()
-  
-  for (x in seq(loop_count))   {
-    # set random seed
-    t &lt;- as.numeric(Sys.time())
-    seed &lt;- 1e8 * (as.numeric(Sys.time()) - floor(t))
-    set.seed(seed); print(seed)
-    
-    # truncate feature set
-    feature_pool &lt;- setdiff(names(the_data_frame), c(outcome_name,feature_weight))
-    feature_pool &lt;- base::sample(feature_pool, feature_size)
-    # add feature_weight back to feature_pool
-    feature_pool &lt;- c(feature_pool, feature_weight)
-    
-    print(feature_pool)
-    
-    c5model &lt;- C5.0(
-      x = the_data_frame[,feature_pool],
-      y = the_data_frame[,outcome_name],
-      rules = TRUE, trials = 3
-    )
-    
-    rule_munger &lt;- capture.output(c5model$rules , split = TRUE)
-    rule_munger &lt;- strsplit(rule_munger,'\\\\n')
-    rule_munger &lt;-
-      gsub(x = rule_munger[[1]], pattern = '\\\\|\&quot;', replacement = '')[-1]
-    rule_munger
-    
-    # extract results into data frame format
-    rule_count &lt;- 0
-    conds_last &lt;- 0
-    cover_last &lt;- 0
-    ok_last &lt;- 0
-    lift_last &lt;-  0
-    class_last &lt;- 0
-    
-    rules &lt;- c()
-    current_uuid &lt;- ''
-    for (entry in rule_munger) {
-      print(entry)
-      if (substr(entry,1,5) == 'rules')
-        print(entry)
-      
-      # track only lines starting with conds or type - ignore rest
-      if (substr(entry,1,5) == 'conds' |
-          substr(entry,1,4) == 'type') {
-        if (substr(entry,1,5) == 'conds') {
-          current_uuid &lt;- UUIDgenerate()
-          rule_count &lt;- rule_count + 1
-          conds_last &lt;-
-            strsplit(x = strsplit(x = entry, split = &quot; &quot;)[[1]][1], split = '=')[[1]][2]
-          # cover is the number of training cases covered by the rule
-          cover_last &lt;-
-            strsplit(x = strsplit(x = entry, split = &quot; &quot;)[[1]][2], split = '=')[[1]][2]
-          # ok is the number of positives covered by class,
-          ok_last &lt;-
-            strsplit(x = strsplit(x = entry, split = &quot; &quot;)[[1]][3], split = '=')[[1]][2]
-          # lift is the estimated accuracy of the rule
-          lift_last &lt;-
-            strsplit(x = strsplit(x = entry, split = &quot; &quot;)[[1]][4], split = '=')[[1]][2]
-          # class predicted by
-          class_last &lt;-
-            strsplit(x = strsplit(x = entry, split = &quot; &quot;)[[1]][5], split = '=')[[1]][2]
-        }
-        
-        if (substr(entry,1,4) == 'type') {
-          # type=&quot;2&quot; probably means that it is a binary split on a numeric predictor and so on.
-          type_last &lt;-
-            strsplit(x = strsplit(x = entry, split = &quot; &quot;)[[1]][1], split = '=')[[1]][2]
-          att_last &lt;-
-            strsplit(x = strsplit(x = entry, split = &quot; &quot;)[[1]][2], split = '=')[[1]][2]
-          
-          # sniff out optional parameters
-          elts_last &lt;- ''
-          if (grepl(x = entry, pattern = 'elts')) {
-            elts_last &lt;- strsplit(x = entry, split = &quot;elts=&quot;)[[1]][2]
-          }
-          
-          cut_last &lt;- ''
-          if (grepl(x = entry, pattern = 'cut')) {
-            cut_last &lt;-
-              strsplit(
-                x = strsplit(
-                  x = entry, split = &quot;cut=&quot;
-                )[[1]][2], split = ' '
-              )[[1]][1]
-          }
-          
-          val_last &lt;- ''
-          if (grepl(x = entry, pattern = 'val')) {
-            val_last &lt;- strsplit(x = entry, split = &quot;val=&quot;)[[1]][2]
-          }
-          
-          result_last &lt;- ''
-          if (grepl(x = entry, pattern = 'result')) {
-            result_last &lt;- strsplit(x = entry, split = &quot;result=&quot;)[[1]][2]
-          }
-          
-          rules &lt;- rbind(
-            rules, c(
-              current_uuid,
-              rule_count,
-              conds_last,
-              cover_last,
-              ok_last,
-              lift_last,
-              type_last,
-              att_last,
-              elts_last,
-              result_last,
-              cut_last,
-              val_last,
-              class_last
-            )
-          )
-        }
-        
-      }
-      gc()
-    }
-    
-    if (!is.null(rules)) {
-      rules &lt;- data.frame(rules)
-      names(rules) &lt;-
-        c(
-          'uuid', 'rule_number', 'conditions', 'cover', 'true_pos',
-          'lift', 'type', 'attribute', 'elts', 'cut', 'result',
-          'value', 'outcome'
-        )
-      rules[, 2:7] &lt;- sapply(rules[, 2:7], as.character)
-      rules[, 2:7] &lt;- sapply(rules[, 2:7], as.numeric)
-      
-      if (length(unique(rules$rule_number) &gt; 0)) {
-        rules %&gt;% dplyr::arrange(desc(lift)) %&gt;%
-          dplyr::mutate(elts = substr(elts, 1, max_elts_length)) -&gt; rules
-        print(length(unique(rules$rule_number)))
-        head(rules$lift)
-        head(rules$true_pos)
-        total_rules &lt;- rbind(total_rules, rules)
-      }
-    }
-  }
-  
-  # remove dupliate rules
-  total_rules %&gt;% dplyr::distinct(uuid, .keep_all = TRUE) %&gt;% dplyr::select(uuid, conditions, cover, true_pos, lift) %&gt;% 
-    dplyr::distinct(lift, .keep_all = TRUE) %&gt;% arrange(cover) %&gt;% select(uuid) -&gt; uuids
-  
-  total_rules &lt;- dplyr::filter(total_rules, uuid %in% uuids$uuid)
 
-   return (dplyr::select(total_rules, -rule_number, -type) %&gt;% arrange(conditions, desc(cover)))
-}</code></pre>
+<BR><BR>
+<h2>Reporting Magic</h2>
+<p>To make this easier on all of us, we’re going to build a function called <code>interesting_interactions</code> that will format this automatically and return a compact data frame.</p>
+<pre class="r"><code>
+
+
+interesting_interactions <- function(the_data_frame, outcome_name) {
+  # install.packages(...) if missing
+  require(C50)
+  require(dplyr)
+  total_rules <- c()
+  
+  c5model <- C5.0(
+    x = the_data_frame[,setdiff(names(the_data_frame), outcome_name)],
+    y = the_data_frame[,outcome_name],
+    rules = TRUE
+  )
+  
+  rule_munger <- capture.output(c5model$rules , split = TRUE)
+  rule_munger <- strsplit(rule_munger,'\\\\n')
+  rule_munger <- gsub(x = rule_munger[[1]], pattern = '\\\\|\"', replacement = '')[-1]
+  
+  # extract results into data frame format
+  rule_count <- 0
+  conds_last <- 0
+  cover_last <- 0
+  ok_last <- 0
+  lift_last <-  0
+  class_last <- 0
+  
+  rules <- c()
+  for (entry in rule_munger) {
+    print(entry)
+    if (substr(entry,1,5) == 'rules')
+      print(entry)
+    
+    # track only lines starting with conds or type - ignore rest
+    if (substr(entry,1,5) == 'conds' |
+        substr(entry,1,4) == 'type') {
+      if (substr(entry,1,5) == 'conds') {
+        rule_count <- rule_count + 1
+        conds_last <-
+          strsplit(x = strsplit(x = entry, split = " ")[[1]][1], split = '=')[[1]][2]
+        # cover is the number of training cases covered by the rule
+        cover_last <-
+          strsplit(x = strsplit(x = entry, split = " ")[[1]][2], split = '=')[[1]][2]
+        # ok is the number of positives covered by class,
+        ok_last <-
+          strsplit(x = strsplit(x = entry, split = " ")[[1]][3], split = '=')[[1]][2]
+        # lift is the estimated accuracy of the rule
+        lift_last <-
+          strsplit(x = strsplit(x = entry, split = " ")[[1]][4], split = '=')[[1]][2]
+        # class predicted by
+        class_last <-
+          strsplit(x = strsplit(x = entry, split = " ")[[1]][5], split = '=')[[1]][2]
+      }
+      
+      if (substr(entry,1,4) == 'type') {
+        # variable type
+        type_last <-
+          strsplit(x = strsplit(x = entry, split = " ")[[1]][1], split = '=')[[1]][2]
+        att_last <-
+          strsplit(x = strsplit(x = entry, split = " ")[[1]][2], split = '=')[[1]][2]
+        
+        # sniff out optional parameters
+        elts_last <- ''
+        if (grepl(x = entry, pattern = 'elts')) {
+          elts_last <- strsplit(x = entry, split = "elts=")[[1]][2]
+        }
+        
+        cut_last <- ''
+        if (grepl(x = entry, pattern = 'cut')) {
+          cut_last <-
+            strsplit(
+              x = strsplit(
+                x = entry, split = "cut="
+              )[[1]][2], split = ' '
+            )[[1]][1]
+        }
+        
+        val_last <- ''
+        if (grepl(x = entry, pattern = 'val')) {
+          val_last <- strsplit(x = entry, split = "val=")[[1]][2]
+        }
+        
+        result_last <- ''
+        if (grepl(x = entry, pattern = 'result')) {
+          result_last <- strsplit(x = entry, split = "result=")[[1]][2]
+        }
+        
+        rules <- rbind(
+          rules, c(
+            rule_count,
+            conds_last,
+            cover_last,
+            ok_last,
+            lift_last,
+            type_last,
+            att_last,
+            elts_last,
+            result_last,
+            cut_last,
+            val_last,
+            class_last
+          )
+        )
+      }
+      
+    }
+    
+  }
+  if (!is.null(rules)) {
+    
+    rules <- data.frame(rules)
+    
+    names(rules) <-
+      c(
+        'rule_number', 'conditions', 'cover', 'true_pos',
+        'lift', 'type', 'attribute', 'elts', 'cut', 'result',
+        'value', 'outcome'
+      )
+    rules[, 1:6] <- sapply(rules[, 1:6], as.character)
+    rules[, 1:6] <- sapply(rules[, 1:6], as.numeric)
+    
+    if (length(unique(rules$rule_number) > 0)) {
+      rules %>% dplyr::arrange(desc(lift)) -> rules
+    }
+    
+  }
+  return (rules)
+}
+
+
+</code></pre>
 <p>Now that we built this function, let’s take it for a spin and see what it what we can learn about our churning and non-churning customers.</p>
 <pre class="r"><code>results &lt;- interesting_interactions(the_data_frame = churn_data, outcome_name = outcome_name, feature_size = 4, loop_count = 10)</code></pre>
 <pre><code>## Loading required package: uuid</code></pre>
@@ -808,309 +791,167 @@ head(rule_munger,6)</code></pre>
 ## 9  1.05761             total_day_minutes        &lt;     223.2         Stays
 ## 10 1.24818              total_eve_charge        &lt; 20.049999         Stays</code></pre>
 <p>We can take this one step further and build a report-generating function. Something that can peel the conditions apart and weave them into a sentence:</p>
-<pre class="r"><code># rules report
-print_rules &lt;- function(rules_found, rule_uuid) {
+<pre class="r"><code>
+# rules report
+print_rules <- function(rules_found, rulenum) {
   print('')
-  print(paste0('Rule #', rule_uuid))
-  pulled_rule &lt;- dplyr::filter(rules_found, uuid == rule_uuid)
-  dplyr::select(pulled_rule, cover, true_pos, outcome) %&gt;% head(1) -&gt; rule_def
-  dplyr::select(pulled_rule, attribute, elts, cut, result, value) -&gt; conditions
+  print(paste0('Rule #', rulenum))
+  dplyr::filter(rules_found, rule_number == rulenum) -> pulled_rule
+  dplyr::select(pulled_rule, cover, true_pos, outcome) %>% head(1) -> rule_def
+  dplyr::select(pulled_rule, attribute, elts, cut, result, value) -> conditions
   
-  print(paste0('Cover:', rule_def$cover, ' Success:', round(rule_def$true_pos/rule_def$cover,2)*100, '%'))
-  print(&quot; &quot;)
-  print(paste0(as.character(rule_def$outcome),&quot;:&quot;))
+  print(paste0('In ', rule_def$cover, ' cases, ', round(rule_def$true_pos/rule_def$cover,2)*100, '% customers ',
+               as.character(rule_def$outcome),' when:'))
   
   for (cond_id in seq(nrow(conditions))) {
-    cond &lt;- conditions[cond_id,]
+    cond <- conditions[cond_id,]
     #attribute elts cut result value
-    if (nchar(as.character(cond$elts)) &gt; 0) {
+    if (nchar(as.character(cond$elts)) > 0) {
       print(paste0(cond$attribute, 
                    ': ', cond$elts))
-    } else if (nchar(as.character(cond$value)) &gt; 0) {
+    } else if (nchar(as.character(cond$value)) > 0) {
       print(paste0(cond$attribute, 
                    ' == ', cond$value))
     } else {
-      print(paste0(cond$attribute, &quot; &quot;, cond$cut, &quot; &quot;, cond$result))
+      print(paste0(cond$attribute, " ", cond$cut, " ", cond$result))
     }
   }
   print('')
-  print('')
-}</code></pre>
-<pre class="r"><code># collate interesting rules into report format - top x rules found sorted by lift
-
-for (rule_uuid in unique(results$uuid))
-  print_rules(results, rule_uuid)</code></pre>
+}
+</code></pre>
+<pre class="r"><code>
+# collate interesting rules into report format - top x rules found sorted by lift
+for (rule_number in unique(results$rule_number))
+  print_rules(results, rule_number)
+</code></pre>
 <pre><code>## [1] &quot;&quot;
-## [1] &quot;Rule #8a83c18e-3281-4da2-ac88-dfac99d9d5cb&quot;
-## [1] &quot;Cover:3232 Success:87%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;number_customer_service_calls &lt; 4&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #441ebe33-7688-4b12-bfc8-75fc3529f229&quot;
-## [1] &quot;Cover:3122 Success:89%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;total_day_minutes &lt; 264.39999&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #de39f990-baf8-4096-a2c1-d083ac054c2d&quot;
-## [1] &quot;Cover:3066 Success:89%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;number_customer_service_calls &lt; 3&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #621127a1-dc6a-43aa-965b-2d65f1293707&quot;
-## [1] &quot;Cover:3064.11 Success:72%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;total_day_minutes &lt; 263.10001&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #99175d48-698f-41d9-9990-56c36f4a050a&quot;
-## [1] &quot;Cover:3010 Success:89%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;international_plan == no&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #1ec99565-84cc-4046-aea6-4cad6a984602&quot;
-## [1] &quot;Cover:2949.38 Success:71%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;international_plan == no&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #2d242f4e-93db-41f2-a5cb-b3a897a0d894&quot;
-## [1] &quot;Cover:2947.1 Success:73%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;number_customer_service_calls &lt; 3&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #2a3a462a-8a1b-4f05-945a-20d71792beeb&quot;
-## [1] &quot;Cover:2666 Success:87%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;total_intl_calls &gt; 2&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #19a50248-e803-4a08-9160-164d3ecee440&quot;
-## [1] &quot;Cover:2643 Success:90%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;total_day_minutes &lt; 223.2&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #77077550-dae4-4c29-984f-eb540097c0d1&quot;
-## [1] &quot;Cover:2115.74 Success:94%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;total_eve_charge &lt; 20.049999&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #4041d770-4ab2-4c85-ba61-93f079f1bb51&quot;
-## [1] &quot;Cover:1743.76 Success:100%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;total_day_minutes &lt; 224.10001&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #10215bb3-cc04-47d0-804b-746926e5d029&quot;
-## [1] &quot;Cover:449.846 Success:64%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;international_plan == yes&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #a62fd138-86e6-4c1b-8db0-a1b39bff315c&quot;
-## [1] &quot;Cover:385.897 Success:58%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;number_customer_service_calls &gt; 3&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #a9444aee-498e-4787-918d-d302c74c6f99&quot;
-## [1] &quot;Cover:383.619 Success:62%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;international_plan == yes&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #f32561c4-28e8-466a-aa1c-809969d08079&quot;
-## [1] &quot;Cover:268.886 Success:60%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;total_day_minutes &gt; 263.10001&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #1f4df285-f039-4d0a-9c15-c4bd2e9708c2&quot;
-## [1] &quot;Cover:211 Success:60%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;total_day_minutes &gt; 264.39999&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #f8889098-a1ad-48bc-bb56-290aa7fbbaca&quot;
-## [1] &quot;Cover:101 Success:61%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;number_customer_service_calls &gt; 4&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #04f9f6f3-872c-4c74-b7df-ff3378d4a83f&quot;
-## [1] &quot;Cover:20 Success:100%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;total_day_minutes &gt; 315.60001&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #d623327d-ea79-429c-b9b9-075fdfa9a48e&quot;
-## [1] &quot;Cover:2916 Success:90%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;international_plan == no&quot;
-## [1] &quot;number_customer_service_calls &lt; 4&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #cebe4680-8c7f-4e51-a3b1-34abe6c16361&quot;
-## [1] &quot;Cover:2536.45 Success:79%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;international_plan == no&quot;
-## [1] &quot;number_customer_service_calls &lt; 3&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #8240d319-fb4b-4ca7-b92b-6b01da8de17c&quot;
-## [1] &quot;Cover:2434 Success:90%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;total_eve_charge &lt; 20.48&quot;
-## [1] &quot;total_day_minutes &lt; 264.39999&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #ee0377ad-19aa-4756-aea4-d4f3883e31fa&quot;
-## [1] &quot;Cover:1703 Success:87%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;total_night_minutes &lt; 203.39999&quot;
-## [1] &quot;total_day_minutes &lt; 315.60001&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #8d634c58-7700-4a73-ad24-61690796aaeb&quot;
-## [1] &quot;Cover:850 Success:90%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;total_eve_charge &lt; 14.21&quot;
-## [1] &quot;total_day_minutes &lt; 315.60001&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #a1f5f11b-64bc-4582-b61e-30b2bbb9c3cc&quot;
-## [1] &quot;Cover:462.412 Success:81%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;total_eve_charge &gt; 20.049999&quot;
-## [1] &quot;total_day_minutes &gt; 224.10001&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #4c3c09b9-09c3-4ae5-8184-31b7fc4db79a&quot;
-## [1] &quot;Cover:346.703 Success:55%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;international_plan == no&quot;
-## [1] &quot;number_customer_service_calls &gt; 3&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #784be3d2-39f8-4c6f-ad59-35166a552ad2&quot;
-## [1] &quot;Cover:107 Success:70%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;total_night_minutes &gt; 203.39999&quot;
-## [1] &quot;total_day_minutes &gt; 264.39999&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #5283c03b-6e82-4d8d-8494-9051edf82256&quot;
-## [1] &quot;Cover:100 Success:71%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;total_eve_charge &gt; 20.48&quot;
-## [1] &quot;total_day_minutes &gt; 237.3&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #f8a494c7-22f0-491b-8ee4-0c1b5c6bc819&quot;
-## [1] &quot;Cover:60 Success:100%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
+## [1] &quot;Rule #1&quot;
+## [1] &quot;In 60 cases, 100% customers Does_Churn when:&quot;
 ## [1] &quot;international_plan == yes&quot;
 ## [1] &quot;total_intl_calls &lt; 2&quot;
 ## [1] &quot;&quot;
 ## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #1137490b-32c1-47c0-b56a-4b1e78f2140f&quot;
-## [1] &quot;Cover:59 Success:76%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
-## [1] &quot;total_eve_charge &gt; 22.690001&quot;
-## [1] &quot;total_day_minutes &gt; 223.2&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #4c9ea5e0-a3a4-47f1-8851-1730c8cd4f7a&quot;
-## [1] &quot;Cover:28 Success:68%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Does_Churn:&quot;
+## [1] &quot;Rule #2&quot;
+## [1] &quot;In 57 cases, 100% customers Does_Churn when:&quot;
 ## [1] &quot;international_plan == yes&quot;
+## [1] &quot;total_intl_minutes &gt; 13.1&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #3&quot;
+## [1] &quot;In 32 cases, 100% customers Does_Churn when:&quot;
+## [1] &quot;total_day_minutes &lt; 120.5&quot;
 ## [1] &quot;number_customer_service_calls &gt; 3&quot;
 ## [1] &quot;&quot;
 ## [1] &quot;&quot;
-## [1] &quot;&quot;
-## [1] &quot;Rule #bb58f0ed-76c3-45ed-91eb-32de8d89102a&quot;
-## [1] &quot;Cover:2142 Success:89%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;total_intl_calls &lt; 9&quot;
-## [1] &quot;total_eve_charge &lt; 19.08&quot;
-## [1] &quot;total_day_minutes &lt; 284.39999&quot;
+## [1] &quot;Rule #4&quot;
+## [1] &quot;In 79 cases, 96% customers Does_Churn when:&quot;
+## [1] &quot;total_day_minutes &lt; 160.2&quot;
+## [1] &quot;total_eve_charge &lt; 19.83&quot;
+## [1] &quot;number_customer_service_calls &gt; 3&quot;
 ## [1] &quot;&quot;
 ## [1] &quot;&quot;
+## [1] &quot;Rule #5&quot;
+## [1] &quot;In 43 cases, 95% customers Does_Churn when:&quot;
+## [1] &quot;international_plan == no&quot;
+## [1] &quot;voice_mail_plan == no&quot;
+## [1] &quot;total_day_minutes &gt; 246.60001&quot;
+## [1] &quot;total_eve_charge &gt; 20.5&quot;
 ## [1] &quot;&quot;
-## [1] &quot;Rule #dd22e86c-0479-45aa-ae2d-cfc71940570f&quot;
-## [1] &quot;Cover:343 Success:91%&quot;
-## [1] &quot; &quot;
-## [1] &quot;Stays:&quot;
-## [1] &quot;total_eve_charge &gt; 20.48&quot;
-## [1] &quot;total_eve_charge &lt; 22.690001&quot;
-## [1] &quot;total_day_minutes &lt; 237.3&quot;
 ## [1] &quot;&quot;
+## [1] &quot;Rule #6&quot;
+## [1] &quot;In 28 cases, 93% customers Does_Churn when:&quot;
+## [1] &quot;total_day_minutes &lt; 264.39999&quot;
+## [1] &quot;total_eve_calls &lt; 125&quot;
+## [1] &quot;total_eve_charge &lt; 12.05&quot;
+## [1] &quot;number_customer_service_calls &gt; 3&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #7&quot;
+## [1] &quot;In 78 cases, 90% customers Does_Churn when:&quot;
+## [1] &quot;voice_mail_plan == no&quot;
+## [1] &quot;total_day_minutes &gt; 223.2&quot;
+## [1] &quot;total_eve_charge &gt; 20.5&quot;
+## [1] &quot;total_night_minutes &gt; 174.2&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #8&quot;
+## [1] &quot;In 114 cases, 79% customers Does_Churn when:&quot;
+## [1] &quot;voice_mail_plan == no&quot;
+## [1] &quot;total_day_minutes &gt; 223.2&quot;
+## [1] &quot;total_eve_charge &gt; 20.5&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #9&quot;
+## [1] &quot;In 152 cases, 62% customers Does_Churn when:&quot;
+## [1] &quot;total_day_minutes &gt; 223.2&quot;
+## [1] &quot;total_eve_charge &gt; 20.5&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #10&quot;
+## [1] &quot;In 211 cases, 60% customers Does_Churn when:&quot;
+## [1] &quot;total_day_minutes &gt; 264.39999&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #12&quot;
+## [1] &quot;In 768 cases, 97% customers Stays when:&quot;
+## [1] &quot;international_plan == no&quot;
+## [1] &quot;voice_mail_plan == yes&quot;
+## [1] &quot;number_customer_service_calls &lt; 3&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #11&quot;
+## [1] &quot;In 2221 cases, 97% customers Stays when:&quot;
+## [1] &quot;international_plan == no&quot;
+## [1] &quot;total_day_minutes &lt; 223.2&quot;
+## [1] &quot;number_customer_service_calls &lt; 3&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #13&quot;
+## [1] &quot;In 140 cases, 96% customers Stays when:&quot;
+## [1] &quot;account_length &lt; 123&quot;
+## [1] &quot;total_eve_minutes &lt; 187.7&quot;
+## [1] &quot;total_night_minutes &lt; 151.89999&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #14&quot;
+## [1] &quot;In 45 cases, 98% customers Stays when:&quot;
+## [1] &quot;international_plan == no&quot;
+## [1] &quot;voice_mail_plan == yes&quot;
+## [1] &quot;total_day_minutes &gt; 264.39999&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #15&quot;
+## [1] &quot;In 1972 cases, 96% customers Stays when:&quot;
+## [1] &quot;total_day_minutes &lt; 264.39999&quot;
+## [1] &quot;total_intl_minutes &lt; 13.1&quot;
+## [1] &quot;total_intl_calls &gt; 2&quot;
+## [1] &quot;number_customer_service_calls &lt; 3&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #16&quot;
+## [1] &quot;In 197 cases, 95% customers Stays when:&quot;
+## [1] &quot;total_day_minutes &gt; 120.5&quot;
+## [1] &quot;total_day_minutes &lt; 160.2&quot;
+## [1] &quot;total_eve_charge &gt; 19.83&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #17&quot;
+## [1] &quot;In 155 cases, 94% customers Stays when:&quot;
+## [1] &quot;voice_mail_plan == no&quot;
+## [1] &quot;total_day_minutes &lt; 277&quot;
+## [1] &quot;total_night_minutes &lt; 126.9&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #18&quot;
+## [1] &quot;In 1675 cases, 89% customers Stays when:&quot;
+## [1] &quot;total_day_minutes &gt; 160.2&quot;
+## [1] &quot;total_day_minutes &lt; 264.39999&quot;
+## [1] &quot;total_eve_charge &gt; 12.05&quot;
+## [1] &quot;&quot;
+## [1] &quot;&quot;
+## [1] &quot;Rule #19&quot;
+## [1] &quot;In 434 cases, 89% customers Stays when:&quot;
+## [1] &quot;total_eve_charge &lt; 12.26&quot;
 ## [1] &quot;&quot;</code></pre>
 <p><b>Thanks again for the artwork, Lucas!!</b></p>
 
