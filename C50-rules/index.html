@@ -239,6 +239,9 @@ summary(c50_model)</code></pre>
 ## 
 ## Time: 0.0 secs</code></pre>
 <BR><BR>
+Note from C5.0: An Informal Tutorial: "For instance, the last leaf of the decision tree is compensated (174.6/24.8), for which n is 174.6 and m is 24.8. The value of n is the number of cases in the file hypothyroid.data that are mapped to this leaf, and m (if it appears) is the number of them that are classified incorrectly by the leaf. (A non-integral number of cases can arise because, when the value of an attribute in the tree is not known, C5.0 splits the case and sends a fraction down each branch.)"<BR>
+<a href='https://www.rulequest.com/see5-unix.html' target='_blank'>C5.0: An Informal Tutorial</a>
+<BR><BR>
 <p>Now, if we turn on <code>rules</code> to TRUE (see ?C5.0: A logical: should the tree be decomposed into a rule-based model?). We get the same output but in a more readable format and that is going to help us get this information into a structured format:</p>
 <pre class="r"><code>c50_model &lt;- C5.0(x=churn_data[,setdiff(names(churn_data), outcome_name)], churn_data[,outcome_name], rules = TRUE)
 summary(c50_model)</code></pre>
@@ -408,7 +411,7 @@ summary(c50_model)</code></pre>
     total_day_minutes &gt; 223.2
     total_eve_charge &gt; 20.5
     -&gt;  class Does_Churn  [0.617]</code></pre>
-<p>It states that 152 cases with <code>total_day_minutes &gt; 223.2</code> and <code>total_eve_charge &gt; 20.5</code> led to <code>churn==Does_Churn</code>. There were <code>152</code> positive cases out of <code>210</code> (or 152 + 58) which measured a lift of 4.3 in predicting <code>churn</code>.</p>
+<p>It states that 152 cases with <code>total_day_minutes &gt; 223.2</code> and <code>total_eve_charge &gt; 20.5</code> led to <code>churn==Does_Churn</code>. There were <code>152</code> cases fulling the above condition where <code>58</code> failed to lead to the stated outcome. This rule provided a lift of 4.3 in predicting <code>churn</code>.</p>
 <BR><BR>
 <H2>Automating a Report</H2>
 <p>Though the output is interesting and insightful, we need this in a data-frame format so we can build it into our reporting pipeline. Let’s see what we have to work with:</p>
