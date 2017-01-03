@@ -441,7 +441,6 @@ interesting_interactions <- function(the_data_frame, outcome_name) {
   # install.packages(...) if missing
   require(C50)
   require(dplyr)
-  total_rules <- c()
   
   c5model <- C5.0(
     x = the_data_frame[,setdiff(names(the_data_frame), outcome_name)],
