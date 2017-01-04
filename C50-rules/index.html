@@ -133,7 +133,7 @@ str(churn_data)</code></pre>
 <BR><BR>
 <h2>Straight up C5.0</h2>
 <p>Let’s first look at the default summary output from C5.0:</p>
-<pre class="r"><code>c50_model &lt;- C5.0(x=churn_data[,setdiff(names(churn_data), outcome_name)], churn_data[,outcome_name], rules = FALSE)
+<pre class="r"><code>c50_model &lt;- C5.0(x=churn_data[,setdiff(names(churn_data), outcome_name)], y=churn_data[,outcome_name])
 summary(c50_model)</code></pre>
 
 
@@ -243,7 +243,7 @@ Note from C5.0: An Informal Tutorial: "For instance, the last leaf of the decisi
 <a href='https://www.rulequest.com/see5-unix.html' target='_blank'>C5.0: An Informal Tutorial</a>
 <BR><BR>
 <p>Now, if we turn on <code>rules</code> to TRUE (see ?C5.0: A logical: should the tree be decomposed into a rule-based model?). We get the same output but in a more readable format and that is going to help us get this information into a structured format:</p>
-<pre class="r"><code>c50_model &lt;- C5.0(x=churn_data[,setdiff(names(churn_data), outcome_name)], churn_data[,outcome_name], rules = TRUE)
+<pre class="r"><code>c50_model &lt;- C5.0(x=churn_data[,setdiff(names(churn_data), outcome_name)], y=churn_data[,outcome_name], rules = TRUE)
 summary(c50_model)</code></pre>
 <pre><code>## 
 ## Call:
