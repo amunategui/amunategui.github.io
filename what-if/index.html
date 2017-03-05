@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>What-if Roadmap - Assessing Live Opportunities and their Paths to Success or Failure</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">What-if Roadmap - Assessing Live Opportunities and their Paths to Success or Failure</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+<p style="text-align:center">
+<img src="img/C50-globe.png" alt="C50 Globe" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<p><br /><br /></p>
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=Fu3vKj0EozM&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<p><br />
+
+<p><BR><BR> The R statistical programming language has a function called <strong>stringdist</strong> which:</p>
+<blockquote>
+‘Implements an approximate string matching version of R’s native ’match’ function’.
+</blockquote>
+<p>It contains a large set of <a href="https://cran.r-project.org/web/packages/stringdist/stringdist.pdf" target="_blank">matching approaches</a>:</p>
+<ul>
+<li>
+<B>osa</B> Optimal string aligment, (restricted Damerau-Levenshtein distance)
+</li>
+<li>
+<B>lv</b> Levenshtein distance
+</li>
+<li>
+<B>dl</b> Full Damerau-Levenshtein distance
+</li>
+<li>
+<B>hamming</b> Hamming distance
+</li>
+<li>
+<B>lcs</b> Longest common substring distance
+</li>
+<li>
+<B>qgram</b> q-gram distance
+</li>
+<li>
+<B>cosine</b> cosine distance between q-gram profiles
+</li>
+<li>
+<B>jaccard</b> Jaccard distance between q-gram profiles
+</li>
+<li>
+<B>jw</b> Jaro, or Jaro-Winker distance
+</li>
+<li>
+<B>soundex</b> Distance based on soundex encoding
+</li>
+</ul>
+<p>In this example we are using the <b>jaccard</b> matching approach. <BR><BR> <strong>An Example using a Toy Dataset</strong></p>
+<pre class="r"><code># install.packages('dplyr')
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: 'dplyr'</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code># install.packages('C50')
+library(C50)
+
+data(churn)
+
+churn_data &lt;- churnTrain
+outcome_name &lt;- 'churn'</code></pre>
+<p><BR><BR> In our toy example, we take the first row as our hypothetical live case, and consider all other rows as closed, historical opportunities (in this case whether or not a customer has churned)</p>
+<pre class="r"><code># pick focus customer - from which to find matching cases from your historical data
+live_row &lt;- churn_data[1,]
+historical_df &lt;- churn_data[-1,]</code></pre>
+<p><BR><BR> Now that we have two data sets, we apply the stringdist function to get our distance metrics from our historical data in comparison to our picked hypothetical live customer.</p>
+<pre class="r"><code># install.packages('stringdist')
+library(stringdist)
+# hide outcome variable as it is unknown in a live set
+similar_metrics &lt;- Reduce(`+`,Map(stringdist, dplyr::select(historical_df, -churn), 
+                                      dplyr::select(live_row, -churn),
+                                      method='jaccard'))
+
+head(similar_metrics)</code></pre>
+<pre><code>## [1]  9.166667 13.911905 15.102381 12.379762 14.668723 12.484199</code></pre>
+<p><BR><BR> A good next step is to add our distance metrics back to the historical data set and pull the closest matches with our focus row for both positive and negative outcomes.</p>
+<pre class="r"><code># print focus row for comparaisoin 
+live_row</code></pre>
+<pre><code>##   state account_length     area_code international_plan voice_mail_plan
+## 1    KS            128 area_code_415                 no             yes
+##   number_vmail_messages total_day_minutes total_day_calls total_day_charge
+## 1                    25             265.1             110            45.07
+##   total_eve_minutes total_eve_calls total_eve_charge total_night_minutes
+## 1             197.4              99            16.78               244.7
+##   total_night_calls total_night_charge total_intl_minutes total_intl_calls
+## 1                91              11.01                 10                3
+##   total_intl_charge number_customer_service_calls churn
+## 1               2.7                             1    no</code></pre>
+<pre class="r"><code># assign metrics back to historical data set
+historical_df$similar &lt;- similar_metrics
+
+# set number of similar rows needed per outcome
+rows_to_collect &lt;- 1
+# get first similar item that has positive outcome
+historical_df %&gt;% dplyr::filter(churn == 'yes') %&gt;% 
+  dplyr::arrange(similar) %&gt;% head(rows_to_collect)  </code></pre>
+<pre><code>##   state account_length     area_code international_plan voice_mail_plan
+## 1    KS            170 area_code_415                 no             yes
+##   number_vmail_messages total_day_minutes total_day_calls total_day_charge
+## 1                    42             199.5             119            33.92
+##   total_eve_minutes total_eve_calls total_eve_charge total_night_minutes
+## 1               135              90            11.48               184.6
+##   total_night_calls total_night_charge total_intl_minutes total_intl_calls
+## 1                49               8.31               10.9                3
+##   total_intl_charge number_customer_service_calls churn  similar
+## 1              2.94                             4   yes 9.446429</code></pre>
+<pre class="r"><code># get first similar item that has negative outcome
+historical_df %&gt;% dplyr::filter(churn == 'no') %&gt;% 
+  dplyr::arrange(similar) %&gt;% head(rows_to_collect) </code></pre>
+<pre><code>##   state account_length     area_code international_plan voice_mail_plan
+## 1    AR             89 area_code_415                 no             yes
+##   number_vmail_messages total_day_minutes total_day_calls total_day_charge
+## 1                    25             215.1             140            36.57
+##   total_eve_minutes total_eve_calls total_eve_charge total_night_minutes
+## 1             197.4              69            16.78               162.1
+##   total_night_calls total_night_charge total_intl_minutes total_intl_calls
+## 1               117               7.29               10.6               10
+##   total_intl_charge number_customer_service_calls churn  similar
+## 1              2.86                             1    no 7.621429</code></pre>
+<p><BR><BR> As we are after insights that are ‘actionable’, we need to look at our features and remove those that don’t lend itself to ‘action’, like geographic markers. Let’s remove ‘State’ and ‘Area Code’.</p>
+<pre class="r"><code># state and area_code not of big interest in terms of affectable actions
+live_row %&gt;% dplyr::select(-state, -area_code) -&gt; live_row
+historical_df %&gt;% dplyr::select(-state, -area_code) -&gt; historical_df
+
+ 
+historical_df$similar &lt;- Reduce(`+`,Map(stringdist, dplyr::select(historical_df, -churn), 
+                                        dplyr::select(live_row, -churn),
+                                        method='jaccard'))</code></pre>
+<pre><code>## Warning in mapply(FUN = f, ..., SIMPLIFY = FALSE): longer argument not a
+## multiple of length of shorter</code></pre>
+<pre class="r"><code># set number of similar rows needed per outcome
+rows_to_collect &lt;- 3
+# get first similar item that has positive outcome
+historical_df %&gt;% dplyr::filter(churn == 'yes') %&gt;% 
+  dplyr::select(-churn) %&gt;%
+  dplyr::arrange(similar) %&gt;% head(rows_to_collect) -&gt; positive_historical_df
+
+# get first similar item that has negative outcome
+historical_df %&gt;% dplyr::filter(churn == 'no') %&gt;% 
+  dplyr::select(-churn) %&gt;%
+  dplyr::arrange(similar) %&gt;% head(rows_to_collect) -&gt; negative_historical_df</code></pre>
+<p><BR><BR> <strong>Correlations - Finding Features Moving in Opposite Direction</strong></p>
+<p>We’re almost there, now that we have our closest top positive and negative similar cases, let’s take a look at what features were the most inverslely correlated. We’ll use the <strong>cor</strong> function to find the features moving in opposite direciton as these may offer insight into what can be done to understand and affect a positive outcome.</p>
+<pre class="r"><code># find extreme examples best portraying different directions ----------------------------
+diverging_features &lt;- c()
+order_ids &lt;- c()
+average_neg &lt;- c()
+average_pos &lt;- c()
+for (col_id in seq(ncol(positive_historical_df))) {
+
+  positive_historical_df[,col_id]  &lt;- as.numeric(positive_historical_df[,col_id])
+  negative_historical_df[,col_id]  &lt;- as.numeric(negative_historical_df[,col_id])
+  
+  similar_cor &lt;- (cor(positive_historical_df[,col_id], negative_historical_df[,col_id]))
+  if (!is.na(similar_cor) &amp;&amp; (similar_cor &lt; -0.2)) {
+    print(names(positive_historical_df)[col_id])
+    diverging_features &lt;- c(diverging_features, names(positive_historical_df)[col_id])
+    order_ids &lt;- c(order_ids, col_id)
+    
+    
+    # plot as vertical bar chart
+    pos_df &lt;- data.frame('Opp_ID'=paste0('Opp_ID_',seq(nrow(positive_historical_df))),
+                         'Value'=(positive_historical_df[,col_id]),
+                         'Influence'='Positive')
+    neg_df &lt;-  data.frame('Opp_ID'=paste0('Opp_ID_',seq(nrow(negative_historical_df))),
+                          'Value'=(negative_historical_df[,col_id]),
+                          'Influence'='Negative')
+    
+    # flip negative scale for side-by-side plotting
+    pos_df$Value &lt;- as.numeric(pos_df$Value)
+    neg_df$Value &lt;- as.numeric(neg_df$Value) * -1
+    
+    
+    par(mfrow=c(1,2)) 
+    max_xlim &lt;- max(max(abs(neg_df$Value)), max(abs(pos_df$Value)))
+    barplot(neg_df$Value, main=&quot;Negative Trend&quot;, horiz=TRUE, xlim=c((max_xlim * -1),0), 
+            col='red', border = 1, xaxt='n')
+    box(lty = '1373', col = 'black')
+    barplot(pos_df$Value, main=&quot;Positive Trend&quot;, horiz=TRUE, xlim=c(0, max_xlim), col='blue',
+            beside=FALSE, names.arg=pos_df$Opp_ID,las=1, xaxt='n')
+    box(lty = '1373', col = 'black')
+    title(paste(&quot;Doctor Trending\n&quot;,names(positive_historical_df)[col_id]), outer=TRUE)
+    
+    # return conclusion for opportunity ID 
+    average_neg &lt;- c(average_neg, mean(abs(neg_df$Value)))
+    average_pos &lt;- c(average_pos, mean(abs(pos_df$Value)))
+    
+  }
+}</code></pre>
+<pre><code>## Warning in cor(positive_historical_df[, col_id], negative_historical_df[, :
+## the standard deviation is zero
+
+## Warning in cor(positive_historical_df[, col_id], negative_historical_df[, :
+## the standard deviation is zero</code></pre>
+<pre><code>## [1] &quot;number_vmail_messages&quot;</code></pre>
+<p><img src="data:image/png"></p>
+
+<p><BR><BR> As with most ‘advanced analytics’ results aren’t simple and/or easy - otherwise it would be considered simple and your client would most likely already know about it. It is critical to look at the whole picture, look for outliers and significance, etc.</p>
+<pre class="r"><code>recommendations &lt;-  data.frame(diverging_features = diverging_features, 
+                               order_ids = order_ids,
+                               average_neg = average_neg,
+                               average_pos = average_pos)
+
+# present cases of interest
+for (case_id in seq(nrow(recommendations))) {
+  print(case_id)
+  
+  # what if both values are negatigve, or one of each?
+  
+  par(mfrow=c(1,2)) 
+  max_xlim &lt;- max(max(abs(recommendations$average_pos[case_id])), max(abs(recommendations$average_neg[case_id])))
+  barplot(recommendations$average_neg[case_id], main=&quot;Does Not Churn&quot;, horiz=TRUE, xlim=c(0, max_xlim), 
+          col='green', border = 1)
+  box(lty = '1373', col = 'black')
+  
+  barplot(recommendations$average_pos[case_id], main=&quot;Does Churn&quot;, horiz=TRUE, xlim=c(0, max_xlim), col='purple',
+          beside=FALSE) #, names.arg=recommendations$diverging_features[case_id],las=1)
+  
+  box(lty = '1373', col = 'black')
+  title(paste(&quot;Doctor Trending\n&quot;,recommendations$diverging_features[case_id]), outer=TRUE)
+  
+}</code></pre>
+<pre><code>## [1] 1</code></pre>
+<p><img src="data:image/png;"></p>
+
+
+
+<p><b>Thanks again for the artwork, Lucas!!</b></p>
+
+
+
+  
+</div>   
+</body>
+</html>
