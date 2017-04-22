@@ -51,7 +51,7 @@
 
 <p><strong>Resources</strong></p>
 <ul>
-<li type="square"><a href="" target="_blank">YouTube Companion Video</a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=maqne14dM3w&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
 </ul>
 <br/>
 
@@ -79,7 +79,7 @@ Keep in mind that markets are not always well behaved or normally distributed. T
 <H3>
 Brief Look at the Code
 </H3>
-<p>Let’s look at the important components of the Market Profile code (for more details see the YouTube <a href target="_blank">video</a>). The <code>Print_Market_Profile</code> takes 5 parameters: the symbol you want to visualize, the height precision (or dollar precision), the time-frame frequency, and the market start and end date.</p>
+<p>Let’s look at the important components of the Market Profile code (for more details see the YouTube <a href='https://www.youtube.com/watch?v=maqne14dM3w&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA' target="_blank">video</a>). The <code>Print_Market_Profile</code> takes 5 parameters: the symbol you want to visualize, the height precision (or dollar precision), the time-frame frequency, and the market start and end date.</p>
 <p>The market data is downloaded from <a href="https://finance.yahoo.com/chart/YHOO" target="_blank">Yahoo Finance</a> using the <code>pandas_datareader</code> library:</p>
 <pre class="r"><code>fin_prod_data = pdr.get_data_yahoo(symbol.upper(), start_date, end_date)</code></pre>
 <p>Which returns:</p>
