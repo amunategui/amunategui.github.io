@@ -62,7 +62,13 @@
 <BR><BR>
 
 <p><BR><BR></p>
-<p>Let’s build a market profile chart using Python in about 30 lines of code. This is a bare version of J.P Steidlmayer’s charting system, but should give you a good idea of market distribution within a particular time frame and where the market spent most of its time. Here we’ll focus on monthly distributions using end-of-day data from <a href="https://finance.yahoo.com/chart/YHOO" target="_blank">Yahoo Finance</a>. <br><BR> So, what is Market Profile?</p>
+<p>Let’s build a market profile chart using Python in about 30 lines of code. This is a bare version of J.P Steidlmayer’s charting system, but should give you a good idea of market distribution within a particular time frame and where the market spent most of its time. Here we’ll focus on monthly distributions using end-of-day data from <a href="https://finance.yahoo.com/chart/YHOO" target="_blank">Yahoo Finance</a>. 
+<BR>
+<p><B>Yahoo's ichart service is down. You'll need to use Google Finance instead - source code at end of blog has been udpdate.</B></p>
+
+
+
+<br><BR> So, what is Market Profile?</p>
 <blockquote>
 A Market Profile is an intra-day charting technique (price vertical, time/activity horizontal) devised by J. Peter Steidlmayer, a trader at the Chicago Board of Trade (CBOT), ca 1959-1985. Steidlmayer was seeking to evaluate market value as it developed in the day time frame. Steidlmayer’s charts displayed a bell shape, fatter at the middle prices, with activity trailing off at the higher and lower prices. In this structure he recognized the ‘Normal’, gaussian distribution he had met with in college statistics… (<a href="https://en.wikipedia.org/wiki/Market_profile" target="_blank">Wikipedia: Market Profile</a>)
 </blockquote>
@@ -199,8 +205,6 @@ from pandas_datareader import data, wb
 import pandas_datareader as pdr
 from collections import defaultdict
  
-# interesting symbols gld, ^gspc, ^vix, ^n225, ^tnx, spy
-
 def Print_Market_Profile(symbol, height_precision = 1, 
     frequency='m', start_date=None, end_date=None):
 
@@ -213,7 +217,7 @@ def Print_Market_Profile(symbol, height_precision = 1,
     if end_date == None:
         end_date = datetime.date.today() 
 
-    fin_prod_data = pdr.get_data_yahoo(symbol.upper(), start_date, end_date)
+    fin_prod_data = pdr.get_data_google(symbol.upper(), start_date, end_date)
     fin_prod_data[('High')] = fin_prod_data[('High')] * height_precision
     fin_prod_data[('Low')] = fin_prod_data[('Low')] * height_precision
     fin_prod_data = fin_prod_data.round({'Low': 0, 'High': 0})  
