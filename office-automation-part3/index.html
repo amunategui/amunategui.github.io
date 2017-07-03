@@ -1,0 +1,678 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Office Automation Part 3 - Classifying Enron Emails with Google's Tensorflow Deep Neural Network Classifier</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Office Automation Part 3 - Classifying Enron Emails with Google's Tensorflow Deep Neural Network Classifier</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=hEE8ZxcXxu4&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<br/>
+
+
+<p style="text-align:center">
+<img src="img/word-vectors.png" alt="Word Vectors" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR><BR>
+
+<p><BR><BR></p>
+<p>This walkthrough is comprised of three videos:</p>
+<ul>
+<li><a href='http://amunategui.github.io/office-automation/index.html' target='_blank'>Part 1: word2vec on Tensorflow, Modeling the Enron Email Dataset</a>
+</li>
+<li>
+<a href='http://amunategui.github.io/office-automation-part2/index.html' target='_blank'>Part 2: Using pre-trained word vector embeddings on Enron emails</a>
+</li>
+<li>
+<b><a href='http://amunategui.github.io/office-automation-part3/index.html'>Part 3: Classification using Tensorflow's Deep Classifier Model</a></b>
+</li>
+</ul>
+
+<p><BR><BR></p>
+<p>This is the last video/post in the Enron and word2vec series - thanks for hanging in and hopefully you'll find this fun. This is where we bring it all together and come up with a production-grade, classification solution to routing emails automatically.</p> 
+<BR>
+
+<H2>Let's Code</H2>
+Code-wise, we need to repeat a series of steps from the previous video. We need to:
+<p><BR></p>
+<ul>
+<li>Load the Enron dataset</li>
+<li>Clean it up and create a dataframe with Date, Subject, Content</li>
+<li>Load the GloVe pre-trained embedded word vectors</li>
+<li>Match Enron words with GloVe embeddings</li>
+</ul>
+
+<pre class="r"><code>from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import tensorflow as tf
+import collections
+import os
+import random
+import numpy as np
+from tqdm import tqdm
+import sys, email
+import pandas as pd 
+import math
+import datetime
+
+#########################################################
+# Load Enron dataset
+#########################################################
+
+ENRON_EMAIL_DATASET_PATH = '/enron-dataset/emails.csv'
+
+# load enron dataset
+emails_df = pd.read_csv(ENRON_EMAIL_DATASET_PATH)
+print(emails_df.shape)
+emails_df.head()
+
+
+#########################################################
+# Sort out required email features: date, subject, content
+#########################################################
+
+# source https://www.kaggle.com/zichen/explore-enron
+## Helper functions
+def get_text_from_email(msg):
+    '''To get the content from email objects'''
+    parts = []
+    for part in msg.walk():
+        if part.get_content_type() == 'text/plain':
+            parts.append( part.get_payload() )
+    return ''.join(parts)
+
+import email
+# Parse the emails into a list email objects
+messages = list(map(email.message_from_string, emails_df['message']))
+emails_df.drop('message', axis=1, inplace=True)
+# Get fields from parsed email objects
+keys = messages[0].keys()
+for key in keys:
+    emails_df[key] = [doc[key] for doc in messages]
+# Parse content from emails
+emails_df['Content'] = list(map(get_text_from_email, messages))
+
+# keep only Subject and Content for this exercise
+emails_df = emails_df[['Date','Subject','Content']]
+
+#########################################################
+# change model to work with Enron emails
+#########################################################
+
+ 
+# point it to our Enron data set
+emails_sample_df = emails_df.copy()
+
+import string, re
+# clean up subject line
+emails_sample_df['Subject'] = emails_sample_df['Subject'].str.lower()
+emails_sample_df['Subject'] = emails_sample_df['Subject'].str.replace(r'[^a-z]', ' ')  
+emails_sample_df['Subject'] = emails_sample_df['Subject'].str.replace(r'\s+', ' ')  
+
+# clean up content line
+emails_sample_df['Content'] = emails_sample_df['Content'].str.lower()
+emails_sample_df['Content'] = emails_sample_df['Content'].str.replace(r'[^a-z]', ' ')  
+emails_sample_df['Content'] = emails_sample_df['Content'].str.replace(r'\s+', ' ')  
+
+# create sentence list 
+emails_text = (emails_sample_df[&quot;Subject&quot;] + &quot; &quot; + emails_sample_df[&quot;Content&quot;]).tolist()
+
+sentences = ' '.join(emails_text)
+words = sentences.split()
+
+print('Data size', len(words))
+ 
+
+# get unique words and map to glove set
+print('Unique word count', len(set(words))) 
+ 
+
+# drop rare words
+vocabulary_size = 50000
+
+def build_dataset(words):
+  count = [['UNK', -1]]
+  count.extend(collections.Counter(words).most_common(vocabulary_size - 1))
+  dictionary = dict()
+  for word, _ in count:
+    dictionary[word] = len(dictionary)
+  data = list()
+  unk_count = 0
+  for word in tqdm(words):
+    if word in dictionary:
+      index = dictionary[word]
+    else:
+      index = 0  # dictionary['UNK']
+      unk_count += 1
+    data.append(index)
+  count[0][1] = unk_count
+  reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
+  return data, count, dictionary, reverse_dictionary
+
+data, count, dictionary, reverse_dictionary = build_dataset(words)
+
+del words  
+print('Most common words (+UNK)', count[:5])
+print('Sample data', data[:10], [reverse_dictionary[i] for i in data[:10]])
+
+####################################################################
+# find matches with glove 
+####################################################################
+GLOVE_DATASET_PATH = '/data/glove.840B.300d.txt'
+ 
+embeddings_index = {}
+f = open(GLOVE_DATASET_PATH)
+word_counter = 0
+for line in tqdm(f):
+  values = line.split()
+  word = values[0]
+  if word in dictionary:
+    coefs = np.asarray(values[1:], dtype='float32')
+    embeddings_index[word] = coefs
+  word_counter += 1
+f.close()
+
+print('Found %s word vectors matching enron data set.' % len(embeddings_index))
+print('Total words in GloVe data set: %s' % word_counter)</code></pre>
+<BR><BR>
+<H2>
+Using word clusters to create Bag-of-words
+</H2>
+<p>Okay, onto the new stuff. I ended up asking for 500 clusters and hand-picked 6 groups to create 6 hypothetical departments to forward emails. I used multiple clusters to make a departments - this is subjective and creative and doesn’t really matter how you go about it. The key is that each department doesn’t bleed too much into the next or else it will make classification difficult. Also, if you are thinking about applying a similar approach for your company, you can skip this step and simply collect key words that differentiates each department instead</p>
+<pre class="r"><code>#########################################################
+# Check out some clusters
+#########################################################
+
+# create a dataframe using the embedded vectors and attach the key word as row header
+enrond_dataframe = pd.DataFrame(embeddings_index)
+enrond_dataframe = pd.DataFrame.transpose(enrond_dataframe)
+ 
+# See what it learns and look at clusters to pull out major themes in the data
+CLUSTER_SIZE = 500 
+# cluster vector and investigate top groups
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=CLUSTER_SIZE)
+cluster_make = kmeans.fit_predict(enrond_dataframe)
+
+labels = kmeans.predict(enrond_dataframe)
+import collections
+cluster_frequency = collections.Counter(labels)
+print(cluster_frequency)
+cluster_frequency.most_common()
+
+clusters = {}
+n = 0
+for item in labels:
+    if item in clusters:
+        clusters[item].append(list(enrond_dataframe.index)[n])
+    else:
+        clusters[item] = [list(enrond_dataframe.index)[n]]
+    n +=1
+
+for k,v in cluster_frequency.most_common(500):
+  print('\n\n')
+  print('Cluster:', k)
+  print (' '.join(clusters[k]))
+
+
+####################################################
+# Load master clusters for all six deparatments
+####################################################
+ 
+LEGAL=['affirmed','alleged','appeal','appealed','appeals','appellate','attorney','attorneys','bankruptcy','case','cases','charged','charges','civil','claim','claims','complaint','constitutional','constitutionality','constitutionally','copyright','counsel','court','courts','criminal','damages','decision','decree','decrees','defendants','denied','dispute','dissented','dissenting','enforcement','federal','filed','filing','invalidate','invalidated','judge','judgement','judges','judgment','judgments','judicial','judiciary','jurisdiction','jurisprudence','justice','justices','law','laws','lawsuit','lawsuits','lawyer','lawyers','legal','legality','legally','litigation','overrule','overruled','overturn','overturned','overturning','plaintiff','precedent','precedents','prosecutorial','reversed','rights','ruled','ruling','rulings','settlement','settlements','sue','supreme','tribunal','tribunals','unanimous','unconstitutional','upheld','uphold','upholding','upholds','verdict','violation']
+
+COMMUICATIONS=['accessed','ads','alphabetical','alphabetically','archive','archived','archives','below','bookmark','bookmarked','bookmarks','browse','browsing','calendar','catalog','categories','categorized','category','chart','charts','check','classified','classifieds','codes','compare','content','database','details','directories','directory','domain','domains','downloadable','entries','favorites','feeds','free','genealogy','homepage','homepages','hosting','index','indexed','indexes','info','information','keyword','keywords','library','link','linking','links','list','listed','listing','listings','lists','locate','locator','maps','online','page','pages','peruse','portal','profile','profiles','rated','related','resource','results','search','searchable','searched','searches','searching','selections','signup','site','sites','sorted','statistics','stats','subscribing','tagged','testimonials','titles','updated','updates','via','web','webmaster','webpage','webpages','website','websites','wishlist','accountant','careers','clerical','contracting','department','employed','employee','employees','employer','employers','employment','experienced','freelance','fulltime','generalist','hire','hired','hires','hiring','hourly','intern','interviewing','job','jobs','labor','labour','managerial','manpower','office','paralegal','personnel','placements','positions','profession','professional','professions','qualified','receptionist','recruit','recruiter','recruiters','recruiting','recruitment','resume','resumes','salaried','salaries','salary','seeking','skilled','staff','staffing','supervisor','trainee','vacancies','vacancy','worker','workers','workforce','workplace']
+
+SECURITY_SPAM_ALERTS=['abducted','accidental','anthrax','anti','antibiotic','antibiotics','assaulted','attacked','attacker','attackers','auth','authenticated','authentication','avoid','avoidance','avoided','avoiding','bacteria','besieged','biometric','bioterrorism','blocking','boarded','bodyguards','botched','captive','captives','captors','captured','chased','commandeered','compromised','confronted','contagious','cornered','culprit','damage','damaging','danger','dangerous','dangers','destroying','destructive','deterrent','detrimental','disruptive','electrocuted','eliminate','eliminating','encroachment','encrypted','encryption','epidemic','escape','escaped','escapee','escaping','expose','exposed','exposing','fatally','feared','fled','flee','fleeing','flu','foiled','freed','germ','germs','guarded','guarding','guards','gunning','hapless','harassed','harm','harmful','harmless','harsh','hepatitis','hid','hijacked','hijacker','hijackers','hiv','hostage','hostages','hunted','immune','immunity','immunization','imprisoned','improper','inadvertent','infect','infected','infecting','infection','infections','infectious','infects','injuring','intentional','interference','interfering','intruders','intrusion','intrusive','invaded','isolates','kidnapped','limiting','login','logins','logon','lured','malaria','malicious','masked','minimise','minimize','minimizing','misuse','mite','mitigating','mosquito','motorcade','nuisance','offending','outbreak','overrun','passcode','password','passwords','plaintext','pneumonia','policeman','potentially','prevent','prevented','preventing','prevents','prone','protect','protected','protecting','protection','protects','quarantine','raided','ransom','raped','refuge','removing','rescued','rescuing','resisting','risks','robbed','runaway','safeguard','secret','secrets','seized','sensitive','server','shielding','smallpox','spam','spores','stolen','stormed','strain','strains','stranded','strep','summoned','susceptible','swine','threat','threatened','threatening','threats','thwarted','tortured','trapped','unaccounted','undesirable','unhealthy','unidentified','unintended','unintentional','unnamed','unnecessary','unprotected','unsafe','unwanted','unwelcome','user','username','vaccine','vaccines','villagers','viral','virus','viruses','vulnerability','vulnerable','whereabouts','whooping','withstand','wounded']
+
+SUPPORT=['ability','acrobat','adobe','advantage','advice','aid','aids','aim','alternatives','app','apps','ares','assist','autodesk','avs','benefits','best','boost','bring','bringing','build','cad','ccna','cellphone','challenge','choices','choosing','citrix','compatible','computer','computers','conferencing','console','consoles','continue','contribute','corel','create','creating','crucial','desktop','desktops','develop','devices','digital','discover','discuss','ease','easier','educate','effective','effectively','effort','electronic','electronics','encarta','encourage','energy','enhance','ensure','essential','eudora','experience','explore','finding','future','gadget','gadgets','gizmos','goal','groupwise','guide','guides','handhelds','handset','handsets','hardware','help','helpful','helping','helps','hopes','ideas','idm','important','improve','interactive','internet','introduce','intuit','invaluable','ios','join','kiosk','kiosks','laptops','lead','learn','lightwave','mac','machines','macintosh','macromedia','maintain','manage','mcafee','mcse','meet','messaging','metastock','microsoft','mobile','monitors','morpheus','mouse','mice','msie','multimedia','natural','needed','needs','netware','networked','networking','norton','notebooks','novell','ocr','oem','offline','office','opportunity','our','peripherals','personal','pgp','phone','phones','photoshop','plan','plans','portables','potential','practical','prepare','pros','quark','quicken','realplayer','recommend','remotely','resco','resources','safe','save','saving','sbe','screens','serve','servers','share','sharing','software','solve','sophos','spb','spss','ssg','standalone','support','symantec','task','tech','telephones','televisions','their','tips','to','together','trojan','useful','users','valuable','veritas','virtual','visio','vista','vital','vmware','ways','wga','whs','winzip','wordperfect','working','workstation','workstations','xp','xpress']
+
+ENERGY_DESK=['amps','baseload','bhp','biomass','blowers','boiler','boilers','btu','btus','burners','cc','cfm','chiller','chillers','cogen','cogeneration','compressors','conditioner','conditioners','conditioning','coolers','cooling','cranking','desalination','diesels','electric','electrical','electricity','electricty','electrification','energy','engine','engines','furnace','furnaces','gasification','generators','genset','geothermal','gigawatt','gpm','heat','heater','heaters','heating','horsepower','hp','hvac','hydro','hydroelectric','hydroelectricity','hydropower','idle','idling','ignition','interconnectors','intertie','kilovolt','kilowatt','kilowatts','kw','kwh','levelized','liter','megawatt','megawatts','microturbine','microturbines','motor','motors','mph','municipally','peaker','photovoltaic','photovoltaics','power','powered','powerplant','powerplants','psi','psig','reactors','redline','refrigerated','refrigeration','renewable','renewables','repower','repowering','retrofits','retrofitting','revs','rpm','siting','solar','substation','substations','switchgear','switchyard','temperatures','terawatt','thermo','thermoelectric','thermostat','thermostats','throttle','torque','turbine','turbines','turbo','undergrounding','ventilation','volt','volts','weatherization','whp','wind','windmill','windmills','windpower']
+
+SALES_DEPARTMENT=['accounting','actuals','advertised','affordable','auction','auctions','audited','auditing','bargain','bargains','bidding','billable','billed','billing','billings','bookkeeping','bought','brand','branded','brands','broker','brokerage','brokers','budgeting','bulk','buy','buyer','buyers','buying','buys','cancel','cancellation','cancellations','cancelled','cardholders','cashback','cashflow','chain','chargeback','chargebacks','cheap','cheaper','cheapest','checkbook','checkout','cheque','cheques','clearance','closeout','consignment','convenience','cosmetics','coupon','coupons','deals','debit','debited','debits','deducted','delivery','deposit','discontinued','discount','discounted','discounts','distributor','ebay','escrow','expensive','export','exported','exporter','exporters','exporting','exports','fee','fees','goods','gratuities','gratuity','groceries','grocery','import','importation','imported','importer','importers','importing','imports','incur','inexpensive','instore','inventory','invoice','invoiced','invoices','invoicing','item','items','lease','ledger','ledgers','manufacturer','marketed','merchandise','merchant','negotiable','nonmembers','nonrefundable','ordering','origination','outlets','overage','overdraft','overstock','owner','owners','payable','payables','payment','payroll','postage','postmarked','premium','prepaid','prepay','prepayment','price','priced','prices','pricey','pricing','product','products','proforma','purchase','purchased','purchaser','purchases','purchasing','rebate','rebook','rebooked','rebooking','receipts','receivable','receivables','reconciliations','recordkeeping','redeem','redeemable','refund','refundable','refunded','refunding','refunds','remittance','resell','reselling','retail','retailer','retailing','sale','sell','seller','sellers','selling','sells','shipment','shipments','shipped','shipper','shippers','shipping','shop','shopped','shopping','shops','sold','spreadsheets','store','stores','submittals','supermarket','supermarkets','superstore','supplier','supplies','supply','surcharge','surcharges','timesheet','timesheets','transaction','upfront','vending','vendor','verifications','voucher','vouchers','warehouse','warehouses','wholesale','wholesaler','wholesaling']</code></pre>
+<BR><BR>
+<H2>
+Augmenting our Bag-of-words with Cosine Distance Synonyms
+</H2>
+<p>Each department has about 100 to 200 words. We will use those words to filter incoming emails and forward it to the department that has the most matching ones. But a 200-word net isn’t that big; what happens for future emails that don’t contain any of them? Or what happens if your company’s set of keywords is smaller?</p>
+<p>This is where we revisit our GloVe dataset and instead of looking for intersecting words, we use all of them! All 2 million words. In a nutshell, we loop through every word in our list of departmental words and add additional words within a certain distance of it. We have a 300-dimension representation of all 2 million words in GloVe, <a href="https://en.wikipedia.org/wiki/Cosine_similarity" target="_blank">cosine distance</a> will easily find the closest ones in the English language context.</p>
+<p>We’re going to boost each set from 200 words to over 1000! This should handle future emails with only some or no words matching Enron emails. We’re going to ask our cosine distance function to pull an extra 5 words every original one.</p>
+<pre class="r"><code># boost bags with cosine distance from full glove data set
+from tqdm import tqdm
+import string
+embeddings_index = {}
+f = open(GLOVE_DATASET_PATH)
+word_counter = 0
+for line in tqdm(f):
+  values = line.split()
+  word = values[0]
+  # difference here as we don't intersect words, we take most of them
+  if (word.islower() and word.isalpha()): # work with smaller list of vectors
+    coefs = np.asarray(values[1:], dtype='float32')
+    embeddings_index[word] = coefs
+  word_counter += 1
+f.close()
+
+print('Found %s word vectors matching enron data set.' % len(embeddings_index))
+print('Total words in GloVe data set: %s' % word_counter)
+
+# create a dataframe using the embedded vectors and attach the key word as row header
+glove_dataframe = pd.DataFrame(embeddings_index)
+glove_dataframe = pd.DataFrame.transpose(glove_dataframe)
+
+departments = [LEGAL, COMMUICATIONS, SECURITY_SPAM_ALERTS, SUPPORT, ENERGY_DESK, SALES_DEPARTMENT]
+
+temp_matrix = pd.DataFrame.as_matrix(glove_dataframe)
+import scipy
+import scipy.spatial
+
+vocab_boost_count = 5
+for group_id in range(len(departments)):
+  print('Working bag number:', str(group_id))
+  glove_dataframe_temp = glove_dataframe.copy()
+  vocab = []
+  for word in departments[group_id]:
+    print(word)
+    vocab.append(word)
+    cos_dist_rez = scipy.spatial.distance.cdist(temp_matrix, np.array(glove_dataframe.loc[word])[np.newaxis,:], metric='cosine')
+    # find closest words to help
+    glove_dataframe_temp['cdist'] = cos_dist_rez
+    glove_dataframe_temp = glove_dataframe_temp.sort_values(['cdist'], ascending=[1])
+    vocab = vocab + list(glove_dataframe_temp.head(vocab_boost_count).index)
+  # replace boosted set to old department group and remove duplicates
+  departments[group_id] = list(set(vocab))
+
+# save final objects to disk
+import cPickle as pickle
+with open('full_bags.pk', 'wb') as handle:
+  pickle.dump(departments, handle)</code></pre>
+<p><BR><BR> Now that we have all our words, we’re going to loop through each Enron email and count how many matching words are contained in them for each of our 6 departments. While we’re in there, we’ll collect some additional quantitative features like the number or letters and words contained therein…</p>
+<pre class="r"><code>##################################################################### 
+# Create features of word counts for each department in each email
+#####################################################################
+ 
+import cPickle as pickle
+with open('full_bags.pk', 'rb') as handle:
+    departments = pickle.load(handle)
+
+# loop through all emails and count group words in each raw text
+words_groups = []
+for group_id in range(len(departments)):
+  work_group = []
+  print('Working bag number:', str(group_id))
+  top_words = departments[group_id]
+  for index, row in tqdm(emails_sample_df.iterrows()): 
+    text = (row[&quot;Subject&quot;] + &quot; &quot; + row[&quot;Content&quot;]) 
+    work_group.append(len(set(top_words) &amp; set(text.split())))
+    #work_group.append(len([w for w in text.split() if w in set(top_words)]))
+    
+  words_groups.append(work_group)
+
+# count emails per category group and feature engineering
+
+raw_text = []
+subject_length = []
+subject_word_count = []
+content_length = []
+content_word_count = []
+is_am_list = []
+is_weekday_list = []
+group_LEGAL = []
+group_COMMUICATIONS = []
+group_SECURITY_SPAM_ALERTS = []
+group_SUPPORT = []
+group_ENERGY_DESK = []
+group_SALES_DEPARTMENT = []
+final_outcome = []
+
+emails_sample_df['Subject'].fillna('', inplace=True)
+emails_sample_df['Date'] = pd.to_datetime(emails_sample_df['Date'], infer_datetime_format=True)
+
+counter = 0
+for index, row in tqdm(emails_sample_df.iterrows()):
+  raw_text.append([row[&quot;Subject&quot;] + &quot; &quot; + row[&quot;Content&quot;]])
+  group_LEGAL.append(words_groups[0][counter])
+  group_COMMUICATIONS.append(words_groups[1][counter]) 
+  group_SECURITY_SPAM_ALERTS.append(words_groups[2][counter])
+  group_SUPPORT.append(words_groups[3][counter])
+  group_ENERGY_DESK.append(words_groups[4][counter])
+  group_SALES_DEPARTMENT.append(words_groups[5][counter])
+  outcome_tots = [words_groups[0][counter], words_groups[1][counter], words_groups[2][counter],
+    words_groups[3][counter], words_groups[4][counter], words_groups[5][counter]] 
+  final_outcome.append(outcome_tots.index(max(outcome_tots)))
+    
+  subject_length.append(len(row['Subject']))
+  subject_word_count.append(len(row['Subject'].split()))
+  content_length.append(len(row['Content']))
+  content_word_count.append(len(row['Content'].split()))
+  dt = row['Date']
+  is_am = 'no'
+  if (dt.time() &lt; datetime.time(12)): is_am = 'yes'
+  is_am_list.append(is_am)
+  is_weekday = 'no'
+  if (dt.weekday() &lt; 6): is_weekday = 'yes'
+  is_weekday_list.append(is_weekday)
+  counter += 1
+
+
+# add simple engineered features?
+training_set = pd.DataFrame({
+              &quot;raw_text&quot;:raw_text,
+              &quot;group_LEGAL&quot;:group_LEGAL,
+              &quot;group_COMMUICATIONS&quot;:group_COMMUICATIONS,
+              &quot;group_SECURITY_SPAM_ALERTS&quot;:group_SECURITY_SPAM_ALERTS,
+              &quot;group_SUPPORT&quot;:group_SUPPORT,
+              &quot;group_ENERGY_DESK&quot;:group_ENERGY_DESK,
+              &quot;group_SALES_DEPARTMENT&quot;:group_SALES_DEPARTMENT,
+              &quot;subject_length&quot;:subject_length,
+              &quot;subject_word_count&quot;:subject_word_count,
+              &quot;content_length&quot;:content_length,
+              &quot;content_word_count&quot;:content_word_count,
+              &quot;is_AM&quot;:is_am_list,
+              &quot;is_weekday&quot;:is_weekday_list,
+              &quot;outcome&quot;:final_outcome})
+
+# remove all emails that have all zeros (i.e. not from any of required categories)
+training_set = training_set[(training_set.group_LEGAL &gt; 0) | 
+              (training_set.group_COMMUICATIONS &gt; 0) | 
+              (training_set.group_SECURITY_SPAM_ALERTS &gt; 0) |
+              (training_set.group_SUPPORT &gt; 0) |
+              (training_set.group_ENERGY_DESK &gt; 0) |
+              (training_set.group_SALES_DEPARTMENT &gt; 0)]
+print(len(training_set))
+
+# save extractions to file
+training_set.to_csv('enron_classification_df.csv', index=False, header=True)</code></pre>
+<p><BR><BR> We now have a data set ready to be modeled, we’re going to feed it all into <a href="https://www.tensorflow.org/api_docs/python/tf/contrib/learn" target="_blank">Tensorflow’s higher level API</a>: <a href target="_blank">tf.contrib.learn.DNNClassifier</a>. We are preparing a lot of features, such as is_AM, for whether the email was sent in the morning or not. Some of those features didn’t prove predictive for the departments chosen or data set but I still left them in as it may depend on the context and corpus.</p>
+<pre class="r"><code>####################################################
+# TensorFlow Deep Classifier 
+####################################################
+# https://www.tensorflow.org/api_docs/python/tf/contrib/learn/DNNClassifier
+# create a wide and deep model and also predict a few entries
+
+model_ready_data = pd.read_csv('enron_classification_df.csv') 
+
+# https://stackoverflow.com/questions/38250710/how-to-split-data-into-3-sets-train-validation-and-test
+# (60% - train set, 20% - validation set, 20% - test set)
+df_train, df_test, df_val = np.split(model_ready_data.sample(frac=1), [int(.6*len(model_ready_data)), int(.8*len(model_ready_data))])
+
+# Continuous base columns
+content_length = tf.contrib.layers.real_valued_column(&quot;content_length&quot;)
+content_word_count = tf.contrib.layers.real_valued_column(&quot;content_word_count&quot;)
+subject_length = tf.contrib.layers.real_valued_column(&quot;subject_length&quot;)
+subject_word_count = tf.contrib.layers.real_valued_column(&quot;subject_word_count&quot;)
+group_LEGAL = tf.contrib.layers.real_valued_column(&quot;group_LEGAL&quot;)
+group_COMMUICATIONS = tf.contrib.layers.real_valued_column(&quot;group_COMMUICATIONS&quot;)
+group_SECURITY_SPAM_ALERTS = tf.contrib.layers.real_valued_column(&quot;group_SECURITY_SPAM_ALERTS&quot;)
+group_SUPPORT = tf.contrib.layers.real_valued_column(&quot;group_SUPPORT&quot;)
+group_ENERGY_DESK = tf.contrib.layers.real_valued_column(&quot;group_ENERGY_DESK&quot;)
+group_SALES_DEPARTMENT = tf.contrib.layers.real_valued_column(&quot;group_SALES_DEPARTMENT&quot;)
+content_length_bucket = tf.contrib.layers.bucketized_column(content_length, boundaries=[100, 200, 300, 400])
+subject_length_bucket = tf.contrib.layers.bucketized_column(subject_length, boundaries=[10,15, 20, 25, 30])
+
+# Categorical base columns
+is_AM_sparse_column = tf.contrib.layers.sparse_column_with_keys(column_name=&quot;is_AM&quot;, keys=[&quot;yes&quot;, &quot;no&quot;])
+# is_AM = tf.contrib.layers.one_hot_column(is_AM_sparse_column)\
+is_weekday_sparse_column = tf.contrib.layers.sparse_column_with_keys(column_name=&quot;is_weekday&quot;, keys=[&quot;yes&quot;, &quot;no&quot;])
+# is_weekday = tf.contrib.layers.one_hot_column(is_weekday_sparse_column)
+
+categorical_columns = [is_AM_sparse_column, is_weekday_sparse_column, content_length_bucket, subject_length_bucket] 
+
+deep_columns = [content_length, content_word_count, subject_length, subject_word_count,
+               group_LEGAL, group_COMMUICATIONS, group_SECURITY_SPAM_ALERTS, group_SUPPORT, 
+               group_ENERGY_DESK, group_SALES_DEPARTMENT]
+
+simple_columns = [group_LEGAL, group_COMMUICATIONS, group_SECURITY_SPAM_ALERTS, group_SUPPORT, 
+               group_ENERGY_DESK, group_SALES_DEPARTMENT]
+
+import tempfile
+model_dir = tempfile.mkdtemp()
+classifier = tf.contrib.learn.DNNClassifier(feature_columns=simple_columns,
+                                hidden_units=[20, 20],
+                                n_classes=6,
+                                model_dir=model_dir,)
+
+# Define the column names for the data sets.
+COLUMNS = ['content_length',
+ 'content_word_count',
+ 'group_LEGAL',
+ 'group_COMMUICATIONS',
+ 'group_SECURITY_SPAM_ALERTS',
+ 'group_SUPPORT',
+ 'group_ENERGY_DESK',
+ 'group_SALES_DEPARTMENT',
+ 'is_AM',
+ 'is_weekday',
+ 'subject_length',
+ 'subject_word_count',
+ 'outcome']
+LABEL_COLUMN = 'outcome'
+CATEGORICAL_COLUMNS = [&quot;is_AM&quot;, &quot;is_weekday&quot;]
+CONTINUOUS_COLUMNS = ['content_length',
+ 'content_word_count',
+ 'group_LEGAL',
+ 'group_COMMUICATIONS',
+ 'group_SECURITY_SPAM_ALERTS',
+ 'group_SUPPORT',
+ 'group_ENERGY_DESK',
+ 'group_SALES_DEPARTMENT',
+ 'subject_length',
+ 'subject_word_count']
+
+LABELS = [0, 1, 2, 3, 4, 5]
+ 
+def input_fn(df):
+  # Creates a dictionary mapping from each continuous feature column name (k) to
+  # the values of that column stored in a constant Tensor.
+  continuous_cols = {k: tf.constant(df[k].values)
+                     for k in CONTINUOUS_COLUMNS}
+  # Creates a dictionary mapping from each categorical feature column name (k)
+  # to the values of that column stored in a tf.SparseTensor.
+  categorical_cols = {k: tf.SparseTensor(
+      indices=[[i, 0] for i in range(df[k].size)],
+      values=df[k].values,
+      dense_shape=[df[k].size, 1])
+                      for k in CATEGORICAL_COLUMNS}
+  # Merges the two dictionaries into one.
+  feature_cols = dict(continuous_cols.items() + categorical_cols.items())
+  
+  # Converts the label column into a constant Tensor.
+  label = tf.constant(df[LABEL_COLUMN].values)
+  # Returns the feature columns and the label.
+  return feature_cols, label
+
+def train_input_fn():
+  return input_fn(df_train)
+
+def eval_input_fn():
+  return input_fn(df_test)
+# After reading in the data, you can train and evaluate the model:
+
+classifier.fit(input_fn=train_input_fn, steps=200)
+results = classifier.evaluate(input_fn=eval_input_fn, steps=1)
+for key in sorted(results):
+    print(&quot;%s: %s&quot; % (key, results[key]))
+
+y_pred = classifier.predict(input_fn=lambda: input_fn(df_val), as_iterable=False)
+print(y_pred)
+
+print('buckets found:',set(y_pred))
+
+# # confusion matrix analysis
+# from sklearn.metrics import confusion_matrix
+# confusion_matrix(df_val[LABEL_COLUMN], y_pred)
+# pd.crosstab(df_val[LABEL_COLUMN], y_pred, rownames=['Actual'], colnames=['Predicted'], margins=True)
+
+# create some data
+# https://stats.stackexchange.com/questions/95209/how-can-i-interpret-sklearn-confusion-matrix
+lookup = {0: 'LEGAL', 1:'COMMUICATIONS', 2:'SECURITY', 3:'SUPPORT', 4:'ENERGY', 5:'SALES'}
+y_truet = pd.Series([lookup[_] for _ in df_val[LABEL_COLUMN]])
+y_predt = pd.Series([lookup[_] for _ in y_pred])
+pd.crosstab(y_truet, y_predt, rownames=['Actual'], colnames=['Predicted'], margins=True)</code></pre>
+<p><BR><BR> The confusion matrix shows that we’re doing a really good job on our internal data - this should be expected as we pruned out any emails that didn’t fit in the our six buckets. As a variant, you may want to create another department called other, and assign all those that don’t belong to that department instead of pruning them out. In a production setting, you will have emails that can’t be assigned to known buckets and that is where additional feature engineering will come in handy (such as recipient names, time of day, location, sentiment, etc). Check out Google’s <a href="https://cloud.google.com/natural-language/" target="_blank">Google Cloud Natural Language API</a> for ideas.</p>
+<pre class="r"><code>Predicted      COMMUICATIONS  ENERGY  LEGAL  SALES  SECURITY  SUPPORT    All
+Actual                                                                      
+COMMUICATIONS          12660       0      1      0         1        0  12662
+ENERGY                     2    3687      9      3         1        0   3702
+LEGAL                      0       0  25449      0         0        0  25449
+SALES                      9       6     17  10300        11        6  10349
+SECURITY                   9       1     16      0      4534        0   4560
+SUPPORT                    2       0     25      5         1     6648   6681
+All                    12682    3694  25517  10308      4548     6654  63403</code></pre>
+<p><BR><BR> Finally, let’s take a pretend email, create a crude data scrubbing function and feed it through our model’s predictor:</p>
+<pre class="r"><code>subject_to_predict = &quot;To the help desk&quot;
+content_to_predict = &quot;My monitor stopped responding and I need to get this spreadsheet finished as soon as possible. Please help me!&quot;
+
+def scrub_text(subject_to_predict, content_to_predict, departments):
+  # prep text
+  subject_to_predict = subject_to_predict.lower()
+  pattern = re.compile('[^a-z]')
+  subject_to_predict = re.sub(pattern, ' ', subject_to_predict)
+  pattern = re.compile('\s+')
+  subject_to_predict = re.sub(pattern, ' ', subject_to_predict) 
+  
+  content_to_predict = content_to_predict.lower()
+  pattern = re.compile('[^a-z]')
+  content_to_predict = re.sub(pattern, ' ', content_to_predict)
+  pattern = re.compile('\s+')
+  content_to_predict = re.sub(pattern, ' ', content_to_predict) 
+  
+  # get bag-of-words
+  words_groups = []
+  text = subject_to_predict + ' ' + content_to_predict
+  for group_id in range(len(departments)):
+    work_group = []
+    print('Working bag number:', str(group_id))
+    top_words = departments[group_id]
+    work_group.append(len([w for w in text.split() if w in set(top_words)]))
+    words_groups.append(work_group)
+
+  # count emails per category group and feature engineering
+  raw_text = []
+  subject_length = []
+  subject_word_count = []
+  content_length = []
+  content_word_count = []
+  is_am_list = []
+  is_weekday_list = []
+  group_LEGAL = []
+  group_COMMUICATIONS = []
+  group_SECURITY_SPAM_ALERTS = []
+  group_SUPPORT = []
+  group_ENERGY_DESK = []
+  group_SALES_DEPARTMENT = []
+  final_outcome = []
+
+  cur_time_stamp = datetime.datetime.now()
+ 
+  raw_text.append(text)
+  group_LEGAL.append(words_groups[0])
+  group_COMMUICATIONS.append(words_groups[1]) 
+  group_SECURITY_SPAM_ALERTS.append(words_groups[2])
+  group_SUPPORT.append(words_groups[3])
+  group_ENERGY_DESK.append(words_groups[4])
+  group_SALES_DEPARTMENT.append(words_groups[5])
+  outcome_tots = [words_groups[0], words_groups[1], words_groups[2], words_groups[3], words_groups[4], words_groups[5]] 
+  final_outcome.append(outcome_tots.index(max(outcome_tots)))
+    
+  subject_length.append(len(subject_to_predict))
+  subject_word_count.append(len(subject_to_predict.split()))
+  content_length.append(len(content_to_predict))
+  content_word_count.append(len(content_to_predict.split()))
+  dt = cur_time_stamp
+  is_am = 'no'
+  if (dt.time() &lt; datetime.time(12)): is_am = 'yes'
+  is_am_list.append(is_am)
+  is_weekday = 'no'
+  if (dt.weekday() &lt; 6): is_weekday = 'yes'
+  is_weekday_list.append(is_weekday)
+ 
+  # add simple engineered features?
+  training_set = pd.DataFrame({
+                &quot;raw_text&quot;:raw_text,
+                &quot;group_LEGAL&quot;:group_LEGAL[0],
+                &quot;group_COMMUICATIONS&quot;:group_COMMUICATIONS[0],
+                &quot;group_SECURITY_SPAM_ALERTS&quot;:group_SECURITY_SPAM_ALERTS[0],
+                &quot;group_SUPPORT&quot;:group_SUPPORT[0],
+                &quot;group_ENERGY_DESK&quot;:group_ENERGY_DESK[0],
+                &quot;group_SALES_DEPARTMENT&quot;:group_SALES_DEPARTMENT[0],
+                &quot;subject_length&quot;:subject_length,
+                &quot;subject_word_count&quot;:subject_word_count,
+                &quot;content_length&quot;:content_length,
+                &quot;content_word_count&quot;:content_word_count,
+                &quot;is_AM&quot;:is_am_list,
+                &quot;is_weekday&quot;:is_weekday_list,
+                &quot;outcome&quot;:final_outcome})
+
+
+  return(training_set)
+  
+scrubbed_entry = scrub_text(subject_to_predict, content_to_predict, departments)
+
+y_pred = classifier.predict(input_fn=lambda: input_fn(scrubbed_entry), as_iterable=False)
+print(y_pred)
+
+department_names = ['Legal Desk', 'Communications Desk', 'Security Desk', 'Help Desk', 'Energy Desk', 'Sales Desk']
+
+print('Forward request to: ' +  department_names[y_pred[0]])</code></pre>
+<p><BR><BR> And the model predicts:</p>
+<pre class="r"><code>Forward request to: Help Desk</code></pre>
+<p><BR><BR> There you have it, a little more work and you should be able to adapt this for your own company!</p>
+<p>And thanks for the artwork, Lucas!!</p>
+
+
+
+
+
+
+</div> 
+</body>
+</html>
