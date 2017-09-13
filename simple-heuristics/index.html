@@ -1,0 +1,214 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Simple Heuristics - Graphviz and Decision Trees to Quickly Find Patterns in your Data</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Simple Heuristics - Graphviz and Decision Trees to Quickly Find Patterns in your Data</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/user/mamunate/videos" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<br/>
+
+<BR>
+<p style="text-align:center">
+<img src="img/simple-heuristics/img/iris-two-deep.png" alt="iris tree" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR><BR>
+  
+<p><BR><BR></p>
+<p>Before breaking out the big algos on a new dataset, it is always a good idea to explore it for simple, intuitive patterns (i.e. heuristics). This will pay off in droves. It not only exposes you to your data, it makes you understand it and give you that critical ‘business knowledge’. People you work with will ask you general questions about the data, and this is how you can get that. The goal here is to find the important values that can explain a particular target outcome. We’ll use <a href="http://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html" target="_blank">sklearn’s DecisionTreeClassifier</a> for some powerful, non-linear splits and <a href="http://www.graphviz.org/" target="_blank"></a> for exporting and visualizing trees.</p>
+<p>I’ll use the <a href="https://en.wikipedia.org/wiki/Iris_flower_data_set" target="_blank">Iris multivariate data set</a> to illustrate this simple tool. The data set can be obtained directly through <a href="http://scikit-learn.org/stable/datasets/index.html" target="_blank">sklearn’s datasets import</a>.</p>
+<p>You will also need to ‘install graphviz’ if you don’t already have it.</p>
+
+<pre class="r"><code>import pandas as pd
+import numpy as np
+# !pip install graphviz
+from sklearn import tree
+from sklearn import datasets
+  
+# import some data to play with
+iris = datasets.load_iris()</code></pre>
+<p><BR><BR> <code>sklearn</code> offers the data in a handy object, so we need to transform it a bit to get it into our usual data frame format.</p>
+<pre class="r"><code>dataset = iris.data
+df = pd.DataFrame(dataset, columns=iris.feature_names)
+df['species'] = iris.target
+
+# define feature space
+features = iris.feature_names
+target = 'species'
+
+df.head(3)</code></pre>
+<pre class="r"><code>Out[323]: 
+   sepal length (cm)  sepal width (cm)  petal length (cm)  petal width (cm)  \
+0                5.1               3.5                1.4               0.2   
+1                4.9               3.0                1.4               0.2   
+2                4.7               3.2                1.3               0.2   
+
+   species  
+0        0  
+1        0  
+2        0  </code></pre>
+<p><BR><BR> A quick look at the balance of targets:</p>
+<pre class="r"><code># check balance of target values
+from collections import Counter
+Counter(df['species'])</code></pre>
+<pre class="r"><code>Out[322]: Counter({0: 50, 1: 50, 2: 50})</code></pre>
+<pre class="r"><code>iris.target_names</code></pre>
+<pre class="r"><code>Out[331]: 
+array(['setosa', 'versicolor', 'virginica'],
+      dtype='|S10')</code></pre>
+<BR><BR>
+<H2>
+Simple Splits
+</H2>
+<p>Let’s call the <code>DecisionTreeClassifier</code> and the <code>export_graphviz</code> from <b>sklearn</b>. The classifier is a straightforward tree-based classification model where we’ll pass it our desired tree depth of 1 to only look at single features.</p>
+<pre class="r"><code>HOW_DEEP_TREES = 1
+clf = tree.DecisionTreeClassifier(random_state=0, max_depth=HOW_DEEP_TREES)
+clf = clf.fit(df[features], df[target])
+clf</code></pre>
+<pre class="r"><code>Out[328]: 
+DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=1,
+            max_features=None, max_leaf_nodes=None,
+            min_impurity_decrease=0.0, min_impurity_split=None,
+            min_samples_leaf=1, min_samples_split=2,
+            min_weight_fraction_leaf=0.0, presort=False, random_state=0,
+            splitter='best')</code></pre>
+<p><BR><BR></p>
+<p>We pass our trained model to the <code>tree.export_graphviz</code> to export the tree and render it:</p>
+<pre class="r"><code>import graphviz
+dot_data = tree.export_graphviz(clf, out_file=None,  feature_names=features,  
+    class_names=iris.target_names,  filled=True, rounded=True, special_characters=True) 
+graph = graphviz.Source(dot_data)  
+graph.render('dtree_render',view=True)</code></pre>
+<BR><BR>
+
+<p style="text-align:center">
+<img src="img/simple-heuristics/img/iris-one-deep.png" alt="iris tree" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+ 
+ 
+
+<p><BR><BR> To interpret the above chart, we see that feature <code>petal width (cm)</code> when it is smaller or equal to 0.8 yields to class <b>setosa</b> and that out of a sample of 50 cases, 100% fulfilled that rule. A <code>petal width (cm)</code> above 0.8 yields to <b>versicolor</b>, and out of a sample set of 100 rows, 50 fulfilled that rule. Because this is a multivariate data set, we can assume that both <b>versicolor</b> and <b>virginica</b> are larger than 0.8. The model selected the <code>petal width (cm)</code> feature, thus we can assume it thinks its the most important feature.</p>
+<p>If you want to only understand target <code>virginica</code>, you can always change the target feature to account for it and relegate the other two to class ‘other’:</p>
+<pre class="r"><code>df_temp = df.copy() # use a copy of the data so we don't have to rebuild it again
+# bianry outcome - is it virginica or not?
+df_temp['species'] = np.where(df_temp['species']==2, 1,0)
+clf = tree.DecisionTreeClassifier(random_state=0, max_depth=HOW_DEEP_TREES)
+clf = clf.fit(df_temp[features], df_temp[target])
+dot_data = tree.export_graphviz(clf, out_file=None,  feature_names=features,  
+    class_names=['virginica','other'],  filled=True, rounded=True, special_characters=True) 
+graph = graphviz.Source(dot_data)  
+graph.render('dtree_render',view=True)</code></pre>
+<BR>
+<p style="text-align:center">
+<img src="img/simple-heuristics/img/virginica-or-not.png" alt="iris tree" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR><BR>
+
+<p><BR><BR> If you want to explore feature interaction, you simply need to set the <code>HOW_DEEP_TREES</code> value to something larger (see top graph for an example of 2 features per tree).</p>
+<BR><BR>
+<H2>
+Complex Splits
+</H2>
+<p>This tool easily and visually breaks down splits in data - one thing to keep in mind is that this approach always fits ‘perfectly’ (some may say over-fits) your training data. To help it generalize a bit more with real world data, you can break it up into smaller random chunks and fit those numerous times inside a loop. Let’s build exactly that but instead of rendering it graphically, we’ll only extract the features and split values. The goal here is to get to important values in the data that explain a target. Let’s increase the number of features per tree and run it 20 times with data samples of size 10:</p>
+<pre class="r"><code>import random
+feature_splits = []
+
+HOW_DEEP_TREES = 2
+clf = tree.DecisionTreeClassifier(random_state=0, max_depth=HOW_DEEP_TREES)
+ 
+for x in range(0,20):
+    # sample should be smaller than df size
+    rows = random.sample(df.index, 10)
+    sample_frame = df.ix[rows]
+  
+    estimator = clf.fit(sample_frame[features], sample_frame[target])
+    n_nodes = estimator.tree_.node_count
+    children_left = estimator.tree_.children_left
+    children_right = estimator.tree_.children_right
+    feature = estimator.tree_.feature
+    threshold = estimator.tree_.threshold
+
+    cur_node = ''
+    for i in range(n_nodes):
+        if (threshold[i] &gt;= 0):
+            cur_node = cur_node + features[feature[i]] + ' &lt;= ' + str(threshold[i]) + &quot; &quot;
+            #feature_splits[features[feature[i]]].append( threshold[i] )
+    if (len(cur_node) &gt; 0):
+        feature_splits.append(cur_node)
+ 
+feature_splits</code></pre>
+<pre class="r"><code>Out[336]: 
+['petal width (cm) &lt;= 1.64999997616 sepal width (cm) &lt;= 3.0 ',
+ 'sepal width (cm) &lt;= 3.09999990463 petal length (cm) &lt;= 5.09999990463 ',
+ 'petal width (cm) &lt;= 0.699999988079 petal length (cm) &lt;= 4.65000009537 ',
+ 'petal width (cm) &lt;= 0.949999988079 petal length (cm) &lt;= 4.80000019073 ',
+ 'petal width (cm) &lt;= 0.649999976158 petal width (cm) &lt;= 1.64999997616 ',
+ 'petal width (cm) &lt;= 1.54999995232 sepal width (cm) &lt;= 3.0 ',
+ 'sepal width (cm) &lt;= 3.15000009537 petal length (cm) &lt;= 4.84999990463 ',
+ 'sepal length (cm) &lt;= 6.14999961853 petal length (cm) &lt;= 2.79999995232 sepal width (cm) &lt;= 2.90000009537 ',
+ 'petal width (cm) &lt;= 0.600000023842 petal width (cm) &lt;= 1.64999997616 ',
+ 'petal width (cm) &lt;= 1.64999997616 sepal width (cm) &lt;= 3.15000009537 ',
+ 'petal width (cm) &lt;= 1.64999997616 petal length (cm) &lt;= 2.84999990463 ',
+ 'sepal width (cm) &lt;= 3.15000009537 petal length (cm) &lt;= 4.80000019073 ',
+ 'sepal width (cm) &lt;= 2.95000004768 sepal width (cm) &lt;= 2.25 sepal length (cm) &lt;= 5.75 ',
+ 'petal width (cm) &lt;= 1.64999997616 petal length (cm) &lt;= 2.65000009537 ',
+ 'petal width (cm) &lt;= 0.649999976158 sepal width (cm) &lt;= 3.09999990463 ',
+ 'petal width (cm) &lt;= 0.699999988079 petal length (cm) &lt;= 5.09999990463 ',
+ 'petal length (cm) &lt;= 4.75 sepal width (cm) &lt;= 3.34999990463 ',
+ 'petal width (cm) &lt;= 0.650000035763 petal length (cm) &lt;= 4.89999961853 ',
+ 'sepal width (cm) &lt;= 3.04999995232 petal length (cm) &lt;= 3.59999990463 ',
+ 'petal width (cm) &lt;= 0.949999988079 petal width (cm) &lt;= 1.75 ']</code></pre>
+<p><BR><BR> Though we don’t see what split explains what target, we get an interesting series of split values. Clearly, the <code>petal width (cm)</code> is the most important feature, yet <code>sepal width (cm)</code> and <code>petal length (cm)</code> do also appear. More interesting (as I’d consider the rare appearance of a features as more of an aberration), the split values of <code>petal width (cm)</code> are different for each run. All this is great data intelligence to those that want to better understand their data, and offer a general direction for further investigation as to why those splits are important and what that means in the context of your business. <BR></p>
+
+
+
+</div> 
+</body>
+</html>
