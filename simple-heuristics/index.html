@@ -146,21 +146,57 @@ versicolor    1.326
 virginica     2.026
 Name: petal width (cm), dtype: float64
 </code></pre>
- 
+<BR><BR>
 <p>If you want to only understand target <code>virginica</code>, you can always change the target feature to account for it and relegate the other two to class ‘other’:</p>
 <pre class="r"><code>df_temp = df.copy() # use a copy of the data so we don't have to rebuild it again
 # bianry outcome - is it virginica or not?
-df_temp['species'] = np.where(df_temp['species']==2, 1,0)
-clf = tree.DecisionTreeClassifier(random_state=0, max_depth=HOW_DEEP_TREES)
+
+df_temp['species'] = pd.Series(['virginica' if iris.target_names[cat] == 'virginica' else 'other' for cat in iris.target]).astype("category", categories=['virginica', 'other'], ordered=True)
+Counter(df_temp['species'])
+</code></pre>
+c
+Counter({'virginica': 50, 'other': 100})
+</code></pre>
+<BR><BR>  
+We will call the same <b>DecisionTreeClassifier</b> as before except we will use the <b>class_weight="balanced"</b> parameter that will balance our data by outcome:
+<pre class="r"><code>
+clf = tree.DecisionTreeClassifier(random_state=0, max_depth=HOW_DEEP_TREES, class_weight="balanced")
 clf = clf.fit(df_temp[features], df_temp[target])
 dot_data = tree.export_graphviz(clf, out_file=None,  feature_names=features,  
-    class_names=['virginica','other'],  filled=True, rounded=True, special_characters=True) 
+    class_names=['other','virginica'], filled=True, rounded=True, special_characters=True) 
 graph = graphviz.Source(dot_data)  
 graph.render('dtree_render',view=True)</code></pre>
 <BR>
 <p style="text-align:center">
 <img src="img/virginica-or-not.png" alt="iris tree" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
+Double check this:
+<pre class="r"><code>
+# double check using:
+df.groupby(['species'])['petal length (cm)'].mean()
+</code></pre>
+<pre class="r"><code>
+species
+setosa        1.464
+versicolor    4.260
+virginica     5.552
+Name: petal length (cm), dtype: float64
+</code></pre>
+<pre class="r"><code>
+# check on df_temp:
+df_temp[df_temp['petal length (cm)'] <= 4.75].groupby(['species']).count()  
+</code></pre>
+<pre class="r"><code>
+           sepal length (cm)  sepal width (cm)  petal length (cm)  \
+species                                                             
+virginica                  1                 1                  1   
+other                     94                94                 94   
+
+           petal width (cm)  
+species                      
+virginica                 1  
+other                    94    
+</code></pre>
 <BR><BR>
 
 <p><BR><BR> If you want to explore feature interaction, you simply need to set the <code>HOW_DEEP_TREES</code> value to something larger (see top graph for an example of 2 features per tree).</p>
