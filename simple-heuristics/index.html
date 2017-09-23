@@ -74,10 +74,10 @@ from sklearn import datasets
   
 # import some data to play with
 iris = datasets.load_iris()</code></pre>
-<p><BR><BR> <code>sklearn</code> offers the data in a handy object, so we need to transform it a bit to get it into our usual data frame format.</p>
+<p><BR><BR> <code>sklearn</code> offers the data in a handy object, so we need to transform it a bit to get it into our usual data frame format. Note: we are creating our target variable as a categorical type (R users will be familiar with this).</p>
 <pre class="r"><code>dataset = iris.data
 df = pd.DataFrame(dataset, columns=iris.feature_names)
-df['species'] = iris.target
+df['species'] = pd.Series([iris.target_names[cat] for cat in iris.target]).astype("category", categories=iris.target_names, ordered=True)
 
 # define feature space
 features = iris.feature_names
@@ -98,7 +98,7 @@ df.head(3)</code></pre>
 <pre class="r"><code># check balance of target values
 from collections import Counter
 Counter(df['species'])</code></pre>
-<pre class="r"><code>Out[322]: Counter({0: 50, 1: 50, 2: 50})</code></pre>
+<pre class="r"><code>Out[322]: Counter({'setosa': 50, 'versicolor': 50, 'virginica': 50})</code></pre>
 <pre class="r"><code>iris.target_names</code></pre>
 <pre class="r"><code>Out[331]: 
 array(['setosa', 'versicolor', 'virginica'],
@@ -135,6 +135,18 @@ graph.render('dtree_render',view=True)</code></pre>
  
 
 <p><BR><BR> To interpret the above chart, we see that feature <code>petal width (cm)</code> when it is smaller or equal to 0.8 yields to class <b>setosa</b> and that out of a sample of 50 cases, 100% fulfilled that rule. A <code>petal width (cm)</code> above 0.8 yields to <b>versicolor</b>, and out of a sample set of 100 rows, 50 fulfilled that rule. Because this is a multivariate data set, we can assume that both <b>versicolor</b> and <b>virginica</b> are larger than 0.8. The model selected the <code>petal width (cm)</code> feature, thus we can assume it thinks its the most important feature.</p>
+<BR>We can double check this by doing a <b>groupby</b> on the target variable:
+<pre class="r"><code>
+df.groupby(['species'])['petal width (cm)'].mean()
+</code></pre>
+<pre class="r"><code>
+species
+setosa        0.244
+versicolor    1.326
+virginica     2.026
+Name: petal width (cm), dtype: float64
+</code></pre>
+ 
 <p>If you want to only understand target <code>virginica</code>, you can always change the target feature to account for it and relegate the other two to class ‘other’:</p>
 <pre class="r"><code>df_temp = df.copy() # use a copy of the data so we don't have to rebuild it again
 # bianry outcome - is it virginica or not?
