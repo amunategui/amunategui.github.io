@@ -87,6 +87,124 @@ nx.draw_networkx_labels(G,pos)
 plt.show()</code></pre>
 <BR>
 <p style="text-align:center">
+<img src="/Users/manuel/Documents/reinforcement-learning/img/initial-q-learning-map.png" alt="starting map" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR><BR>
+</p>
+<p><BR><BR> The map shows that point <b>0</b> is where our bot will start its journey and point <b>7</b> is it’s final goal. The extra added points and false paths are the obstacles the bot will have to contend with. If you look at the top image, we can weave a story into this search - our bot is looking for honey, it is trying to find the hive and avoid the factory (the story-line will make sense in the second half of the article).</p>
+<p>We then create the rewards graph - this is the matrix version of our list of points map. We initialize the matrix to be the height and width of our points list (8 in this example) and initialize all values to <b>-1</b>:</p>
+<pre class="r"><code># how many points in graph? x points
+MATRIX_SIZE = 8
+
+# create matrix x*y
+R = np.matrix(np.ones(shape=(MATRIX_SIZE, MATRIX_SIZE)))
+R *= -1</code></pre>
+<p><BR><BR> We then change the values to be 0 if it is a viable path and 100 if it is a goal path (for more on this topic, see Mnemosyne_studio’s great tutorial: <a href="http://mnemstudio.org/path-finding-q-learning-tutorial.htm" target="_blank">Deep Q Learning for Video Games - The Math of Intelligence #9</a>)</p>
+<pre class="r"><code># assign zeros to paths and 100 to goal-reaching point
+for point in points_list:
+    print(point)
+    if point[1] == goal:
+        R[point] = 100
+    else:
+        R[point] = 0
+
+    if point[0] == goal:
+        R[point[::-1]] = 100
+    else:
+        # reverse of point
+        R[point[::-1]]= 0
+
+# add goal point round trip
+R[goal,goal]= 100
+
+R</code></pre>
+<pre class="r"><code>matrix([[  -1.,    0.,   -1.,   -1.,   -1.,   -1.,   -1.,   -1.],
+        [   0.,   -1.,    0.,   -1.,   -1.,    0.,   -1.,   -1.],
+        [  -1.,    0.,   -1.,    0.,   -1.,   -1.,   -1.,  100.],
+        [  -1.,   -1.,    0.,   -1.,   -1.,   -1.,   -1.,   -1.],
+        [  -1.,   -1.,   -1.,   -1.,   -1.,    0.,   -1.,   -1.],
+        [  -1.,    0.,   -1.,   -1.,    0.,   -1.,    0.,   -1.],
+        [  -1.,   -1.,   -1.,   -1.,   -1.,    0.,   -1.,   -1.],
+        [  -1.,   -1.,    0.,   -1.,   -1.,   -1.,   -1.,  100.]])</code></pre>
+<p><BR><BR> To read the above matrix, the y-axis is the state or where your bot is currently located, and the x-axis is your possible next actions. We then build our Q-learning matrix which will hold all the lessons learned from our bot. The Q-learning model uses a transitional rule formula and gamma is the learning parameter (see <a href="http://mnemstudio.org/path-finding-q-learning-tutorial.htm" target="_blank">Deep Q Learning for Video Games - The Math of Intelligence #9</a> for more details). The rest of this example is mostly copied from Mic’s blog post <a href="http://firsttimeprogrammer.blogspot.com/2016/09/getting-ai-smarter-with-q-learning.html" target="_blank">Getting AI smarter with Q-learning: a simple first step in Python</a>.</p>
+<pre class="r"><code>Q = np.matrix(np.zeros([MATRIX_SIZE,MATRIX_SIZE]))
+
+# learning parameter
+gamma = 0.8
+
+initial_state = 1
+
+def available_actions(state):
+    current_state_row = R[state,]
+    av_act = np.where(current_state_row &gt;= 0)[1]
+    return av_act
+
+available_act = available_actions(initial_state) 
+
+def sample_next_action(available_actions_range):
+    next_action = int(np.random.choice(available_act,1))
+    return next_action
+
+action = sample_next_action(available_act)
+
+def update(current_state, action, gamma):
+    
+  max_index = np.where(Q[action,] == np.max(Q[action,]))[1]
+  
+  if max_index.shape[0] &gt; 1:
+      max_index = int(np.random.choice(max_index, size = 1))
+  else:
+      max_index = int(max_index)
+  max_value = Q[action, max_index]
+  
+  Q[current_state, action] = R[current_state, action] + gamma * max_value
+  print('max_value', R[current_state, action] + gamma * max_value)
+  
+  if (np.max(Q) &gt; 0):
+    return(np.sum(Q/np.max(Q)*100))
+  else:
+    return (0)
+    
+update(initial_state, action, gamma)</code></pre>
+<p><BR><BR> We keep following Mic’s blog and run the training and testing functions that will run the update function 700 times allowing the Q-learning model to figure out the most efficient path:</p>
+<pre class="r"><code># Training
+scores = []
+for i in range(700):
+    current_state = np.random.randint(0, int(Q.shape[0]))
+    available_act = available_actions(current_state)
+    action = sample_next_action(available_act)
+    score = update(current_state,action,gamma)
+    scores.append(score)
+    print ('Score:', str(score))
+    
+print(&quot;Trained Q matrix:&quot;)
+print(Q/np.max(Q)*100)
+
+# Testing
+current_state = 0
+steps = [current_state]
+
+while current_state != 7:
+
+    next_step_index = np.where(Q[current_state,] == np.max(Q[current_state,]))[1]
+    
+    if next_step_index.shape[0] &gt; 1:
+        next_step_index = int(np.random.choice(next_step_index, size = 1))
+    else:
+        next_step_index = int(next_step_index)
+    
+    steps.append(next_step_index)
+    current_state = next_step_index
+
+print(&quot;Most efficient path:&quot;)
+print(steps)
+
+plt.plot(scores)
+plt.show()</code></pre>
+<pre class="r"><code>Most efficient path:
+[0, 1, 2, 7]</code></pre>
+<BR>
+<p style="text-align:center">
 <img src="img/converging-to-solutions.png" alt="number of tries to find solution" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 </p>
