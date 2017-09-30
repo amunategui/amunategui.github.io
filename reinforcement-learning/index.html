@@ -1,0 +1,97 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Simple Heuristics - Graphviz and Decision Trees to Quickly Find Patterns in your Data</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Reinforcement Learning - A Simple Python Example and A Step Closer to AI with Assisted Q-Learning</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=b40sc7lceqs&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<br/>
+
+<BR>
+<p style="text-align:center">
+<img src="img/looking-for-honey.png" alt="looking for honey" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<p><BR><BR></p>
+<blockquote>
+Q-learning is a model-free reinforcement learning technique. Specifically, Q-learning can be used to find an optimal action-selection policy for any given (finite) Markov decision process (MDP). <a href="https://en.wikipedia.org/wiki/Q-learning" target="_blank">Q-learning - Wikipedia</a>
+</blockquote>
+  
+<p>Machine learning is assumed to be either supervised or unsupervised but a recent new-comer broke the status-quo - reinforcement learning. Supervised and unsupervised approaches require data to model, not reinforcement learning! That’s right, it can explore space with a handful of instructions, analyze its surroundings one step at a time, and build data as it goes along for modeling.</p>
+In this walk-through, we’ll use Q-learning to find the shortest path between two areas. It has the ability to embark on a journey with no knowledge of what to do next. This approach requires constant trial and error as it collects data about its surroundings and figures out how to accomplish its goal. This opens up interesting possibilities, what about recording additional information, like environmental details along the way that it may not fully understand until after it reaches its goal? And once reached, could it review that additional data to determine if any of it would have helped it reach its goal faster? <BR><BR>
+<H2>
+A VERY Simple Python Q-learning Example
+</H2>
+<p>But let’s first look at a very simple python implementation of q-learning - no easy feat as most examples on the Internet are too complicated for new comers. The code is heavily borrowed from Mic’s great blog post <a href="http://firsttimeprogrammer.blogspot.com/2016/09/getting-ai-smarter-with-q-learning.html" target="_blank">Getting AI smarter with Q-learning: a simple first step in Python</a>. Thanks Mic for keeping it simple!</p>
+<pre class="r"><code>import numpy as np
+import pylab as plt
+
+# map cell to cell, add circular cell to goal point
+points_list = [(0,1), (1,5), (5,6), (5,4), (1,2), (2,3), (2,7)]</code></pre>
+<p><BR><BR> We create a points-list map that represents each direction our bot can take. Using this format allows us to easily create complex graphs but also easily visualize everything with <a href="https://networkx.github.io/" target="_blank">networkx</a> graphs.</p>
+<p>Our starting point is <b>0</b>, our goal point is <b>7</b>.</p>
+<pre class="r"><code>goal = 7
+
+import networkx as nx
+G=nx.Graph()
+G.add_edges_from(points_list)
+pos = nx.spring_layout(G)
+nx.draw_networkx_nodes(G,pos)
+nx.draw_networkx_edges(G,pos)
+nx.draw_networkx_labels(G,pos)
+plt.show()</code></pre>
+<BR>
+
+
+
+
+</div> 
+</body>
+</html>
