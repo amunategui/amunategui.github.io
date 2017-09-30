@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -88,6 +86,197 @@ nx.draw_networkx_edges(G,pos)
 nx.draw_networkx_labels(G,pos)
 plt.show()</code></pre>
 <BR>
+<p style="text-align:center">
+<img src="img/converging-to-solutions.png" alt="number of tries to find solution" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+</p>
+<BR><BR> We see that the model did correctly find the most efficient path from the starting node <b>0</b> to the goal node <b>7</b> and took around 400 iterations to converge to a solution. <BR><BR>
+<H2>
+Version 2.0, with Environmental Details
+</H2>
+<p>Now let’s take this a step further, look at the top image again, notice how the factory is surrounded by smoke and the hive, by bees. Let’s assume that bees don’t like smoke or factories, thus there will never be a hive or bees around smoke. What if our bot could record those environmental factors and turn them into actionable insight? Whenever the bot finds smoke it can turn around immediately instead of continuing to the factory, whenever it finds bees, it can stick around and assume the hive it close.</p>
+<pre class="r"><code>bees = [2]
+smoke = [4,5,6]
+
+G=nx.Graph()
+G.add_edges_from(points_list)
+mapping={0:'Start', 1:'1', 2:'2 - Bees', 3:'3', 4:'4 - Smoke', 5:'5 - Smoke', 6:'6 - Smoke', 7:'7 - Beehive'} 
+H=nx.relabel_nodes(G,mapping) 
+pos = nx.spring_layout(H)
+nx.draw_networkx_nodes(H,pos, node_size=[200,200,200,200,200,200,200,200])
+nx.draw_networkx_edges(H,pos)
+nx.draw_networkx_labels(H,pos)
+plt.show()</code></pre>
+<BR>
+<p style="text-align:center">
+<img src="img/map-with-environmental-factors.png" alt="adding environmental factors to node map" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR><BR>
+</p>
+<p><BR><BR> We assign node <b>2</b> as having bees and nodes <b>4,5,6</b> as having smoke. Our Q-learning bot doesn’t know yet that there are bees or smoke there nor does it know that bees are good and smoke bad in finding hives. The bot needs to do another run like we just did, but this time it needs to collect environmental factors.</p>
+<p>Here is the new <b>update</b> function with the capability of updating the Q-learning scores when if finds either bees or smoke.</p>
+<pre class="r"><code># re-initialize the matrices for new run
+Q = np.matrix(np.zeros([MATRIX_SIZE,MATRIX_SIZE]))
+
+enviro_bees = np.matrix(np.zeros([MATRIX_SIZE,MATRIX_SIZE]))
+enviro_smoke = np.matrix(np.zeros([MATRIX_SIZE,MATRIX_SIZE]))
+ 
+initial_state = 1
+
+def available_actions(state):
+    current_state_row = R[state,]
+    av_act = np.where(current_state_row &gt;= 0)[1]
+    return av_act
+ 
+def sample_next_action(available_actions_range):
+    next_action = int(np.random.choice(available_act,1))
+    return next_action
+
+def collect_environmental_data(action):
+    found = []
+    if action in bees:
+        found.append('b')
+
+    if action in smoke:
+        found.append('s')
+    return (found)
+ 
+available_act = available_actions(initial_state) 
+ 
+action = sample_next_action(available_act)
+
+def update(current_state, action, gamma):
+  max_index = np.where(Q[action,] == np.max(Q[action,]))[1]
+  
+  if max_index.shape[0] &gt; 1:
+      max_index = int(np.random.choice(max_index, size = 1))
+  else:
+      max_index = int(max_index)
+  max_value = Q[action, max_index]
+  
+  Q[current_state, action] = R[current_state, action] + gamma * max_value
+  print('max_value', R[current_state, action] + gamma * max_value)
+  
+  environment = collect_environmental_data(action)
+  if 'b' in environment: 
+    enviro_bees[current_state, action] += 1
+  
+  if 's' in environment: 
+    enviro_smoke[current_state, action] += 1
+  
+  if (np.max(Q) &gt; 0):
+    return(np.sum(Q/np.max(Q)*100))
+  else:
+    return (0)
+
+update(initial_state,action,gamma)
+
+scores = []
+for i in range(700):
+    current_state = np.random.randint(0, int(Q.shape[0]))
+    available_act = available_actions(current_state)
+    action = sample_next_action(available_act)
+    score = update(current_state,action,gamma)
+
+# print environmental matrices
+print('Bees Found')
+print(enviro_bees)
+print('Smoke Found')
+print(enviro_smoke)</code></pre>
+<pre class="r"><code>Bees Found
+[[  0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.  21.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.  93.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.  41.   0.   0.   0.   0.   0.]]
+
+Smoke Found
+[[  0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.  30.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.]
+ [  0.   0.   0.   0.   0.  90.   0.   0.]
+ [  0.   0.   0.   0.  23.   0.  29.   0.]
+ [  0.   0.   0.   0.   0.  92.   0.   0.]
+ [  0.   0.   0.   0.   0.   0.   0.   0.]]</code></pre>
+<p><BR><BR></p>
+<p>The environmental matrices show how many bees and smoke the bot found during its journey while searching for the most efficient path to the hive. To make this walk-through simpler, I am assuming two things - we modeled the environmental data and found out that the <b>bees</b> have a positive coefficient on finding hives, and <b>smoke</b>, a negative one. And we are going to reuse the environmental matrix already mapped out for our landscape, a more realistic approach would be to dynamically look at a new environment and assign environmental biases as they are encountered.</p>
+<pre class="r"><code>Q = np.matrix(np.zeros([MATRIX_SIZE,MATRIX_SIZE]))
+
+# subtract bees with smoke, this gives smoke a negative effect
+enviro_matrix = enviro_bees - enviro_smoke
+
+# Get available actions in the current state
+available_act = available_actions(initial_state) 
+
+# Sample next action to be performed
+action = sample_next_action(available_act)
+
+# This function updates the Q matrix according to the path selected and the Q 
+# learning algorithm
+def update(current_state, action, gamma):
+    
+    max_index = np.where(Q[action,] == np.max(Q[action,]))[1]
+
+    if max_index.shape[0] &gt; 1:
+        max_index = int(np.random.choice(max_index, size = 1))
+    else:
+        max_index = int(max_index)
+    max_value = Q[action, max_index]
+
+    Q[current_state, action] = R[current_state, action] + gamma * max_value
+    print('max_value', R[current_state, action] + gamma * max_value)
+
+    environment = collect_environmental_data(action)
+    if 'b' in environment: 
+        enviro_matrix[current_state, action] += 1
+    if 's' in environment: 
+        enviro_matrix[current_state, action] -= 1
+
+    return(np.sum(Q/np.max(Q)*100))
+
+update(initial_state,action,gamma)
+
+enviro_matrix_snap = enviro_matrix.copy()
+
+def available_actions_with_enviro_help(state):
+    current_state_row = R[state,]
+    av_act = np.where(current_state_row &gt;= 0)[1]
+    # if there are multiple routes, dis-favor anything negative
+    env_pos_row = enviro_matrix_snap[state,av_act]
+    if (np.sum(env_pos_row &lt; 0)):
+        # can we remove the negative directions from av_act?
+        temp_av_act = av_act[np.array(env_pos_row)[0]&gt;=0]
+        if len(temp_av_act) &gt; 0:
+            print('going from:',av_act)
+            print('to:',temp_av_act)
+            av_act = temp_av_act
+    return av_act
+
+# Training
+scores = []
+for i in range(700):
+    current_state = np.random.randint(0, int(Q.shape[0]))
+    available_act = available_actions_with_enviro_help(current_state)
+    action = sample_next_action(available_act)
+    score = update(current_state,action,gamma)
+    scores.append(score)
+    print ('Score:', str(score))
+ 
+
+plt.plot(scores)
+plt.show()</code></pre>
+<BR>
+<p style="text-align:center">
+<img src="img/faster-convergence.png" alt="faster convergence" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<p><BR><BR> We see that the bot converges in less tries, say around 100 less, than our original model. This isn’t meant to be a controlled environment to compare both approaches, instead it’s about triggering thoughts on different ways of applying reinforced learning for discovery…</p>
+<p><BR><BR> Thanks to <B>Thomas</b> and <b>Lucas</b> for the artwork!</p>
+
+
 
 
 
