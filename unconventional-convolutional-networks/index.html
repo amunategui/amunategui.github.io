@@ -71,7 +71,7 @@
 <H2>
 Creating Synthetic Images
 </H2>
-<p>An important advantage of working with images is that you can load them up with many features. Think of the following dataset of end-of-day GOOG, you could very easily split an image into four quadrants and add the Open in one quadrant, the High in another, and so on:</p>
+<p>An important advantage of working with images is that you can load them up with many features. Think of the following dataset of end-of-day GOOG, you could very easily split an image into four quadrants and add the Open in one quadrant, the High in another, and so on. That's four time-series in one image!</p>
 <pre class="r"><code>import pandas_datareader as pdr
 stock_data = pdr.get_data_google('GOOG')
 stock_data.head()</code></pre>
@@ -96,7 +96,7 @@ The bottom half will hold a derived market indicator made of the Close minus the
 <img src="img/close-minus-open.png" alt="close minus open indicator chart" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 <BR><BR>
-When you splice them together, you get the following square matrix. That's it, there's our image - a complex time-series representation of various price action data for 20 periods:
+When you splice them together, you get the following square matrix. That's it, there's our image - a complex time-series representation of various price action data for how many periods you choose (40 in the below example):
 
 <BR>
 <p style="text-align:center">
@@ -258,7 +258,7 @@ for stock in STOCKS:
 <H2>
 Modeling with Convolutional Neural Networks
 </H2>
-We’re going to use <a href="https://keras.io/layers/convolutional/" target="_blank">Keras</a>, the higher-level API, to abstract some of the tedious work of building a convolutional network. The model is based on a VGG-like convnet found in the Keras <a href="https://keras.io/getting-started/sequential-model-guide/" target="_blank">Getting started with the Keras Sequential model’</a> guide. There are many ways to slice and dice such type of model, so definitely experiment away. In a nutshell, we’re using:<BR><BR>
+We’re going to use <a href="https://keras.io/layers/convolutional/" target="_blank">Keras</a>, the higher-level API, to abstract some of the tedious work of building a convolutional network. The model is based on a VGG-like convnet found in the Keras <a href="https://keras.io/getting-started/sequential-model-guide/" target="_blank">Getting started with the Keras Sequential model’</a> guide. There are many ways of slicing and dicing such type of model, so definitely experiment away. In a nutshell, we’re using:<BR><BR>
 <ul>
 <li>
 Three convolutional layers. The first will detect edges, the second will dig deeper and the third will capture even higher-level features
@@ -276,7 +276,7 @@ And a few dense layers to bring the outcome into focus all the way down to the o
 </ul>
 <p><BR><BR></p>
 <pre class="r"><code>
-  import keras
+import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
@@ -343,12 +343,14 @@ actuals = y_valid_mod[:,1]
 preds = predictions[:,1]
 from sklearn.metrics import accuracy_score
 print ('Accuracy on all data:', accuracy_score(actuals,[1 if x &gt;= 0.5 else 0 for x in preds]))</code></pre>
-<pre class="r"><code>balance 0.556956004756
+<pre class="r">
+<code>
+balance 0.556956004756
 valid auc: 0.600883159876
 Accuracy on all data: 0.579686209744</code></pre>
 <p>We get an AUC of 0.6, which isn’t bad when predicting the stock market and an accuracy of 57%, so a tad better than the natural balance of the data of 0.55 (so if you picked any at random you would automatically have a 55% success rate). Still this isn’t a lot higher than random. What can we do?</p>
 <H2>
-Pick The Best Bets To Run With
+Let's Run With The Best Bets
 </H2>
 <p>Well, the model does return probabilities, let’s cherry-pick the higher ones and see how that affects accuracy. Let’s set your prediction threshold to 0.65, meaning that anything below 0.65 will be ignored:</p>
 <pre class="r"><code>threshold = 0.65
