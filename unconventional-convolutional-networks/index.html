@@ -600,7 +600,12 @@ actuals = y_valid_mod[:,1][predictions[:,1] &gt;= threshold]
 from sklearn.metrics import accuracy_score
 print ('Accuracy on higher threshold:', accuracy_score(actuals,[1 if x &gt; 0.5 else 0 for x in preds]))
 print('Returns:',len(actuals))</code></pre>
-<p>conclusion link to cnn text and cnn time series</p>
+<H2>Addtional Resources</H2>
+<ul>
+<li type="square">
+<a href='https://arxiv.org/abs/1603.06995' target='_blank'>Multi-Scale Convolutional Neural Networks for Time Series Classification (https://arxiv.org/abs/1603.06995)</a></li>
+<li type="square"><a href='ttp://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/' target='_blank'>Implementing a CNN for Text Classification in TensorFlow (http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/)</a></li>
+</ul>
 
 
 
