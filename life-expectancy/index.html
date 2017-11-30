@@ -56,12 +56,13 @@
 
 <BR>
 <p style="text-align:center">
-<img src="img/life-expectancy-output.png" alt="life years left" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+<img src="img/life-expectancy-output.png" alt="life years left" style='padding:1px; border:1px solid #021a40; width: 60%; height: 60%'>
 </p>
 
 <p><BR><BR></p>
-<p>I’m going to walk through a simple linear regression model on estimating life expectancy in Python and build it into an interactive web application using Flask and PythonAnywhere. Check out a version that I built on <a href="http://www.TimeLeftToLive.com" target="_blank">TimeLeftToLive.com</a>. I see this topic as an important awareness tool but I apologize in advance if I’m going to depress anybody. It’s up there with those interactive banking tools reminding you how much money you don’t have to properly retire. This is a surprisingly easy model to build using solid data curated by top statisticians. Two top sources are the <a href="https://www.cia.gov/library/publications/the-world-factbook/rankorder/2102rank.html" target="_blank">Central Intelligence Agency (CIA)</a> to the <a href="http://www.who.int/gho/mortality_burden_disease/life_tables/en/" target="_blank">World Health Organization (WHO)</a>.</p>
+<p>I’m going to walk through a simple linear regression model on estimating life expectancy in Python and build it into an interactive web application using Flask and PythonAnywhere. Check out a version that I built on <a href="http://www.TimeLeftToLive.com" target="_blank">TimeLeftToLive.com</a>. I see this topic as an important awareness tool but I apologize in advance if I’m going to depress anybody. It’s up there with those interactive banking tools reminding you how much money you don’t have to properly retire. This is a surprisingly easy model to build using solid data curated by top statisticians. Two top sources are the <a href="http://www.who.int/gho/mortality_burden_disease/life_tables/en/" target="_blank">World Health Organization (WHO)</a> and the <a href="https://www.cia.gov/library/publications/the-world-factbook/rankorder/2102rank.html" target="_blank">Central Intelligence Agency (CIA)</a>.</p>
 <p>Here we’ll use the <a href="http://www.who.int/gho/en/" target="_blank">World Health Organization (WHO) Global Health Observatory Data</a> and I recommend checking out the link because there are plenty more interesting data sets there.</p>
+<BR>
 <H2>
 Mortality Data
 </H2>
@@ -70,6 +71,7 @@ Mortality Data
 <p><b>Life expectancy at birth (years)</b> The average number of years that a newborn could expect to live, if he or she were to pass through life exposed to the sex- and age-specific death rates prevailing at the time of his or her birth, for a specific year, in a given country, territory, or geographic area. From the WHO site:</p>
 <b>Life expectancy at age 60 (years)</b> The average number of years that a person of 60 years old could expect to live, if he or she were to pass through life exposed to the sex- and age-specific death rates prevailing at the time of his or her 60 years, for a specific year, in a given country, territory, or geographic area.
 </blockquote>
+<BR>
 <H2>
 Simple Linear Regression and Predicting Life Expectancy
 </H2>
@@ -89,7 +91,7 @@ simple_life_dataset.head()</code></pre>
 <p style="text-align:center">
 <img src="img/simple-data-set.png" alt="simple life-expectancy data set" style='padding:1px; border:1px solid #021a40; width: 20%; height: 20%'>
 </p>
-<p><BR> Now let’s feed that data into the <b>stats.linregress</b> function. We’ll only use two of its output, the <b>slope</b> and <b>intercept</b>. Those two values and the <a href="https://www.mathsisfun.com/equation_of_line.html" target="_blank">y = mx+b</a> line equation, give us everything we need to estimate life-expectancy for any age.</p>
+<p><BR>Now let’s feed that data into the <b>stats.linregress</b> function. We’ll only use two of its output, the <b>slope</b> and <b>intercept</b>. Those two values and the <a href="https://www.mathsisfun.com/equation_of_line.html" target="_blank">y = mx+b</a> line equation, give us everything we need to estimate life-expectancy for any age.</p>
 <pre class="r"><code>import numpy as np
 from scipy import stats
 slope, intercept, r_value, p_value, std_err = stats.linregress(simple_life_dataset['Age'],simple_life_dataset['Life Expectancy'])
@@ -97,7 +99,7 @@ print('intercept: ', intercept)
 print('slope: ', slope)</code></pre>
 <pre class="r"><code>('intercept: ', 90.0)
 ('slope: ', -1.0)</code></pre>
-<BR> So, how many years left of life for a 20-year old according to our fictitious data? We apply the stats.linregress outputs to the <a href="https://www.mathsisfun.com/equation_of_line.html" target="_blank">y = mx+b</a> line equation: <BR>
+<BR><BR>So, how many years left of life for a 20-year old according to our fictitious data? We apply the stats.linregress outputs to the <a href="https://www.mathsisfun.com/equation_of_line.html" target="_blank">y = mx+b</a> line equation: <BR><BR>
 <p style="text-align:center">
 <b>Life Expectancy Estimate = Slope * Age + Intercept</b>
 <p>
@@ -122,6 +124,7 @@ plt.show()</code></pre>
 </p>
 
 <BR>
+<BR>
 <H2>
 WHO Mortality Data
 </H2>
@@ -144,17 +147,19 @@ who_list[who_list['COUNTRY (DISPLAY)']=='France'].head(10)</code></pre>
 <img src="img/head-who-data.png" alt="WHO data" style='padding:1px; border:1px solid #021a40; width: 40%; height: 40%'>
 </p>
 
-p><BR> Let’s predict how many years of life I have left (yikes!). First let’s look at the data, this is really inst resting. The life expectancy of a new born male in the USA using the latest data, is 77 years, while a 60-year-old male in the USA using the latest data is 22 years which totals 82 years, what gives? That’s one of the complexities of statistics, taking averages for a sixty-year-old implies that this person already survived 60 years, this is called <a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank">Survivorship bias</a>. And what the means for us here, is that the model will be slightly optimistic for those closer to zero and slightly pessimistic for those closer to 60.</p>
+<p><BR>Let’s predict how many years of life I have left (yikes!). First let’s look at the data, this is really interesting. The life expectancy of a new born male in the USA using the latest data, is 77 years, while a 60-year-old male in the USA using the latest data is 22 years which totals 82 years, what gives? That’s one of the complexities of statistics, taking averages for a sixty-year-old implies that this person already survived 60 years, this is called <a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank">Survivorship bias</a>. And what the means for us here, is that the model will be slightly optimistic for those closer to zero and slightly pessimistic for those closer to 60.</p>
 <pre class="r"><code>country = 'United States Of America'
 sex = 'Male'
 
-# pull latest entries for birth and 60 years
+# pull latest entries for birth and 60 years for a country and gender
 sub_set = who_list[who_list['COUNTRY (DISPLAY)'].str.startswith(country, na=False)]
 sub_set = sub_set[sub_set['SEX (DISPLAY)'] == sex]
+
 # sort by year in descending order to work with the latest read
 sub_set = sub_set.sort_values('YEAR (CODE)', ascending=False)
 sub_set_birth = sub_set[sub_set['GHO (DISPLAY)'] == 'Life expectancy at birth (years)'] 
 sub_set_60 = sub_set[sub_set['GHO (DISPLAY)'] == 'Life expectancy at age 60 (years)'] 
+
 print('sub_set_birth:')
 print(sub_set_birth.head(5))
 print('sub_set_60:')
@@ -246,14 +251,15 @@ np.ceil(slope * 49 + intercept)</code></pre>
     else:
         return None
 
-# test the function out with a Japanese 22 female:
+# test the function out using a 22-year-old Japanese female:
 get_life_expectancy(22, 'Japan', 'Female')</code></pre>
 <pre class="r"><code>66.0</code></pre>
 <BR>
 <H2>
 Prototyping our Model using Flask and PythonAnywhere
 </H2>
-<p><a href="https://www.pythonanywhere.com/" target="_blank">PythonAnywhere.com</a> is a great way to rapidly prototype your Python interactive ideas and models on the Internet. First signup for a free account on PythonAnywere.</p>
+<p><a href="https://www.pythonanywhere.com/" target="_blank">PythonAnywhere.com</a> is a great way to rapidly prototype your Python interactive ideas and models on the Internet. First signup for a free account on <a href="https://www.pythonanywhere.com/" target="_blank">PythonAnywhere.com</a>.</p>
+<BR>
 <H2>
 Needed Files
 </H2>
@@ -373,14 +379,14 @@ def interact_life_expectancy():
                             string_to_print = string_to_print,
                             healthy_image_list = healthy_image_list)</code></pre>
 <BR> Your ‘life_expectancy’ folder should look like the following:
-
+<BR>
 <BR>
 <p style="text-align:center">
 <img src="img/pythonanywhere-base-folders.png" alt="base folders on PythonAnywhere" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
 
 <p><BR> <BR>Still under ‘life_expectancy’ create another folder called ‘static’ and under it create another folder ‘images’ and upload the following six sport icons (only one at a time unfortunately):</p>
-
+<BR>
 <p style="text-align:left">
 <img src="img/Cycling.png" alt="sport icon" style='padding:1px; border:1px solid #021a40;'>
 <img src="img/Jogging.png" alt="sport icon" style='padding:1px; border:1px solid #021a40;'>
@@ -389,6 +395,8 @@ def interact_life_expectancy():
 <img src="img/WeightLifting.png" alt="sport icon" style='padding:1px; border:1px solid #021a40;'>
 <img src="img/Yoga.png" alt="sport icon" style='padding:1px; border:1px solid #021a40;'>
 </p>
+<BR>
+You 'images' folder should look like the following:
 <BR>
 <p style="text-align:center">
 <img src="img/pythonanywhere-images-folder.png" alt="image folder" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
@@ -457,7 +465,7 @@ def interact_life_expectancy():
 &lt;/HTML&gt;</code></pre>
 <BR>
 Your ‘templates’ folder should look like the following:
-
+<BR>
 <BR>
 <p style="text-align:center">
 <img src="img/pythonanywhere-templates-folder.png" alt="templates folder" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
@@ -468,7 +476,7 @@ Your ‘templates’ folder should look like the following:
 Virtual Files
 </H2>
 We’re almost there! We now need to get our web server and Flask platform up-and-running. Under the ‘Web’ tab, click the ‘Add a new web app’ blue button. And accept the defaults until you get to the ‘Select a Python Web framework’ and click on ‘Flask’ and then the latest Python framework.
-
+<BR>
 <BR>
 <p style="text-align:center">
 <img src="img/pythonanywhere-new-flask.png" alt="flask platform" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
@@ -493,7 +501,7 @@ Congratulations!
 There it is! Congrats to those who made it this far! And take these simple tools and techniques to showcase your ideas! <BR><BR>
 </div> 
 
-BR>
+<BR>
 <p style="text-align:center">
 <img src="img/final-web-page.png" alt="final web page" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
