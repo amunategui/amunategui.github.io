@@ -164,7 +164,9 @@ print('sub_set_birth:')
 print(sub_set_birth.head(5))
 print('sub_set_60:')
 print(sub_set_60.head(5))</code></pre>
-<pre class="r"><code>sub_set_birth:
+<pre class="r"><code>
+sub_set_birth:
+
                           GHO (DISPLAY)  YEAR (CODE)  \
 16046  Life expectancy at birth (years)         2015   
 17532  Life expectancy at birth (years)         2014   
@@ -178,7 +180,9 @@ print(sub_set_60.head(5))</code></pre>
 15326  United States Of America          Male  76.45519  
 12318  United States Of America          Male  76.43168  
 17531  United States Of America          Male  76.29261  
+
 sub_set_60:
+
                            GHO (DISPLAY)  YEAR (CODE)  \
 7481   Life expectancy at age 60 (years)         2015   
 7900   Life expectancy at age 60 (years)         2014   
@@ -191,7 +195,9 @@ sub_set_60:
 7900   United States Of America          Male  21.95811  
 9935   United States Of America          Male  21.72074  
 16044  United States Of America          Male  21.72548  
-16211  United States Of America          Male  21.61596 </code></pre>
+16211  United States Of America          Male  21.61596 
+
+</code></pre>
 <p><BR> Let’s pull the two latest data points from the WHO data set and plot it out.</p>
 <pre class="r"><code># create data set with both points as shown in first example
 lf_at_birth = sub_set_birth['Numeric'].values[0]
@@ -218,13 +224,16 @@ plt.show()</code></pre>
 </p>
 
 <p><BR> And now, let’s estimate my life expectancy:</p>
-<pre class="r"><code># model 
+<pre class="r"><code>
+
+# model 
 slope, intercept, r_value, p_value, std_err = stats.linregress(age, life_expectancy)
 print('intercept: ', intercept)
 print('slope: ', slope)
 
 # predict life expectancy for an 49-year-old male in the USA:
-np.ceil(slope * 49 + intercept)</code></pre>
+np.ceil(slope * 49 + intercept)
+</code></pre>
 <pre class="r"><code>('intercept: ', 76.938519999999997)
 ('slope: ', -0.91447049999999985)
 33.0</code></pre>
@@ -397,7 +406,7 @@ def interact_life_expectancy():
 </p>
 <BR>
 You 'images' folder should look like the following:
-<BR>
+<BR><BR>
 <p style="text-align:center">
 <img src="img/pythonanywhere-images-folder.png" alt="image folder" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
