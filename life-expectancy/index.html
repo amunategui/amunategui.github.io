@@ -144,7 +144,7 @@ who_list['COUNTRY (DISPLAY)'] = [ctry.title() for ctry in who_list['COUNTRY (DIS
 who_list[who_list['COUNTRY (DISPLAY)']=='France'].head(10)</code></pre>
 <BR>
 <p style="text-align:center">
-<img src="img/head-who-data.png" alt="WHO data" style='padding:1px; border:1px solid #021a40; width: 40%; height: 40%'>
+<img src="img/head-who-data.png" alt="WHO data" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
 </p>
 
 <p><BR>Let’s predict how many years of life I have left (yikes!). First let’s look at the data, this is really interesting. The life expectancy of a new born male in the USA using the latest data, is 77 years, while a 60-year-old male in the USA using the latest data is 22 years which totals 82 years, what gives? That’s one of the complexities of statistics, taking averages for a sixty-year-old implies that this person already survived 60 years, this is called <a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank">Survivorship bias</a>. And what the means for us here, is that the model will be slightly optimistic for those closer to zero and slightly pessimistic for those closer to 60.</p>
