@@ -256,7 +256,7 @@ np.ceil(slope * 49 + intercept)
         slope, intercept, r_value, p_value, std_err = stats.linregress([0,60],[lf_at_birth, lf_at_60])
 
         # predict for the age variable
-        return(np.ceil(intercept + slope * age))
+        return(np.ceil(slope * age + intercept))
     else:
         return None
 
@@ -269,6 +269,31 @@ Prototyping our Model using Flask and PythonAnywhere
 </H2>
 <p><a href="https://www.pythonanywhere.com/" target="_blank">PythonAnywhere.com</a> is a great way to rapidly prototype your Python interactive ideas and models on the Internet. First signup for a free account on <a href="https://www.pythonanywhere.com/" target="_blank">PythonAnywhere.com</a>.</p>
 <BR>
+
+<H2>
+Virtual Files
+</H2>
+We’re almost there! We now need to get our web server and Flask platform up-and-running. Under the ‘Web’ tab, click the ‘Add a new web app’ blue button. And accept the defaults until you get to the ‘Select a Python Web framework’ and click on ‘Flask’ and then the latest Python framework.
+<BR>
+<BR>
+<p style="text-align:center">
+<img src="img/pythonanywhere-new-flask.png" alt="flask platform" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
+</p>
+
+
+<p><BR> Under the ‘Quickstart new Flask project’, change the path from</p>
+<pre class="r"><code>/home/manuelamunategui/mysite/flask_app.py</code></pre>
+<p>to</p>
+<pre class="r"><code>/home/manuelamunategui/life_expectancy/flask_app.py</code></pre>
+<BR><BR> And you’re done, final page shows your <b>URL</b>. Go ahead and try it! <BR><BR>
+
+<BR>
+<p style="text-align:center">
+<img src="img/pythonanywhere-your-url.png" alt="your URL" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
+</p>
+
+
+
 <H2>
 Needed Files
 </H2>
@@ -312,7 +337,7 @@ def get_life_expectancy(age, country, sex):
         slope, intercept, r_value, p_value, std_err = stats.linregress([0,60],[lf_at_birth, lf_at_60])
 
         # predict for the age variable
-        return(np.ceil(intercept + slope * age))
+        return(np.ceil(islope * age + intercept))
     else:
         return None
 
@@ -481,27 +506,6 @@ Your ‘templates’ folder should look like the following:
 </p>
 
 <p><BR></p>
-<H2>
-Virtual Files
-</H2>
-We’re almost there! We now need to get our web server and Flask platform up-and-running. Under the ‘Web’ tab, click the ‘Add a new web app’ blue button. And accept the defaults until you get to the ‘Select a Python Web framework’ and click on ‘Flask’ and then the latest Python framework.
-<BR>
-<BR>
-<p style="text-align:center">
-<img src="img/pythonanywhere-new-flask.png" alt="flask platform" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
-</p>
-
-
-<p><BR> Under the ‘Quickstart new Flask project’, change the path from</p>
-<pre class="r"><code>/home/manuelamunategui/mysite/flask_app.py</code></pre>
-<p>to</p>
-<pre class="r"><code>/home/manuelamunategui/life_expectancy/flask_app.py</code></pre>
-<BR><BR> And you’re done, final page shows your <b>URL</b>. Go ahead and try it! <BR><BR>
-
-<BR>
-<p style="text-align:center">
-<img src="img/pythonanywhere-your-url.png" alt="your URL" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
-</p>
 
 <BR>
 <H2>
