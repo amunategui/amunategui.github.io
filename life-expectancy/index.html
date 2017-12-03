@@ -273,31 +273,28 @@ Prototyping our Model using Flask and PythonAnywhere
 <H2>
 Virtual Files
 </H2>
-We’re almost there! We now need to get our web server and Flask platform up-and-running. Under the ‘Web’ tab, click the ‘Add a new web app’ blue button. And accept the defaults until you get to the ‘Select a Python Web framework’ and click on ‘Flask’ and then the latest Python framework.
+Next, let's create a web server on PythonAnywhere with the Flask web-serving platform. It is super easy to do. Under the ‘Web’ tab, click the ‘Add a new web app’ blue button. And accept the defaults until you get to the ‘Select a Python Web framework’ and click on ‘Flask’ and then the latest Python framework.
 <BR>
 <BR>
 <p style="text-align:center">
 <img src="img/pythonanywhere-new-flask.png" alt="flask platform" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
-
-
-<p><BR> Under the ‘Quickstart new Flask project’, change the path from</p>
-<pre class="r"><code>/home/manuelamunategui/mysite/flask_app.py</code></pre>
-<p>to</p>
-<pre class="r"><code>/home/manuelamunategui/life_expectancy/flask_app.py</code></pre>
-<BR><BR> And you’re done, final page shows your <b>URL</b>. Go ahead and try it! <BR><BR>
-
+You will get to the landing configuation page, hit the green 'Reload youraccount.pythonanywhere.com' button and take your new URL for a spin
+<BR>
 <BR>
 <p style="text-align:center">
 <img src="img/pythonanywhere-your-url.png" alt="your URL" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
-</p>
-
-
+</p><BR><BR>
+You should see a simple but real web page with the 'Hello from Flask!' message:
+<BR><BR>
+<p style="text-align:center">
+<img src="img/hello-flask.png" alt="Hello world from Flask" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
+</p><BR><BR>
 
 <H2>
 Needed Files
 </H2>
-<p>Click on the ‘Files’ tab and create a new folder called ‘life_expectancy’ under your root account. In that folder, upload the ‘WHOSIS_000001,WHOSIS_000015.csv’ data set we saved prior. Create a Python file called ‘<b>flask_app.py</b>’ and paste the ‘flask_app.py’ code below.</p>
+<p>Now we need to replace the Flask generic skelton web code with our own. Click on the ‘Files’ tab and create a new folder called ‘life_expectancy’ under your root account. In that folder, upload the ‘WHOSIS_000001,WHOSIS_000015.csv’ data set we saved prior. Create a Python file called ‘<b>flask_app.py</b>’ and paste the ‘flask_app.py’ code below.</p>
 <pre class="r"><code>from flask import Flask, render_template, request, url_for
 import pandas as pd
 import numpy as np
@@ -436,7 +433,6 @@ You 'images' folder should look like the following:
 <img src="img/pythonanywhere-images-folder.png" alt="image folder" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
 
-
 <p><BR> Go back to the ‘life_expectancy’ folder and create the ‘templates’ folder. Templates folder will store our HTML templates that Flask will use to display our content dynamically. Under the ‘templates’ folder, create a file called ‘<b>main_page.html</b>’ and paste the following dynamic HTML code:</p>
 <pre class="r"><code>&lt;!DOCTYPE html&gt;
 &lt;HTML lang=&quot;en&quot;&gt;
@@ -504,8 +500,39 @@ Your ‘templates’ folder should look like the following:
 <p style="text-align:center">
 <img src="img/pythonanywhere-templates-folder.png" alt="templates folder" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
+<BR><BR>
+<H2>Virtual Files Refresh</H2>
+Go back to the 'Web' tab and change the 'Source code:' from:
 
-<p><BR></p>
+<pre class="r"><code>/home/manuelamunategui/mysite/</code></pre>
+<p>to</p>
+<pre class="r"><code>/home/manuelamunategui/life_expectancy/</code></pre>
+
+Click on the '/var/www/manuelamunategui_pythonanywhere_com_wsgi.py' link a few lines below and edit the following line of code:
+
+<pre class="r"><code>project_home = u'/home/manuelamunategui/mysite'</code></pre>
+<p>to</p>
+<pre class="r"><code>project_home = u'/home/manuelamunategui/life_expectancy'</code></pre>
+
+
+
+vitual-code-settings.png
+
+
+<p><BR> Under the ‘Quickstart new Flask project’, change the path from</p>
+<pre class="r"><code>/home/manuelamunategui/mysite/</code></pre>
+<p>to</p>
+<pre class="r"><code>/home/manuelamunategui/life_expectancy/flask_app.py</code></pre>
+<BR><BR> And you’re done, final page shows your <b>URL</b>. Go ahead and try it! <BR><BR>
+
+
+
+
+
+
+
+
+
 
 <BR>
 <H2>
