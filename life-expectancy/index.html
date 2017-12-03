@@ -270,9 +270,7 @@ Prototyping our Model using Flask and PythonAnywhere
 <p><a href="https://www.pythonanywhere.com/" target="_blank">PythonAnywhere.com</a> is a great way to rapidly prototype your Python interactive ideas and models on the Internet. First signup for a free account on <a href="https://www.pythonanywhere.com/" target="_blank">PythonAnywhere.com</a>.</p>
 <BR>
 
-<H2>
-Virtual Files
-</H2>
+<H2>Setting Up Flask Web Framework</H2>
 Next, let's create a web server on PythonAnywhere with the Flask web-serving platform. It is super easy to do. Under the ‘Web’ tab, click the ‘Add a new web app’ blue button. And accept the defaults until you get to the ‘Select a Python Web framework’ and click on ‘Flask’ and then the latest Python framework.
 <BR>
 <BR>
@@ -293,9 +291,8 @@ You should see a simple but real web page with the 'Hello from Flask!' message:
 <img src="img/hello-flask.png" alt="Hello world from Flask" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p><BR><BR>
 
-<H2>
-Needed Files
-</H2>
+<H2>Uploading Life-Expectancy Web Code</H2>
+
 <p>Now we need to replace the Flask generic skelton code with our life-expectancy code. Click on the '<b>Files</b>' tab and create a new folder called '<b>life_expectancy</b>'' under your root account. In that folder, upload the '<b>WHOSIS_000001,WHOSIS_000015.csv</b>' data set we saved prior. Create a Python file called ‘<b>flask_app.py</b>’ and paste the ‘flask_app.py’ code below.</p>
 <pre class="r"><code>from flask import Flask, render_template, request, url_for
 import pandas as pd
