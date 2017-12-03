@@ -279,7 +279,7 @@ Next, let's create a web server on PythonAnywhere with the Flask web-serving pla
 </p>
 <BR>
 <BR>
-You will get to the landing configuation page, hit the green 'Reload youraccount.pythonanywhere.com' button and take your new URL for a spin
+You will get to the landing configuration page, hit the green 'Reload your account.pythonanywhere.com' button and take your new URL for a spin
 <BR>
 <BR>
 <p style="text-align:center">
@@ -293,7 +293,7 @@ You should see a simple but real web page with the 'Hello from Flask!' message:
 
 <H2>Uploading Life-Expectancy Web Code</H2>
 
-<p>Now we need to replace the Flask generic skelton code with our life-expectancy code. Click on the '<b>Files</b>' tab and create a new folder called '<b>life_expectancy</b>'' under your root account. In that folder, upload the '<b>WHOSIS_000001,WHOSIS_000015.csv</b>' data set we saved prior. Create a Python file called ‘<b>flask_app.py</b>’ and paste the ‘flask_app.py’ code below.</p>
+<p>Now we need to replace the Flask generic skeleton code with our life-expectancy code. Click on the '<b>Files</b>' tab and create a new folder called '<b>life_expectancy</b>' under your root account. In that folder, upload the '<b>WHOSIS_000001,WHOSIS_000015.csv</b>' data set we saved prior. Create a Python file called ‘<b>flask_app.py</b>’ and paste the ‘flask_app.py’ code below.</p>
 <pre class="r"><code>from flask import Flask, render_template, request, url_for
 import pandas as pd
 import numpy as np
@@ -432,7 +432,7 @@ You 'images' folder should look like the following:
 <img src="img/pythonanywhere-images-folder.png" alt="image folder" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
 
-<p><BR> Go back to the ‘life_expectancy’ folder and create the ‘templates’ folder. Templates folder will store our HTML templates that Flask will use to display our content dynamically. Under the ‘templates’ folder, create a file called ‘<b>main_page.html</b>’ and paste the following dynamic HTML code:</p>
+<p><BR> Go back to the '<b>life_expectancy</b>' folder and create the '<b>templates</b>' folder. Templates folder will store our HTML templates that Flask will use to display our content dynamically. Under the '<b>templates</b>' folder, create a file called ‘<b>main_page.html</b>’ and paste the following dynamic HTML code:</p>
 <pre class="r"><code>&lt;!DOCTYPE html&gt;
 &lt;HTML lang=&quot;en&quot;&gt;
 &lt;HEAD&gt;
@@ -493,7 +493,7 @@ You 'images' folder should look like the following:
 &lt;/BODY&gt;
 &lt;/HTML&gt;</code></pre>
 <BR>
-Your ‘templates’ folder should look like the following:
+Your '<b>templates</b>' folder should look like the following:
 <BR>
 <BR>
 <p style="text-align:center">
@@ -506,38 +506,22 @@ Go back to the 'Web' tab and change the 'Source code:' from:
 <pre class="r"><code>/home/manuelamunategui/mysite/</code></pre>
 <p>to</p>
 <pre class="r"><code>/home/manuelamunategui/life_expectancy/</code></pre>
-
+<BR>
 Click on the '/var/www/manuelamunategui_pythonanywhere_com_wsgi.py' link a few lines below and edit the following line of code:
 
 <pre class="r"><code>project_home = u'/home/manuelamunategui/mysite'</code></pre>
 <p>to</p>
 <pre class="r"><code>project_home = u'/home/manuelamunategui/life_expectancy'</code></pre>
 
-
-
-vitual-code-settings.png
-
-
-<p><BR> Under the ‘Quickstart new Flask project’, change the path from</p>
-<pre class="r"><code>/home/manuelamunategui/mysite/</code></pre>
-<p>to</p>
-<pre class="r"><code>/home/manuelamunategui/life_expectancy/flask_app.py</code></pre>
-<BR><BR> And you’re done, final page shows your <b>URL</b>. Go ahead and try it! <BR><BR>
-
-
-
-
-
-
-
-
-
-
-<BR>
+ 
+<p style="text-align:center">
+<img src="img/vitual-code-settings.png" alt="virtual settings" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
+</p>
+<BR><BR>
 <H2>
 Congratulations!
 </H2>
-There it is! Congrats to those who made it this far! And take these simple tools and techniques to showcase your ideas! <BR><BR>
+There it is! Congrats to those who made it this far! And take these simple tools and techniques to showcase your Python ideas! <BR><BR>
 </div> 
 
 <BR>
