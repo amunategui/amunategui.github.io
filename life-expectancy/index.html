@@ -279,6 +279,8 @@ Next, let's create a web server on PythonAnywhere with the Flask web-serving pla
 <p style="text-align:center">
 <img src="img/pythonanywhere-new-flask.png" alt="flask platform" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
+<BR>
+<BR>
 You will get to the landing configuation page, hit the green 'Reload youraccount.pythonanywhere.com' button and take your new URL for a spin
 <BR>
 <BR>
@@ -288,13 +290,13 @@ You will get to the landing configuation page, hit the green 'Reload youraccount
 You should see a simple but real web page with the 'Hello from Flask!' message:
 <BR><BR>
 <p style="text-align:center">
-<img src="img/hello-flask.png" alt="Hello world from Flask" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
+<img src="img/hello-flask.png" alt="Hello world from Flask" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p><BR><BR>
 
 <H2>
 Needed Files
 </H2>
-<p>Now we need to replace the Flask generic skelton web code with our own. Click on the ‘Files’ tab and create a new folder called ‘life_expectancy’ under your root account. In that folder, upload the ‘WHOSIS_000001,WHOSIS_000015.csv’ data set we saved prior. Create a Python file called ‘<b>flask_app.py</b>’ and paste the ‘flask_app.py’ code below.</p>
+<p>Now we need to replace the Flask generic skelton code with our life-expectancy code. Click on the '<b>Files</b>' tab and create a new folder called '<b>life_expectancy</b>'' under your root account. In that folder, upload the '<b>WHOSIS_000001,WHOSIS_000015.csv</b>' data set we saved prior. Create a Python file called ‘<b>flask_app.py</b>’ and paste the ‘flask_app.py’ code below.</p>
 <pre class="r"><code>from flask import Flask, render_template, request, url_for
 import pandas as pd
 import numpy as np
