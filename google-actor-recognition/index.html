@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Google Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Bios in Real Time</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+ 
+<body>
+
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div><!-- /blog-masthead -->
+
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Google Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Bios in Real Time</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+ 
+  
+<p style="text-align:center">
+<img src="img/blade-young.png" alt="recognizing actors" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%' /></p>
+
+ 
+<p><strong>Resources</strong></p>
+<ul>
+<li type="square">YouTube Companion Video/li>
+</ul>
+
+<BR>For around 200 lines of code you can process a popular movie-clip down to the actor/character face and bio in a fully automated pipeline! This may seem like a lot of code, but just five years ago it would have required tens of thousands of lines and a headache to automate.</p>
+<p>At <a href="http://www.springml.com/" target="_blank">SpringML</a>, we’ve built many solutions using the versatile <a href="https://cloud.google.com/apis/" target="_blank">Googale Cloud suite of APIs</a> but some of the funnest projects have been working with the Google Video Intelligence and Vision APIs in particular. Leveraging these two powerful APIs is like having an army of convolutional neural-network PhDs at your beck and call.</p>
+
+<H3>Video Processing Pipeline</H3>
+Here is a high-level visual chart of the action:<BR><BR>
+ 
+<BR><BR>
+<ol type="1">
+<li>
+Feed a clip of your favorite video into the Google Video Intelligence API and collect time stamps when it detects people
+</li>
+<li>
+Extract the frames with FFmpeg and feed into the Google Vision API facial detection function to get individual faces
+</li>
+<li>
+Feed those faces into the Google Vision API web-detection function and collect names
+</li>
+<li>
+Finally, feed the name into the Wikipedia API and pull the first paragraph for each name
+</li>
+</ol>
+<BR>
+<H3>
+Principal Functions
+</H3>
+<BR> Three notes before we begin looking at the different principal functions used in this pipeline:
+<ul>
+<li>
+The code below wouldn’t be possible without the hands-on samples <a href="https://github.com/GoogleCloudPlatform/python-docs-samples/" target="_blank">python-doc-samples</a> made available by the gracious folks at Google Cloud.
+</li>
+<li>
+Also, as important, <a href="https://cloud.google.com/storage/pricing" target="_blank">Google Cloud and its APIs aren’t free</a>, it’s affordable and you may get a credit if you are a first time user. As with everything ‘cloud’, only use what you need, and turn off ALL services when you’re done, otherwise you’ll keep accruing charges.
+</li>
+<li>
+Finally, you will need a <a href="https://console.cloud.google.com/start" target="_blank">Google Cloud account</a> and you will need a Google Cloud Project and to enable each API covered in this walk through (Video Intelligence and Vision APIs).
+</ul>
+<BR>
+<H4>
+The Google Video Intelligence API
+</H4>
+<p>The first building block, and probably the most important, is the <a href="https://cloud.google.com/video-intelligence/" target="_blank">Google Video Intelligence API</a>, it can gather a lot of intelligence from raw video footage right out of the box! Another big advantage of accessing APIs online is that they keep getting more features and more power without any intervention on your part. Here we’re mostly interested in one feature, the model’s ability to detect a person in a shot. It will return a confidence level of when it sees people and a time stamp of when that happened. I always put my video data to be analyzed in <a href="https://cloud.google.com/storage" target="_blank">Google Cloud Storage</a> to be as close as possible to the Google Video Intelligence API.</p>
+<pre class="r"><code>def analyze_labels(movie_to_process, bucket_name):
+    &quot;&quot;&quot; Detects labels given a GCS path. &quot;&quot;&quot;
+    path = 'gs://' + bucket_name + '/video_processing/' + movie_to_process
+    
+    video_client = videointelligence.VideoIntelligenceServiceClient()
+    features = [videointelligence.enums.Feature.LABEL_DETECTION]
+
+    mode = videointelligence.enums.LabelDetectionMode.SHOT_AND_FRAME_MODE
+    config = videointelligence.types.LabelDetectionConfig(
+        label_detection_mode=mode)
+    
+    context = videointelligence.types.VideoContext(
+        label_detection_config=config)
+
+    operation = video_client.annotate_video(
+        path, features=features, video_context=context)
+
+    result = operation.result(timeout=90)
+
+    frame_offsets = []
+ 
+    # Process frame level label annotations
+    frame_labels = result.annotation_results[0].frame_label_annotations
+    for i, frame_label in enumerate(frame_labels):
+       for category_entity in frame_label.category_entities:
+            # look for categories that contain person regardless of situation
+            if (category_entity.description == 'person'):
+                # Each frame_label_annotation has many frames,
+                # but we keep information only about the first one
+                frame = frame_label.frames[0]
+                time_offset = (frame.time_offset.seconds +
+                               frame.time_offset.nanos / 1e9)
+                print('\tFirst frame time offset: {}s'.format(time_offset))
+                print('\tFirst frame confidence: {}'.format(frame.confidence))
+                print('\n')
+                frame_offsets.append(time_offset)
+                
+    return(sorted(set(frame_offsets)))</code></pre>
+<BR><BR>
+<H4>
+FFmpeg and the Google Vision API
+</H4>
+<p>Once we have a list of time stamps marking each person in the video clip, the next set is to extract those frames into PNG images using <a href="https://www.ffmpeg.org/" target="_blank">FFmpeg</a> and feeding them into the <a href="cloud.google.com/Vision_API">Google Vision API</a>. FFmpeg is a powerhouse in-of-itself and does a great job extracting stills from video. The Vision API is also chock-full-of-features and, at this point in the pipeline, we’re only interested in getting coordinates of a face.</p>
+<pre class="r"><code>def extract_image_from_video(video_input, name_output, time_stamp):
+    ret = &quot;Error&quot;
+    try:
+        ret = os.system(&quot;ffmpeg -i &quot; + video_input + &quot; -ss &quot; + time_stamp + &quot; -frames:v 1 &quot; + name_output)    
+        # if all goes well FFMPEG will return 0
+        return ret
+    except ValueError:
+        return(&quot;Oops! error...&quot;)
+
+def detect_face(face_file, max_results=4):
+    # find a face and return its coordinates
+    client = vision.ImageAnnotatorClient()
+    content = face_file.read()
+    image = types.Image(content=content)
+
+    # return coords of face
+    return client.face_detection(image=image).face_annotations</code></pre>
+<BR><BR>
+<H4>
+Annotating an Image = Dropping an Image in Google Images
+</H4>
+<p>We save the image of each face (actually a little larger than just the face, more like the bust) and feed them back in the Google Vision API again this time to get ‘web hits’ from that image. If the face on the image is from a popular movie, you’ll most likely get some meta data back. It returns all sorts of things from the name all the way to the source URL. In this case we only care about the First and Last Name of the first discovery, the one with the most confidence. From there, we drop that name into the <a href="https://pypi.python.org/pypi/wikipedia" target="_blank">Wikipedia API</a> and extract the first paragraph.</p>
+<pre class="r"><code>def annotate(path):
+    &quot;&quot;&quot;Returns web annotations given the path to an image.&quot;&quot;&quot;
+    client = vision.ImageAnnotatorClient()
+
+    if path.startswith('http') or path.startswith('gs:'):
+        image = types.Image()
+        image.source.image_uri = path
+    else:
+        with io.open(path, 'rb') as image_file:
+            content = image_file.read()
+
+        image = types.Image(content=content)
+
+    web_detection = client.web_detection(image=image).web_detection
+
+    return web_detection</code></pre>
+<p><BR> If you watch the video, you’ll notice that I display the pipeline in real time. Briefly, I drop all the images in a Google Cloud Storage bucket and use an App Engine/Flask web site to probe the contents of the bucket and display the findings in real-time. Its great for demos but its a whole project in-of-itself, so too much for this walk through.</p>
+<BR>
+ 
+  </body>
+</html>
