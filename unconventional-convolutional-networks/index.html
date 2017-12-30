@@ -58,6 +58,8 @@
 <img src="img/data_transform2.png" alt="creating thousands of synthetic charts" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
 </p>
 
+<p>NOTE: Full code at end of page has been updated with Yahoo Finance as data provider and better performing covnet.</p>
+
 <p>This post is about taking numerical data, transforming it into images and modeling it with convolutional neural networks. In other words, we are creating synthetic image-representation of quantitative data, and seeing if a CNN brings any additional modeling understanding, accuracy, a boost via ensembling, etc. CNN’s are hyper-contextually aware - they know what’s going on above, below, to the right and to the left, even what is going on in front and behind if you use image depth. </p>
 
 <p>The genesis for this idea came from bridging the ‘retail’ trader, a predominantly visual approach, to the ‘quant/HFT’ trader, a numerical one. I have been a professional on both sides for many years. Retail trading looks at support/resistance levels, moving averages, chart patterns, new highs/lows, etc. - mostly visual patterns based off of stock charts. The quantitative trader may use order flow, order depth, imbalances between exchanges, complex hedging, delta-neutral synthetic products, Black-Scholes pricing estimates, binomial distributions, etc. - all numerical data.</p>
@@ -366,15 +368,19 @@ Returns: 822</code></pre>
 <H2>
 All Together
 </H2>
-<pre class="r"><code>import time
+<pre class="r"><code>
+import time
 import datetime
 import pandas as pd
 import numpy as np
 import pandas_datareader as pdr
- 
+import matplotlib.pyplot as plt
+import pandas_datareader as pdr
+from pandas_datareader import data as pdr
+import fix_yahoo_finance as yf
+yf.pdr_override()  
 
 def scale_list(l, to_min, to_max):
-
     def scale_number(unscaled, to_min, to_max, from_min, from_max):
         return (to_max-to_min)*(unscaled-from_min)/(from_max-from_min)+to_min
 
@@ -384,12 +390,7 @@ def scale_list(l, to_min, to_max):
         return [scale_number(i, to_min, to_max, min(l), max(l)) for i in l]
  
 
-STOCKS = ['AAPL', 'AXP', 'BA', 'CAT', 'CSCO', 'CVX', 'DD', 'DIS', 'GE', 'GS', 'HD', 'IBM', 'INTC', 'JNJ', 'JPM', 'KO', 'MCD', 'MMM', 'MRK', 'MSFT', 'NKE', 'PFE', 'PG', 'UNH', 'UTX', 'V', 'VZ', 'WMT', 'XOM']
-
-
-####################################################################
-# Create images from stock-market data
-####################################################################
+STOCKS = ['AAPL','AXP','BA','CAT','CSCO','CVX','DIS','DWDP','GE','GS','HD','IBM','INTC','JNJ','JPM','KO','MCD','MMM','MRK','MSFT','NKE','PFE','PG','TRV','UNH','UTX','V','VZ','WMT','XOM']
 
 TIME_RANGE = 20
 PRICE_RANGE = 20
@@ -405,11 +406,20 @@ x_valid = None
 y_train = []
 y_valid = []
 
+# xgboost lists
+live_data_xgboost = []
+validation_data_xgboost = []
+train_data_xgboost = []
+
 for stock in STOCKS:
     print(stock)
 
     # build image data for this stock
-    stock_data = pdr.get_data_google(stock)
+    # stock_data = pdr.get_data_google(stock)
+
+    # download dataframe
+    stock_data = pdr.get_data_yahoo(stock, start="2016-01-01", end="2017-12-27")
+
     stock_data['Symbol'] = stock
     stock_data['Date'] = stock_data.index
     stock_data['Date'] = pd.to_datetime(stock_data['Date'], infer_datetime_format=True)
@@ -439,7 +449,7 @@ for stock in STOCKS:
     for cnt in range(4, len(stock_closes)):
         if (cnt % 500 == 0): print(cnt)
 
-        if (cnt &gt;= TIME_RANGE):
+        if (cnt >= TIME_RANGE):
             # start making images
             graph_open = list(np.round(scale_list(stock_opens[cnt-TIME_RANGE:cnt], 0, half_scale_size-1),0))
             graph_close_minus_open = list(np.round(scale_list(close_minus_open[cnt-TIME_RANGE:cnt], 0, half_scale_size-1),0))
@@ -450,15 +460,10 @@ for stock in STOCKS:
             graph_close = close_data_together[0:PRICE_RANGE]
             graph_close_ma = close_data_together[PRICE_RANGE:] 
 
-            if 1==2:
-                fig = plt.figure(figsize=(5,5))
-                plt.plot(graph_closes[-1], color='black')
-                plt.show()
-
             outcome = None
-            if (cnt &lt; len(stock_closes) -1):
+            if (cnt < len(stock_closes) -1):
                 outcome = 0
-                if stock_closes[cnt+1] &gt; stock_closes_rolling_avg[cnt+1]:
+                if stock_closes[cnt+1] > stock_closes_rolling_avg[cnt+1]:
                     outcome = 1
 
             blank_matrix_close = np.zeros(shape=(half_scale_size, TIME_RANGE))
@@ -499,13 +504,17 @@ for stock in STOCKS:
                     x_live = np.vstack([x_live, [blank_matrix]])
                 live_symbols.append(stock)
 
-            elif (stock_dates[cnt] &gt;= VALIDTAION_CUTOFF_DATE):
+                live_data_xgboost.append(graph_close_ma + graph_close + graph_close_minus_open + [0])
+
+            elif (stock_dates[cnt] >= VALIDTAION_CUTOFF_DATE):
                 # validation data
                 if x_valid is None:
                     x_valid = [blank_matrix]
                 else:
                     x_valid = np.vstack([x_valid, [blank_matrix]])
                 y_valid.append(outcome)
+
+                validation_data_xgboost.append(graph_close_ma + graph_close + graph_close_minus_open + [outcome])
 
             else:
                 # training data
@@ -514,6 +523,11 @@ for stock in STOCKS:
                 else:
                     x_train = np.vstack([x_train, [blank_matrix]])
                 y_train.append(outcome)
+
+                train_data_xgboost.append(graph_close_ma + graph_close + graph_close_minus_open + [outcome])
+
+
+
 
 
 ####################################################################
@@ -531,12 +545,12 @@ num_classes = 2
 epochs = 20
  
 # input image dimensions
-img_rows, img_cols = TIME_RANGE, TIME_RANGE
+img_rows, img_cols = TIME_RANGE, PRICE_RANGE
 
 # add fake depth channel 
 x_train_mod = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
 x_valid = x_valid.reshape(x_valid.shape[0], img_rows, img_cols, 1)
-input_shape = (TIME_RANGE, TIME_RANGE, 1)
+input_shape = (TIME_RANGE, PRICE_RANGE, 1)
 
 x_train_mod = x_train_mod.astype('float32')
 x_valid = x_valid.astype('float32')
@@ -552,14 +566,46 @@ model.add(Conv2D(64, (5, 5), input_shape=input_shape, activation='relu'))
 model.add(Conv2D(32, (3, 3), activation='relu'))
 model.add(Conv2D(10, (2, 2), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.2))
+model.add(Dropout(0.1))
 model.add(Flatten())
 model.add(Dense(128, activation='relu'))
 model.add(Dense(50, activation='relu'))
 model.add(Dense(num_classes, activation='softmax'))
+
 # Compile model
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 model.summary()
+
+
+######################## testing
+# https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html
+from keras.models import Sequential
+from keras.layers import Conv2D, MaxPooling2D
+from keras.layers import Activation, Dropout, Flatten, Dense
+model = Sequential()
+model.add(Conv2D(64, (3, 3), input_shape=input_shape))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+
+model.add(Conv2D(32, (2, 2)))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+
+model.add(Flatten())  
+model.add(Dense(64))
+model.add(Activation('relu'))
+model.add(Dropout(0.5))
+model.add(Dense(num_classes))
+model.add(Activation('sigmoid'))
+
+model.compile(loss='binary_crossentropy',
+              optimizer='rmsprop',
+              metrics=['accuracy'])
+
+model.summary()
+
+#################################
+
 
 model.fit(x_train_mod, y_train_mod,
           batch_size=batch_size,
@@ -572,20 +618,20 @@ score = model.evaluate(x_train_mod, y_train_mod, verbose=0)
 # print('Test loss:', score[0])
 # print('Test accuracy:', score[1])
  
-predictions = model.predict(x_valid)
+predictions_cnn = model.predict(x_valid)
 
 # run an accuracy or auc test
 from sklearn.metrics import roc_curve, auc, accuracy_score
  
 # balance
-print('balance', np.mean(y_train_mod[:,1]))
+print('Outcome balance %f' % np.mean(y_train_mod[:,1]))
 
 # print('Model accuracy: ', accuracy_score(y_valid_mod[:,1], temp_predictions,'%'))
-fpr, tpr, thresholds = roc_curve(y_valid_mod[:,1], predictions[:,1])
+fpr, tpr, thresholds = roc_curve(y_valid_mod[:,1], predictions_cnn[:,1])
 roc_auc = auc(fpr, tpr)
-print('valid auc:',roc_auc)
+print('AUC: %f' % roc_auc)
 from sklearn.metrics import roc_auc_score
-roc_auc_score(y_valid_mod[:,1], predictions[:,1])
+ 
 
 ####################################################################
 # Play around with thresholds to pick the best predictions
@@ -593,16 +639,84 @@ roc_auc_score(y_valid_mod[:,1], predictions[:,1])
 
 # pick top of class to find best bets 
 actuals = y_valid_mod[:,1]
-preds = predictions[:,1]
+preds = predictions_cnn[:,1]
 from sklearn.metrics import accuracy_score
-print ('Accuracy on all data:', accuracy_score(actuals,[1 if x &gt;= 0.5 else 0 for x in preds]))
+print ('Accuracy on all data:', accuracy_score(actuals,[1 if x >= 0.5 else 0 for x in preds]))
  
-threshold = 0.65
-preds = predictions[:,1][predictions[:,1] &gt;= threshold]
-actuals = y_valid_mod[:,1][predictions[:,1] &gt;= threshold]
+threshold = 0.75
+preds = predictions_cnn[:,1][predictions_cnn[:,1] >= threshold]
+actuals = y_valid_mod[:,1][predictions_cnn[:,1] >= threshold]
 from sklearn.metrics import accuracy_score
-print ('Accuracy on higher threshold:', accuracy_score(actuals,[1 if x &gt; 0.5 else 0 for x in preds]))
-print('Returns:',len(actuals))</code></pre>
+print ('Accuracy on higher threshold:', accuracy_score(actuals,[1 if x > 0.5 else 0 for x in preds]))
+print('Returns:',len(actuals))
+
+
+####################################################################
+# XGBoost
+####################################################################
+
+train_xgboost = pd.DataFrame(train_data_xgboost)
+val_xgboost = pd.DataFrame(validation_data_xgboost)
+
+outcome = 60
+features = [x for x in range(0,60)]
+
+import xgboost as xgb
+dtrain = xgb.DMatrix(data=train_xgboost[features],
+  label = train_xgboost[[outcome]])
+dval = xgb.DMatrix(data=val_xgboost[features],
+  label = val_xgboost[[outcome]])
+
+evals = [(dval,'eval'), (dtrain,'train')]
+
+param = {'max_depth': 4, 
+       'eta':0.01, 'silent':1, 
+       'eval_metric':'auc',
+       'subsample': 0.7,
+       'colsample_bytree': 0.8,
+       'objective':'binary:logistic' }
+
+model_xgb = xgb.train ( params = param,
+              dtrain = dtrain,
+              num_boost_round = 1000,
+              verbose_eval=10, 
+              early_stopping_rounds = 100,
+              evals=evals,
+              maximize = True)
+
+
+####################################################################
+#Predict training set:
+####################################################################
+
+predictions_xgb = clf.predict(dval)
+predictions_class = [1 if x >= 0.5 else 0 for x in predictions_xgb]
+
+from sklearn import cross_validation, metrics    
+print ("\nModel Report")
+print ("Accuracy : %.4g" % metrics.accuracy_score(val_xgboost[outcome], predictions_class))
+print ("AUC Score (Train): %f" % metrics.roc_auc_score(val_xgboost[outcome], predictions_xgb))
+best_picks_val = val_xgboost[outcome][predictions_xgb > 0.8]
+
+threshold = 0.7
+preds = predictions_xgb[predictions_xgb >= threshold]
+actuals = val_xgboost[outcome][predictions_xgb >= threshold]
+from sklearn.metrics import accuracy_score
+print (accuracy_score(actuals,[1] * len(actuals)))
+ 
+# plot the important features #
+fig, ax = plt.subplots(figsize=(7,7))
+xgb.plot_importance(model_xgb,  height=0.8, ax=ax)
+plt.show()
+
+####################################################################
+# Ensembled
+####################################################################
+ensemble = (predictions_xgb + predictions_cnn[:,1]) / 2
+ensemble_class = [1 if x >= 0.5 else 0 for x in ensemble]
+print ("Accuracy : %.4g" % metrics.accuracy_score(val_xgboost[outcome], ensemble_class))
+print ("AUC Score (Train): %f" % metrics.roc_auc_score(val_xgboost[outcome], ensemble))
+</code></pre>
 <H2>Addtional Resources</H2>
 <ul>
 <li type="square">
