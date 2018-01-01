@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Show it to the World! Let’s Build a Free Art Portfolio Website on GitHub.io in 20 Minutes!</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Show it to the World! Let’s Build a Free Art Portfolio Website on GitHub.io in 20 Minutes!</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+
+<p><strong>On YouTube:</strong></p>
+<BR>
+
+
+<p><a href="https://pages.github.com/" blank="_blank">GitHub.io (also known as GitHub Pages)</a> is a great option if you want to host a static website for free. With basic tools such as HTML, JavaScript, <a href="https://jekyllrb.com/" target="_blank">jekyll</a> and <a href="https://getbootstrap.com/" target="_blank">Bootstrap</a> you can make a professional-looking site in no time. The best part is we can do everything directly from the GitHub website. This is only a short introduction but will show you enough to get you started and point where to research further if interested.</p>
+Let’s build a site that displays pictures or artwork using thumbnails with the ability to click on them to see larger versions of the images. This will make a perfect portfolio website for that budding artist in your family (which is where I got the idea in the first place with my artistically-inclined son). <BR>
+<p style="text-align:center">
+<img src="img/art-album.png" alt="art album" style='padding:1px; border:1px solid #021a40; width: 30%; height: 30%'></p>
+<BR><BR>
+<h3>A Simple Hello World Website</h3>
+We'll start with a ‘Hello World’ website to get us started. Create a <a href='https://github.com/' blank='_blank'>GitHub account</a> if you don't already have one:
+
+<BR>
+<p style="text-align:center">
+<img src="/Users/manuel/Documents/github-free-website/img/github-signup.png" alt="github signup" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<BR><BR>
+Now start a new project:
+<BR>
+<p style="text-align:center">
+<img src="/Users/manuel/Documents/github-free-website/img/start-a-project.png" alt="start a project" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<BR><BR>
+If this is not your first project, then select “New repository”. Create your website’s main repository and add the Repository name in the following format – your GitHub repository name followed by '.github.io', i.e. <b>YOUR-REPO-NAME.github.io</b>
+
+Don’t forget to check 'Initialize this repository with a README’ as this will create a place holder file to help your project get started (you can always delete afterwards if you don’t need it).
+<BR><BR>
+<p style="text-align:center">
+<img src="/Users/manuel/Documents/github-free-website/img/create-new-repository.png" alt="create new repository" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+
+<p><BR><BR></p>
+<p>Select ‘Create new file’, name it ‘index.html’ and add the following code:</p>
+<pre class="r"><code>&lt;HTML&gt;
+  &lt;BODY&gt;
+    Hello World!
+  &lt;/BODY&gt;
+&lt;/HTML&gt;</code></pre>
+It should look like: 
+<BR><BR>
+<p style="text-align:center">
+<img src="img/new-file.png" alt="new file" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<p><BR><BR> GitHub has its own simple editor where you can enter and tweak your code directly on the site. Usually you will clone a repository onto your local machine and work from that vantage point. Of course, working off a local machine has many advantages starting from being able to use your own integrated development environment and having off-line access to your code. But being able to run things directly from the site offers simplicity, speed and code-from-anywhere advantages and that is what the cloud is all about.</p>
+<p>Once you’ve entered all the HTML code, scroll down to the bottom and enter a comment explaining what you just did. Though this is optional, it is definitely recommended. This is an important tenant of source control; keeping a clear summary of all actions done to the code base will empower you to know what you, or anybody else did, throughout of the history of your project. GitHub offers the ability to ‘roll-back’ the code to any previously saved version – very handy for circumventing those new pesky bugs you just can’t find…</p>
+<h3>
+Time to Say Hello to the World
+</h3>
+<BR><BR>
+<<p style="text-align:center">
+<img src="img/commit.png" alt="commit" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<p><BR><BR> And click the ‘Commit new file’ and that’s it! You now have an extremely simple page on the Internet! Your URL should look like:</p>
+<p>https://YOUR-REPO-NAME.github.io/index.html</p>
+It may take a few minutes to propagate and be accessible but keep trying!<BR><BR>
+<p style="text-align:center">
+<img src="img/hello-world.png" alt="hello world" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<BR><BR>
+<H3>Down to Real Business: The Album Website
+</H3>
+<p>We will start with a Bootstrap template, customize it with HTML and JavaScript and end with a great-looking site. A perfect starting template for our needs is the <a href="https://getbootstrap.com/docs/4.0/examples/album" target="_blank">“Album Example” on GetBootstrap.com</a>.</p>
+<BR><BR>
+<p style="text-align:center">
+<img src="img/starter-template.png" alt="starter template" style="padding:1px; border:1px solid #021a40; width: 30%; height: 30%">
+</p>
+<p><BR><BR> The version we will build will contain only two rows of images but it should be straightforward to grow it from there. Go back to your GitHub repository and open up the ‘index.html’ and erase the previous ‘Hello World!!’ code. This can easily be done by clicking on the pencil icon in the upper right corner next to the trash can, then highlighting and deleting all the HTML code.</p>
+<BR><BR>
+<p style="text-align:center">
+<img src="img/erase.png" alt="erase it" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<p><BR><BR></p>
+Go to <a href="https://getbootstrap.com/docs/4.0/examples/album" target="_blank">“Album Example” on GetBootstrap.com</a>, right click on the page, select ‘view source’ and copy it all. Then go to your GitHub index.html editor page and paste the code into it. Then save and submit it to view it in a browser. It won’t look like the original yet as we have to fix a bunch of broken links. <BR><BR>
+<H4>
+Fixing Broken HTML Tags
+</H4>
+<p>The problem is that most LINK tags are broken. For example the “bootstrap.min.css” link:</p>
+<pre class="r"><code>&lt;link href=&quot;../../../../dist/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;</code></pre>
+<p>points to the local web server instead of an external URL. Fixing these issues is easy and beneficial. You can find the latest links on the <a href="https://getbootstrap.com/" class="uri">https://getbootstrap.com/</a> site (scroll to the bottom of the page under ‘Boostrap CDN’). By pointing it to an external resource, we benefit from not having to manager or host that code.</p>
+<p>So we replace it with the same information but hosted by somebody else:</p>
+<pre class="r"><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css&quot; integrity=&quot;sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb&quot; crossorigin=&quot;anonymous&quot;&gt;</code></pre>
+<p><BR> Instead of doing this manually, get the updated index.html file from <a href="https://github.com/amunategui/github.io-custom-album-example" class="uri">https://github.com/amunategui/github.io-custom-album-example</a> and also get the custom css file album.css and all the images from the images folder. Your directory structure should look like:</p>
+<BR><BR>
+<p style="text-align:center">
+<img src="img/main-directory.png" alt="main directory" style='padding:1px; border:1px solid #021a40; width: 30%; height: 30%'></p>
+<BR><BR>
+and your images directory should look like:
+<BR><BR>
+<p style="text-align:center">
+<img src="img/image-directory.png" alt="image directory" style='padding:1px; border:1px solid #021a40; width: 40%; height: 40%'></p>
+<BR><BR>
+To make this easy on you, you can simple clone or fork this walkthrough's repo https://github.com/amunategui/github.io-custom-album-example
+<BR><BR>
+<p style="text-align:center">
+<img src="img/clone-me.png" alt="clone me" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'></p>
+<BR><BR>
+<H3>Conclusion</H3>
+<p>Once your repo contains the same files and file structure as mine, you are ready to take it for a spin! Go ahead, customize it with your own pictures and experiment with different Bootstrap templates for your different web needs - they are there for you! Also, even though GitHub.io isn’t server side technology, you can still take credit card payments, collect email addresses, add a message board even make a gated-garden area! Google it, probably a lot of other addons I never heard of. <BR><BR> Big thanks to Lucas Amunategui for allowing me to use his original artwork for this walkthrough. More of his work on: <a href="https://lucasamunategui.github.io/" class="uri">https://lucasamunategui.github.io/</a></p>
+
+</div>
+</body>
+</html>
