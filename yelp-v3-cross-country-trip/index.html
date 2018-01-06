@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Yelp v3 and a Romantic Trip Across the USA, One Florist at a Time</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Yelp v3 and a Romantic Trip Across the USA, One Florist at a Time</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+
+<p><strong>On YouTube:</strong></p>
+<ul>
+<li type="square"><a href="" target="_blank"><img src="img/Show it to the World.jpg" alt="YouTube.com companion link" width="120" height="90" border="10" /></a></li>
+</ul>
+<BR><BR>
+
+
+<BR>
+<p style="text-align:center">
+<img src="img/zipping-across-us.png" alt="zipping across the USA" style='padding:1px; border:1px solid #021a40; width: 60%; height: 60%'>
+</p>
+<BR><BR>
+Just in time for <a href='https://en.wikipedia.org/wiki/Valentine%27s_Day' target='_blank'>Valentine’s Day</a>, if you happen to be planning a trip across the United States and want to offer your companion a rose at every degree of latitude traveled, then this walk-through is for you! 
+<BR><BR>
+The title says it all, we’re going to use the <a href='https://www.yelp.com/developers/documentation/v3/get_started' target='_blank'>Yelp v3 API</a> to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. This is an updated take on the previous walk-though I did 3 years ago (<a href='http://amunategui.github.io/yelp-cross-country-trip/index.html' target='_blank'>see original here</a>). This one uses the new Yelp v3 API and is written in Python. The second part will extend this into an interactive web-app on Google Cloud. 
+<BR><BR>
+<p style="text-align:left">
+<img src="img/yelp_logo.png" alt="yelp" style='padding:1px; width: 20%; height: 20%'>
+</p>
+The review site, <a href='https://www.yelp.com/' target='_blank'>Yelp</a>, should be known to most. It is listed as 'User Reviews and Recommendations of Best Restaurants, Shopping, Nightlife, Food, Entertainment, Things to Do, Services and More'. The latest Yelp v3 API is easier to use than the previous versions. Now you only need to pass your free API key, no more complicated auth stuff. Follow the two steps below and you're good to go:
+<BR><BR>
+<OL>
+<LI>
+Sign Up for Yelp: <a href='https://www.yelp.com/signup' target='_blank'>https://www.yelp.com/signup</a>
+</LI>
+<LI>
+Get an API Key: <a href='https://www.yelp.com/developers/v3/manage_app/' target='_blank'>https://www.yelp.com/developers/v3/manage_app/</a>
+</LI>
+</OL>
+
+
+<H3>Sign Up for Yelp</H3>
+<BR>
+Straightforward <a href='https://www.yelp.com/signup' target='_blank'>signup page</a> requires a valid email address:
+<BR><BR>
+<p style="text-align:center">
+<img src="img/yelp-singup-page.png" alt="yelp sign-up page" style='padding:1px; border:1px solid #021a40; width: 40%; height: 40%'>
+</p>
+<BR><BR>
+
+
+<H3>Get an API Key</H3>
+<BR>
+Click on the <a href='https://www.yelp.com/developers/v3/manage_app/' target='_blank'>Yelp developer's link</a> and go to <b>Manage App</b>. You only need to add an App Name, Industry and contact email in order to generate a valid key. Note at the bottom where it indicates the daily API limit count. 
+<BR><BR>
+<p style="text-align:center">
+<img src="img/yelp-api-key.png" alt="yelp api key" style='padding:1px; border:1px solid #021a40; width: 40%; height: 40%'>
+</p>
+<BR><BR>
+If you want more details on Yelp's v3 API, check out <a href='https://www.yelp.com/developers/documentation/v3/get_started' target='_blank'>Get started with Yelp's Fusion API</a>
+
+<BR><BR>
+<H1>Let's Build This</H1>
+We are going to create 3 functions and use a big loop to get from one end of the USA to the other, step-by-step:
+<OL>
+  <LI>GetPossibleCoordinates</LI>
+  <LI>GetBestYelpLocation</LI>
+  <LI>MakeAMove</LI>
+</OL>
+
+<H3>GetPossibleCoordinates</H3> 
+This function takes the current position of our traveler and calculates its bounded box. The default bounded box unit is 1 degree (equates loosely around 60 miles), so we add 30 miles in all four directions from the current point to created the bounded square (making it a 1x1 degree box, or 60x60 miles box). It returns the next 2 possible moves, both forward and one higher, the other, lower (see image below).
+<BR><BR>
+<p style="text-align:left">
+<img src="img/nextmoves.png" alt="next move" style='width: 20%; height: 20%'>
+</p>
+<BR>
+<H3>GetPossibleCoordinates</H3> 
+This takes a vector of two sets of geo-spatial coordinates, the upper left point and the lower right one, along with the search term and sends it to Yelp. It returns a data frame with the name, city, rating, state, latitude and longitude of the top location using the search term. It automatically picks the best one if available found in the new geo zone.
+<BR><BR>
+<H3>MakeAMove</H3>
+MakeAMove is the central relay that communicates with the other functions. It will get the next coordinates via GetPossibleCoordinates, figure out if it should try up or down first depending on where it is in relation to the end point’s latitude, and call on the Yelp API. If it finds a florist, it will report back the pertinent information such as the florist’s name, state, and coordinates. If it can’t find one, it will report back a None.
+<BR><BR>
+<H3>And a Big A** Loop</H3>
+The main logic is a big loop that loops one round for every move (and attempted moves) on the map. Here we set a search term <b>florist</b>, and a bounded square size unit, 1 degree in this case. <b>made_it</b> is the boolean flag that keeps the while loop going until we make it close to our final destination (or if we fail after x tries). <b>time.sleep(0.5)</b> will pause the code between each loop, this is critical so you don’t flood the Yelp server and get yourself banned.
+<BR><BR>
+As code runs its course, it collects the Yelp data and geo-coordinates. The coordinates are feed into <a href='https://matplotlib.org/basemap/' target='_blank'>mpl_toolkits.basemap</a> and displayed atop a map of the USA as scatter points. Each point obviously represents a florist. Gaps in points are areas where the model struggled to find a close-by florist. The final output is the log of the journey containing all the data collected from Yelp. Enjoy!
+
+<BR>
+<p style="text-align:center">
+<img src="img/journey-output-log.png" alt="log of the journey" style='padding:1px; border:1px solid #021a40; width: 40%; height: 40%'>
+</p>
+
+<pre class="r"><code>#!pip install geocoder
+#!pip install --upgrade matplotlib
+import pandas as pd
+import json
+import requests
+import sys
+import time
+import urllib
+import geocoder
+import matplotlib.pyplot as plt
+from mpl_toolkits.basemap import Basemap
+import warnings
+warnings.filterwarnings('ignore')
+
+# source https://github.com/Yelp/yelp-fusion/blob/master/fusion/python/sample.py
+# This client code can run on Python 2.x or 3.x.  Your imports can be
+# simpler if you only need one of those.
+try:
+    # For Python 3.0 and later
+    from urllib.error import HTTPError
+    from urllib.parse import quote
+    from urllib.parse import urlencode
+except ImportError:
+    # Fall back to Python 2's urllib2 and urllib
+    from urllib2 import HTTPError
+    from urllib import quote
+    from urllib import urlencode
+    
+def GetBestYelpLocation(host, path, api_key, term, latitude, longitude):
+    &quot;&quot;&quot;Given your api_key, send a GET request to the API.
+    Args:
+        host: domain host of the API.
+        path: path of the API after the domain.
+        api_key: API Key
+        term: search term
+        latitude: latitude
+        longitude: longitude
+    Returns:
+        DataFrame: top business found
+    &quot;&quot;&quot;
+    
+    # build url paramaters to append to GET string
+    url_params = {
+    'term': term.replace(' ', '+'),
+    'latitude':latitude,
+    'longitude':longitude,
+    'limit': 1
+    }
+
+    # finalize 
+    url_params = url_params or {}
+    url = '{0}{1}'.format(host, quote(path.encode('utf8')))
+    headers = {
+        'Authorization': 'Bearer %s' % api_key,
+    }
+
+    print(u'Querying {0} ...'.format(url))
+
+    response = requests.request('GET', url, headers=headers, params=url_params)
+    response = response.json()
+    rez = None
+    if response['total'] &gt; 0:
+        rez = pd.DataFrame({&quot;name&quot;:[response['businesses'][0]['name']],
+           'city':[response['businesses'][0]['location']['city']],
+           'rating':[response['businesses'][0]['rating']], 
+           'latitude':[response['region']['center']['latitude']],
+           'longitude':[response['region']['center']['longitude']],
+           'state':[response['businesses'][0]['location']['state']]})
+    return (rez)
+
+
+def GetPossibleCoordinates(lat, lon, area=1):
+    &quot;&quot;&quot; Get next sets of corrdinates to search
+    Args:
+        lat: latitude
+        lon: longitude
+        area: size of area to search
+    Returns:
+        DataFrame: top and bottom new geo zones
+    &quot;&quot;&quot;
+    
+    # new forward top square area
+    topArea_latitude = lat + area
+    topArea_longitude = lon + area
+
+    # new forward bottom square area
+    bottomArea_latitude = lat - area
+    bottomArea_longitude = lon + area
+
+    # create a Pandas data frame to hold new seachable zones
+    rownames = ['new_top_area','new_bottom_area']
+    latitude_points= [topArea_latitude, bottomArea_latitude]
+    longitude_points = [topArea_longitude, bottomArea_longitude]
+
+    return (pd.DataFrame({'direction':rownames,
+            'latitude_point':latitude_points,
+            'longitude_point':longitude_points}))
+ 
+def MakeAMove(lat, lon, sizebox, search_term, lat_endPoint):
+    &quot;&quot;&quot; coordinate travelers next move
+    Args:
+        lat: latitude
+        lon: longitude
+        sizebox: size of area to search
+        search_term: what business to query Yelp for
+        lat_endPoint: final destination latitude
+    Returns:
+        DataFrame: top business found
+    &quot;&quot;&quot;
+    
+    possibleCoordinates = GetPossibleCoordinates(lat,lon,sizebox)
+
+    # go up or down first depending on latitude of end point
+    searchOrder = ['new_top_area','new_bottom_area']
+    if (lat &gt; lat_endPoint):
+        searchOrder = ['new_bottom_area','new_top_area']
+
+    for directiontogo in searchOrder:
+        coords = possibleCoordinates[possibleCoordinates['direction']==directiontogo]
+        print('Scanning %s for term %s') % (directiontogo, search_term)
+        foundLocation = GetBestYelpLocation(host=API_HOST, 
+            path=SEARCH_PATH, 
+            api_key=API_KEY, 
+            term=search_term, 
+            latitude=coords['latitude_point'].values[0],
+            longitude=coords['longitude_point'].values[0])
+
+        if (foundLocation is not None):
+            return (foundLocation)
+
+    return (None)
+        
+# General Setup 
+# https://github.com/Yelp/yelp-fusion/blob/master/fusion/python/sample.py
+API_KEY = '&lt;YOUR YELP API KEY HERE&gt;'
+# API constants, you shouldn't have to change these.
+API_HOST = 'https://api.yelp.com'
+SEARCH_PATH = '/v3/businesses/search'
+BUSINESS_PATH = '/v3/businesses/'  # Business ID will come after slash.
+
+where = &quot;Fishersman's Wharf, San Francisco, CA&quot;
+g = geocoder.google(where)
+# lat long 
+startingpoint = g.latlng
+print(&quot;Starting point: %s - %s&quot; %(where, startingpoint))
+time.sleep(1)
+where = &quot;Chelsea Piers, NY&quot;
+g = geocoder.google(where)
+endingpoint = g.latlng
+print(&quot;Ending point: %s - %s&quot; %(where, endingpoint))
+
+# wait for values to be returned
+counter = 0
+while (startingpoint is None or endingpoint is None):
+    time.sleep(0.5)
+    counter += 1
+    if counter &gt; 5: break;
+    
+
+search_term = 'florist'
+square_size = 1 # setting the bounded area to a square 
+
+# start trip info vectors - we need to remember where we've been!
+currentLatitude = startingpoint[0]
+currentLongitude = startingpoint[1]
+
+made_it = False
+safety_count = 0
+foundCount = 0
+location_history = None
+while (made_it == False):
+    safety_count += 1
+    foundLocation = MakeAMove(lat=currentLatitude,
+        lon=currentLongitude, 
+        sizebox=square_size, 
+        search_term=search_term, 
+        lat_endPoint = endingpoint[0])
+
+    if foundLocation is not None: 
+        print (('Our new %s is %s in %s, %s %f start rating')  % (search_term, 
+            foundLocation['name'].values[0], 
+            foundLocation['city'].values[0], 
+            foundLocation['state'].values[0], 
+            foundLocation['rating'].values[0]))
+        currentLatitude = foundLocation['latitude'].values[0]
+        currentLongitude = foundLocation['longitude'].values[0]
+
+        if (location_history is None):
+            location_history = foundLocation.copy()
+        else:
+            location_history = location_history.append(foundLocation, ignore_index=True)
+
+        # reset temporary setting
+        square_size = 1
+
+        # let's keep track how our successes!
+        foundCount += 1
+    else:
+        # increase square_size
+        print((&quot;Can't find any %s, enlarging square search area to %i&quot;) % (search_term, square_size + 1))
+        # temporary settings to get us out of desert
+        square_size += 1 
+
+    # have we arrived at our end point
+    if (currentLongitude &lt; (endingpoint[1] + square_size)) and (currentLongitude &gt; (endingpoint[1] - square_size)):
+            print(('We made it!! It took %i hops...') % (foundCount))
+            break;
+    if (safety_count &gt; 100):
+            print(('Giving up!! Failed after %i hops') % (foundCount))
+            break;
+
+    # be considerate with your Yelp requests
+    time.sleep(0.5)
+
+# plot map of journey        
+plt.figure(figsize=(23,10))
+# build usa map
+m = Basemap(projection='mill',
+            llcrnrlat = 25,
+            llcrnrlon = -130,
+            urcrnrlat = 50,
+            urcrnrlon = -60,
+            resolution='l')
+
+# plot lat/long cross-country journey and add starting and ending points
+lon_prox = [startingpoint[1]] + list(location_history['longitude']) + [endingpoint[1]]  
+lat_prox  = [startingpoint[0]] +  list(location_history['latitude']) + [endingpoint[0]]  
+ 
+
+x,y=m(lon_prox, lat_prox)
+m.scatter(x, y, s=200, zorder=10, alpha=1) 
+m.drawcoastlines()
+m.drawcountries(linewidth=2)
+m.drawstates(color='b')
+plt.legend(loc=4)
+plt.title('Yelp Cross-Country Adventure')
+plt.show()
+
+print(location_history)
+</code></pre>
+
+
+<BR><BR>
+As usual, a big shout-out to <a href='lucasamunategui.github.io' target='_blank'>Lucas Amunategui</a> for providing great original art for these walk-throughs.
+
+ 
+</div>
+</body>
+</html>
