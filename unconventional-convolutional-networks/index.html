@@ -373,12 +373,8 @@ import time
 import datetime
 import pandas as pd
 import numpy as np
-import pandas_datareader as pdr
 import matplotlib.pyplot as plt
 import pandas_datareader as pdr
-from pandas_datareader import data as pdr
-import fix_yahoo_finance as yf
-yf.pdr_override()  
 
 def scale_list(l, to_min, to_max):
     def scale_number(unscaled, to_min, to_max, from_min, from_max):
@@ -418,7 +414,7 @@ for stock in STOCKS:
     # stock_data = pdr.get_data_google(stock)
 
     # download dataframe
-    stock_data = pdr.get_data_yahoo(stock, start="2016-01-01", end="2017-12-27")
+    stock_data = pdr.get_data_yahoo(stock, start="2016-01-01", end="2018-01-17")
 
     stock_data['Symbol'] = stock
     stock_data['Date'] = stock_data.index
