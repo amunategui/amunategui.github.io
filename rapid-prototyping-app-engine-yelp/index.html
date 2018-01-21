@@ -55,9 +55,9 @@
 <BR><BR>
 <p><strong>GitHub Repository:</strong></p>
 <ul>
-<li type="square"><a href="https://github.com/amunategui/rapid-prototyping-app-engine-yelp" target="_blank">GitHub Repository: https://github.com/amunategui/rapid-prototyping-app-engine-yelp</a></li>
+<li type="square"><a href="https://github.com/amunategui/rapid-prototyping-app-engine-yelp" target="_blank">GitHub: https://github.com/amunategui/rapid-prototyping-app-engine-yelp</a></li>
 </ul>
-
+<BR><BR>
 Let's build a web application to map out trips and plot specific businesses along the route every fifty miles or so using Yelp and Google App Engine. Here is an example traveling from Portland, Oregon all the way to Boise, Idaho while being within 50 miles of a florist at all times - just in time for <a href='https://en.wikipedia.org/wiki/Valentine%27s_Day' target='_blank'>Valentine's day</a>! You can click on each marker on the map to get the business name and rating.
 
 <BR><BR><BR>
@@ -156,9 +156,7 @@ If your code (modeling, data wrangling) isn't too complicated, you can house it 
 
 And now for the easy part. There are multiple ways of deploying you web application on Google App Engine. In the video (ADD LINK HERE), I show a way to link your GitHub (works with BitBucket as well) using the Google Cloud dashboard. But the easiest, especially if it isn't your repository or if you don't intend uploading back code changes, is to simply using the command line <b>git clone</b> call: 
 <BR><BR>
-<pre class="r"><code>
-git clone https://github.com/amunategui/rapid-prototyping-app-engine-yelp
-</code></pre>
+<pre class="r"><code>git clone https://github.com/amunategui/rapid-prototyping-app-engine-yelp</code></pre>
 <BR>
 So log into your instance of Google Cloud and select the project you want your App Engine to live (if you don't have one see <a href='https://cloud.google.com/resource-manager/docs/creating-managing-projects' target='_blank'>Creating and Managing Projects</a>). Start the <a href='https://cloud.google.com/shell/' target='_blank'>cloud shell command line tool</a> by clicking on the upper-right caret button. This will open a familiar-looking command line window in the bottom half of the GCP dashboard.  
 <BR><BR><BR>
@@ -182,8 +180,7 @@ Once you are done, hit the <b>escape</b> key to get out of <b>Insert</b> mode an
 Navigate to the <b>templates</b> folder and edit the <b>map.html</b> file:
 
 <BR><BR>
-<pre class="r"><code>
-cd templates
+<pre class="r"><code>cd templates
 vi map.html</code></pre>
 <BR>
 Hit the <b>i</b> key again to get into insert mode and add your Google Key as indicated in the code:
