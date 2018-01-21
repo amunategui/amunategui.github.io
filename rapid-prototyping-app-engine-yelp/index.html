@@ -51,9 +51,12 @@
 <p><strong>On YouTube:</strong></p>
 <ul>
 <li type="square"><a href="https://www.youtube.com/watch?v=5z4v4qX2_7c&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target="_blank"><img src="img/yelp-app-engine-youtube.jpg" alt="YouTube.com companion link" width="120" height="90" border="10" /></a></li>
-<li type="square"><a href="https://github.com/amunategui/rapid-prototyping-app-engine-yelp" target="_blank">GitHub Repository: https://github.com/amunategui/rapid-prototyping-app-engine-yelp</a></li>
 </ul>
 <BR><BR>
+<p><strong>GitHub Repository:</strong></p>
+<ul>
+<li type="square"><a href="https://github.com/amunategui/rapid-prototyping-app-engine-yelp" target="_blank">GitHub Repository: https://github.com/amunategui/rapid-prototyping-app-engine-yelp</a></li>
+</ul>
 
 Let's build a web application to map out trips and plot specific businesses along the route every fifty miles or so using Yelp and Google App Engine. Here is an example traveling from Portland, Oregon all the way to Boise, Idaho while being within 50 miles of a florist at all times - just in time for <a href='https://en.wikipedia.org/wiki/Valentine%27s_Day' target='_blank'>Valentine's day</a>! You can click on each marker on the map to get the business name and rating.
 
@@ -66,7 +69,7 @@ Let's build a web application to map out trips and plot specific businesses alon
 Prototyping your machine-learning models into web applications is a critical topic for most data scientists. There are plenty of resources to transition developers into data scientists but few on helping data scientists acquire full-ops development skills. For some, this may not be an issue as they either rely on outside help, or they have no desire in bringing products to market. For the rest of us, especially the data scientist with some entrepreneurial aspirations, there are some easy-to-acquire skills and tools to enable extending ideas into web applications on the cheap. 
 <BR><BR>
 I have posted on this topic in the past using tools like:
-
+<BR>
 <UL><LI>Amazon Web Services: <a href='http://amunategui.github.io/idea-to-pitch/index.html' target='_blank'>Going from an Idea to a Pitch: Hosting your Python Application using Flask and Amazon Web Services (AWS)</a></LI>
 <LI>PythonAnywhere: <a href='http://amunategui.github.io/life-expectancy/index.html' target='_blank'>Life Coefficients - Modeling Life Expectancy and Prototyping it on the Web with Flask and PythonAnywhere</a></LI></UL>
 <BR>
@@ -113,7 +116,7 @@ The full source-code can be found on GitHub: <a href='https://github.com/amunate
 You will also need a free Yelp API key. First <a href='https://www.yelp.com/signup' target='_blank'>sign up for a free account on Yelp</a> then get a <a href='https://www.yelp.com/developers/v3/manage_app/' target='_blank'>free Yelp developer API key</a>.
 </LI></UL>
 Once you have a Google Cloud account, a Google Maps API key and a Yelp API key, you will have everything you need to create this cool mapping application. 
-<BR><BR>
+<BR><BR><BR>
 <H3>Python, Flask, Bootstrap, JavaScript and Ajax</H3>
 The brains behind this application is Python. That is one of the reasons I love working with <a href='http://flask.pocoo.org/' target='_blank'>Flask</a> as it allows us to link stand-alone python scripts to the server-side web framework without leaving the Python language - makes passing data between objects a whole lot easier! <a href='http://flask.pocoo.org/' target='_blank'>Flask</a> is a lightweight but very powerful server-side web framework. It's the glue between our Python data producing functions and web pages. 
 
@@ -174,7 +177,7 @@ Once in the <b>vi</b> editor, hit the <b>i</b> key to get in insert mode and scr
 <img src="img/command-line-update.png" alt="command line edit" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
 </p>
 <BR><BR>
-Once you are done, hit the <b>escape</b> key to get out of <b>Insert</b> mode and type <b>:wq</b> to save and quit out of vi (if you want additional vi help check out the <a href='https://www.cs.colostate.edu/helpdocs/vi.html' target='_blank'>Colorado State CS help doc</a>). One more file to fix and we can deploy. 
+Once you are done, hit the <b>escape</b> key to get out of <b>Insert</b> mode and type <b>:wq</b> to save and quit out of vi (if you want additional on <b>vi</b> help check out the <a href='https://www.cs.colostate.edu/helpdocs/vi.html' target='_blank'>Colorado State CS help doc</a>). One more file to fix and we can deploy. 
 
 Navigate to the <b>templates</b> folder and edit the <b>map.html</b> file:
 
@@ -197,7 +200,7 @@ Once again, hit the <b>escape</b> key to get out of <b>Insert</b> mode and type 
 Almost there, if you look in the <b>requirements.txt</b> file, you will see a series of Python libraries that are required to run the application. When you build your own application, this is where you list all the libraries needed, you then run the script to actually install them the <b>lib</b> folder. A word of caution, the <b>Standard Environment</b> version of the Google App Engine only supports a minimal set of libraries, for anything more complicated (like writing/reading to files) you will need to use the <b>Flexible Environment</b>.
 
 So run the following command to install all the needed additional libraries to the lib folder. When you deploy your web app, the lib folder will travel along with the needed libraries.
- 
+ <BR><BR>
 <pre class="r"><code>pip install -t lib -r requirements.txt</code></pre>
 <BR>
 Next initialize gcloud with the following command and answer a series of questions:
