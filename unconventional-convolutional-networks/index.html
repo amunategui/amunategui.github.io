@@ -685,7 +685,7 @@ model_xgb = xgb.train ( params = param,
 #Predict training set:
 ####################################################################
 
-predictions_xgb = clf.predict(dval)
+predictions_xgb = model_xgb.predict(dval)
 predictions_class = [1 if x >= 0.5 else 0 for x in predictions_xgb]
 
 from sklearn import cross_validation, metrics    
