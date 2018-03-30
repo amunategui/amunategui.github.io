@@ -54,11 +54,7 @@
 </ul>
 
 <BR><BR>
-<p><strong>GitHub Repository:</strong></p>
-<ul>
-<li type="square"><a href="https://github.com/amunategui/rapid-prototyping-app-engine-yelp" target="_blank">GitHub: https://github.com/amunategui/rapid-prototyping-app-engine-yelp</a></li>
-</ul>
-<BR><BR>
+ 
 This is the second part to the previous blog entry <a href='http://amunategui.github.io/google-actor-recognition/index.html' target='_blnak'>Google's Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Biographies in Real Time</a>.  
 
 <p>The above celebrity pipeline can chew through a celebrity video faster than you can say protagonist - and that’s the whole point!</p>
@@ -103,7 +99,7 @@ This is the second part to the previous blog entry <a href='http://amunategui.gi
 
 ￼
 <H2>Getting Started</H2>
-
+<BR>
 <p>You need to install <a href='https://www.tensorflow.org/install/index' target='_blank'>TensorFlow</a> or pip install it on your machine:
 
 <pre class="r"><code>pip install tensorflow</code></pre>
@@ -172,8 +168,9 @@ python -m scripts.label_image \
     --graph=tf_files/retrained_graph.pb  \
     --image=tf_files/flower_photos/roses/2414954629_3708a1a04d.jpg 
 </code></pre>
-
+<BR><BR>
 <H2>Additional Resouces</H2>
+<BR>
 <p>Another great resource on this topic is from TensorFlow’s own docs: <a href='https://www.tensorflow.org/tutorials/image_retraining' target='_blank'>How to Retrain an Image Classifier for New Categories</a>.</p>
 
 <p>Below is the full source code to run through a movie file, extract faces, run them through our custom-trained Inception model. Sorry it is a big clump but if you followed the first video: <a href='http://amunategui.github.io/google-actor-recognition/index.html' target='_blank'>Google's Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Biographies in Real Time</a>, this is a slight deviation from it:</p>
