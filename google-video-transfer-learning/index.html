@@ -140,15 +140,14 @@ tf_file
 
 <BR><BR> 
 <pre class="r"><code>python ./retrain.py 
-  --bottleneck_dir=./tf_files/bottlenecks 
-  --how_many_training_steps 5000 
-  --learning_rate 0.01 
-  --train_batch_size 10 
-  --model_dir=./tf_files/inception 
-  --output_graph=./tf_files/retrained_graph.pb 
-  --output_labels=./tf_files/retrained_labels.txt 
-  --image_dir ./tf_files/kids_photos
-</code></pre>
+--bottleneck_dir=./tf_files/bottlenecks 
+--how_many_training_steps 5000 
+--learning_rate 0.01 
+--train_batch_size 10 
+--model_dir=./tf_files/inception 
+--output_graph=./tf_files/retrained_graph.pb 
+--output_labels=./tf_files/retrained_labels.txt 
+--image_dir ./tf_files/kids_photos</code></pre>
 <BR><BR> 
 <p>The first run takes time as it downloads inception and builds the bottleneck files (analysis of spliced images). As it models the new data, it spits out training messages just like any model does. It will return an accuracy score for training and validtion. You may need to run the model a couple of times (it runs a lot faster the second time around) and play around with parameters like “learning rate”, “train batch size”, and “how many training steps”.</p>
 
