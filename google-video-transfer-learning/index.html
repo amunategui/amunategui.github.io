@@ -71,29 +71,29 @@ This is the second part to the previous blog entry <a href='http://amunategui.gi
 <p style="text-align:center">
 <img src="img/app-engine-output.png" alt="Not-So-Famous-People" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
-
+<BR><BR>
 <p>All we need to do is swap one step in the pipeline (albeit with some manual pre-processing work required). We remove the image web-search step and replace it with our own trained convolutional deep neural network. If you are trying to find out which family members are on a video, then a web search using headshots probably won't help you (unless they’re super famous). 
 
 <p>Enters…</p>
  
-
+<BR>
 <H2>Inception V3, Transfer Learning, And A Massive Modeling Shortcut</H2>
-
+<BR>
 <p>Inception V3 is the third inception version of convolutional deep neural networks (CNN) trained to recognize general object categories using the famous ImageNet dataset.</p>
-
+<BR>
 <blockquote>“The ImageNet project is a large visual database designed for use in visual object recognition software research. Over 14 million URLs of images have been hand-annotated by ImageNet to indicate what objects are pictured; in at least one million of the images, bounding boxes are also provided. ImageNet contains over 20 thousand ambiguous categories; a typical category, such as "balloon" or "strawberry", contains several hundred images.” 
 <p style="text-align:right">
 <a href='https://en.wikipedia.org/wiki/ImageNet' target='_blank'>Wikipedia Imagenet</a></p></blockquote>
-
+<BR>
 <p>The V3 can differentiate between 1,000 different objects (<a href='http://image-net.org/challenges/LSVRC/2014/browse-synsets' target='_blank'>image-net.org</a>):
 
 <BR><BR> 
 <p style="text-align:center">
 <img src="img/inception_v3_architecture.png" alt="inception v3 architecture" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
-<p>(<a href='https://github.com/tensorflow/models/blob/master/research/inception/README.md' target='_blank'>Inception in TensorFlow</a>)</p>
+<p style="text-align:right">(<a href='https://github.com/tensorflow/models/blob/master/research/inception/README.md' target='_blank'>Inception in TensorFlow</a>)</p>
   
-
+<BR><BR>
 <p>Transfer learning is a big deal in supervised CNN modeling. Simply put, you can ask a model already trained on a set of object to recognize different ones. As you may know, large models require a lot of data and huge processing power with specialized hardware. Having the ability of piggy backing powerful and publicly-available models is a huge time saver!</p>
 “Transfer learning or inductive transfer is a research problem in machine learning that focuses on storing knowledge gained while solving one problem and applying it to a different but related problem. For example, knowledge gained while learning to recognize cars could apply when trying to recognize trucks.” (<a href='https://en.wikipedia.org/wiki/Transfer_learning' target='_blank'>Wikipedia Transfer Learning</a>)</blockquote> </p>
   
@@ -109,8 +109,8 @@ This is the second part to the previous blog entry <a href='http://amunategui.gi
 <pre class="r"><code>pip install tensorflow</code></pre>
 
 <p>You’ll need to copy the <a href='https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py' target='_blank'>retrain.py</a> script (https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py) to you local machine. </p>
- 
-<H2>You Don't Need Too Much Training Data</H2>
+<BR>
+<H3>You Don't Need Too Much Training Data</H3>
 <p>The approach of the “retrain.py” script is very clever. It does most of the heavy lifting for you. All you need to do is collect training data and place each category in its own folder. I want to analyze footage and be able to recognize if either of my kids is in a picture. So all I need to do is create a “kids_photos” folder and add a folder per category underneath it (i.e. one for Lucas and another for Thomas).</p>
 
 <p>I collected about 40 headshots for each of my two kids and applied <a href='https://keras.io/preprocessing/image/' target='_blank'>Keras ImageDataGenerator</a> to generate thousands of additional versions of each with slight random alterations.</p>
@@ -119,7 +119,7 @@ This is the second part to the previous blog entry <a href='http://amunategui.gi
 <p style="text-align:center">
 <img src="img/image-data-generator.png" alt="Keras ImageDataGenerator output" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
-
+<BR><BR> 
 <p>Your folder structure should look like the following:</p>
 <pre class="r"><code>retrain.py
 tf_file
@@ -135,9 +135,10 @@ tf_file
         | -  _0_3.jpg
     …
 </code></pre>
+<BR><BR> 
 <p>If your folder does look like the above, you are ready to transfer learn. You simply need to call the below retrain.py script in a terminal window with the following parameters. </p>
 
-
+<BR><BR> 
 <pre class="r"><code>python ./retrain.py 
   --bottleneck_dir=./tf_files/bottlenecks 
   --how_many_training_steps 5000 
@@ -148,7 +149,7 @@ tf_file
   --output_labels=./tf_files/retrained_labels.txt 
   --image_dir ./tf_files/kids_photos
 </code></pre>
-
+<BR><BR> 
 <p>The first run takes time as it downloads inception and builds the bottleneck files (analysis of spliced images). As it models the new data, it spits out training messages just like any model does. It will return an accuracy score for training and validtion. You may need to run the model a couple of times (it runs a lot faster the second time around) and play around with parameters like “learning rate”, “train batch size”, and “how many training steps”.</p>
 
 <p>In this example, the model did learn nicely in both training and validation:</p>
@@ -159,11 +160,11 @@ tf_file
 2018-03-30 05:39:06.422331: Step 4999: Validation accuracy = 99.0% (N=100)
 Final test accuracy = 98.3% (N=709)
 </code></pre>
-
+<BR><BR> 
 <p>Once you think the model can differentiate between categories within an acceptable level of accuracy, you are done. </p>
-
-
-<H2>Predicting On Live Data</H2>
+<BR><BR> 
+<H3>Predicting On Live Data</H3>
+<BR>
 Obviously, the whole point of the model is to run it on the output of our celebrity-finding engine but you can also run one-offs to see how your trained model works on a single image (from <a href='https://kiosk-dot-codelabs-site.appspot.com/codelabs/tensorflow-for-poets/#0' target='_blank'>tensorflow-for-poets</a>):
 
 <pre class="r"><code>
