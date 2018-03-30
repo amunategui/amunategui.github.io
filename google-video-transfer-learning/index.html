@@ -9,7 +9,7 @@
     <meta name="author" content="Manuel Amunategui">
     <link rel="icon" href="../favicon.ico">
 
-    <title>Rapid Prototyping on Google App Engine - Easily Extend Python ML Models into Interactive Web Applications - Trip Planner with Google Maps and Yelp</title>
+    <title>Google Video Intelligence, TensorFlow And Inception V3 - Recognizing Not-So-Famous-People</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -43,33 +43,38 @@
 <div class="container">
 
   <div class="blog-header">
-    <h1 class="blog-title">Rapid Prototyping on Google App Engine - Easily Extend your Python ML Models into Interactive Web Applications - Trip Planner with Google Maps and Yelp</h1>
+    <h1 class="blog-title">Google Video Intelligence, TensorFlow And Inception V3 - Recognizing Not-So-Famous-People</h1>
     <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
   </div>
   
 
 <p><strong>On YouTube:</strong></p>
 <ul>
-<li type="square"><a href="https://www.youtube.com/watch?v=5z4v4qX2_7c&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target="_blank"><img src="img/yelp-app-engine-youtube.jpg" alt="YouTube.com companion link" width="120" height="90" border="10" /></a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=a5E-W0Ck-8U&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target="_blank"><img src="img/youtube-image.png" alt="YouTube.com companion link" width="120" height="90" border="10" /></a></li>
 </ul>
+
 <BR><BR>
 <p><strong>GitHub Repository:</strong></p>
 <ul>
 <li type="square"><a href="https://github.com/amunategui/rapid-prototyping-app-engine-yelp" target="_blank">GitHub: https://github.com/amunategui/rapid-prototyping-app-engine-yelp</a></li>
 </ul>
 <BR><BR>
-Let's build a web application to map out trips and plot specific businesses along the route every fifty miles or so using Yelp and Google App Engine. Here is an example traveling from Portland, Oregon all the way to Boise, Idaho while being within 50 miles of a florist at all times - just in time for <a href='https://en.wikipedia.org/wiki/Valentine%27s_Day' target='_blank'>Valentine's day</a>! You can click on each marker on the map to get the business name and rating.
+This is the second part to the previous blog entry <a href='http://amunategui.github.io/google-actor-recognition/index.html' target='_blnak'>Google's Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Biographies in Real Time</a>.  
 
-<BR><BR><BR>
+<p>The above celebrity pipeline can chew through a celebrity video faster than you can say protagonist - and that’s the whole point!</p>
+
+<p>Can we divert some of that speed and instight towards something other than finding celebrities? What if you we wanted to identify regular people? Or any other entity not currently offered with Google Video Intelligence?</p>
+
+<p>Yes, we can!</p>
+
+<BR><BR> 
 <p style="text-align:center">
-<img src="img/planning-the-trip.png" alt="trip planning dashboard" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+<img src="img/app-engine-output.png" alt="Not-So-Famous-People" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
 
-<BR><BR><BR>
-<p style="text-align:center">
-<img src="img/Portland-Boise-Florists.png" alt="Florists between Portland and Boise" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
-</p>
-<BR><BR>
+<p>All we need to do is swap one step in the pipeline (albeit with some manual pre-processing work required). We remove the image web-search step and replace it with our own trained convolutional deep neural network. If you are trying to find out which family members are on a video, then a web search using headshots probably won't help you (unless they’re super famous). 
+
+<p>Enters…</p>
 
 Prototyping your machine-learning models into web applications is a critical topic for most data scientists. There are plenty of resources to transition developers into data scientists but few on helping data scientists acquire full-ops development skills. For some, this may not be an issue as they either rely on outside help, or they have no desire in bringing products to market. For the rest of us, especially the data scientist with some entrepreneurial aspirations, there are some easy-to-acquire skills and tools to enable extending ideas into web applications on the cheap. 
 <BR><BR>
