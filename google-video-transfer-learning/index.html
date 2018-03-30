@@ -55,7 +55,7 @@
 
 <BR><BR>
  
-This is the second part to the previous blog entry <a href='http://amunategui.github.io/google-actor-recognition/index.html' target='_blnak'>Google's Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Biographies in Real Time</a>.  
+<p>This is the second part to the previous blog entry <a href='http://amunategui.github.io/google-actor-recognition/index.html' target='_blnak'>Google's Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Biographies in Real Time</a>. </p>
 
 <p>The above celebrity pipeline can chew through a celebrity video faster than you can say protagonist - and that’s the whole point!</p>
 
@@ -68,7 +68,7 @@ This is the second part to the previous blog entry <a href='http://amunategui.gi
 <img src="img/app-engine-output.png" alt="Not-So-Famous-People" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
 <BR><BR>
-<p>All we need to do is swap one step in the pipeline (albeit with some manual pre-processing work required). We remove the image web-search step and replace it with our own trained convolutional deep neural network. If you are trying to find out which family members are on a video, then a web search using headshots probably won't help you (unless they’re super famous). 
+<p>All we need to do is swap one step in the pipeline (albeit with some manual pre-processing work required). We remove the image web-search step and replace it with our own trained convolutional deep neural network. If you are trying to find out which family members are on a video, then a web search using headshots probably won't help you (unless they’re super famous).</p>
 
 <p>Enters…</p>
  
@@ -91,8 +91,12 @@ This is the second part to the previous blog entry <a href='http://amunategui.gi
   
 <BR><BR>
 <p>Transfer learning is a big deal in supervised CNN modeling. Simply put, you can ask a model already trained on a set of object to recognize different ones. As you may know, large models require a lot of data and huge processing power with specialized hardware. Having the ability of piggy backing powerful and publicly-available models is a huge time saver!</p>
-“Transfer learning or inductive transfer is a research problem in machine learning that focuses on storing knowledge gained while solving one problem and applying it to a different but related problem. For example, knowledge gained while learning to recognize cars could apply when trying to recognize trucks.” (<a href='https://en.wikipedia.org/wiki/Transfer_learning' target='_blank'>Wikipedia Transfer Learning</a>)</blockquote> </p>
-  
+
+<blockquote>“Transfer learning or inductive transfer is a research problem in machine learning that focuses on storing knowledge gained while solving one problem and applying it to a different but related problem. For example, knowledge gained while learning to recognize cars could apply when trying to recognize trucks.” 
+<p style="text-align:right">
+<a href='https://en.wikipedia.org/wiki/Transfer_learning' target='_blank'>Wikipedia Transfer Learnin</a></p>
+</blockquote> 
+
 <p>If its the first time you hear about this, you may wonder how a model that has only been trained to recognize mundane things like cars, fruits, trees, etc. can also be used to differentiate between my children.</p>
 
 <p>The best way to convince yourself is to try it out. It turns out that this approach does a good job with new data and new labels spliced right at the end of the network. But the main takeawy is that it would take efforts in the multiples with big hardware, a whole lot more data and serious hyperparameter-tuning knowledge to do this from scratch.</p>
@@ -104,10 +108,10 @@ This is the second part to the previous blog entry <a href='http://amunategui.gi
 
 <pre class="r"><code>pip install tensorflow</code></pre>
 
-<p>You’ll need to copy the <a href='https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py' target='_blank'>retrain.py</a> script (https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py) to you local machine. </p>
+<p>You’ll also need to copy the <a href='https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py' target='_blank'>retrain.py</a> script (https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py) to you local machine. </p>
 <BR>
 <H3>You Don't Need Too Much Training Data</H3>
-<p>The approach of the “retrain.py” script is very clever. It does most of the heavy lifting for you. All you need to do is collect training data and place each category in its own folder. I want to analyze footage and be able to recognize if either of my kids is in a picture. So all I need to do is create a “kids_photos” folder and add a folder per category underneath it (i.e. one for Lucas and another for Thomas).</p>
+<p>The approach of the “retrain.py” script is very clever. It does most of the heavy lifting for you. All you need to do is collect training data and place each category in its own folder. I want to analyze footage and be able to recognize if either of my kids is in a picture. So all I need to do is create a “kids_photos” folder and add a folder per category underneath it (i.e. one for kid1 and another for kid2).</p>
 
 <p>I collected about 40 headshots for each of my two kids and applied <a href='https://keras.io/preprocessing/image/' target='_blank'>Keras ImageDataGenerator</a> to generate thousands of additional versions of each with slight random alterations.</p>
 
@@ -120,12 +124,12 @@ This is the second part to the previous blog entry <a href='http://amunategui.gi
 <pre class="r"><code>retrain.py
 tf_file
 | - kids_photos
-    | - Lucas 
+    | - kid1 
         | - _0_1.jpg
         | - _0_2.jpg
         | - _0_3.jpg
     …
-    | - Thomas
+    | - kid2
         | -  _0_1.jpg
         | -  _0_2.jpg
         | -  _0_3.jpg
