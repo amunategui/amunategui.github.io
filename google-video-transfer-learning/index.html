@@ -104,130 +104,384 @@ This is the second part to the previous blog entry <a href='http://amunategui.gi
 ￼
 <H2>Getting Started</H2>
 
-You need to install <a href='https://www.tensorflow.org/install/index' target='_blank'>TensorFlow</a> or pip install it (pip install tensorflow) on your machine.
-<p>
-You’ll need to copy the <a href='https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py' target='_blank'>retrain.py</a> script (https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py) to you local machine. </p>
+<p>You need to install <a href='https://www.tensorflow.org/install/index' target='_blank'>TensorFlow</a> or pip install it on your machine:
+
+<pre class="r"><code>pip install tensorflow</code></pre>
+
+<p>You’ll need to copy the <a href='https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py' target='_blank'>retrain.py</a> script (https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py) to you local machine. </p>
  
+<H2>You Don't Need Too Much Training Data</H2>
+<p>The approach of the “retrain.py” script is very clever. It does most of the heavy lifting for you. All you need to do is collect training data and place each category in its own folder. I want to analyze footage and be able to recognize if either of my kids is in a picture. So all I need to do is create a “kids_photos” folder and add a folder per category underneath it (i.e. one for Lucas and another for Thomas).</p>
 
+<p>I collected about 40 headshots for each of my two kids and applied <a href='https://keras.io/preprocessing/image/' target='_blank'>Keras ImageDataGenerator</a> to generate thousands of additional versions of each with slight random alterations.</p>
+
+<BR><BR> 
+<p style="text-align:center">
+<img src="img/image-data-generator.png" alt="Keras ImageDataGenerator output" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+
+<p>Your folder structure should look like the following:</p>
+<pre class="r"><code>retrain.py
+tf_file
+| - kids_photos
+    | - Lucas 
+        | - _0_1.jpg
+        | - _0_2.jpg
+        | - _0_3.jpg
+    …
+    | - Thomas
+        | -  _0_1.jpg
+        | -  _0_2.jpg
+        | -  _0_3.jpg
+    …
+</code></pre>
+<p>If your folder does look like the above, you are ready to transfer learn. You simply need to call the below retrain.py script in a terminal window with the following parameters. </p>
+
+
+<pre class="r"><code>python ./retrain.py 
+  --bottleneck_dir=./tf_files/bottlenecks 
+  --how_many_training_steps 5000 
+  --learning_rate 0.01 
+  --train_batch_size 10 
+  --model_dir=./tf_files/inception 
+  --output_graph=./tf_files/retrained_graph.pb 
+  --output_labels=./tf_files/retrained_labels.txt 
+  --image_dir ./tf_files/kids_photos
+</code></pre>
+
+<p>The first run takes time as it downloads inception and builds the bottleneck files (analysis of spliced images). As it models the new data, it spits out training messages just like any model does. It will return an accuracy score for training and validtion. You may need to run the model a couple of times (it runs a lot faster the second time around) and play around with parameters like “learning rate”, “train batch size”, and “how many training steps”.</p>
+
+<p>In this example, the model did learn nicely in both training and validation:</p>
+
+<pre class="r"><code>
+2018-03-30 05:39:06.357276: Step 4999: Train accuracy = 100.0%
+2018-03-30 05:39:06.357435: Step 4999: Cross entropy = 0.005487
+2018-03-30 05:39:06.422331: Step 4999: Validation accuracy = 99.0% (N=100)
+Final test accuracy = 98.3% (N=709)
+</code></pre>
+
+<p>Once you think the model can differentiate between categories within an acceptable level of accuracy, you are done. </p>
+
+
+<H2>Predicting On Live Data</H2>
+Obviously, the whole point of the model is to run it on the output of our celebrity-finding engine but you can also run one-offs to see how your trained model works on a single image (from <a href='https://kiosk-dot-codelabs-site.appspot.com/codelabs/tensorflow-for-poets/#0' target='_blank'>tensorflow-for-poets</a>):
+
+<pre class="r"><code>
+python -m scripts.label_image \
+    --graph=tf_files/retrained_graph.pb  \
+    --image=tf_files/flower_photos/roses/2414954629_3708a1a04d.jpg 
+</code></pre>
+
+<H2>Additional Resouces</H2>
+<p>Another great resource on this topic is from TensorFlow’s own docs: <a href='https://www.tensorflow.org/tutorials/image_retraining' target='_blank'>How to Retrain an Image Classifier for New Categories</a>.</p>
+
+<p>Below is the full source code to run through a movie file, extract faces, run them through our custom-trained Inception model. Sorry it is a big clump but if you followed the first video: <a href='http://amunategui.github.io/google-actor-recognition/index.html' target='_blank'>Google's Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Biographies in Real Time</a>, this is a slight deviation from it:</p>
+<pre class="r"><code>
+import glob, os
+import sys
+import argparse
+import math
+import datetime
+from google.cloud import videointelligence
+from google.cloud import vision
+from google.cloud import storage
+from google.cloud.vision import types
+import shutil
+import numpy as np
+import io
+import tensorflow as tf
+import skvideo.io
+from PIL import Image, ImageDraw
+import ffmpy
  
-I have an entire blog post on Bootstrap - <a href='http://amunategui.github.io/free-website-on-github/index.html' target='_blank'>Show it to the World! Build a Free Art Portfolio Website on GitHub.io in 20 Minutes!</a>.
+import sys  
+reload(sys)  
+sys.setdefaultencoding('utf8')
 
-JavaScript and Ajax are great front-end scripting languages that add dynamic behavior to a web page. <a href='https://en.wikipedia.org/wiki/Ajax_(programming)' target='_blank'>Ajax</a> allows sending and receiving data without rebuilding the entire thing. This is what allows us to animate the Google Maps by making markers appear during the trip's progression. 
+video_location = ""
+ 
+def delete_blob(bucket_name, blob_name):
+    """Deletes a blob from the bucket."""
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.delete()
 
-<BR><BR>
-<H3>Anatomy of a Web Application</H3>
-A typical folder structure for a Flask web application on Google's App Engine looks like:
+def init(movie_to_process, bucket_name):
+    # step 1 get video link
+    global video_location
+    
+    # clean out directory structure
+    os.system('sudo rm -r tmp')
 
-<BR><BR><BR>
-<p style="text-align:center">
-<img src="img/flask-folder-structure.png" alt="flask-folder-structure.png" style='padding:1px; border:1px solid #021a40; width: 30%; height: 30%'>
-</p>
-<BR><BR>
-<UL>
-<LI><B>app.yaml</B> declares where the controlling Flask Python script resides along with the <b>static</b> and <b>templates</b> folder locations</LI>
-<LI><B>appengine_config.py</B> points to the lib folder that holds any additional libraries</LI>
-<LI><B>requirements.txt</B> holds library names and version to be installed and added to the lib folder</LI>
-<LI><B>main.py</B> is the brains of the Flask operations and holds all of the Python code and directives for each HTML pages</LI>
-</UL> 
+    """Deletes a blob from the bucket."""
+    storage_client = storage.Client()
 
-If your code (modeling, data wrangling) isn't too complicated, you can house it all in main.py. In the template folder lives your HTML pages. Typically you will see an <b>index.html</b> page where a visitor first lands and any other subsequent pages depending on your application. In our case we also have a <b>maps.html</b> that will display the application results. The <b>static</b> folder (not used in this application) holds static things like images, videos, css, etc. We don't use one in this web application just to keep things simple and streamlined. All the code can be found on GitHub at: https://github.com/amunategui/rapid-prototyping-app-engine-yelp/tree/master/templates
-<BR><BR>
-<H2>Deploying on Google App Engine</H2>
+    # clean things up on GS
+    bucket = storage.Bucket(storage_client, bucket_name)
+    for obj in bucket.list_blobs(prefix='face_winners/'):
+      file_name = obj.name
+      delete_blob(bucket_name, file_name)
 
-And now for the easy part. There are multiple ways of deploying you web application on Google App Engine. In the <a href='https://www.youtube.com/watch?v=5z4v4qX2_7c' target='_blank'>video</a>, I show a way to link your GitHub (works with BitBucket as well) using the Google Cloud dashboard. But the easiest, especially if it isn't your repository or if you don't intend uploading back code changes, is to simply using the command line <b>git clone</b> call: 
-<BR><BR>
-<pre class="r"><code>git clone https://github.com/amunategui/rapid-prototyping-app-engine-yelp</code></pre>
-<BR>
-So log into your instance of Google Cloud and select the project you want your App Engine to live (if you don't have one see <a href='https://cloud.google.com/resource-manager/docs/creating-managing-projects' target='_blank'>Creating and Managing Projects</a>). Start the <a href='https://cloud.google.com/shell/' target='_blank'>cloud shell command line tool</a> by clicking on the upper-right caret button. This will open a familiar-looking command line window in the bottom half of the GCP dashboard.  
-<BR><BR><BR>
-<p style="text-align:center">
-<img src="img/shell-start.png" alt="start cloud shell" style='padding:1px; border:1px solid #021a40; width: 60%; height: 60%'>
-</p>
-<BR><BR>
-Run the git clone command above and you will see a new directory with the name <b>rapid-prototyping-app-engine-yelp</b> created under your root's directory. You're almost ready to deploy, we just need to add our API keys in three different places. Enter the new folder and open up the <b>main.py</b> file to add the keys:
-<BR><BR>
-<pre class="r"><code>cd rapid-prototyping-app-engine-yelp
-vi main.py</code></pre>
-<BR>
-Once in the <b>vi</b> editor, hit the <b>i</b> key to get in insert mode and scroll down until you find the API variables for both Google and Yelp (highlighted in green in the screenshot).
-<BR><BR><BR>
-<p style="text-align:center">
-<img src="img/command-line-update.png" alt="command line edit" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
-</p>
-<BR><BR>
-Once you are done, hit the <b>escape</b> key to get out of <b>Insert</b> mode and type <b>:wq</b> to save and quit out of vi (if you want additional on <b>vi</b> help check out the <a href='https://www.cs.colostate.edu/helpdocs/vi.html' target='_blank'>Colorado State CS help doc</a>). One more file to fix and we can deploy. 
+    for obj in bucket.list_blobs(prefix='text_winners/'):
+      file_name = obj.name
+      delete_blob(bucket_name, file_name)
 
-Navigate to the <b>templates</b> folder and edit the <b>map.html</b> file:
+    for obj in bucket.list_blobs(prefix='video_processing/'):
+        file_name = obj.name
+        delete_blob(bucket_name, file_name)
 
-<BR><BR>
-<pre class="r"><code>cd templates
-vi map.html</code></pre>
-<BR>
-Hit the <b>i</b> key again to get into insert mode and add your Google Key as indicated in the code:
-<BR><BR><BR>
-<p style="text-align:center">
-<img src="img/command-line-update-2.png" alt="command line edit" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
-</p>
-<BR><BR>
-Once again, hit the <b>escape</b> key to get out of <b>Insert</b> mode and type <b>:wq</b> to save and quit out of vi. Navigate back to the <b>rapid-prototyping-app-engine-yelp</b> folder: 
-<BR><BR>
-<pre class="r"><code>cd ..</code></pre>
-<BR><BR>
-<h3>Deploying our Web Application</h3>
-Almost there, if you look in the <b>requirements.txt</b> file, you will see a series of Python libraries that are required to run the application. When you build your own application, this is where you list all the libraries needed, you then run the script to actually install them the <b>lib</b> folder. A word of caution, the <b>Standard Environment</b> version of the Google App Engine only supports a minimal set of libraries, for anything more complicated (like writing/reading to files) you will need to use the <b>Flexible Environment</b>.
-
-So run the following command to install all the needed additional libraries to the lib folder. When you deploy your web app, the lib folder will travel along with the needed libraries.
- <BR><BR>
-<pre class="r"><code>pip install -t lib -r requirements.txt</code></pre>
-<BR>
-Next initialize gcloud with the following command and answer a series of questions:
-<pre class="r"><code>gcloud init</code></pre>
-<BR>
-And answer the following questions:
-
-<BR><BR><BR>
-<p style="text-align:center">
-<img src="img/gcloud-init-question-1.png" alt="gcloud question 1" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
-</p>
-
-<BR><BR><BR>
-
-<p style="text-align:center">
-<img src="img/gcloud-init-question-2.png" alt="gcloud question 2" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
-</p>
-
-<BR><BR><BR>
-<p style="text-align:center">
-<img src="img/gcloud-init-question-3.png" alt="gcloud question 3" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
-</p>
-<BR>
-<BR> Finally deploy it to the world with the following command:</p>
-<pre class="r"><code>gcloud app deploy</code></pre>
-<BR><BR><BR>
-<p style="text-align:center">
-<img src="img/deploy-question-1.png" alt="deploy question 1" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
-</p>
-<BR><BR><BR>
-<p style="text-align:center">
-<img src="img/deploy-question-2.png" alt="deploy question 2" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
-</p>
-<BR><BR>
+    blob=bucket.blob('video_processing/' + movie_to_process)
+    blob.upload_from_filename(movie_to_process)
+    blob.make_public() 
+ 
   
+# step 2 find people
+def analyze_labels(movie_to_process, bucket_name):
+    path = 'gs://' + bucket_name + '/video_processing/' + movie_to_process
+    """ Detects labels given a GCS path. """
+    video_client = videointelligence.VideoIntelligenceServiceClient()
+    features = [videointelligence.enums.Feature.LABEL_DETECTION]
 
-After a few minutes, it will state it is done and offer you the handy command <b>gcloud app browse</b>. If you use it, it will yield a clickable link to jump to your new web application.
+    mode = videointelligence.enums.LabelDetectionMode.SHOT_AND_FRAME_MODE
+    config = videointelligence.types.LabelDetectionConfig(
+        label_detection_mode=mode)
+    context = videointelligence.types.VideoContext(
+        label_detection_config=config)
 
-<BR><BR><BR>
-<p style="text-align:center">
-<img src="img/ready-to-deploy-path.png" alt="get the URL" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
-</p>
-<BR><BR>
+    operation = video_client.annotate_video(
+        path, features=features, video_context=context)
+    print('\nProcessing video for label annotations:')
 
-And now for the fun part, let's deploy this to the world!
-<BR><BR><BR>
-<p style="text-align:center">
-<img src="img/trip-seattle-sanfran.jpg" alt="finally trip data" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
-</p>
-<BR><BR>
+    result = operation.result(timeout=90)
+    print('\nFinished processing.')
+
+    frame_offsets = []
+ 
+    # Process frame level label annotations
+    frame_labels = result.annotation_results[0].frame_label_annotations
+    for i, frame_label in enumerate(frame_labels):
+        #if (frame_label.entity.description == 'person'):
+        print('Frame label description: {}'.format(
+            frame_label.entity.description))
+        for category_entity in frame_label.category_entities:
+            if (category_entity.description == 'person'):
+                print('\tLabel category description: {}'.format(
+                    category_entity.description))
+                print(frame_label)
+                # Each frame_label_annotation has many frames,
+                # here we print information only about the first frame.
+                #for frame in frame_label.frames:
+                frame = frame_label.frames[0]
+                time_offset = (frame.time_offset.seconds +
+                               frame.time_offset.nanos / 1e9)
+                print('\tFirst frame time offset: {}s'.format(time_offset))
+                print('\tFirst frame confidence: {}'.format(frame.confidence))
+                print('\n')
+                #frame_offsets.append(time_offset - 0.5)
+                #frame_offsets.append(time_offset + 0.5)
+                frame_offsets.append(time_offset)
+    return(sorted(set(frame_offsets)))
+
+def extract_image_from_video(video_input, name_output, time_stamp):
+    ret = "Error"
+    try:
+        ret = os.system("ffmpeg -i " + video_input + " -ss " + time_stamp + " -frames:v 1 " + name_output)    
+        # if all goes well FFMPEG will return 0 
+        return ret
+    except ValueError:
+        return("Oops! error...")
+
+def crop_image(input_image, output_image, start_x, start_y, width, height):
+    """Pass input name image, output name image, x coordinate to start croping, y coordinate to start croping, width to crop, height to crop """
+    input_img = Image.open(input_image)
+    # give the image some buffer space
+    start_with_buffer_x = int(start_x - np.ceil(width/5))
+    start_with_buffer_y = int(start_y - np.ceil(height/5))
+    width_with_buffer = int(start_x + width + np.ceil(width/5))
+    height_with_buffer = int(start_y + height + np.ceil(height/5))
+
+    box = (start_with_buffer_x, start_with_buffer_y, width_with_buffer, height_with_buffer)
+    output_img = input_img.crop(box)
+    output_img.save(output_image +".jpg")
+    return (output_image +".jpg")
+
+def detect_face(face_file, max_results=4):
+    # can you find a face and return coordinates
+    client = vision.ImageAnnotatorClient()
+    content = face_file.read()
+    image = types.Image(content=content)
+
+    # return coords of face
+    return client.face_detection(image=image).face_annotations
+
+def highlight_faces(image, faces):
+    """Draws a polygon around the faces, then saves to output_filename.
+    Args:
+      image: a file containing the image with the faces.
+      faces: a list of faces found in the file. This should be in the format
+          returned by the Vision API.
+      output_filename: the name of the image file to be created, where the
+          faces have polygons drawn around them.
+    """
+
+    faces_boxes = []
+    im = Image.open(image)
+    draw = ImageDraw.Draw(im)
+
+    for face in faces:
+        box = [(vertex.x, vertex.y)
+               for vertex in face.bounding_poly.vertices]
+        draw.line(box + [box[0]], width=5, fill='#00ff00')
+        faces_boxes.append([box[0][0], box[0][1], box[1][0] - box[0][0], box[3][1] - box[0][1]])
+
+    return (faces_boxes)
+
+def annotate(path):
+    """Returns web annotations given the path to an image."""
+    client = vision.ImageAnnotatorClient()
+
+    if path.startswith('http') or path.startswith('gs:'):
+        image = types.Image()
+        image.source.image_uri = path
+    else:
+        with io.open(path, 'rb') as image_file:
+            content = image_file.read()
+
+        image = types.Image(content=content)
+
+    web_detection = client.web_detection(image=image).web_detection
+
+    return web_detection
+
+def get_stills(movie_to_process, bucket_name, timestamps_to_pull):
+    video_location = 'https://storage.googleapis.com/' + bucket_name + '/video_processing/' + movie_to_process
+    storage_client = storage.Client()
+    max_results = 3
+
+    # add a buffer before and after a timestamp to get a few extra stills
+    timestamps_to_pull_tmp = timestamps_to_pull + [x - 0.3 for x in timestamps_to_pull[:-1]] + [x + 0.3 for x in timestamps_to_pull[1:]] # + timestamps_to_pull 
+    # remove anything that is negative from timestamps_to_pull_tmp
+    timestamps_to_pull_tmp = [ts for ts in timestamps_to_pull_tmp if ts >= 0]
+
+    # clear out stills folder  
+    if len(timestamps_to_pull_tmp) > 0:
+        # create directory structure
+        os.system('mkdir tmp')
+        os.system('mkdir tmp/face_images')
+        os.system('mkdir tmp/face_winners')
+
+        filepath = 'tmp/'
+
+        # make stills
+        cnt_ = 0
+        for ttp in timestamps_to_pull_tmp:
+            # get the still image at that timestamp
+            time_stamp = str(datetime.timedelta(seconds=ttp))
+            file = "still_"  + str(cnt_) + ".jpg"
+            filePathAndName =  filepath + file
+            print('filename: ' + time_stamp)
+
+            ret = extract_image_from_video(video_input = video_location, name_output = filePathAndName, time_stamp = time_stamp)
+            print(ret)
+            # shutil.copy(filename, '/static/images/')
+            cnt_ += 1
+
+            # find face on still image
+            with open(filePathAndName, 'rb') as image:
+                faces = detect_face(image, max_results)
+                print('Found {} face{}'.format(
+                  len(faces), '' if len(faces) == 1 else 's'))
+
+                print('Looking for a face {}'.format(filePathAndName))
+                # Reset the file pointer, so we can read the file again
+                image.seek(0)
+                faces_boxes = highlight_faces(filePathAndName, faces) #, filePathAndName)
+                print('faces_boxes:', faces_boxes)
+
+                if len(faces_boxes) > 0:
+                    # image had a face
+
+                    count = 0
+                    for face_box in faces_boxes:
+                        # cv2.imwrite("frame%d.jpg" % count, image)     # save frame as JPEG file
+                        saved_name = crop_image(filePathAndName, "tmp/face_images/" + file.split('.')[0] + str(count) + '_faces', face_box[0], face_box[1], face_box[2], face_box[3])
+                        count += 1
+  
+def predict_on_live_data(image_folder, bucket_name):
+  counter_ = 0 
+  storage_client = storage.Client()
+
+  # get all custom entities found by video intelligence
+  all_files = glob.glob(os.path.join(image_folder, "*.jpg"))   
+  print('all_files: ', all_files)
+  for file in all_files:
+    print(file)
+    # Read in the image_data
+    image_data = tf.gfile.FastGFile(file, 'rb').read()
+
+    # Loads label file, strips off carriage return
+    label_lines = [line.rstrip() for line in tf.gfile.GFile("tf_files/retrained_labels.txt")]
+
+    # Unpersists graph from file
+    with tf.gfile.FastGFile("tf_files/retrained_graph.pb", 'rb') as f:
+      graph_def = tf.GraphDef()
+      graph_def.ParseFromString(f.read())
+      _ = tf.import_graph_def(graph_def, name='')
+
+    with tf.Session() as sess:
+      # Feed the image_data as input to the graph and get first prediction
+      softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
+
+      predictions = sess.run(softmax_tensor, {'DecodeJpeg/contents:0': image_data})
+
+      # Sort to show labels of first prediction in order of confidence
+      top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
+
+      for node_id in top_k:
+        human_string = label_lines[node_id]
+        score = predictions[0][node_id]
+        if score > 0.987:
+          counter_ += 1
+          # move file to storage bucket 
+          print('%s (score = %.5f)' % (human_string, score))
+          print('file name:', file)
+          potential_names = human_string + '_' + str(counter_) + '_' + str(score) + '.png'
+
+          # we have a winner 
+          new_name = 'tmp/face_winners/' + potential_names
+          shutil.copy(file,new_name)
+
+          # upload it on gs
+          bucket = storage_client.get_bucket(bucket_name)
+          blob=bucket.blob('face_winners/' + potential_names)
+          blob.upload_from_filename(new_name)
+          blob.make_public() 
+ 
+# set google storage work space
+BUCKET_NAME = ''
+MOVIE_TO_PROCESS = ''
+if __name__ == "__main__":
+  if len(sys.argv) == 3:
+    MOVIE_TO_PROCESS = sys.argv[1]
+    BUCKET_NAME = sys.argv[2]
+    # start things off clean 
+    print('Cleaning up...')
+    init(MOVIE_TO_PROCESS, BUCKET_NAME)
+
+    print('Copying video to the cloud...')
+    timestamps_to_pull = analyze_labels(MOVIE_TO_PROCESS, BUCKET_NAME)
+
+    print('Searching for people...')
+    get_stills(MOVIE_TO_PROCESS, BUCKET_NAME, timestamps_to_pull)
+
+    print('Processing people...')
+    predict_on_live_data(image_folder="tmp/face_images/", bucket_name=BUCKET_NAME)
+    
+    print('All done...')
+  else:
+    print('Wrong argument inputs')
+</code></pre>
 
 
 </div>
