@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Rapid Prototyping on Google App Engine - Easily Extend Python ML Models into Interactive Web Applications - Trip Planner with Google Maps and Yelp</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+
+  <div class="blog-header">
+    <h1 class="blog-title">Rapid Prototyping on Google App Engine - Easily Extend your Python ML Models into Interactive Web Applications - Trip Planner with Google Maps and Yelp</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+
+<p><strong>On YouTube:</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=5z4v4qX2_7c&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target="_blank"><img src="img/yelp-app-engine-youtube.jpg" alt="YouTube.com companion link" width="120" height="90" border="10" /></a></li>
+</ul>
+<BR><BR>
+<p><strong>GitHub Repository:</strong></p>
+<ul>
+<li type="square"><a href="https://github.com/amunategui/rapid-prototyping-app-engine-yelp" target="_blank">GitHub: https://github.com/amunategui/rapid-prototyping-app-engine-yelp</a></li>
+</ul>
+<BR><BR>
+Let's build a web application to map out trips and plot specific businesses along the route every fifty miles or so using Yelp and Google App Engine. Here is an example traveling from Portland, Oregon all the way to Boise, Idaho while being within 50 miles of a florist at all times - just in time for <a href='https://en.wikipedia.org/wiki/Valentine%27s_Day' target='_blank'>Valentine's day</a>! You can click on each marker on the map to get the business name and rating.
+
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/planning-the-trip.png" alt="trip planning dashboard" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/Portland-Boise-Florists.png" alt="Florists between Portland and Boise" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
+</p>
+<BR><BR>
+
+Prototyping your machine-learning models into web applications is a critical topic for most data scientists. There are plenty of resources to transition developers into data scientists but few on helping data scientists acquire full-ops development skills. For some, this may not be an issue as they either rely on outside help, or they have no desire in bringing products to market. For the rest of us, especially the data scientist with some entrepreneurial aspirations, there are some easy-to-acquire skills and tools to enable extending ideas into web applications on the cheap. 
+<BR><BR>
+I have posted on this topic in the past using tools like:
+<BR>
+<UL><LI>Amazon Web Services: <a href='http://amunategui.github.io/idea-to-pitch/index.html' target='_blank'>Going from an Idea to a Pitch: Hosting your Python Application using Flask and Amazon Web Services (AWS)</a></LI>
+<LI>PythonAnywhere: <a href='http://amunategui.github.io/life-expectancy/index.html' target='_blank'>Life Coefficients - Modeling Life Expectancy and Prototyping it on the Web with Flask and PythonAnywhere</a></LI></UL>
+<BR>
+In this walk-through, I'll show you how to extend a scripted python program into a fully interactive web application using <a href='https://cloud.google.com/appengine/' target='_blank'>Google App Engine</a>. This platform is a no-hassle and cost effective option for easy and reliable web hosting.
+<BR><BR><BR>
+<H2>Google App Engine</H2>
+
+According to Wikipedia:
+<BR><BR>
+<blockquote>
+Google App Engine (often referred to as GAE or simply App Engine) is a web framework and cloud computing platform for developing and hosting web applications in Google-managed data centers. Applications are sandboxed and run across multiple servers.[1] App Engine offers automatic scaling for web applications—as the number of requests increases for an application, App Engine automatically allocates more resources for the web application to handle the additional demand.[2]
+<p style="text-align:right">
+<a href='https://en.wikipedia.org/wiki/Google_App_Engine'>Wikipedia on Google App Engine</a>
+</p>
+</blockquote>
+<BR>
+The <a href='https://cloud.google.com/appengine/' target='_blank'>Google App Engine</a> is serverless so you don't have to think about any of the hardware behind your web application. You don't have to know what OS your application is running under, it will scale accordingly, Google will take care of security patches, and you only pay for what you consume. If you are looking for a hands-off web hosting option, this may be it. I will write a post on <a href='https://aws.amazon.com/lambda/' target='_blank'>Amazon's AWS Lambda</a> shortly to compare services. 
+
+There are <a href='https://cloud.google.com/appengine/docs/python/' target='_blank'>two types of App Engines you can opt for</a> - one is very simple but less customizable, while the other isn't. We'll stick to the simple one - Standard Environment.
+
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/standard-vs-flexible.png" alt="standard vs flexible" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR><BR>
+
+<H3>A Python Starting Script</H3>
+The impetus behind rapid prototyping is that you have a stand-alone python script (or at the very least an idea your can accomplish in Python) that you would like to turn into an interactive tool accessible by anybody with a web browser. Here, we will extend the core idea behind my previous blog post <a href='http://amunategui.github.io/yelp-v3-cross-country-trip/index.html' target='_blank'>Yelp v3 and a Romantic Trip Across the USA, One Florist at a Time</a>. We're going to extend it to the web and add an interactive UI so the user can select departure, destination and business to track along the trip path. The querying engine will still be the Yelp API but the results will be displayed on Google Maps with markers. 
+
+<BR><BR>
+<p style="text-align:center">
+<img src="img/planning-the-trip.png" alt="trip planning dashboard" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR><BR>
+
+<H2>Let's Code</H2>
+The full source-code can be found on GitHub: <a href='https://github.com/amunategui/rapid-prototyping-app-engine-yelp' target=_blank>github.com/amunategui/rapid-prototyping-app-engine-yelp</a>. But before you start copying and pasting, I'll show you a neat way of importing the GitHub repo into Google Cloud Platform (GCP) and get a web application up-and-running in minutes. To see this in action, check out the my video walk-through: https://www.youtube.com/watch?v=5z4v4qX2_7c
+<BR><BR>
+<H3>Prerequisites</H3>
+<UL>
+<LI><B>Google Prerequisites</b>:In order to host on Google Cloud, you will need to get a <a href='https://console.cloud.google.com/start' target='_blank'>Google Cloud account</a> and you will need to create a free <a href='https://developers.google.com/maps/documentation/javascript/get-api-key' target='_blank'>Google Maps API Key</a>.
+</LI>
+<LI><B>Yelp Prerequisites</B>
+You will also need a free Yelp API key. First <a href='https://www.yelp.com/signup' target='_blank'>sign up for a free account on Yelp</a> then get a <a href='https://www.yelp.com/developers/v3/manage_app/' target='_blank'>free Yelp developer API key</a>.
+</LI></UL>
+Once you have a Google Cloud account, a Google Maps API key and a Yelp API key, you will have everything you need to create this cool mapping application. 
+<BR><BR><BR>
+<H3>Python, Flask, Bootstrap, JavaScript and Ajax</H3>
+The brains behind this application is Python. That is one of the reasons I love working with <a href='http://flask.pocoo.org/' target='_blank'>Flask</a> as it allows us to link stand-alone python scripts to the server-side web framework without leaving the Python language - makes passing data between objects a whole lot easier! <a href='http://flask.pocoo.org/' target='_blank'>Flask</a> is a lightweight but very powerful server-side web framework. It's the glue between our Python data producing functions and web pages. 
+
+We can only work in Python for so long and after that, we need to step into front-end web scripting. But don't let that bother you, there are so many great examples on the web, <a href='https://stackoverflow.com/' target='_blank'>stackoverflow</a>, <a href='https://www.w3schools.com/' target='_blank'>w3schools</a> and the incredible looking <a href='https://getbootstrap.com/' target='_blank'>Boostrap templates (used by over 13% of the web!)</a>.
+
+Bootstrap is a very powerful, almost magical tool for front-end web work, according to Wikipedia:
+<BR><BR>
+<blockquote>
+Bootstrap is a free and open-source front-end web framework for designing websites and web applications. It contains HTML- and CSS-based design templates for typography, forms, buttons, navigation and other interface components, as well as optional JavaScript extensions. Unlike many web frameworks, it concerns itself with front-end development only.
+<p style="text-align:right">
+<a href='https://en.wikipedia.org/wiki/Bootstrap_(front-end_framework)'>Wikipedia on Bootstrap</a>
+</p>
+</blockquote>
+I have an entire blog post on Bootstrap - <a href='http://amunategui.github.io/free-website-on-github/index.html' target='_blank'>Show it to the World! Build a Free Art Portfolio Website on GitHub.io in 20 Minutes!</a>.
+
+JavaScript and Ajax are great front-end scripting languages that add dynamic behavior to a web page. <a href='https://en.wikipedia.org/wiki/Ajax_(programming)' target='_blank'>Ajax</a> allows sending and receiving data without rebuilding the entire thing. This is what allows us to animate the Google Maps by making markers appear during the trip's progression. 
+
+<BR><BR>
+<H3>Anatomy of a Web Application</H3>
+A typical folder structure for a Flask web application on Google's App Engine looks like:
+
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/flask-folder-structure.png" alt="flask-folder-structure.png" style='padding:1px; border:1px solid #021a40; width: 30%; height: 30%'>
+</p>
+<BR><BR>
+<UL>
+<LI><B>app.yaml</B> declares where the controlling Flask Python script resides along with the <b>static</b> and <b>templates</b> folder locations</LI>
+<LI><B>appengine_config.py</B> points to the lib folder that holds any additional libraries</LI>
+<LI><B>requirements.txt</B> holds library names and version to be installed and added to the lib folder</LI>
+<LI><B>main.py</B> is the brains of the Flask operations and holds all of the Python code and directives for each HTML pages</LI>
+</UL> 
+
+If your code (modeling, data wrangling) isn't too complicated, you can house it all in main.py. In the template folder lives your HTML pages. Typically you will see an <b>index.html</b> page where a visitor first lands and any other subsequent pages depending on your application. In our case we also have a <b>maps.html</b> that will display the application results. The <b>static</b> folder (not used in this application) holds static things like images, videos, css, etc. We don't use one in this web application just to keep things simple and streamlined. All the code can be found on GitHub at: https://github.com/amunategui/rapid-prototyping-app-engine-yelp/tree/master/templates
+<BR><BR>
+<H2>Deploying on Google App Engine</H2>
+
+And now for the easy part. There are multiple ways of deploying you web application on Google App Engine. In the <a href='https://www.youtube.com/watch?v=5z4v4qX2_7c' target='_blank'>video</a>, I show a way to link your GitHub (works with BitBucket as well) using the Google Cloud dashboard. But the easiest, especially if it isn't your repository or if you don't intend uploading back code changes, is to simply using the command line <b>git clone</b> call: 
+<BR><BR>
+<pre class="r"><code>git clone https://github.com/amunategui/rapid-prototyping-app-engine-yelp</code></pre>
+<BR>
+So log into your instance of Google Cloud and select the project you want your App Engine to live (if you don't have one see <a href='https://cloud.google.com/resource-manager/docs/creating-managing-projects' target='_blank'>Creating and Managing Projects</a>). Start the <a href='https://cloud.google.com/shell/' target='_blank'>cloud shell command line tool</a> by clicking on the upper-right caret button. This will open a familiar-looking command line window in the bottom half of the GCP dashboard.  
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/shell-start.png" alt="start cloud shell" style='padding:1px; border:1px solid #021a40; width: 60%; height: 60%'>
+</p>
+<BR><BR>
+Run the git clone command above and you will see a new directory with the name <b>rapid-prototyping-app-engine-yelp</b> created under your root's directory. You're almost ready to deploy, we just need to add our API keys in three different places. Enter the new folder and open up the <b>main.py</b> file to add the keys:
+<BR><BR>
+<pre class="r"><code>cd rapid-prototyping-app-engine-yelp
+vi main.py</code></pre>
+<BR>
+Once in the <b>vi</b> editor, hit the <b>i</b> key to get in insert mode and scroll down until you find the API variables for both Google and Yelp (highlighted in green in the screenshot).
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/command-line-update.png" alt="command line edit" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
+</p>
+<BR><BR>
+Once you are done, hit the <b>escape</b> key to get out of <b>Insert</b> mode and type <b>:wq</b> to save and quit out of vi (if you want additional on <b>vi</b> help check out the <a href='https://www.cs.colostate.edu/helpdocs/vi.html' target='_blank'>Colorado State CS help doc</a>). One more file to fix and we can deploy. 
+
+Navigate to the <b>templates</b> folder and edit the <b>map.html</b> file:
+
+<BR><BR>
+<pre class="r"><code>cd templates
+vi map.html</code></pre>
+<BR>
+Hit the <b>i</b> key again to get into insert mode and add your Google Key as indicated in the code:
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/command-line-update-2.png" alt="command line edit" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
+</p>
+<BR><BR>
+Once again, hit the <b>escape</b> key to get out of <b>Insert</b> mode and type <b>:wq</b> to save and quit out of vi. Navigate back to the <b>rapid-prototyping-app-engine-yelp</b> folder: 
+<BR><BR>
+<pre class="r"><code>cd ..</code></pre>
+<BR><BR>
+<h3>Deploying our Web Application</h3>
+Almost there, if you look in the <b>requirements.txt</b> file, you will see a series of Python libraries that are required to run the application. When you build your own application, this is where you list all the libraries needed, you then run the script to actually install them the <b>lib</b> folder. A word of caution, the <b>Standard Environment</b> version of the Google App Engine only supports a minimal set of libraries, for anything more complicated (like writing/reading to files) you will need to use the <b>Flexible Environment</b>.
+
+So run the following command to install all the needed additional libraries to the lib folder. When you deploy your web app, the lib folder will travel along with the needed libraries.
+ <BR><BR>
+<pre class="r"><code>pip install -t lib -r requirements.txt</code></pre>
+<BR>
+Next initialize gcloud with the following command and answer a series of questions:
+<pre class="r"><code>gcloud init</code></pre>
+<BR>
+And answer the following questions:
+
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/gcloud-init-question-1.png" alt="gcloud question 1" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
+</p>
+
+<BR><BR><BR>
+
+<p style="text-align:center">
+<img src="img/gcloud-init-question-2.png" alt="gcloud question 2" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
+</p>
+
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/gcloud-init-question-3.png" alt="gcloud question 3" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
+</p>
+<BR>
+<BR> Finally deploy it to the world with the following command:</p>
+<pre class="r"><code>gcloud app deploy</code></pre>
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/deploy-question-1.png" alt="deploy question 1" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
+</p>
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/deploy-question-2.png" alt="deploy question 2" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
+</p>
+<BR><BR>
+  
+
+After a few minutes, it will state it is done and offer you the handy command <b>gcloud app browse</b>. If you use it, it will yield a clickable link to jump to your new web application.
+
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/ready-to-deploy-path.png" alt="get the URL" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
+</p>
+<BR><BR>
+
+And now for the fun part, let's deploy this to the world!
+<BR><BR><BR>
+<p style="text-align:center">
+<img src="img/trip-seattle-sanfran.jpg" alt="finally trip data" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
+</p>
+<BR><BR>
+
+
+</div>
+</body>
+</html>
