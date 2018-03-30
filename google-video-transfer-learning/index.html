@@ -69,77 +69,47 @@ This is the second part to the previous blog entry <a href='http://amunategui.gi
 
 <BR><BR> 
 <p style="text-align:center">
-<img src="img/app-engine-output.png" alt="Not-So-Famous-People" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+<img src="img/app-engine-output.png" alt="Not-So-Famous-People" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
 
 <p>All we need to do is swap one step in the pipeline (albeit with some manual pre-processing work required). We remove the image web-search step and replace it with our own trained convolutional deep neural network. If you are trying to find out which family members are on a video, then a web search using headshots probably won't help you (unless they’re super famous). 
 
 <p>Enters…</p>
+ 
 
-Prototyping your machine-learning models into web applications is a critical topic for most data scientists. There are plenty of resources to transition developers into data scientists but few on helping data scientists acquire full-ops development skills. For some, this may not be an issue as they either rely on outside help, or they have no desire in bringing products to market. For the rest of us, especially the data scientist with some entrepreneurial aspirations, there are some easy-to-acquire skills and tools to enable extending ideas into web applications on the cheap. 
-<BR><BR>
-I have posted on this topic in the past using tools like:
-<BR>
-<UL><LI>Amazon Web Services: <a href='http://amunategui.github.io/idea-to-pitch/index.html' target='_blank'>Going from an Idea to a Pitch: Hosting your Python Application using Flask and Amazon Web Services (AWS)</a></LI>
-<LI>PythonAnywhere: <a href='http://amunategui.github.io/life-expectancy/index.html' target='_blank'>Life Coefficients - Modeling Life Expectancy and Prototyping it on the Web with Flask and PythonAnywhere</a></LI></UL>
-<BR>
-In this walk-through, I'll show you how to extend a scripted python program into a fully interactive web application using <a href='https://cloud.google.com/appengine/' target='_blank'>Google App Engine</a>. This platform is a no-hassle and cost effective option for easy and reliable web hosting.
-<BR><BR><BR>
-<H2>Google App Engine</H2>
+<H2>Inception V3, Transfer Learning, And A Massive Modeling Shortcut</H2>
 
-According to Wikipedia:
-<BR><BR>
-<blockquote>
-Google App Engine (often referred to as GAE or simply App Engine) is a web framework and cloud computing platform for developing and hosting web applications in Google-managed data centers. Applications are sandboxed and run across multiple servers.[1] App Engine offers automatic scaling for web applications—as the number of requests increases for an application, App Engine automatically allocates more resources for the web application to handle the additional demand.[2]
+<p>Inception V3 is the third inception version of convolutional deep neural networks (CNN) trained to recognize general object categories using the famous ImageNet dataset.</p>
+
+<blockquote>“The ImageNet project is a large visual database designed for use in visual object recognition software research. Over 14 million URLs of images have been hand-annotated by ImageNet to indicate what objects are pictured; in at least one million of the images, bounding boxes are also provided. ImageNet contains over 20 thousand ambiguous categories; a typical category, such as "balloon" or "strawberry", contains several hundred images.” 
 <p style="text-align:right">
-<a href='https://en.wikipedia.org/wiki/Google_App_Engine'>Wikipedia on Google App Engine</a>
-</p>
-</blockquote>
-<BR>
-The <a href='https://cloud.google.com/appengine/' target='_blank'>Google App Engine</a> is serverless so you don't have to think about any of the hardware behind your web application. You don't have to know what OS your application is running under, it will scale accordingly, Google will take care of security patches, and you only pay for what you consume. If you are looking for a hands-off web hosting option, this may be it. I will write a post on <a href='https://aws.amazon.com/lambda/' target='_blank'>Amazon's AWS Lambda</a> shortly to compare services. 
+<a href='https://en.wikipedia.org/wiki/ImageNet' target='_blank'>Wikipedia Imagenet</a></p></blockquote>
 
-There are <a href='https://cloud.google.com/appengine/docs/python/' target='_blank'>two types of App Engines you can opt for</a> - one is very simple but less customizable, while the other isn't. We'll stick to the simple one - Standard Environment.
+<p>The V3 can differentiate between 1,000 different objects (<a href='http://image-net.org/challenges/LSVRC/2014/browse-synsets' target='_blank'>image-net.org</a>):
 
-<BR><BR><BR>
+<BR><BR> 
 <p style="text-align:center">
-<img src="img/standard-vs-flexible.png" alt="standard vs flexible" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+<img src="img/inception_v3_architecture.png" alt="inception v3 architecture" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
 </p>
-<BR><BR>
+<p>(<a href='https://github.com/tensorflow/models/blob/master/research/inception/README.md' target='_blank'>Inception in TensorFlow</a>)</p>
+  
 
-<H3>A Python Starting Script</H3>
-The impetus behind rapid prototyping is that you have a stand-alone python script (or at the very least an idea your can accomplish in Python) that you would like to turn into an interactive tool accessible by anybody with a web browser. Here, we will extend the core idea behind my previous blog post <a href='http://amunategui.github.io/yelp-v3-cross-country-trip/index.html' target='_blank'>Yelp v3 and a Romantic Trip Across the USA, One Florist at a Time</a>. We're going to extend it to the web and add an interactive UI so the user can select departure, destination and business to track along the trip path. The querying engine will still be the Yelp API but the results will be displayed on Google Maps with markers. 
+<p>Transfer learning is a big deal in supervised CNN modeling. Simply put, you can ask a model already trained on a set of object to recognize different ones. As you may know, large models require a lot of data and huge processing power with specialized hardware. Having the ability of piggy backing powerful and publicly-available models is a huge time saver!</p>
+“Transfer learning or inductive transfer is a research problem in machine learning that focuses on storing knowledge gained while solving one problem and applying it to a different but related problem. For example, knowledge gained while learning to recognize cars could apply when trying to recognize trucks.” (<a href='https://en.wikipedia.org/wiki/Transfer_learning' target='_blank'>Wikipedia Transfer Learning</a>)</blockquote> </p>
+  
+<p>If its the first time you hear about this, you may wonder how a model that has only been trained to recognize mundane things like cars, fruits, trees, etc. can also be used to differentiate between my children.</p>
 
-<BR><BR>
-<p style="text-align:center">
-<img src="img/planning-the-trip.png" alt="trip planning dashboard" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
-</p>
-<BR><BR>
+<p>The best way to convince yourself is to try it out. It turns out that this approach does a good job with new data and new labels spliced right at the end of the network. But the main takeawy is that it would take efforts in the multiples with big hardware, a whole lot more data and serious hyperparameter-tuning knowledge to do this from scratch.</p>
 
-<H2>Let's Code</H2>
-The full source-code can be found on GitHub: <a href='https://github.com/amunategui/rapid-prototyping-app-engine-yelp' target=_blank>github.com/amunategui/rapid-prototyping-app-engine-yelp</a>. But before you start copying and pasting, I'll show you a neat way of importing the GitHub repo into Google Cloud Platform (GCP) and get a web application up-and-running in minutes. To see this in action, check out the my video walk-through: https://www.youtube.com/watch?v=5z4v4qX2_7c
-<BR><BR>
-<H3>Prerequisites</H3>
-<UL>
-<LI><B>Google Prerequisites</b>:In order to host on Google Cloud, you will need to get a <a href='https://console.cloud.google.com/start' target='_blank'>Google Cloud account</a> and you will need to create a free <a href='https://developers.google.com/maps/documentation/javascript/get-api-key' target='_blank'>Google Maps API Key</a>.
-</LI>
-<LI><B>Yelp Prerequisites</B>
-You will also need a free Yelp API key. First <a href='https://www.yelp.com/signup' target='_blank'>sign up for a free account on Yelp</a> then get a <a href='https://www.yelp.com/developers/v3/manage_app/' target='_blank'>free Yelp developer API key</a>.
-</LI></UL>
-Once you have a Google Cloud account, a Google Maps API key and a Yelp API key, you will have everything you need to create this cool mapping application. 
-<BR><BR><BR>
-<H3>Python, Flask, Bootstrap, JavaScript and Ajax</H3>
-The brains behind this application is Python. That is one of the reasons I love working with <a href='http://flask.pocoo.org/' target='_blank'>Flask</a> as it allows us to link stand-alone python scripts to the server-side web framework without leaving the Python language - makes passing data between objects a whole lot easier! <a href='http://flask.pocoo.org/' target='_blank'>Flask</a> is a lightweight but very powerful server-side web framework. It's the glue between our Python data producing functions and web pages. 
+￼
+<H2>Getting Started</H2>
 
-We can only work in Python for so long and after that, we need to step into front-end web scripting. But don't let that bother you, there are so many great examples on the web, <a href='https://stackoverflow.com/' target='_blank'>stackoverflow</a>, <a href='https://www.w3schools.com/' target='_blank'>w3schools</a> and the incredible looking <a href='https://getbootstrap.com/' target='_blank'>Boostrap templates (used by over 13% of the web!)</a>.
+You need to install <a href='https://www.tensorflow.org/install/index' target='_blank'>TensorFlow</a> or pip install it (pip install tensorflow) on your machine.
+<p>
+You’ll need to copy the <a href='https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py' target='_blank'>retrain.py</a> script (https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py) to you local machine. </p>
+ 
 
-Bootstrap is a very powerful, almost magical tool for front-end web work, according to Wikipedia:
-<BR><BR>
-<blockquote>
-Bootstrap is a free and open-source front-end web framework for designing websites and web applications. It contains HTML- and CSS-based design templates for typography, forms, buttons, navigation and other interface components, as well as optional JavaScript extensions. Unlike many web frameworks, it concerns itself with front-end development only.
-<p style="text-align:right">
-<a href='https://en.wikipedia.org/wiki/Bootstrap_(front-end_framework)'>Wikipedia on Bootstrap</a>
-</p>
-</blockquote>
+ 
 I have an entire blog post on Bootstrap - <a href='http://amunategui.github.io/free-website-on-github/index.html' target='_blank'>Show it to the World! Build a Free Art Portfolio Website on GitHub.io in 20 Minutes!</a>.
 
 JavaScript and Ajax are great front-end scripting languages that add dynamic behavior to a web page. <a href='https://en.wikipedia.org/wiki/Ajax_(programming)' target='_blank'>Ajax</a> allows sending and receiving data without rebuilding the entire thing. This is what allows us to animate the Google Maps by making markers appear during the trip's progression. 
