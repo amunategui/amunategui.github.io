@@ -110,7 +110,7 @@
 
 <p>You’ll also need to copy the <a href='https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py' target='_blank'>retrain.py</a> script (https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py) to you local machine. </p>
 <BR>
-<H3>You Don't Need That Much Training Data</H3>
+<H3>You Don't Need That Much Training Data</H3> 
 <p>The approach of the "retrain.py" script is very clever. It does most of the heavy lifting for you. All you need to do is collect training data and place each category in its own folder. I want to analyze footage and be able to recognize if either of my kids is in a picture. So all I need to do is create a “kids_photos” folder underneath the "tf_file" folder and another set underneath that, one-per-category (i.e. one for kid1 and another for kid2 if you are modeling for two groups).</p>
 
 <p>I collected about 40 headshots for each of my two kids and applied <a href='https://keras.io/preprocessing/image/' target='_blank'>Keras ImageDataGenerator</a> to generate thousands of additional versions of each with slight random alterations.</p>
@@ -135,8 +135,9 @@ tf_file
         | -  _0_3.jpg
     …
 </code></pre>
-<BR><BR> 
+<BR>
 <p>If your folder does look like the above, you are ready to transfer learn. You simply need to call the below retrain.py script in a terminal window with the following parameters. </p>
+<BR>
 <H3>Transfer Learning</H3>
 <BR>
 <p>This is the incredible part, all you need to get a new model using your own data and labels, is to run the following code:</p>
