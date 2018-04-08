@@ -89,11 +89,11 @@
 <p class="p3">Create a folder named “AzureFlaskIntro” and copy all the files for this project into it</p>
 <p class="p3">Your local folder structure should look like (notice the name of the Flask script - this is the default on Azure):</p>
 <pre class="r"><code>
-AzureFlaskIntro/<br>
-├── main.py<br>
-├── ptvs_virtualenv_proxy.py<br>
-├── requirements.txt<br>
-└── web.3.4.config<br>
+AzureFlaskIntro/ 
+├── main.py 
+├── ptvs_virtualenv_proxy.py 
+├── requirements.txt 
+└── web.3.4.config 
 </code></pre>
 
 <p class="p3"><b>Supporting Files</b></p>
@@ -167,27 +167,31 @@ AzureFlaskIntro/<br>
 
 <p class="p3">Now go beck to your terminal/command window on your local computer pointing to the correct directory and initialize a git session:</p>
 
-<p class="p6">git init</p>
+<pre class="r"><code>
+git init 
+</code></pre>
 
 <p class="p3">Add all the web-application files for AzureFlaskIntro folder and check git status:</p>
 
-<p class="p6">git add .</p>
-<p class="p14"><br></p>
-<p class="p6">git status</p>
-<p class="p15"><br></p>
-<p class="p6">git commit -am "AzureFlaskIntro local commit"</p>
-<p class="p14"><br></p>
+<pre class="r"><code>
+git add . 
+git status 
+git commit -am "AzureFlaskIntro local commit"</p>
+</code></pre>
 
 <p class="p3">Add the remove user as displayed in “<b>deploymentLocalGitUrl</b>”:</p>
 
-<p class="p8"><span class="s2">git remote add azure</span> <a href="https://test_unique_123@myuniqueappname114.scm.azurewebsites.net/myUniqueAppName114.git">https://test_unique_123@myuniqueappname114.scm.azurewebsites.net/myUniqueAppName114.git</a></p>
+<pre class="r"><code>
+    git remote add azure https://test_unique_123@myuniqueappname114.scm.azurewebsites.net/myUniqueAppName114.git 
+</code></pre>
 
 <p class="p3">It will prompt you for a password, make sure you use the one you created in the “<b>az webapp deployment user</b>” step (“<b>asecretP</b>” in my case).</p>
 
-
 <p class="p3">Finally push it all out to Azure:</p>
 
-<p class="p6">git push newazure master</p>
+<pre class="r"><code>
+    git push newazure master
+</code></pre>
 
 <p class="p3">That’s it! You can got back to your placeholder browser page and hit refresh and you should see “<b>Hello World!</b>”</p>
 
@@ -204,7 +208,7 @@ AzureFlaskIntro/<br>
 
 <p>Below are the four files for this post:</p>
 
-<p>main.py</p>
+<p><b>main.py</b></p>
 <pre class="r"><code>
 from flask import Flask
 app = Flask(__name__)
@@ -217,7 +221,12 @@ if __name__ == '__main__':
     app.run()
 </code></pre>
 
-<p>ptvs_virtualenv_proxy.py</p>
+<p><b>requirements.txt</b></p>
+<pre class="r"><code>
+Flask>=0.12
+</code></pre>
+
+<p><b>ptvs_virtualenv_proxy.py</b></p>
 <pre class="r"><code>
 # ############################################################################
  #
@@ -343,12 +352,7 @@ def get_venv_handler():
     return handler
 </code></pre>
 
-<p>requirements.txt</p>
-<pre class="r"><code>
-Flask>=0.12
-</code></pre>
-
-<p>web.3.4.config</p>
+<p><b>web.3.4.config</b></p>
 <pre class="r"><code>
 
 <?xml version="1.0"?>
