@@ -67,147 +67,146 @@
 <BR><BR>
 
 
-<p class="p2"><br></p>
+
 <p class="p3">Let’s see how we can run our basic Flask application on Microsoft Azure’s serverless Web Apps. Here, we’ll keep the steps as simple as possible as we’ll drill down deeper in subsequent chapters.<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
-<h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 1: Get an account on Microsoft Azure</b></h1>
+
+<h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 1: Get An Account On Microsoft Azure</b></h1>
 <p class="p3">You will need an account on Microsoft Azure and at the time of writing, Microsoft offers a convenient $200 &amp; 30-day trial on all services and 12 months access. For more information: <a href="https://azure.microsoft.com/en-us/free/">https://azure.microsoft.com/en-us/free/</a></p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
+
 <p class="p5"><b>Step2: Install Supporting Tools and Libraries</b></p>
 <p class="p2"><b></b><br></p>
 <p class="p3"><b>Install Flask</b></p>
 <p class="p3">Install Flask (if you didn’t already) using “<b>pip install</b>” or however you normally install Python libraries on your operating system:</p>
-<p class="p2"><br></p>
+
 <p class="p6">pip install Flask</p>
-<p class="p2"><br></p>
+
 <p class="p3"><b>Install Git</b></p>
 <p class="p3">Install Git (if you didn’t already) according to your operating system at <a href="https://git-scm.com/">https://git-scm.com/</a></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+
+
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 3: Create A Folder Called AzureFlaskIntro And Download Source Files</b></h1>
 <p class="p3">You can read, copy or download all the needed files for this section from GitHub: <a href="https://github.com/rapidprototypingml/book/tree/master/Introduction/Introducing-Microsoft-Azure">https://github.com/rapidprototypingml/book/tree/master/Introduction/Introducing-Microsoft-Azure</a></p>
-<p class="p2"><br></p>
+
 <p class="p3">Create a folder named “AzureFlaskIntro” and copy all the files for this project into it. If you have “svn”[1] installed, you can download the above folder directly using the command:</p>
 <p class="p7"><br></p>
 <p class="p8">svn export <a href="https://github.com/rapidprototypingml/book/trunk/Introduction/Introducing-Microsoft-Azure/">https://github.com/rapidprototypingml/book/trunk/Introduction/Introducing-Microsoft-Azure/</a></p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
 <p class="p3">Your local folder structure should look like (notice the name of the Flask script - this is the default on Azure):</p>
-<p class="p2"><br></p>
-<p class="p6">AzureFlaskIntro/</p>
-<p class="p6">├── main.py</p>
-<p class="p6">├── ptvs_virtualenv_proxy.py</p>
-<p class="p6">├── requirements.txt</p>
-<p class="p6">└── web.3.4.config</p>
-<p class="p9"><br></p>
-<p class="p2"><br></p>
+
+AzureFlaskIntro/<br>
+├── main.py<br>
+├── ptvs_virtualenv_proxy.py<br>
+├── requirements.txt<br>
+└── web.3.4.config<br>
+
 <p class="p3"><b>Supporting Files</b></p>
 <p class="p3">The “<b>requirements.txt</b>” file holds any Python libraries a web application needs and is used by the serverless cloud host during a web application’s deployment. You can create your own “<b>requirements.txt</b>” and house it in the same folder as the Flask script “<b>main.py</b>”. In this case it contains only one library and a version requirement:</p>
-<p class="p2"><br></p>
+
 <p class="p6">Flask&gt;=0.12</p>
 <p class="p7"><br></p>
 <p class="p3"><b>Note</b>: you can check the latest version of Flask by going to the official Flask web page (<a href="http://flask.pocoo.org/">http://flask.pocoo.org/</a>) or checking the version of Flask installed on your local machine with pip freeze:</p>
-<p class="p2"><br></p>
+
 <p class="p6">pip freeze | grep Flask</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+
+
 <p class="p3">The “<b>web.3.4.config</b>” is the web server’s configuration file. We will use the Python 3.4 version and go with the defaults. If you decide to explore this cloud provider further, then definitely, take a look inside it.</p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
+
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 4: Open Azure Cloud Shell</b></h1>
 <p class="p3">Open the Azure Cloud Shell by clicking on the caret-underscore<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
+
 <p class="p10"><img src="img/334B16F1-C612-450F-ACEA-5E6608829E39.png" width="871px" height="102px" alt="Image"></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+
+
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 5: Create A Deployment User</b></h1>
 <p class="p3">This user will have appropriate rights for FTP and local Git use. Here I set the “<b>user-name</b>” to “<span class="s1"><b>test_unique_123</b></span>” and “<b>password</b>” to “<span class="s1"><b>asecretP</b></span>”:</p>
-<p class="p2"><br></p>
+
 <p class="p11"><br></p>
 <p class="p6">az webapp deployment user set --user-name test_unique_123 --password asecretP</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+
+
 <p class="p3">The response from the above command and most subsequent commands will look like the following screen shot. Look closely for any errors and issues and fix accordingly.</p>
-<p class="p2"><br></p>
+
 <p class="p10"><img src="img/Pasted Graphic 56.png" width="852px" height="241px" alt="Image"></p>
-<p class="p2"><br></p>
+
 <p class="p3">Your output JSON should be full of nulls, if you see “<b>conflict</b>” then your “<b>user-name</b>” isn’t unique and if you see “<b>bad request</b>”, your password isn’t compliant (it should be at least 8-characters long and made up of a mix of characters, numbers or symbols).</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+
+
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 6: Create A Resource Group</b></h1>
 <p class="p3">Here we create a resource group for a location close to you - in my case “<b>West US</b>” (for locations see <a href="https://azure.microsoft.com/en-us/regions/">https://azure.microsoft.com/en-us/regions/</a> or use the command “<b>az appservice list-locations --sku FREE</b>”) .<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
+
 <p class="p6">az group create --name myResourceGroup --location "West US"</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+
+
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 7: Create An Azure Service Plan</b></h1>
 <p class="p3">Create you Azure service plan. We set “<span class="s1"><b>--name</b>”</span> to “<span class="s1"><b>myAppServicePlan</b>”:</span></p>
-<p class="p2"><br></p>
+
 <p class="p6">az appservice plan create --name myAppServicePlan --resource-group myResourceGroup --sku FREE</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+
+
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 8: Create A Web App</b></h1>
 <p class="p3">Next create a web app and set the “<b>--name</b>” parameter to the name of your application (it has to be unique). I am setting mine to “<b>myUniqueAppName114</b>” and telling the web app that the code will be deployed via local git.<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
+
 <p class="p6">az webapp create --resource-group myResourceGroup --plan myAppServicePlan --name myUniqueAppName114 --runtime "python|3.4" --deployment-local-git<span class="Apple-converted-space"> </span></p>
 <p class="p9"><b></b><br></p>
 <p class="p9"><b></b><br></p>
 <p class="p3">Check the large response string from the “<b>az web app create</b>” command and copy the following “<b>deploymentLocalGitUrl</b>” value. You will need this when you push your local Flask files out to Azure:</p>
-<p class="p2"><br></p>
+
 <p class="p10"><img src="img/CEA4C381-A347-44A5-A543-B0244F8C221F.png" width="1203px" height="298px" alt="Image"></p>
 <p class="p2"><b></b><br></p>
 <p class="p2"><b></b><br></p>
 <p class="p2"><b></b><br></p>
 <p class="p3"><b>Check Your Website Placeholder</b></p>
 <p class="p3">If everything worked, we should be able to visit our placeholder website. Replace “<b>&lt;app name&gt;</b>” with the application name you created in the “<b>az webapp create</b>” step.</p>
-<p class="p2"><br></p>
+
 <p class="p8">http://&lt;app name&gt;.<a href="http://azurewebsites.net">azurewebsites.net</a></p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
+
 <p class="p12"><img src="img/Pasted Graphic 58.png" width="392px" height="219px" alt="Image"></p>
 <p class="p13"><br></p>
 <p class="p3">If this didn’t work for you, you need to check every step over again and make sure you didn’t miss one or that any returned an error that needs to be addressed.</p>
-<p class="p2"><br></p>
+
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 9: Pushing The Flask Application</b></h1>
-<p class="p2"><br></p>
+
 <p class="p3">Now go beck to your terminal/command window on your local computer pointing to the correct directory and initialize a git session:</p>
-<p class="p2"><br></p>
+
 <p class="p6">git init</p>
-<p class="p2"><br></p>
+
 <p class="p3">Add all the web-application files for AzureFlaskIntro folder and check git status:</p>
-<p class="p2"><br></p>
+
 <p class="p6">git add .</p>
 <p class="p14"><br></p>
 <p class="p6">git status</p>
 <p class="p15"><br></p>
 <p class="p6">git commit -am "AzureFlaskIntro local commit"</p>
 <p class="p14"><br></p>
-<p class="p2"><br></p>
+
 <p class="p3">Add the remove user as displayed in “<b>deploymentLocalGitUrl</b>”:</p>
-<p class="p2"><br></p>
+
 <p class="p8"><span class="s2">git remote add azure</span> <a href="https://test_unique_123@myuniqueappname114.scm.azurewebsites.net/myUniqueAppName114.git">https://test_unique_123@myuniqueappname114.scm.azurewebsites.net/myUniqueAppName114.git</a></p>
-<p class="p2"><br></p>
+
 <p class="p3">It will prompt you for a password, make sure you use the one you created in the “<b>az webapp deployment user</b>” step (“<b>asecretP</b>” in my case).</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+
+
 <p class="p3">Finally push it all out to Azure:</p>
-<p class="p2"><br></p>
+
 <p class="p6">git push newazure master</p>
-<p class="p2"><br></p>
+
 <p class="p3">That’s it! You can got back to your placeholder browser page and hit refresh and you should see “<b>Hello World!</b>”</p>
-<p class="p2"><br></p>
+
 <p class="p12"><img src="img/Pasted Graphic 59.png" width="482px" height="64px" alt="Image"></p>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; font: 18.0px Palatino; min-height: 24.0px"><b></b><br></h1>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 10: Don’t Forget To Delete Your Web Application!</b></h1>
 <p class="p3">If you aren’t using your web application anymore, don’t forget to delete it. If you don’t, the meter will keep running and accruing credits or cost. The easiest way to delete everything is to log into the Azure Dashboard and click on the App Service and App Service Plan you created and delete them.</p>
-<p class="p2"><br></p>
+
 <p class="p12"><img src="img/3A4C8CE5-F02F-41A5-845F-C694F0498A59.png" width="412px" height="175px" alt="Image"></p>
 <p class="p7"><br></p>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; font: 18.0px Palatino; min-height: 24.0px"><b></b><br></h1>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Additional Information</b></h1>
 <p class="p3">For additional information, see the excellent post titled ”<b>Create a Python web app in Azure</b>” on Microsoft Azure Docs upon which this section was based on: <a href="https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-python">https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-python</a></p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
+
+
 <p class="p17"><span class="s3"></span><br></p>
 <p class="p17"><span class="s3"></span><br></p>
 <p class="p18"><span class="s3"><img src="img/anImage_3.png" width="150px" height="12px" alt="Image"></span></p>
