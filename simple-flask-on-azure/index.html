@@ -62,7 +62,21 @@
 <img src="img/azure-logo.png" alt="Microsoft Azure" style='padding:1px; border:1px solid #021a40; width: 30%; height: 30%'>
 </p>
 <BR><BR>
- 
+
+<p>You've seen this <a href='http://flask.pocoo.org/' target='_blank'>Flask</a> example a million times, but what does it take to get it to run on serverless <a href='https://azure.microsoft.com/' target='_blank'>Azure</a>?</p>
+<BR>
+<pre class="r"><code>
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    return "Hello World!"
+
+if __name__ == '__main__':
+    app.run()
+</code></pre>
+<BR>
 <p class="p3">Let’s see how we can run our a basic "Hello World" Flask application on Microsoft Azure’s serverless Web Apps. We'll keep things as simple as possible to get a feel of the minimum steps needed to get up-and-running on the web.</p>
 <BR><BR>
 
