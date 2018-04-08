@@ -73,7 +73,7 @@
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 1: Get An Account On Microsoft Azure</b></h1>
 <p class="p3">You will need an account on Microsoft Azure and at the time of writing, Microsoft offers a convenient $200 &amp; 30-day trial on all services and 12 months access. For more information: <a href="https://azure.microsoft.com/en-us/free/">https://azure.microsoft.com/en-us/free/</a></p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
-
+<BR>
 <p class="p5"><b>Step2: Install Supporting Tools and Libraries</b></p>
 <p class="p2"><b></b><br></p>
 <p class="p3"><b>Install Flask</b></p>
@@ -84,7 +84,7 @@
 <p class="p3"><b>Install Git</b></p>
 <p class="p3">Install Git (if you didn’t already) according to your operating system at <a href="https://git-scm.com/">https://git-scm.com/</a></p>
 
-
+<BR>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 3: Create A Folder Called AzureFlaskIntro And Copy Source Files</b></h1>
 <p class="p3">Create a folder named “AzureFlaskIntro” and copy all the files for this project into it</p>
 <p class="p3">Your local folder structure should look like (notice the name of the Flask script - this is the default on Azure):</p>
@@ -108,13 +108,13 @@ AzureFlaskIntro/
 
 <p class="p3">The “<b>web.3.4.config</b>” is the web server’s configuration file. We will use the Python 3.4 version and go with the defaults. If you decide to explore this cloud provider further, then definitely, take a look inside it.</p>
 <p class="p2"><span class="Apple-converted-space"> </span></p>
-
+<BR>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 4: Open Azure Cloud Shell</b></h1>
 <p class="p3">Open the Azure Cloud Shell by clicking on the caret-underscore<span class="Apple-converted-space"> </span></p>
 
 <p class="p10"><img src="img/334B16F1-C612-450F-ACEA-5E6608829E39.png" width="871px" height="102px" alt="Image"></p>
 
-
+<BR>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 5: Create A Deployment User</b></h1>
 <p class="p3">This user will have appropriate rights for FTP and local Git use. Here I set the “<b>user-name</b>” to “<span class="s1"><b>test_unique_123</b></span>” and “<b>password</b>” to “<span class="s1"><b>asecretP</b></span>”:</p>
 
@@ -128,19 +128,19 @@ AzureFlaskIntro/
 
 <p class="p3">Your output JSON should be full of nulls, if you see “<b>conflict</b>” then your “<b>user-name</b>” isn’t unique and if you see “<b>bad request</b>”, your password isn’t compliant (it should be at least 8-characters long and made up of a mix of characters, numbers or symbols).</p>
 
-
+<BR>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 6: Create A Resource Group</b></h1>
 <p class="p3">Here we create a resource group for a location close to you - in my case “<b>West US</b>” (for locations see <a href="https://azure.microsoft.com/en-us/regions/">https://azure.microsoft.com/en-us/regions/</a> or use the command “<b>az appservice list-locations --sku FREE</b>”) .<span class="Apple-converted-space"> </span></p>
 
 <p class="p6">az group create --name myResourceGroup --location "West US"</p>
 
-
+<BR>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 7: Create An Azure Service Plan</b></h1>
 <p class="p3">Create you Azure service plan. We set “<span class="s1"><b>--name</b>”</span> to “<span class="s1"><b>myAppServicePlan</b>”:</span></p>
 
 <p class="p6">az appservice plan create --name myAppServicePlan --resource-group myResourceGroup --sku FREE</p>
 
-
+<BR>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 8: Create A Web App</b></h1>
 <p class="p3">Next create a web app and set the “<b>--name</b>” parameter to the name of your application (it has to be unique). I am setting mine to “<b>myUniqueAppName114</b>” and telling the web app that the code will be deployed via local git.<span class="Apple-converted-space"> </span></p>
 
@@ -162,7 +162,7 @@ AzureFlaskIntro/
 <p class="p12"><img src="img/Pasted Graphic 58.png" width="392px" height="219px" alt="Image"></p>
 <p class="p13"><br></p>
 <p class="p3">If this didn’t work for you, you need to check every step over again and make sure you didn’t miss one or that any returned an error that needs to be addressed.</p>
-
+<BR>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 9: Pushing The Flask Application</b></h1>
 
 <p class="p3">Now go beck to your terminal/command window on your local computer pointing to the correct directory and initialize a git session:</p>
@@ -197,6 +197,7 @@ git commit -am "AzureFlaskIntro local commit"</p>
 
 <p class="p12"><img src="img/Pasted Graphic 59.png" width="482px" height="64px" alt="Image"></p>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; font: 18.0px Palatino; min-height: 24.0px"><b></b><br></h1>
+<BR>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 10: Don’t Forget To Delete Your Web Application!</b></h1>
 <p class="p3">If you aren’t using your web application anymore, don’t forget to delete it. If you don’t, the meter will keep running and accruing credits or cost. The easiest way to delete everything is to log into the Azure Dashboard and click on the App Service and App Service Plan you created and delete them.</p>
 
