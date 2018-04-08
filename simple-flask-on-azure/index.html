@@ -9,7 +9,7 @@
     <meta name="author" content="Manuel Amunategui">
     <link rel="icon" href="../favicon.ico">
 
-    <title>Serverless Hosting On Microsoft Azure - Simple Flask Example</title>
+    <title>Serverless Hosting On Microsoft Azure - A Simple Flask Example</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -43,7 +43,7 @@
 <div class="container">
 
   <div class="blog-header">
-    <h1 class="blog-title">Serverless Hosting On Microsoft Azure - Simple Flask Example</h1>
+    <h1 class="blog-title">Serverless Hosting On Microsoft Azure - A Simple Flask Example</h1>
     <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
   </div>
   
@@ -107,7 +107,7 @@ pip freeze | grep Flask
 </code></pre>
 
 
-<p class="p3">The “<b>web.3.4.config</b>” is the web server’s configuration file. We will use the Python 3.4 version and go with the defaults. If you decide to explore this cloud provider further, then definitely, take a look inside it.</p>
+<p class="p3">The “<b>web.3.4.config</b>” is the web server’s configuration file. We will use the Python 3.4 version and go with the defaults. If you decide to explore this cloud-provider further, then definitely, take a look inside it.</p>
 <BR>
 <h1 style="margin: 13.0px 0.0px 0.0px 0.0px; "><b>Step 4: Open Azure Cloud Shell</b></h1>
 <p class="p3">Open the Azure Cloud Shell by clicking on the caret-underscore<span class="Apple-converted-space"> </span></p>
@@ -364,50 +364,50 @@ def get_venv_handler():
 <p><b>web.3.4.config</b></p>
 <pre class="r"><code>
 
-<?xml version="1.0"?>
-<configuration>
-  <appSettings>
-    <add key="WSGI_ALT_VIRTUALENV_HANDLER" value="main.app" />
-    <add key="WSGI_ALT_VIRTUALENV_ACTIVATE_THIS"
-         value="D:\home\site\wwwroot\env\Scripts\python.exe" />
-    <add key="WSGI_HANDLER"
-         value="ptvs_virtualenv_proxy.get_venv_handler()" />
-    <add key="PYTHONPATH" value="D:\home\site\wwwroot" />
-  </appSettings>
-  <system.web>
-    <compilation debug="true" targetFramework="4.0" />
-  </system.web>
-  <system.webServer>
-    <modules runAllManagedModulesForAllRequests="true" />
-    <handlers>
-      <remove name="Python27_via_FastCGI" />
-      <remove name="Python34_via_FastCGI" />
-      <add name="Python FastCGI"
+&lt;?xml version="1.0"?&gt;
+&lt;configuration&gt;
+  &lt;appSettings&gt;
+    &lt;add key="WSGI_ALT_VIRTUALENV_HANDLER" value="main.app" /&gt;
+    &lt;add key="WSGI_ALT_VIRTUALENV_ACTIVATE_THIS"
+         value="D:\home\site\wwwroot\env\Scripts\python.exe" /&gt;
+    &lt;add key="WSGI_HANDLER"
+         value="ptvs_virtualenv_proxy.get_venv_handler()" /&gt;
+    &lt;add key="PYTHONPATH" value="D:\home\site\wwwroot" /&gt;
+  &lt;/appSettings&gt;
+  &lt;system.web&gt;
+    &lt;compilation debug="true" targetFramework="4.0" /&gt;
+  &lt;/system.web&gt;
+  &lt;system.webServer&gt;
+    &lt;modules runAllManagedModulesForAllRequests="true" /&gt;
+    &lt;handlers&gt;
+      &lt;remove name="Python27_via_FastCGI" /&gt;
+      &lt;remove name="Python34_via_FastCGI" /&gt;
+      &lt;add name="Python FastCGI"
            path="handler.fcgi"
            verb="*"
            modules="FastCgiModule"
            scriptProcessor="D:\Python34\python.exe|D:\Python34\Scripts\wfastcgi.py"
            resourceType="Unspecified"
-           requireAccess="Script" />
-    </handlers>
-    <rewrite>
-      <rules>
-        <rule name="Static Files" stopProcessing="true">
-          <conditions>
-            <add input="true" pattern="false" />
-          </conditions>
-        </rule>
-        <rule name="Configure Python" stopProcessing="true">
-          <match url="(.*)" ignoreCase="false" />
-          <conditions>
-            <add input="{REQUEST_URI}" pattern="^/static/.*" ignoreCase="true" negate="true" />
-          </conditions>
-          <action type="Rewrite" url="handler.fcgi/{R:1}" appendQueryString="true" />
-        </rule>
-      </rules>
-    </rewrite>
-  </system.webServer>
-</configuration>
+           requireAccess="Script" /&gt;
+    &lt;/handlers&gt;
+    &lt;rewrite&gt;
+      &lt;rules&gt;
+        &lt;rule name="Static Files" stopProcessing="true"&gt;
+          &lt;conditions&gt;
+            &lt;add input="true" pattern="false" /&gt;
+          &lt;/conditions&gt;
+        &lt;/rule&gt;
+        &lt;rule name="Configure Python" stopProcessing="true"&gt;
+          &lt;match url="(.*)" ignoreCase="false" /&gt;
+          &lt;conditions&gt;
+            &lt;add input="{REQUEST_URI}" pattern="^/static/.*" ignoreCase="true" negate="true" /&gt;
+          &lt;/conditions&gt;
+          &lt;action type="Rewrite" url="handler.fcgi/{R:1}" appendQueryString="true" /&gt;
+        &lt;/rule&gt;
+      &lt;/rules&gt;
+    &lt;/rewrite&gt;
+  &lt;/system.webServer&gt;
+&lt;/configuration&gt;
 </code></pre>
 
 
