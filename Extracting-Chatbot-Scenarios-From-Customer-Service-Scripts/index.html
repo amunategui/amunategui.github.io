@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title>Extracting Chatbot Scenarios From Customer Service Scripts</title>
+  <meta name="Author" content="manuel">
+  <meta name="CreationTime" content="2018-04-29T16:23:47Z">
+  <meta name="ModificationTime" content="2018-04-29T16:23:47Z">
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1561.4">
+  <!-- Custom styles for this template -->
+  <link href="../blog.css" rel="stylesheet">
+
+  <style type="text/css">
+    p.p1 {margin: 12.0px 0.0px 36.0px 0.0px; font: 40.0px 'Arial Narrow'}
+    p.p2 {margin: 18.0px 0.0px 17.0px 0.0px; font: 20.0px Helvetica}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; line-height: 14.0px; font: 20.0px Helvetica; min-height: 24.0px}
+    p.p4 {margin: 0.0px 0.0px 12.0px 0.0px; text-align: right; font: 11.0px Arial}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: justify; line-height: 16.0px; font: 11.0px Arial}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: justify; line-height: 16.0px; font: 11.0px Arial; min-height: 12.0px}
+    p.p7 {margin: 0.0px 0.0px 0.0px 36.0px; text-align: justify; text-indent: -36.0px; line-height: 16.0px; font: 11.0px Arial; min-height: 12.0px}
+    p.p8 {margin: 18.0px 0.0px 12.0px 21.6px; text-align: justify; font: 11.0px Arial}
+    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Palatino; min-height: 18.0px}
+    p.p10 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo}
+    p.p11 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo; color: #38a300}
+    p.p12 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo; min-height: 13.0px}
+    p.p13 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo; color: #38a300; min-height: 13.0px}
+    p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px Helvetica}
+    p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px Helvetica; min-height: 14.0px}
+    p.p16 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo; color: #0094de}
+    p.p17 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo; color: #0094de; min-height: 13.0px}
+    p.p18 {margin: 18.0px 0.0px 12.0px 0.0px; text-align: justify; font: 11.0px Arial}
+    li.li5 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: justify; line-height: 16.0px; font: 11.0px Arial}
+    span.s1 {color: #38a300}
+    span.Apple-tab-span {white-space:pre}
+    ul.ul1 {list-style-type: disc}
+  </style>
+</head>
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+
+<div style="width: 600px; margin: 0 auto">
+
+<p class="p1"><b>Extracting Chatbot Scenarios From Customer Service Scripts</b></p>
+<p class="p2"><b>Introduction</b></p>
+<p class="p3"><b></b><br></p>
+<p class="p4">- Dialogflow.com</p>
+<p class="p5">Chatbots are all the rage these days and we get a lot of requests for them at SpringML. They not only have that “AI” chic, they’re also a hope for faster customer service at a much cheaper cost - a huge win-win.</p>
+<p class="p6"><br></p>
+<p class="p5">Though chatbot technology is mature and available today, see Dialogflow from Google as an example of how easy it is to implement, building a good one is no trivial task. The last thing you want to do is anger customers that are reaching out to you for help.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
+<p class="p5">In this blog entry, I’ll walk you through a typical approach to come up with chatbot scenarios that are sensible, realistic and offer added value to both customers and its company as a chatbot service. The key is to get good quality transcripts from the customer service department you want to extend. And it doesn’t have to be just customer service, if its a pizza delivery service, then transcripts of phone orders will work just the same. The goal is to find clusters of questions and issues that we can then generalize into chatbot interactions.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
+<p class="p5"><b>The process to distill transcripts into simple chat bot entities and intents:</b></p>
+<ul class="ul1">
+  <li class="li5">Basic natural language processing (NLP) script cleaning</li>
+  <li class="li5">Extract important verbs and nouns with parts of speech (POS) tools</li>
+  <li class="li5">Clustering scripts by key verbs and nouns</li>
+  <li class="li5">Running ngrams on clusters to infer entity and intent</li>
+</ul>
+<p class="p7"><br></p>
+<p class="p2"><b>Chatbot 101</b></p>
+<p class="p5">For a great yet simple look at Dialogflow video, I recommend the YouTube video: <a href="https://www.youtube.com/watch?v=gWNUg_v25dw">https://www.youtube.com/watch?v=gWNUg_v25dw</a></p>
+<p class="p6"><br></p>
+<p class="p5"><b>In a nutshell, you<span class="Apple-converted-space">  </span>have:</b></p>
+<ul class="ul1">
+  <li class="li5"><b>Entities</b>: these are objects or things your bot is taking action on and needs to recognize - in the video above on the pizza delivery bot, entities are toppings like onions, pepperoni, etc.</li>
+  <li class="li5"><b>Intent</b>: things the user will say: “I am hungry”, “I want to order a pizza”, “pizza for pickup”, etc.</li>
+  <li class="li5"><b>Answers to intent</b>: scenario responses you need to come up with and the subject of this blog post, like "what type of pizza do you want?”</li>
+</ul>
+<p class="p6"><br></p>
+<p class="p5">In Dialogflow (<a href="https://dialogflow.com">https://dialogflow.com</a>) you can create all the above and integrate it to Slack, Facebook Messenger, Skype, etc, all within its web-based dashboard. This is great for quick prototypes.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
+<p class="p2"><b>Consumer Complaint Database From The Bureau of Consumer Financial Protection (CFPB)</b></p>
+<p class="p8"><i>“These are complaints we’ve received about financial products and services.”<a id="fnlink1"></a></i><a href="#fn1"><sup>[1]</sup></a><i><span class="Apple-converted-space"> </span></i></p>
+<p class="p4">- CFBP</p>
+<p class="p5">As an example of a realistic customer service data set, we will use the publicly-available “<b>Consumer Complaint Database</b>” from the Bureau of Consumer Financial Protection (CFPB) made available on the <a href="http://Data.gov">Data.gov</a> website. Of interest for this blog post is the “Consumer complaint narrative” feature that contains over 200k worth of complaint narratives.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><br></p>
+<p class="p10"><span class="s1">complaints_df_raw.head()</span><img src="Images/Pasted Graphic.png" width="502px" height="86px" alt="Image"></p>
+<p class="p6"><br></p>
+<p class="p5">The CSV link changes over time so go to: <a href="https://catalog.data.gov/dataset/consumer-complaint-database">https://catalog.data.gov/dataset/consumer-complaint-database</a> and pick one of the comma delimited files to follow along.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
+<p class="p2"><b>NLP basic cleanup</b></p>
+<p class="p5">The NLP cleanup phase isn’t special but necessary. We parse each customer complaint and remove the following (see the code for further details):</p>
+<p class="p6"><br></p>
+<ul class="ul1">
+  <li class="li5">Null complaints and products</li>
+  <li class="li5">Duplicate complaints</li>
+  <li class="li5">Anonymizing characters<span class="Apple-converted-space"> </span></li>
+  <li class="li5">Special characters</li>
+  <li class="li5">Complaints with too much repeated information</li>
+</ul>
+<p class="p6"><br></p>
+<p class="p5">We also force everything to lower-case, though this could be left as the spaCy library may make use of capital letters to determine word types.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
+<p class="p2"><b>Part-of-speech (POS): Finding Top Verbs And Nouns</b></p>
+<p class="p5">This really is the trick we are going to use to parse large bodies of text and pick up on patterns in the transcripts. We will leverage the spaCy Python library (<a href="https://spacy.io">https://spacy.io</a>), self-described as an “Industrial-Strength, Natural Language Processing” library - which it is.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><br></p>
+<p class="p5">This NLP library has so much to offer but here we will focus only on the Part-of-speech (POS) parser <a id="fnlink2"></a><a href="#fn2"><sup>[2]</sup></a>.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><br></p>
+<p class="p8"><i>After tokenization, spaCy can parse and tag a given Doc. This is where the statistical model comes in, which enables spaCy to make a prediction of which tag or label most likely applies in this context. A model consists of binary data and is produced by showing a system enough examples for it to make predictions that generalise across the language – for example, a word following "the" in English is most likely a noun.</i></p>
+<p class="p4">- spaCy docs</p>
+<p class="p5">We are interested in its ability to tag the nouns and verbs within each customer complaint. Here is a sample of the top ones spaCy picked up:</p>
+<p class="p9"><br></p>
+<p class="p11">just_verbs[0].split()[0:10]</p>
+<p class="p10">['approve',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'decline',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'have',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'is',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'have',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'spoke',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'being',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'reported',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'do',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'know']</p>
+<p class="p12"><br></p>
+<p class="p11">just_nouns[0].split()[0:10]</p>
+<p class="p10">['computer',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'base',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'system',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'pre',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'credit',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'limit',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'applicationi',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'dept',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'credit',</p>
+<p class="p10"><span class="Apple-converted-space"> </span>'report']</p>
+<p class="p9"><br></p>
+<p class="p5">Once we have the harvested all the nouns and verbs from spaCy, we run frequency counts and pull the most frequents.</p>
+<p class="p9"><br></p>
+<p class="p11"># what is your upper and lower cut offs?</p>
+<p class="p11">from collections import Counter</p>
+<p class="p11">verbs_df = pd.DataFrame(Counter([verb for verb in verbs_master]).most_common(), columns = ['verb', 'count'])</p>
+<p class="p11">verbs_df.head(20)</p>
+<p class="p10"><img src="Images/Pasted Graphic 1.png" width="116px" height="452px" alt="Image"></p>
+<p class="p12"><br></p>
+<p class="p5">The cutoffs for both categories are subjective and require experimentation depending on the richness of the harvested words found in the transcripts.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><br></p>
+<p class="p5">The final step before clustering the data is to binarize our chosen words. This entails creating a complaint dataframe with each selected word as a feature.<span class="Apple-converted-space"> </span></p>
+<p class="p13"><br></p>
+<p class="p11">row_bools.head()</p>
+<p class="p13"><br></p>
+<p class="p11"><img src="Images/Pasted Graphic 2.png" width="397px" height="137px" alt="Image"><span class="Apple-converted-space"> </span></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p2"><b>Clustering Based On Keywords</b></p>
+<p class="p5">Now that we have our dataframe of chosen key words ready, we can run some Sklearn clusters!</p>
+<p class="p9"><br></p>
+<p class="p11">from sklearn.cluster import KMeans</p>
+<p class="p11">TOTAL_CLUSTERS = 50</p>
+<p class="p11"># Number of clusters</p>
+<p class="p11">kmeans = KMeans(n_clusters=TOTAL_CLUSTERS)</p>
+<p class="p11"># Fitting the input data</p>
+<p class="p11">kmeans = kmeans.fit(row_bools)</p>
+<p class="p11"># Getting the cluster labels</p>
+<p class="p11">labels = kmeans.predict(row_bools)</p>
+<p class="p13"><br></p>
+<p class="p11"># add cluster back to data frame<span class="Apple-converted-space"> </span></p>
+<p class="p11">row_bools['cluster'] = labels</p>
+<p class="p11">row_bools['cluster'].value_counts().head()</p>
+<p class="p13"><br></p>
+<p class="p10"><img src="Images/Pasted Graphic 3.png" width="234px" height="113px" alt="Image"></p>
+<p class="p6"><br></p>
+<p class="p5">Obviously, there are no rules to cluster size, it could be based on the number of questions you want your chatbot to handle or the richness and complexity of the customer transcript data. A lot of experimentation is required.</p>
+<p class="p6"><br></p>
+<p class="p2"><b>N-grams Per Cluster</b></p>
+<p class="p5">This is the final phase of the process before the manual analysis and extraction process begins. We leverage the NLTK library to pull all the n-grams we need.<span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
+<p class="p5">N-grams are sequences of varying sizes found in the text. For example,</p>
+<p class="p6"><br></p>
+<p class="p10"><span class="Apple-converted-space"> </span>“The rabbit is running”<span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
+<p class="p5">Has the following 3 ngrams of 2 dimensions (bigrams):</p>
+<ul class="ul1">
+  <li class="li5">The rabbit</li>
+  <li class="li5">rabbit is</li>
+  <li class="li5">is running</li>
+</ul>
+<p class="p6"><br></p>
+<p class="p5">The reason we are using this approach is to find now many times certain sequential word patterns are used in different complaints (clustered-complaints in our case). The hope is to translate similar complaints into chatbot scenarios that will handle common calls. In our consumer complaint data, we will run n-grams of dimension 2, 3, 4, 5, 6. The larger, the more revelatory to find complex and repeated patterns.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><br></p>
+<p class="p5">Here is a look at a sample of 6-grams from cluster 47:</p>
+<p class="p9"><br></p>
+<p class="p14"><img src="Images/Pasted Graphic 4.png" width="224px" height="130px" alt="Image"></p>
+<p class="p15"><br></p>
+<p class="p2"><b>A Chatbot Intent</b></p>
+<p class="p5">Clearly, the customer is reporting a complaint that a debt collector is trying to pin on them. We can easily then pull a promising samples from the above list to craft a chatbot scenario script.</p>
+<p class="p9"><br></p>
+<p class="p11"># tie it back to look into a couple of actual complaints</p>
+<p class="p11">keywords = "attempting to collect a debt from"</p>
+<p class="p11">for index, row in complaints_df.iterrows():</p>
+<p class="p11"><span class="Apple-converted-space">    </span>txt = row['Consumer complaint narrative']<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-converted-space">    </span>if (keywords in txt):</p>
+<p class="p11"><span class="Apple-converted-space">        </span>print(txt)</p>
+<p class="p11"><span class="Apple-converted-space">        </span>print('------')</p>
+<p class="p12"><br></p>
+<p class="p10">“wakefield and associates of , colorado, has been attempting to collect a debt from me for one year. i have never received proof of the debt in writing they have called me multiple times during the day and evening. they have argued with me and have said they do not need to send paper proof of debts. the collection reported on my credit report does not match the amount they are seeking.</p>
+<p class="p10">------</p>
+<p class="p10">rash curtis and associates is attempting to collect a debt from me that i have no awareness, via threatening to damage my credit.</p>
+<p class="p10">------</p>
+<p class="p10">…”</p>
+<p class="p12"><br></p>
+<p class="p5">The list goes of people complaining about debt collectors. Now that we have unearthed an important topic for consumers, we can easily devise an intent to handle debt collection complaints.</p>
+<p class="p9"><br></p>
+<p class="p16"><span class="Apple-tab-span">	</span>Bot: How may I help you?</p>
+<p class="p12"><br></p>
+<p class="p11">Human: I want to report a debt collecting agency</p>
+<p class="p12"><br></p>
+<p class="p16"><span class="Apple-tab-span">	</span>Bot: I am sorry to hear about this, what is the name of the collection agency?</p>
+<p class="p17"><br></p>
+<p class="p16">etc…</p>
+<hr>
+<p class="p18"><i><a id="fn1"></a></i><a href="#fnlink1">[1]</a> <i>https://catalog.data.gov/dataset/consumer-complaint-database</i></p>
+<p class="p18"><i><a id="fn2"></a></i><a href="#fnlink2">[2]</a> https://spacy.io/usage/linguistic-features#section-pos-tagging</p>
+</div>
+</body>
+</html>
