@@ -168,11 +168,12 @@ scored using the following formula:</p>
 <BR>
 
 <BR>
+<p style="text-align:center">
 <img src="img/image003.png" width='50%' height='50%' alt="Image">
+</p>
 <BR>
 
-<p>Equation
-(1) returns a score evaluating the move from one point to a new one. It also
+<p>Equation (1) returns a score evaluating the move from one point to a new one. It also
 takes in consideration any previous scores the model has already seen. The term
 ‘<i>state</i>’ is the current room the bot is in, and ‘action’ is the next
 state or next room. is a tunable variable between 0 and 1 where values closer
@@ -189,12 +190,12 @@ factory has only 5 rooms as shown in the Figure 2:</p>
 <BR>
 
 <BR>
+<p style="text-align:center">
 <img src="img/image004.png" width='50%' height='50%' alt="Image">
 <BR>
-
-<p>Figure 2: All paths are initialized to 0 except for paths
+Figure 2: All paths are initialized to 0 except for paths
 leading to the goal point which is set to 100 (room 2 to room 4 and recursively
-room 4 to room&nbsp;4).</p>
+room 4 to room 2).</p>
 <BR>
 
 <p>Below
@@ -203,10 +204,10 @@ paths which the bot will ignore):</p>
 <BR>
 
 <BR>
+<p style="text-align:center">
 <img src="img/image005.png" width='50%' height='50%' alt="Image">
 <BR>
-
-<p>Figure 3: Reward matrix with path and goal-point scores.</p>
+Figure 3: Reward matrix with path and goal-point scores.</p>
 <BR>
 
 <p>The
@@ -222,9 +223,10 @@ current point, plus gamma times maximum value of the new action points:</p>
 <BR>
 
 <BR>
+<p style="text-align:center">
 <img src="img/image006.png" width='50%' height='50%' alt="Image">
 <BR>
-
+</p>
 <p>That
 move is valued at 100 points and entered into the Q-matrix. Why 100? Gamma
 multiplied by max(<span class=GramE>Q[</span>(4,2),(4,4)]) equals zero as the
@@ -234,7 +236,9 @@ model chosen <span class=GramE>point</span> 3 instead, then:</p>
 <BR>
 
 <BR>
+<p style="text-align:center">
 <img src="img/image007.png" width='50%' height='50%' alt="Image">
+</p>
 <BR>
 
 <p>After
@@ -243,10 +247,10 @@ the following matrix:</p>
 <BR>
 
 <BR>
+<p style="text-align:center">
 <img src="img/image008.png" width='50%' height='50%' alt="Image">
 <BR>
-
-<p>Figure 4: Q-Matrix with converged scores from
+Figure 4: Q-Matrix with converged scores from
 learning&nbsp;process.</p>
 <BR>
 
@@ -266,11 +270,12 @@ understand. We now let the bot run loose over the factory floor.</p>
 <BR>
 
 <BR>
+<p style="text-align:center">
 <img src="img/image009.png" width='50%' height='50%' alt="Image">
+</p>
 <BR>
 
-Create the rewards table based on a map and the
-starting and goal points desired.</p>
+Create the rewards table based on a map and the starting and goal points desired.</p>
 <BR>
 
 
@@ -298,10 +303,10 @@ and the Q values stabilize.</p>
 
 
 <BR>
+<p style="text-align:center">
 <img src="img/image010.png" width='50%' height='50%' alt="Image">
 <BR>
-
-<p>Figure 6: Shows the Q scores for the optimal path from the
+Figure 6: Shows the Q scores for the optimal path from the
 factory entrance to the chemical&nbsp;leak.</p>
 <BR>
 
@@ -313,10 +318,10 @@ large iterations values without being forced to run through them all.</p>
 <BR>
 
 <BR>
+<p style="text-align:center">
 <img src="img/image011.png" width='50%' height='50%' alt="Image">
 <BR>
-
-<p>Figure 7: Chart shows the model’s iterations, rising score
+Figure 7: Chart shows the model’s iterations, rising score
 and convergence. Blue line shows early-stop feature.</p>
 <BR>
 
@@ -326,12 +331,10 @@ factory to the goal point, i.e. the chemical leak. The early-stop mechanism
 stops the model around 2700 iterations.</p>
 <BR>
 
-<p class=MsoNormal style='margin-top:42.0pt;margin-right:0in;margin-bottom:
-0in;margin-left:-1.6pt;margin-bottom:.0001pt;mso-outline-level:3;background:
-white'><b><span style='font-size:25.5pt;font-family:"Lucida Grande",sans-serif;
-mso-fareast-font-family:"Times New Roman";letter-spacing:-.2pt'>Part 2:
-Analysis of Environmental Data &amp; Using Enhanced Q-Learning with Case-based
-reasoning (CBR)<o:p></o:p></span></b></p>
+<p><H1>Part 2:
+Analysis of Environmental Data: Using Enhanced Q-Learning with Case-based
+reasoning (CBR)</H1></p>
+<br><br>
 
 <p>Now,
 let’s learn from past data to improve on shortest path to chemical leak. After
@@ -362,10 +365,10 @@ represent a 1-degree temperature jump, the yellow, a 2-degree jump and red, a
 <BR>
 
 <BR>
+<p style="text-align:center">
 <img src="img/image012.png" width='50%' height='50%' alt="Image">
 <BR>
-
-<p>Figure 8: Temperature differentials on the factory
+Figure 8: Temperature differentials on the factory
 floor — red for hot, yellow for warm and blue for&nbsp;tepid.</p>
 <BR>
 
@@ -393,10 +396,10 @@ between multiple routes, we give more weight to any with rising temperature.</p>
 <BR>
 
 <BR>
+<p style="text-align:center">
 <img src="img/image013.png" width='50%' height='50%' alt="Image">
 <BR>
-
-<p>Figure 9: The RL bot took less than 1800 tries to confirm
+Figure 9: The RL bot took less than 1800 tries to confirm
 the ideal path from the factory entrance to the leak with&nbsp;CBR.</p>
 <BR>
 
@@ -423,7 +426,9 @@ find the chemical leak a little faster.</p>
 <BR>
 
 <BR>
-<img src="img/image014.png" width='50%' height='50%' alt="Image">
+<p style="text-align:center">
+<img src="img/image013.png" width='50%' height='50%' alt="Image">
+</p>
 <BR>
 
 <p>
