@@ -67,20 +67,589 @@
 </table>
 
 <BR><BR>
-
-<img src="img/image001.jpg" width="871px" height="102px" alt="Image">
-
+<img src="img/image001.jpg" alt="Image">
+<BR>
 <i>Art credit: Lucas Amunategui</i>
+<BR>
 
-<p>
-Imagine a scenario unraveling at a chemical factory right after an explosion that caused a dangerous chemical leak. The alarms are blazing and the personnel is evacuated as the leak cannot be located. They send an autonomous robot inside the empty factory equipped with a camera, lights, and environmental sensors, capable of capturing ambient humidity, in hopes of locating the chemical leak.
+<p>Imagine a scenario unraveling at a chemical factory right after an explosion that
+caused a dangerous chemical leak. The alarms are blazing and the personnel is evacuated as the leak cannot be located. They send an
+autonomous robot inside the empty factory equipped with a camera, lights, and
+environmental sensors, capable of capturing ambient humidity, in hopes of
+locating the chemical leak.
 </p>
-<p>
-The robot has the ability to travel quickly and at ease through each room of the factory without any prior knowledge of the layout. Its primary goal is to find the shortest path to the leak by exploring each room and using its humidity sensor and camera. The robot's decision-making framework uses reinforcement learning and will start traveling at random throughout the factory floor many times, recording each path taken in detail to eventually determine the shortest route to the leak. The goal isn't only to find the leak but also to find the shortest path. This will be of tremendous help to the emergency crew to quickly locate the danger and limit human exposure to chemicals.
-</p>
-<p>
-As Q-Learning requires constant back-and-forth and trial-and-error towards finding a shortest path, why not make use of that discovery process to record as much environmental data as possible? With the rise in popularity of Internet of Things (IoT), there are plenty of third-party sensor attachments, hardware and software management tools to leverage. This could be as simple as attaching a temperature-sensing gauge on the bot with built-in data storage or realtime transmission capabilities. The hope is to analyze the data after each incident and learn more than simply the shortest path.
-We then extend this scenario to another factory facing a similar chemical-leak situation. This time the software in the bot is enhanced with an additional system to leverage the IoT lessons learned from the first experience. The bot won't only look for the shortest path to the leak but will also use environmental lessons it learned from the first incident.
-</p><p>
-Let's see how the process of search and discovery can be enhanced when combining Reinforcement Learning (RL), Machine Learning (ML), Internet of Things (IoT), and Case-based reasoning (CBR).
-</p>
+<BR>
+<p>The
+robot has the ability to travel quickly and at ease through each room of the
+factory without any prior knowledge of the layout. Its primary goal is to find
+the shortest path to the leak by exploring each room and using its humidity
+sensor and camera. The robot’s decision-making framework uses reinforcement
+learning and will start traveling at random throughout the factory floor many
+times, recording each path taken in detail to eventually determine the shortest
+route to the leak. The goal isn’t only to find the leak but also to find the
+shortest path. This will be of tremendous help to the emergency crew to quickly
+locate the danger and limit human exposure to chemicals.</p>
+<BR>
+
+<p>As
+Q-Learning requires constant back-and-forth and trial-and-error towards finding
+a shortest path, why not make use of that discovery process to record as much
+environmental data as possible? With the rise in popularity of Internet of
+Things (IoT), there are plenty of third-party sensor attachments, hardware and
+software management tools to leverage. This could be as simple as attaching a
+temperature-sensing gauge on the bot with built-in data storage or realtime
+transmission capabilities. The hope is to analyze the data after each incident
+and learn more than simply the shortest path.</p>
+<BR>
+
+<p>We
+then extend this scenario to another factory facing a similar chemical-leak
+situation. This time the software in the bot is enhanced with an additional
+system to leverage the IoT lessons learned from the first experience. The bot
+won’t only look for the shortest path to the leak but will also use
+environmental lessons it learned from the first incident.</p>
+<BR>
+
+<p>Let’s
+see how the process of search and discovery can be enhanced when combining
+Reinforcement Learning (RL), Machine Learning (ML), Internet of Things (IoT),
+and Case-based reasoning (CBR).</p>
+<BR>
+
+<p><i><b>Note:</b>For a gentle introduction to RL and Q-Learning in Python, see a post I made on
+my Github blog<a
+href="http://amunategui.github.io/reinforcement-learning/index.html"
+target="_blank">http://amunategui.github.io/reinforcement-learning/index.html</a></i></p>
+<BR>
+
+<p><h1>Finding the Factory Floor with the Dangerous
+Chemical Leak</h1></p>
+<BR>
+
+<p class=MsoNormal style='margin-top:6.0pt;background:white'><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>The
+goal in this experiment is to apply Q-Learning method to map the shortest path
+to a chemical leak for response team. The factory floor plan considered for
+this experiment comprises 57 rooms in which the entrance and the goal are
+considered at room 0 and 50 respectively (see Figure 1).</p>
+<BR>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Times New Roman",serif;mso-fareast-font-family:"Times New Roman"'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="Picture_x0020_12"
+ o:spid="_x0000_i1036" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*gnJBfgwU1tytce0fwYquhA.png"
+ style='width:418pt;height:271pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image002.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*gnJBfgwU1tytce0fwYquhA.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=418 height=271
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image002.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*gnJBfgwU1tytce0fwYquhA.png"
+v:shapes="Picture_x0020_12"><![endif]></span></p>
+<BR>
+
+<p>Figure 1: Shows the graph representation of our chemical
+factory. Each colored circle is a room. The entrance to the factory is room ‘0’
+and the room with the chemical leak is room&nbsp;‘50’.</p>
+<BR>
+
+<p>Q-Learning
+is an unsupervised learning process that will iterate thousands of times to map
+and learn the fastest route to a goal point –room ‘50’ in our case. The bot
+learns using an intelligent rewards-feedback mechanism. This is done with the
+help of a rewards table, a large matrix used to score each path the bot can
+follow. This is the matrix version of a road map. We initialize the matrix to
+be the height and width of all our points (64 in this example) and initialize
+all values to –1. We then change the viable paths to value 0 and goal paths to
+100 (you can make the goal score anything you want as long as its larger enough
+to propagate during Q-Learning).</p>
+<BR>
+
+<p>When
+the model starts, it creates a blank Q-matrix (hence the name Q-Learning),
+which is a matrix the same size as the rewards <span class=GramE>matrix</span>
+but all values are initialized to 0. It is this Q-matrix that our model will
+use to keep track and score how well the paths are doing. Each attempt is
+scored using the following formula:</p>
+<BR>
+
+<p><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
+ id="Picture_x0020_11" o:spid="_x0000_i1035" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*6MnFnb0KOxxqQDKuuoUp2A.png"
+ style='width:401pt;height:22pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image003.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*6MnFnb0KOxxqQDKuuoUp2A.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=401 height=22
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image003.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*6MnFnb0KOxxqQDKuuoUp2A.png"
+v:shapes="Picture_x0020_11"><![endif]></span></p>
+<BR>
+
+<p>Equation
+(1) returns a score evaluating the move from one point to a new one. It also
+takes in consideration any previous scores the model has already seen. The term
+‘<i>state</i>’ is the current room the bot is in, and ‘action’ is the next
+state or next room. is a tunable variable between 0 and 1 where values closer
+to 0 make the model choose an immediate reward while values closer to 1 will
+consider alternative paths and allow rewards from later moves. Finally, it
+multiplies gamma against all experienced next actions from the Q-matrix. This
+is an important part as all new actions take in consideration previous lessons
+learned.</p>
+<BR>
+
+<p>To
+understand how this works, let’s take a slight detour, and imagine that our
+factory has only 5 rooms as shown in the Figure 2:</p>
+<BR>
+
+<p><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
+ id="Picture_x0020_10" o:spid="_x0000_i1034" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*jNo5uSaiqL4yhFtq3Iv9OQ.png"
+ style='width:165pt;height:161pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image004.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*jNo5uSaiqL4yhFtq3Iv9OQ.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=165 height=161
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image004.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*jNo5uSaiqL4yhFtq3Iv9OQ.png"
+v:shapes="Picture_x0020_10"><![endif]></p>
+<BR>
+
+<p>Figure 2: All paths are initialized to 0 except for paths
+leading to the goal point which is set to 100 (room 2 to room 4 and recursively
+room 4 to room&nbsp;4).</p>
+<BR>
+
+<p>Below
+is the matrix format of the rewards table (-1s are used to fill non-existing
+paths which the bot will ignore):</p>
+<BR>
+
+<p><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
+ id="Picture_x0020_9" o:spid="_x0000_i1033" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*WjAGND4liATmVRsX4TaVvw.png"
+ style='width:454pt;height:211pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image005.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*WjAGND4liATmVRsX4TaVvw.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=454 height=211
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image005.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*WjAGND4liATmVRsX4TaVvw.png"
+v:shapes="Picture_x0020_9"><![endif]></span></p>
+<BR>
+
+<p>Figure 3: Reward matrix with path and goal-point scores.</p>
+<BR>
+
+<p>The
+Q-matrix is the same size as the rewards <span class=GramE>matrix</span> but
+all cells are initialized with zeros. For n many iterations, the model will
+randomly select a state, a point on the map represented by a row on the rewards
+matrix, then move to another state and calculate the rewards for that action.
+For example, say the model picks point 2 as a state, it can go to either points
+1, 3 or 4. According to the rewards matrix, the bot is on row 2 (third from
+top) and the only cells that aren’t -1s are 1, 3 and 4. Point 4 is chosen at
+random. According to the Q-Learning algorithm, the score for this move is the
+current point, plus gamma times maximum value of the new action points:</p>
+<BR>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-family:"Times New Roman",serif;mso-fareast-font-family:"Times New Roman"'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="Picture_x0020_8"
+ o:spid="_x0000_i1032" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*Ohxk2WKxfZIRjJgFvGjUGw.png"
+ style='width:418pt;height:55pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image006.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*Ohxk2WKxfZIRjJgFvGjUGw.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=418 height=55
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image006.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*Ohxk2WKxfZIRjJgFvGjUGw.png"
+v:shapes="Picture_x0020_8"><![endif]></span></p>
+<BR>
+
+<p>That
+move is valued at 100 points and entered into the Q-matrix. Why 100? Gamma
+multiplied by max(<span class=GramE>Q[</span>(4,2),(4,4)]) equals zero as the
+bot hasn’t visited those rooms yet and our Q-matrix still only holds zeros.
+Because as that is the value in <span class=GramE>R[</span>2,4] and. Had the
+model chosen <span class=GramE>point</span> 3 instead, then:</p>
+<BR>
+
+<p><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
+ id="Picture_x0020_7" o:spid="_x0000_i1031" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*m62t3SOTayAh0LsQX9dWFQ.png"
+ style='width:427pt;height:36pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image007.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*m62t3SOTayAh0LsQX9dWFQ.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=427 height=36
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image007.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*m62t3SOTayAh0LsQX9dWFQ.png"
+v:shapes="Picture_x0020_7"><![endif]></span></p>
+<BR>
+
+<p>After
+running the model for few hundred iterations, the model converges and returns
+the following matrix:</p>
+<BR>
+
+<p><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
+ id="Picture_x0020_6" o:spid="_x0000_i1030" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*9y0AysSDWOXjvyZxPdb86A.png"
+ style='width:402pt;height:130pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image008.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*9y0AysSDWOXjvyZxPdb86A.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=402 height=130
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image008.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*9y0AysSDWOXjvyZxPdb86A.png"
+v:shapes="Picture_x0020_6"><![endif]></span></p>
+<BR>
+
+<p>Figure 4: Q-Matrix with converged scores from
+learning&nbsp;process.</p>
+<BR>
+
+<p>The
+matrix shows that starting from point 0 (row 0/room 0), the next step with the
+highest score is room 1 at 215.14 points. Moving down to the second row, room 3
+has the highest score at 268.93 points. Finally, dropping to the third row,
+room 4 has the highest score, at 336.16 points, which is the goal point. But
+you can also pick any point you want and find the best path to the goal point
+from that vantage point (for example starting from room/point 3).</p>
+<BR>
+
+<p>Let’s
+get back to our factory incident. We had to take this detour as the matrices
+for our factory are just too big to display and hopefully will be easier to
+understand. We now let the bot run loose over the factory floor.</p>
+<BR>
+
+<p class=MsoNormal style='margin-top:21.75pt;background:white'><b><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Setting
+up Q-Learning at a high level</span></b><span style='font-size:16.0pt;
+font-family:"Georgia",serif;mso-fareast-font-family:"Times New Roman";
+mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'></p>
+<BR>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:10.5pt;
+margin-left:22.5pt;text-indent:-.25in;mso-list:l1 level1 lfo1;tab-stops:list .5in;
+background:white'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:16.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+mso-bidi-font-family:Symbol;letter-spacing:-.05pt'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><b><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Rewards
+Table:</span></b><span style='font-size:16.0pt;font-family:"Georgia",serif;
+mso-fareast-font-family:"Times New Roman";mso-bidi-font-family:"Times New Roman";
+letter-spacing:-.05pt'>&nbsp;Create the rewards table based on a map and the
+starting and goal points desired.</p>
+<BR>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:10.5pt;
+margin-left:22.5pt;text-indent:-.25in;mso-list:l1 level1 lfo1;tab-stops:list .5in;
+background:white'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:16.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+mso-bidi-font-family:Symbol;letter-spacing:-.05pt'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><b><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Q
+Table:</span></b><span style='font-size:16.0pt;font-family:"Georgia",serif;
+mso-fareast-font-family:"Times New Roman";mso-bidi-font-family:"Times New Roman";
+letter-spacing:-.05pt'>&nbsp;Initialize the Q-Learning matrix using same
+dimensions as the rewards matrix and set all cells to 0.</p>
+<BR>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:10.5pt;
+margin-left:22.5pt;text-indent:-.25in;mso-list:l1 level1 lfo1;tab-stops:list .5in;
+background:white'><![if !supportLists]><span style='font-size:10.0pt;
+mso-bidi-font-size:16.0pt;font-family:Symbol;mso-fareast-font-family:Symbol;
+mso-bidi-font-family:Symbol;letter-spacing:-.05pt'><span style='mso-list:Ignore'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><b><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Discount
+Factor:</span></b><span style='font-size:16.0pt;font-family:"Georgia",serif;
+mso-fareast-font-family:"Times New Roman";mso-bidi-font-family:"Times New Roman";
+letter-spacing:-.05pt'>&nbsp;Choose a gamma score between 0 and 1, somewhere in
+the middle so that it doesn’t always go for the immediate reward. We set it to
+0.8 in this example.</p>
+<BR>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-left:22.5pt;
+text-indent:-.25in;mso-list:l1 level1 lfo1;tab-stops:list .5in;background:white'><![if !supportLists]><span
+style='font-size:10.0pt;mso-bidi-font-size:16.0pt;font-family:Symbol;
+mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol;letter-spacing:-.05pt'><span
+style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><b><span style='font-size:16.0pt;font-family:
+"Georgia",serif;mso-fareast-font-family:"Times New Roman";mso-bidi-font-family:
+"Times New Roman";letter-spacing:-.05pt'>Iterations:&nbsp;</span></b><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Determine
+the number of trips to run. This is based on the size of the map (larger maps
+will require more iterations). We selected 3000 iterations for our factory
+floor and the corresponding GitHub code uses an early breakout function to stop
+iterating once it finds the ideal path.</p>
+<BR>
+
+<p class=MsoNormal style='margin-top:21.75pt;background:white'><b><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Q-Learning
+in action</span></b><span style='font-size:16.0pt;font-family:"Georgia",serif;
+mso-fareast-font-family:"Times New Roman";mso-bidi-font-family:"Times New Roman";
+letter-spacing:-.05pt'></p>
+<BR>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:10.5pt;
+margin-left:22.5pt;text-indent:-.25in;mso-list:l0 level1 lfo2;tab-stops:list .5in;
+background:white'><![if !supportLists]><span style='font-size:16.0pt;
+font-family:"Georgia",serif;mso-fareast-font-family:Georgia;mso-bidi-font-family:
+Georgia;letter-spacing:-.05pt'><span style='mso-list:Ignore'>1.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Select
+a random starting state (a random room in the factory).</p>
+<BR>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:10.5pt;
+margin-left:22.5pt;text-indent:-.25in;mso-list:l0 level1 lfo2;tab-stops:list .5in;
+background:white'><![if !supportLists]><span style='font-size:16.0pt;
+font-family:"Georgia",serif;mso-fareast-font-family:Georgia;mso-bidi-font-family:
+Georgia;letter-spacing:-.05pt'><span style='mso-list:Ignore'>2.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Select
+a random next action from the available next actions.</p>
+<BR>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:10.5pt;
+margin-left:22.5pt;text-indent:-.25in;mso-list:l0 level1 lfo2;tab-stops:list .5in;
+background:white'><![if !supportLists]><span style='font-size:16.0pt;
+font-family:"Georgia",serif;mso-fareast-font-family:Georgia;mso-bidi-font-family:
+Georgia;letter-spacing:-.05pt'><span style='mso-list:Ignore'>3.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Calculate
+maximum Q value for next state (<span class=GramE>Q[</span>state, action] =
+R[state, action] + gamma * max(Q[nextState,]) and update the Q-matrix.</p>
+<BR>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-bottom:10.5pt;
+margin-left:22.5pt;text-indent:-.25in;mso-list:l0 level1 lfo2;tab-stops:list .5in;
+background:white'><![if !supportLists]><span style='font-size:16.0pt;
+font-family:"Georgia",serif;mso-fareast-font-family:Georgia;mso-bidi-font-family:
+Georgia;letter-spacing:-.05pt'><span style='mso-list:Ignore'>4.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span></span></span><![endif]><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Set
+next state as current state.</p>
+<BR>
+
+<p class=MsoNormal style='mso-margin-top-alt:auto;margin-left:22.5pt;
+text-indent:-.25in;mso-list:l0 level1 lfo2;tab-stops:list .5in;background:white'><![if !supportLists]><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+Georgia;mso-bidi-font-family:Georgia;letter-spacing:-.05pt'><span
+style='mso-list:Ignore'>5.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:16.0pt;font-family:"Georgia",serif;
+mso-fareast-font-family:"Times New Roman";mso-bidi-font-family:"Times New Roman";
+letter-spacing:-.05pt'>Keep iterating unless the early-stop function confirms
+optimal path or runs out of iterations.</p>
+<BR>
+
+<p><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
+ id="Picture_x0020_5" o:spid="_x0000_i1029" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*K5x1JEOZF_gVO6osDMQScg.png"
+ style='width:384pt;height:232pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image009.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*K5x1JEOZF_gVO6osDMQScg.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=384 height=232
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image009.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*K5x1JEOZF_gVO6osDMQScg.png"
+v:shapes="Picture_x0020_5"><![endif]></span></p>
+<BR>
+
+<p>Figure 5: Shows the optimized path and reward points to go
+from the factory entrance to the chemical&nbsp;leak.</p>
+<BR>
+
+<p>Once
+the model runs through its iterations, the model <span class=GramE>converges</span>
+and the Q values stabilize.</p>
+<BR>
+
+<p><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
+ id="Picture_x0020_4" o:spid="_x0000_i1028" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*Y4piMUc9zy7rL3Dwyey4PQ.png"
+ style='width:383pt;height:248pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image010.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*Y4piMUc9zy7rL3Dwyey4PQ.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=383 height=248
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image010.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*Y4piMUc9zy7rL3Dwyey4PQ.png"
+v:shapes="Picture_x0020_4"><![endif]></span></p>
+<BR>
+
+<p>Figure 6: Shows the Q scores for the optimal path from the
+factory entrance to the chemical&nbsp;leak.</p>
+<BR>
+
+<p>The
+Q-Learning model is outfitted with an early-stop feature that will compare the
+optimal path to the latest Q scores. If the Q scores confirm the optimal path
+for at least 10 iterations, the model ends automatically. This allows setting
+large iterations values without being forced to run through them all.</p>
+<BR>
+
+<p><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
+ id="Picture_x0020_3" o:spid="_x0000_i1027" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*BhwqurGgDj3iDM9jDwSLag.png"
+ style='width:473pt;height:292pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image011.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*BhwqurGgDj3iDM9jDwSLag.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=473 height=292
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image011.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*BhwqurGgDj3iDM9jDwSLag.png"
+v:shapes="Picture_x0020_3"><![endif]></span></p>
+<BR>
+
+<p>Figure 7: Chart shows the model’s iterations, rising score
+and convergence. Blue line shows early-stop feature.</p>
+<BR>
+
+<p>The
+model successfully converges, finds the optimal path from the entrance of the
+factory to the goal point, i.e. the chemical leak. The early-stop mechanism
+stops the model around 2700 iterations.</p>
+<BR>
+
+<p class=MsoNormal style='margin-top:42.0pt;margin-right:0in;margin-bottom:
+0in;margin-left:-1.6pt;margin-bottom:.0001pt;mso-outline-level:3;background:
+white'><b><span style='font-size:25.5pt;font-family:"Lucida Grande",sans-serif;
+mso-fareast-font-family:"Times New Roman";letter-spacing:-.2pt'>Part 2:
+Analysis of Environmental Data &amp; Using Enhanced Q-Learning with Case-based
+reasoning (CBR)<o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-top:6.0pt;background:white'><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Now,
+let’s learn from past data to improve on shortest path to chemical leak. After
+the robot finds the leak, any additional recorded data can be downloaded and
+analyzed in order to learn what happened and what were the conditions
+surrounding the leak beyond humidity readings. The hope is to glean information
+to help the robot get to the leak faster the next time around.</p>
+<BR>
+
+<p>You
+could easily analyze that data with a linear-regression model to find patterns
+using paths, time, or distance against the additional collected features.</p>
+<BR>
+
+<p>In
+this hypothetical story, after analyzing the data, a correlation emerges
+between temperature and proximity to the leak</span><span style='font-size:
+16.0pt;font-family:"Times New Roman",serif;mso-fareast-font-family:"Times New Roman";
+letter-spacing:-.05pt'> </span><span style='font-size:16.0pt;font-family:"Georgia",serif;
+mso-fareast-font-family:"Times New Roman";mso-bidi-font-family:"Times New Roman";
+letter-spacing:-.05pt'>—</span><span style='font-size:16.0pt;font-family:"Times New Roman",serif;
+mso-fareast-font-family:"Times New Roman";letter-spacing:-.05pt'> </span><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>the
+closer the bot got to the leak, the hotter it got. The thicker blue lines
+represent a 1-degree temperature jump, the yellow, a 2-degree jump and red, a
+5-degree jump.</p>
+<BR>
+
+<p><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
+ id="Picture_x0020_2" o:spid="_x0000_i1026" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*ztQYxLY8rvgkg4lHYYGAzQ.png"
+ style='width:431pt;height:256pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image012.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*ztQYxLY8rvgkg4lHYYGAzQ.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=431 height=256
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image012.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*ztQYxLY8rvgkg4lHYYGAzQ.png"
+v:shapes="Picture_x0020_2"><![endif]></span></p>
+<BR>
+
+<p>Figure 8: Temperature differentials on the factory
+floor — red for hot, yellow for warm and blue for&nbsp;tepid.</p>
+<BR>
+
+<p>Even
+though this data didn’t help the first emergency scenario or speed up the bot’s
+iteration process to find the shortest path to the leak, it could prove useful
+in future similar scenarios. The bot can use the temperature information to
+spend more time on some routes and ignore others.</p>
+<BR>
+
+<p>We
+create a similar factory map with the same story of a chemical leak but this
+time with an understanding of the leak/temperature relationship. The closer we
+get to the leak, the hotter it should get. We fire off the bot using an
+enhanced Q-Learning algorithm using the principles behind Case-based reasoning
+(CBR). The software needs to account for historical similarities with previous
+cases and use any additional hints it has gleaned in the past to help new
+searches. In this current situation, it will favor steps with increasing
+temperatures versus steps with decreasing or non-changing ones. There are a few
+ways of approaching this in Q-Learning. We could change the rewards map
+directly to account for this ‘enhanced’ reward data or simply encourage the bot
+to take routes with increasing temperatures whenever faced with multiple path
+choices, in this case, we go with the latter. Whenever the bot has to choose
+between multiple routes, we give more weight to any with rising temperature.</p>
+<BR>
+
+<p><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
+ id="Picture_x0020_1" o:spid="_x0000_i1025" type="#_x0000_t75" alt="https://cdn-images-1.medium.com/max/1280/1*SfYnXKRA1m72gPvSRSceAg.png"
+ style='width:435pt;height:299pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image013.png"
+  o:href="https://cdn-images-1.medium.com/max/1280/1*SfYnXKRA1m72gPvSRSceAg.png"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=435 height=299
+src="Pairing%20Reinforcement%20Learning%20and%20Machine%20Learning.fld/image013.png"
+alt="https://cdn-images-1.medium.com/max/1280/1*SfYnXKRA1m72gPvSRSceAg.png"
+v:shapes="Picture_x0020_1"><![endif]></span></p>
+<BR>
+
+<p>Figure 9: The RL bot took less than 1800 tries to confirm
+the ideal path from the factory entrance to the leak with&nbsp;CBR.</p>
+<BR>
+
+<p>You
+may need to run both examples a couple of times in order to see this pattern
+emerge. Overall, it takes the CBR-enhanced model almost 1000-less iterations to
+find the ideal path over the original scenario. This is a toy problem but the
+ramifications of using RL to map areas along with the ability of recording
+additional data are real. Even though the immediate use of this additional data
+may not be apparent, with a little post-processing, it could open up additional
+and incredible possibilities. This is like unsupervised learning where we don’t
+quite know what we’re going to get but we want it regardless. In this day of
+Internet of Things (IoT), it is best to record all available information on the
+suspicion that it may be useful in the future</span><span style='font-size:
+16.0pt;font-family:"Times New Roman",serif;mso-fareast-font-family:"Times New Roman";
+letter-spacing:-.05pt'> </span><span style='font-size:16.0pt;font-family:"Georgia",serif;
+mso-fareast-font-family:"Times New Roman";mso-bidi-font-family:"Times New Roman";
+letter-spacing:-.05pt'>—</span><span style='font-size:16.0pt;font-family:"Times New Roman",serif;
+mso-fareast-font-family:"Times New Roman";letter-spacing:-.05pt'> </span><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>because
+that one day, it may cure disease, save humanity from famine, or help the bot
+find the chemical leak a little faster.</p>
+<BR>
+
+<p class=MsoNormal style='margin-top:21.75pt;background:white'><b><i><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Note</span></i></b><i><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>:
+Companion code found at
+(https://github.com/amunategui/Leak-At-Chemical-Factory-RL)</span></i><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'></p>
+<BR>
+
+<p class=MsoNormal style='margin-top:42.0pt;margin-right:0in;margin-bottom:
+0in;margin-left:-1.6pt;margin-bottom:.0001pt;mso-outline-level:3;background:
+white'><b><span style='font-size:25.5pt;font-family:"Lucida Grande",sans-serif;
+mso-fareast-font-family:"Times New Roman";letter-spacing:-.2pt'>Special Thanks<o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-top:6.0pt;background:white'><span
+style='font-size:16.0pt;font-family:"Georgia",serif;mso-fareast-font-family:
+"Times New Roman";mso-bidi-font-family:"Times New Roman";letter-spacing:-.05pt'>Special
+thanks to Dr. Mehdi Roopaei for content and edits, Lucas Amunategui for
+artwork, and Mic’s blog post (<a
+href="http://firsttimeprogrammer.blogspot.com/2016/09/getting-ai-smarter-with-q-learning.html"
+target="_blank"><span style='text-decoration:none;text-underline:none'>http://firsttimeprogrammer.blogspot.com/2016/09/getting-ai-smarter-with-q-learning.html</span></a>)
+for easy to digest code on RL.</p>
+<BR>
+
+
+
+
+
+
+
