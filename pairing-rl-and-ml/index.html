@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Pairing Reinforcement Learning and Machine Learning, an Enhanced Emergency Response Scenario</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../blog.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+ <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55202104-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-55202104-1');
+  </script>
+
+  </head>
+<body>
+  
+ <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="../index.html">Home</a>
+        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+      </nav>
+    </div>
+</div>
+
+<div class="container">
+
+  <div class="blog-header">
+    <h1 class="blog-title">Pairing Reinforcement Learning and Machine Learning, an Enhanced Emergency Response Scenario</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+  
+
+<p><strong>On YouTube:</strong></p>
+<table cellpadding="10">
+<tr><td>
+    <a href="https://www.youtube.com/watch?v=gVAMAGpQ1no&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank"><img src="img/youtube-thumbnail.jpg" alt="YouTube.com companion link" width="120" height="90" border="10" /></a>
+</td>
+</tr>
+</table>
+
+<BR><BR>
+
+<img src="img/image001.jpg" width="871px" height="102px" alt="Image">
+
+<i>Art credit: Lucas Amunategui</i>
+
+<p>
+Imagine a scenario unraveling at a chemical factory right after an explosion that caused a dangerous chemical leak. The alarms are blazing and the personnel is evacuated as the leak cannot be located. They send an autonomous robot inside the empty factory equipped with a camera, lights, and environmental sensors, capable of capturing ambient humidity, in hopes of locating the chemical leak.
+</p>
+<p>
+The robot has the ability to travel quickly and at ease through each room of the factory without any prior knowledge of the layout. Its primary goal is to find the shortest path to the leak by exploring each room and using its humidity sensor and camera. The robot's decision-making framework uses reinforcement learning and will start traveling at random throughout the factory floor many times, recording each path taken in detail to eventually determine the shortest route to the leak. The goal isn't only to find the leak but also to find the shortest path. This will be of tremendous help to the emergency crew to quickly locate the danger and limit human exposure to chemicals.
+</p>
+<p>
+As Q-Learning requires constant back-and-forth and trial-and-error towards finding a shortest path, why not make use of that discovery process to record as much environmental data as possible? With the rise in popularity of Internet of Things (IoT), there are plenty of third-party sensor attachments, hardware and software management tools to leverage. This could be as simple as attaching a temperature-sensing gauge on the bot with built-in data storage or realtime transmission capabilities. The hope is to analyze the data after each incident and learn more than simply the shortest path.
+We then extend this scenario to another factory facing a similar chemical-leak situation. This time the software in the bot is enhanced with an additional system to leverage the IoT lessons learned from the first experience. The bot won't only look for the shortest path to the leak but will also use environmental lessons it learned from the first incident.
+</p><p>
+Let's see how the process of search and discovery can be enhanced when combining Reinforcement Learning (RL), Machine Learning (ML), Internet of Things (IoT), and Case-based reasoning (CBR).
+</p>
