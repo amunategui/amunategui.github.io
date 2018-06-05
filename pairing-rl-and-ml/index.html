@@ -61,18 +61,22 @@
 <p><strong>On YouTube:</strong></p>
 <table cellpadding="10">
 <tr><td>
-    <a href="https://www.youtube.com/watch?v=gVAMAGpQ1no&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">
+    <a href="https://www.youtube.com/watch?v=MpsJuo8dO9Q&t=199s" target="_blank">
       <img src="img/youtube-thumbnail.jpg" alt="YouTube.com companion link" width="120" height="90" border="10" /></a>
 </td>
 </tr>
 </table>
 
 <BR><BR>
-<img src="img/image001.jpg" width='50%' height='50%' alt="Image">
-<BR>
+<p style="text-align:center">
+<img src="img/image001.jpg" width='70%' height='70%' alt="Bot">
+<br>
 <i>Art credit: Lucas Amunategui</i>
+</p>
 <BR>
 
+<BR>
+<BR>
 <p>Imagine a scenario unraveling at a chemical factory right after an explosion that
 caused a dangerous chemical leak. The alarms are blazing and the personnel is evacuated 
 as the leak cannot be located. They send an
@@ -118,8 +122,8 @@ Reinforcement Learning (RL), Machine Learning (ML), Internet of Things (IoT),
 and Case-based reasoning (CBR).</p>
 <BR>
 
-<p><i><b>Note:</b>For a gentle introduction to RL and Q-Learning in Python, see a post I made on
-my Github blog<a
+<p><i><b>Note:</b> For a gentle introduction to RL and Q-Learning in Python, see a post I made on
+my Github blog <a
 href="http://amunategui.github.io/reinforcement-learning/index.html"
 target="_blank">http://amunategui.github.io/reinforcement-learning/index.html</a></i></p>
 <BR>
@@ -134,12 +138,13 @@ to a chemical leak for response team. The factory floor plan considered for
 this experiment comprises 57 rooms in which the entrance and the goal are
 considered at room 0 and 50 respectively (see Figure 1).</p>
 <BR>
-<img src="img/image002.jpg" width='50%' height='50%' alt="Image">
+<p style="text-align:center">
+<img src="img/image002.png" width='50%' height='50%' alt="Image">
 <BR>
-
-<p>Figure 1: Shows the graph representation of our chemical
+Figure 1: Shows the graph representation of our chemical
 factory. Each colored circle is a room. The entrance to the factory is room ‘0’
-and the room with the chemical leak is room&nbsp;‘50’.</p>
+and the room with the chemical leak is room ‘50’.
+</p>
 <BR>
 
 <p>Q-Learning
@@ -163,7 +168,7 @@ scored using the following formula:</p>
 <BR>
 
 <BR>
-<img src="img/image003.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image003.png" width='50%' height='50%' alt="Image">
 <BR>
 
 <p>Equation
@@ -184,7 +189,7 @@ factory has only 5 rooms as shown in the Figure 2:</p>
 <BR>
 
 <BR>
-<img src="img/image004.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image004.png" width='50%' height='50%' alt="Image">
 <BR>
 
 <p>Figure 2: All paths are initialized to 0 except for paths
@@ -198,7 +203,7 @@ paths which the bot will ignore):</p>
 <BR>
 
 <BR>
-<img src="img/image005.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image005.png" width='50%' height='50%' alt="Image">
 <BR>
 
 <p>Figure 3: Reward matrix with path and goal-point scores.</p>
@@ -217,7 +222,7 @@ current point, plus gamma times maximum value of the new action points:</p>
 <BR>
 
 <BR>
-<img src="img/image006.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image006.png" width='50%' height='50%' alt="Image">
 <BR>
 
 <p>That
@@ -229,7 +234,7 @@ model chosen <span class=GramE>point</span> 3 instead, then:</p>
 <BR>
 
 <BR>
-<img src="img/image007.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image007.png" width='50%' height='50%' alt="Image">
 <BR>
 
 <p>After
@@ -238,7 +243,7 @@ the following matrix:</p>
 <BR>
 
 <BR>
-<img src="img/image007.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image008.png" width='50%' height='50%' alt="Image">
 <BR>
 
 <p>Figure 4: Q-Matrix with converged scores from
@@ -261,7 +266,7 @@ understand. We now let the bot run loose over the factory floor.</p>
 <BR>
 
 <BR>
-<img src="img/image008.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image009.png" width='50%' height='50%' alt="Image">
 <BR>
 
 Create the rewards table based on a map and the
@@ -293,7 +298,7 @@ and the Q values stabilize.</p>
 
 
 <BR>
-<img src="img/image010.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image010.png" width='50%' height='50%' alt="Image">
 <BR>
 
 <p>Figure 6: Shows the Q scores for the optimal path from the
@@ -308,7 +313,7 @@ large iterations values without being forced to run through them all.</p>
 <BR>
 
 <BR>
-<img src="img/image011.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image011.png" width='50%' height='50%' alt="Image">
 <BR>
 
 <p>Figure 7: Chart shows the model’s iterations, rising score
@@ -357,7 +362,7 @@ represent a 1-degree temperature jump, the yellow, a 2-degree jump and red, a
 <BR>
 
 <BR>
-<img src="img/image012.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image012.png" width='50%' height='50%' alt="Image">
 <BR>
 
 <p>Figure 8: Temperature differentials on the factory
@@ -388,7 +393,7 @@ between multiple routes, we give more weight to any with rising temperature.</p>
 <BR>
 
 <BR>
-<img src="img/image013.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image013.png" width='50%' height='50%' alt="Image">
 <BR>
 
 <p>Figure 9: The RL bot took less than 1800 tries to confirm
@@ -418,7 +423,7 @@ find the chemical leak a little faster.</p>
 <BR>
 
 <BR>
-<img src="img/image014.jpg" width='50%' height='50%' alt="Image">
+<img src="img/image014.png" width='50%' height='50%' alt="Image">
 <BR>
 
 <p>
