@@ -71,7 +71,7 @@
 <table cellpadding="10">
 <tr><td>
   <a href="https://github.com/amunategui/Leak-At-Chemical-Factory-RL" target="_blank">
-      <img src="img/github.png" alt="GitHub.com companion link" width="50%" height="50%" border="10" /></a>
+      <img src="img/github.png" alt="GitHub.com companion link" width="20%" height="20%" border="10" /></a>
     </a>
 </td>
 </tr>
@@ -129,8 +129,8 @@ environmental lessons it learned from the first incident.</p>
 
 <p>Let’s
 see how the process of search and discovery can be enhanced when combining
-Reinforcement Learning (RL), Machine Learning (ML), Internet of Things (IoT),
-and Case-based reasoning (CBR).</p>
+<b>Reinforcement Learning (RL)</b>, <b>Machine Learning (ML)</b>, <b>Internet of Things (IoT)</b>,
+and <b>Case-based reasoning (CBR)</b>.</p>
 <BR>
 
 <p><i><b>Note:</b> For a gentle introduction to RL and Q-Learning in Python, see a post I made on
@@ -152,7 +152,7 @@ considered at room 0 and 50 respectively (see Figure 1).</p>
 <p style="text-align:center">
 <img src="img/image002.png" width='50%' height='50%' alt="Image">
 <BR>
-Figure 1: Shows the graph representation of our chemical
+<b>Figure 1:</b> Shows the graph representation of our chemical
 factory. Each colored circle is a room. The entrance to the factory is room ‘0’
 and the room with the chemical leak is room ‘50’.
 </p>
@@ -204,7 +204,7 @@ factory has only 5 rooms as shown in the Figure 2:</p>
 <p style="text-align:center">
 <img src="img/image004.png" width='50%' height='50%' alt="Image">
 <BR>
-Figure 2: All paths are initialized to 0 except for paths
+<b>Figure 2:</b> All paths are initialized to 0 except for paths
 leading to the goal point which is set to 100 (room 2 to room 4 and recursively
 room 4 to room 2).</p>
 <BR>
@@ -218,7 +218,7 @@ paths which the bot will ignore):</p>
 <p style="text-align:center">
 <img src="img/image005.png" width='50%' height='50%' alt="Image">
 <BR>
-Figure 3: Reward matrix with path and goal-point scores.</p>
+<b>Figure 3:<b/>Reward matrix with path and goal-point scores.</p>
 <BR>
 
 <p>The
@@ -261,7 +261,7 @@ the following matrix:</p>
 <p style="text-align:center">
 <img src="img/image008.png" width='50%' height='50%' alt="Image">
 <BR>
-Figure 4: Q-Matrix with converged scores from
+<b>Figure 4:</b> Q-Matrix with converged scores from
 learning&nbsp;process.</p>
 <BR>
 
@@ -290,21 +290,24 @@ Create the rewards table based on a map and the starting and goal points desired
 <BR>
 
 
-Setting up Q-Learning at a high level
-" Rewards Table: Create the rewards table based on a map and the starting and goal points desired.
-" Q Table: Initialize the Q-Learning matrix using same dimensions as the rewards matrix and set all cells to 0.
-" Discount Factor: Choose a gamma score between 0 and 1, somewhere in the middle so that it doesn't always go for the immediate reward. We set it to 0.8 in this example.
-" Iterations: Determine the number of trips to run. This is based on the size of the map (larger maps will require more iterations). We selected 3000 iterations for our factory floor and the corresponding GitHub code uses an early breakout function to stop iterating once it finds the ideal path.
-Q-Learning in action
-1.  Select a random starting state (a random room in the factory).
-2.  Select a random next action from the available next actions.
-3.  Calculate maximum Q value for next state (Q[state, action] = R[state, action] + gamma * max(Q[nextState,]) and update the Q-matrix.
-4.  Set next state as current state.
-5.  Keep iterating unless the early-stop function confirms optimal path or runs out of iterations.
+<h3>Setting up Q-Learning at a high level</h3>
+<ul>
+  <li>Rewards Table: Create the rewards table based on a map and the starting and goal points desired.</li>
+<li>Q Table: Initialize the Q-Learning matrix using same dimensions as the rewards matrix and set all cells to 0.</li>
+<li>Discount Factor: Choose a gamma score between 0 and 1, somewhere in the middle so that it doesn't always go for the immediate reward. We set it to 0.8 in this example.</li>
+<li>Iterations: Determine the number of trips to run. This is based on the size of the map (larger maps will require more iterations). We selected 3000 iterations for our factory floor and the corresponding GitHub code uses an early breakout function to stop iterating once it finds the ideal path.</li>
+</ul><br><br>
+<h3>Q-Learning in action</h3>
+<ol>
+  <li>Select a random starting state (a random room in the factory).</li>
+<li>Select a random next action from the available next actions.</li>
+<li>Calculate maximum Q value for next state (Q[state, action] = R[state, action] + gamma * max(Q[nextState,]) and update the Q-matrix.</li>
+<li>Set next state as current state.</li>
+<li>Keep iterating unless the early-stop function confirms optimal path or runs out of iterations.</li>
+</ol>
+<br>
 
-
-
-<p>Figure 5: Shows the optimized path and reward points to go from the factory entrance to the chemical's leak.</p>
+<p><b>Figure 5:</b> Shows the optimized path and reward points to go from the factory entrance to the chemical's leak.</p>
 <BR>
 
 <p>Once
@@ -317,7 +320,7 @@ and the Q values stabilize.</p>
 <p style="text-align:center">
 <img src="img/image010.png" width='50%' height='50%' alt="Image">
 <BR>
-Figure 6: Shows the Q scores for the optimal path from the
+<b>Figure 6:</b> Shows the Q scores for the optimal path from the
 factory entrance to the chemical leak.</p> 
 <BR>
 
@@ -332,7 +335,7 @@ large iterations values without being forced to run through them all.</p>
 <p style="text-align:center">
 <img src="img/image011.png" width='50%' height='50%' alt="Image">
 <BR>
-Figure 7: Chart shows the model’s iterations, rising score
+<b>Figure 7:</b> Chart shows the model’s iterations, rising score
 and convergence. Blue line shows early-stop feature.</p>
 <BR>
 
@@ -378,7 +381,7 @@ represent a 1-degree temperature jump, the yellow, a 2-degree jump and red, a
 <p style="text-align:center">
 <img src="img/image012.png" width='50%' height='50%' alt="Image">
 <BR>
-Figure 8: Temperature differentials on the factory
+<b>Figure 8:</b> Temperature differentials on the factory
 floor — red for hot, yellow for warm and blue for&nbsp;tepid.</p>
 <BR>
 
@@ -409,7 +412,7 @@ between multiple routes, we give more weight to any with rising temperature.</p>
 <p style="text-align:center">
 <img src="img/image013.png" width='50%' height='50%' alt="Image">
 <BR>
-Figure 9: The RL bot took less than 1800 tries to confirm
+<b>Figure 9:</b> The RL bot took less than 1800 tries to confirm
 the ideal path from the factory entrance to the leak with&nbsp;CBR.</p>
 <BR>
 
