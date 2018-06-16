@@ -64,7 +64,7 @@
 </ul>
 <BR><BR>
 <p>
-Here are the notes on two methods to get GPUs up-and-running for Tensorflow on Google Cloud. A quick one using pre-built Jetware instances, and one from scratch using a VM. 
+Here are YouTube video notes on two methods to get GPUs up-and-running for Tensorflow on Google Cloud. A quick one using pre-built Jetware instances, and one from scratch using a VM. 
 </p>
 <BR>
 <p>Note: this isn't meant to be stand alone notes, use with corresponding <a href="https://www.youtube.com/watch?v=W-FqRBoyTgw&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target="_blank">video</a>.</p>
@@ -98,11 +98,10 @@ Deploy your Jetware instance, hit the Jupyter button and tensor away!
 <BR><BR>
 <H1>Method 2: From Scratch</H1>
 <p>
-Let's do the above from scratch (big thanks to Eric Scuccimarra
-https://medium.com/google-cloud/setting-up-tensorflow-gpu-on-google-cloud-instance-with-ubuntu-16-04-53cb6749b527)
+Let's do the above from scratch (a big thanks to <a href='https://medium.com/google-cloud/setting-up-tensorflow-gpu-on-google-cloud-instance-with-ubuntu-16-04-53cb6749b527' target="_blank">Eric Scuccimarra</a> for his great blog).
 </p>
 <p>
-You still need to enable GPUs and have a credit-card enabled account (see above for steps).
+Go ahead and click on "VM Instances" and "Create Instance". You still need to enable GPUs and have a credit-card enabled account (see above for steps).
 </p>
 <p style="text-align:center">
 <img src="img/image005.png" alt="Instance" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
@@ -118,11 +117,10 @@ You still need to enable GPUs and have a credit-card enabled account (see above 
 <img src="img/image007.png" alt="Nvidia developer program" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
 <BR><BR>
-<p>Once you have access, click on <a href='https://developer.nvidia.com/developer-program' target='_blank'>Member area</a> 
-Then select the <a href='https://developer.nvidia.com/accelerated-computing-toolkit' target='_blank'>Accelerated Computing Toolkit</a>
+<p>Once you have access, click on <a href='https://developer.nvidia.com/developer-program' target='_blank'>Member area</a> then select the <a href='https://developer.nvidia.com/accelerated-computing-toolkit' target='_blank'>Accelerated Computing Toolkit</a>. 
 Finally, download the <a href='https://developer.nvidia.com/rdp/cudnn-download'>GPU-Accelerated Libraries Deep Neural Network (cuDNN) binaries</a>.
 <BR><BR>
-I went with "libcudnn7_7.1.4.18-1%2Bcuda9.0_amd64.deb"
+I went with <b>libcudnn7_7.1.4.18-1%2Bcuda9.0_amd64.deb</b>
 </p>
 
 <p>You are ready, fire up your instance by clicking the "SSH" button.</p>
@@ -130,7 +128,7 @@ I went with "libcudnn7_7.1.4.18-1%2Bcuda9.0_amd64.deb"
 <img src="img/image008.png" alt="Nvidia developer program" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
 <BR><BR>
-Upload the (cuDNN) file using upload gear button.
+Upload the (cuDNN) file onto your cloud instance using upload gear button.
 <p style="text-align:center">
 <img src="img/image009.png" alt="Nvidia developer program" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
@@ -138,9 +136,7 @@ Upload the (cuDNN) file using upload gear button.
 <BR>
 
 Run the following commands to update <b>apt-get</B>, run as root, and install Nvidia's CUDA software:
-<pre><code>
-
-# update apt-get
+<pre><code># update apt-get
 sudo apt-get update
  
 # work as root
@@ -160,31 +156,28 @@ fi
 <BR>
 <BR>
 Test that your GPU is sucessfully installed:
-<pre><code>
-# check that GPU is working
+<pre><code># check that GPU is working
 nvidia-smi
 </code></pre>
 
 <BR>
 <BR>
-<p>Upload your Deep Neural Network (cuDNN) binaries (check your version):</p>
+<p>Install your Deep Neural Network (cuDNN) binaries that you uploaded earlier (check your version):</p>
 <pre><code>
 sudo dpkg -i libcudnn7_7.1.4.18-1+cuda9.0_amd64.deb
 </code></pre>
 <BR>
 <BR>
 <p>Set sticky path defaults</p>
-<pre><code>
-echo 'export CUDA_HOME=/usr/local/cuda' >> ~/.bashrc
+<pre><code>echo 'export CUDA_HOME=/usr/local/cuda' >> ~/.bashrc
 echo 'export PATH=$PATH:$CUDA_HOME/bin' >> ~/.bashrc
 echo 'export LD_LIBRARY_PATH=/usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc
 source ~/.bashrc
 </code></pre>
 <BR>
 <BR>
-Install needed Python binries
-<pre><code>
-# Install tensorflow
+Install needed Python binaries
+<pre><code># Install tensorflow
 sudo apt-get install python3-dev python3-pip libcupti-dev
 
 # install tensorflow-gpu
@@ -195,9 +188,8 @@ apt install ipython3
 </code></pre>
 <BR>
 <BR>
-<p>Test out the instance using GPU code (see code at: https://www.tensorflow.org/programmers_guide/using_gpu)</p>
-<pre><code>
-# https://www.tensorflow.org/programmers_guide/using_gpu
+<p>Test out the instance using GPU code (see code <a href='https://www.tensorflow.org/programmers_guide/using_gpu' target="_blank">programmers_guide</a></p>
+<pre><code># https://www.tensorflow.org/programmers_guide/using_gpu
 # Creates a graph.
 with tf.device('/gpu:0'):
   a = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[2, 3], name='a')
