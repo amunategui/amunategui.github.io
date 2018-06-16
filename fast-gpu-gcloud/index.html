@@ -60,7 +60,7 @@
 
 <p><strong>On YouTube:</strong></p>
 <ul>
-<li type="square"><a href="https://www.youtube.com/watch?v=W-FqRBoyTgw&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target="_blank"><img src="img/chatbot2-youtube-link.jpg" alt="YouTube.com companion link" width="120" height="90" border="10" /></a></li>
+<li type="square"><a href="https://www.youtube.com/watch?v=W-FqRBoyTgw&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target="_blank"><img src="img/youtube-thumbnail.jpg" alt="YouTube.com companion link" width="120" height="90" border="10" /></a></li>
 </ul>
 <BR><BR>
 <p>
@@ -156,46 +156,44 @@ if ! dpkg-query -W cuda; then
     sudo nvidia-smi -pm 1
 fi
 ```
+<BR>
 Test that your GPU is sucessfully installed:
 ```{r eval=FALSE}
 # check that GPU is working
 nvidia-smi
 ```
 
+<BR>
 
-Deep Neural Network (cuDNN)
-libcudnn7_7.1.4.18-1%2Bcuda9.0_amd64.deb
-
-
-
-
-
-Test out the instance using GPU code (see code at: https://www.tensorflow.org/programmers_guide/using_gpu)
-
-
-
-
+<p>Upload your Deep Neural Network (cuDNN) binaries (check your version):</p>
+```{r eval=FALSE}
 sudo dpkg -i libcudnn7_7.1.4.18-1+cuda9.0_amd64.deb
+```
+<BR>
 
-# sticky path defaults
+
+<p>Set sticky path defaults</p>
+```{r eval=FALSE}
 echo 'export CUDA_HOME=/usr/local/cuda' >> ~/.bashrc
 echo 'export PATH=$PATH:$CUDA_HOME/bin' >> ~/.bashrc
 echo 'export LD_LIBRARY_PATH=/usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc
 source ~/.bashrc
-
-
+```
+<BR>
+Install needed Python binries
+```{r eval=FALSE}
 # Install tensorflow
 sudo apt-get install python3-dev python3-pip libcupti-dev
 
 # install tensorflow-gpu
 sudo pip3 install tensorflow-gpu
 
-
 # install ipython3
 apt install ipython3
-
-Testing code
-
+```
+<BR>
+<p>Test out the instance using GPU code (see code at: https://www.tensorflow.org/programmers_guide/using_gpu)</p>
+```{r eval=FALSE}
 # https://www.tensorflow.org/programmers_guide/using_gpu
 # Creates a graph.
 with tf.device('/gpu:0'):
@@ -206,10 +204,8 @@ c = tf.matmul(a, b)
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 # Runs the op.
 print(sess.run(c))
-
-
-
-
+```
+<p>Happy tensoring!</p>
  
 </div>
 </body>
