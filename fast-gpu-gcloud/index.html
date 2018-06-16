@@ -67,7 +67,7 @@
 Here are the notes on two methods to get GPUs up-and-running for Tensorflow on Google Cloud. A quick one using pre-built Jetware instances, and one from scratch using a VM. 
 </p>
 <BR>
-<p>Note: notes not meant to stand alone, use with corresponding <a href="https://www.youtube.com/watch?v=W-FqRBoyTgw&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target="_blank">video</a></p>
+<p>Note: this isn't meant to be stand alone notes, use with corresponding <a href="https://www.youtube.com/watch?v=W-FqRBoyTgw&list=UUq4pm1i_VZqxKVVOz5qRBIA&index=1" target="_blank">video</a>.</p>
 <BR><BR>
 <H1>Method 1: Jetware Instances</H1>
 <p style="text-align:center">
@@ -134,10 +134,11 @@ Upload the (cuDNN) file using upload gear button.
 <p style="text-align:center">
 <img src="img/image009.png" alt="Nvidia developer program" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
-<BR><BR>
+<BR>
+<BR>
 
 Run the following commands to update <b>apt-get</B>, run as root, and install Nvidia's CUDA software:
-```{r eval=FALSE}
+<pre><code>
 
 # update apt-get
 sudo apt-get update
@@ -155,33 +156,34 @@ if ! dpkg-query -W cuda; then
     sudo apt-get install cuda-9-0
     sudo nvidia-smi -pm 1
 fi
-```
+</code></pre>
+<BR>
 <BR>
 Test that your GPU is sucessfully installed:
-```{r eval=FALSE}
+<pre><code>
 # check that GPU is working
 nvidia-smi
-```
+</code></pre>
 
 <BR>
-
+<BR>
 <p>Upload your Deep Neural Network (cuDNN) binaries (check your version):</p>
-```{r eval=FALSE}
+<pre><code>
 sudo dpkg -i libcudnn7_7.1.4.18-1+cuda9.0_amd64.deb
-```
+</code></pre>
 <BR>
-
-
+<BR>
 <p>Set sticky path defaults</p>
-```{r eval=FALSE}
+<pre><code>
 echo 'export CUDA_HOME=/usr/local/cuda' >> ~/.bashrc
 echo 'export PATH=$PATH:$CUDA_HOME/bin' >> ~/.bashrc
 echo 'export LD_LIBRARY_PATH=/usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc
 source ~/.bashrc
-```
+</code></pre>
+<BR>
 <BR>
 Install needed Python binries
-```{r eval=FALSE}
+<pre><code>
 # Install tensorflow
 sudo apt-get install python3-dev python3-pip libcupti-dev
 
@@ -190,10 +192,11 @@ sudo pip3 install tensorflow-gpu
 
 # install ipython3
 apt install ipython3
-```
+</code></pre>
+<BR>
 <BR>
 <p>Test out the instance using GPU code (see code at: https://www.tensorflow.org/programmers_guide/using_gpu)</p>
-```{r eval=FALSE}
+<pre><code>
 # https://www.tensorflow.org/programmers_guide/using_gpu
 # Creates a graph.
 with tf.device('/gpu:0'):
@@ -204,7 +207,7 @@ c = tf.matmul(a, b)
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 # Runs the op.
 print(sess.run(c))
-```
+</code></pre>
 <p>Happy tensoring!</p>
  
 </div>
