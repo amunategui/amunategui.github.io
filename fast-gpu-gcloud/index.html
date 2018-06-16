@@ -120,22 +120,20 @@ Go ahead and click on "VM Instances" and "Create Instance". You still need to en
 <p>Once you have access, click on <a href='https://developer.nvidia.com/developer-program' target='_blank'>Member area</a> then select the <a href='https://developer.nvidia.com/accelerated-computing-toolkit' target='_blank'>Accelerated Computing Toolkit</a>. 
 Finally, download the <a href='https://developer.nvidia.com/rdp/cudnn-download'>GPU-Accelerated Libraries Deep Neural Network (cuDNN) binaries</a>.
 <BR><BR>
-I went with <b>libcudnn7_7.1.4.18-1%2Bcuda9.0_amd64.deb</b>
+I chose to download file <b>libcudnn7_7.1.4.18-1%2Bcuda9.0_amd64.deb</b>
 </p>
-
-<p>You are ready, fire up your instance by clicking the "SSH" button.</p>
 <p style="text-align:center">
 <img src="img/image008.png" alt="Nvidia developer program" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
 <BR><BR>
-Upload the (cuDNN) file onto your cloud instance using upload gear button.
+<p>You are ready, fire up your instance by clicking the "SSH" button. Once it is up, upload the (cuDNN) file onto your cloud instance using upload gear button.</p>
 <p style="text-align:center">
 <img src="img/image009.png" alt="Nvidia developer program" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
 </p>
 <BR>
 <BR>
 
-Run the following commands to update <b>apt-get</B>, run as root, and install Nvidia's CUDA software:
+You have everything you need to get you going - let's prepare the instance. Run the following commands to update <b>apt-get</B>, run as root, and install Nvidia's CUDA software:
 <pre><code># update apt-get
 sudo apt-get update
  
@@ -188,7 +186,7 @@ apt install ipython3
 </code></pre>
 <BR>
 <BR>
-<p>Test out the instance using GPU code (see code <a href='https://www.tensorflow.org/programmers_guide/using_gpu' target="_blank">programmers_guide</a></p>
+<p>Test out the instance using GPU code (see code <a href='https://www.tensorflow.org/programmers_guide/using_gpu' target="_blank">programmers_guide</a>).</p>
 <pre><code># https://www.tensorflow.org/programmers_guide/using_gpu
 # Creates a graph.
 with tf.device('/gpu:0'):
