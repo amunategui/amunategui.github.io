@@ -1,33 +1,33 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title>Tips From a Data Scientist</title>
-  <meta name="Author" content="Manuel Amunategui">
-  <meta name="CreationTime" content="2018-06-23T23:09:12Z">
-  <meta name="ModificationTime" content="2018-06-23T23:09:12Z">
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="1561.4">
-  <style type="text/css">
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 18.0px; font: 16.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.54); -webkit-text-stroke: rgba(0, 0, 0, 0.54); background-color: #ffffff}
-    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: right; line-height: 18.0px; font: 20.0px 'Helvetica Neue'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); min-height: 23.0px}
-    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 23.0px; font: 20.0px 'Helvetica Neue'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); min-height: 23.0px}
-    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 23.0px; font: 20.0px 'Helvetica Neue'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)}
-    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; line-height: 22.0px; font: 16.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.68); -webkit-text-stroke: rgba(0, 0, 0, 0.68)}
-    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 33.0px; font: 21.0px Georgia; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff; min-height: 24.0px}
-    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 33.0px; font: 14.0px Georgia; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff}
-    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 33.0px; font: 14.0px Georgia; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff; min-height: 16.0px}
-    p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 23.0px; font: 14.0px 'Helvetica Neue'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); min-height: 17.0px}
-    p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 23.0px; font: 14.0px 'Helvetica Neue'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)}
-    span.s1 {font-kerning: none}
-    span.s2 {font: 16.0px 'Lucida Grande'; font-kerning: none; color: rgba(0, 0, 0, 0.54); -webkit-text-stroke: 0px rgba(0, 0, 0, 0.54)}
-    span.s3 {font-kerning: none; background-color: #ffffff}
-    span.s4 {font: 14.0px 'Lucida Grande'; font-kerning: none}
-  </style>
-</head>
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Data Exploration & Machine Learning, Hands-on</title>
+
+    <!-- Bootstrap core CSS -->
+ 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/4.1/examples/album/album.css" rel="stylesheet">
+  </head>
+
 <body>
-<div style="width: 600px; margin: 0 auto">
+
+<main role="main">
+
+{% include header.html %}
+
+
 
 <h1 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 43.0px; font: 42.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff"><span class="s1"><b>My #1 Piece of Advice for Aspiring Data Scientists</b></span></h1>
 <p class="p2"><span class="s1">Published on May 21, 2018 on <a href="https://medium.com/@amunategui/my-1-piece-of-advice-for-aspiring-data-scientists-6aac56545fcd"><span class="s2">Medium.com</span></a></span></p>
@@ -72,5 +72,6 @@
 <p class="p8"><span class="s1">Manuel Amunategui</span></p>
 <p class="p8"><span class="s1"><a href="http://amunategui.github.io">amunategui.github.io</a></span></p>
 </div>
+</main>
 </body>
 </html>
