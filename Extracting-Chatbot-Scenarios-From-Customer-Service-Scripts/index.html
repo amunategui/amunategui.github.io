@@ -1,45 +1,27 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head> 
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title>Chatbot Conversations From Customer Service Transcripts</title>
-  <meta name="Author" content="manuel">
-  <meta name="CreationTime" content="2018-04-29T16:23:47Z">
-  <meta name="ModificationTime" content="2018-04-29T16:23:47Z">
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="1561.4">
-  <!-- Custom styles for this template -->
-  <link href="../blog.css" rel="stylesheet">
-  <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="favicon.ico">
 
-  <style type="text/css">
-    p.p1 {margin: 12.0px 0.0px 36.0px 0.0px; font: 40.0px 'Arial Narrow'}
-    p.p2 {margin: 18.0px 0.0px 17.0px 0.0px; font: 20.0px Helvetica}
-    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; line-height: 14.0px; font: 20.0px Helvetica; min-height: 24.0px}
-    p.p4 {margin: 0.0px 0.0px 12.0px 0.0px; text-align: right; font: 11.0px Arial}
-    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: justify; line-height: 16.0px; font: 11.0px Arial}
-    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: justify; line-height: 16.0px; font: 11.0px Arial; min-height: 12.0px}
-    p.p7 {margin: 0.0px 0.0px 0.0px 36.0px; text-align: justify; text-indent: -36.0px; line-height: 16.0px; font: 11.0px Arial; min-height: 12.0px}
-    p.p8 {margin: 18.0px 0.0px 12.0px 21.6px; text-align: justify; font: 11.0px Arial}
-    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Palatino; min-height: 18.0px}
-    p.p10 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo}
-    p.p11 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo; color: #38a300}
-    p.p12 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo; min-height: 13.0px}
-    p.p13 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo; color: #38a300; min-height: 13.0px}
-    p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px Helvetica}
-    p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 12.0px Helvetica; min-height: 14.0px}
-    p.p16 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo; color: #0094de}
-    p.p17 {margin: 0.0px 0.0px 0.0px 36.0px; font: 11.0px Menlo; color: #0094de; min-height: 13.0px}
-    p.p18 {margin: 18.0px 0.0px 12.0px 0.0px; text-align: justify; font: 11.0px Arial}
-    li.li5 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: justify; line-height: 16.0px; font: 11.0px Arial}
-    span.s1 {color: #38a300}
-    span.Apple-tab-span {white-space:pre}
-    ul.ul1 {list-style-type: disc}
-  </style>
+    <title>Data Exploration & Machine Learning, Hands-on</title>
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- Bootstrap core CSS -->
+ 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/4.1/examples/album/album.css" rel="stylesheet">
+  </head>
+
+     <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55202104-1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -49,19 +31,13 @@
     gtag('config', 'UA-55202104-1');
   </script>
 
-</head>
-<body>
   
- <div class="blog-masthead">
-    <div class="container">
-      <nav class="blog-nav">
-        <a class="blog-nav-item active" href="../index.html">Home</a>
-        <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
-        <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
-        <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
-      </nav>
-    </div>
-</div>
+
+<body>
+
+<main role="main">
+
+{% include header.html %}
 
 
 <div class="container">
@@ -261,5 +237,27 @@
 <p class="p18"><i><a id="fn2"></a></i><a href="#fnlink2">[2]</a> https://spacy.io/usage/linguistic-features#section-pos-tagging</p>
 </div>
 </div>
-</body>
+
+</main>
+
+
+    <BR><BR>
+    <footer class="text-muted">
+      <div class="container">
+        <p class="float-right">
+          <a href="#">Back to top</a>
+        </p>
+        <p>&copy; Manuel Amunategui</p>
+        <p>All articles and walkthroughs are posted for entertainment and education only - use at your own risk. I unfortunately don't have time to respond to support questions, please post them on Stackoverflow or in the comments of the corresponding YouTube videos and the community may help you out. Happy learning!</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+     <script src="http://holderjs.com/holder.js"></script>
+  </body>
 </html>
