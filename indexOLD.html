@@ -1,0 +1,1042 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Data Exploration & Machine Learning, Hands-on</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="blog.css" rel="stylesheet">
+ 
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55202104-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-55202104-1');
+  </script>
+
+  </head>
+
+
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item active" href="index.html">Home</a>
+          <a class="blog-nav-item" href="https://www.linkedin.com/in/manuel-amunategui-20748923" target='_blank'>Linkedin</a>
+          <a class="blog-nav-item" href="https://www.youtube.com/user/mamunate/videos" target='_blank'>Videos</a>
+          <a class="blog-nav-item" href="https://github.com/amunategui/Feedback/issues/new" target='_blank'>Feedback</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="blog-header">
+        <p style="text-align:center">
+          <a href='udemy/index.html'>
+            <img src="udemy_ad.png" alt="Udemy Classes" 
+                   style='padding:1px; border:0px solid #021a40; width: 50%; height: 50%'>
+            </a>
+        </p>
+        <h1 class="blog-title">Data Exploration & Machine Learning, Hands-on</h1>
+        <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+      </div>
+
+      <div class="row">
+
+        <div class="col-sm-8 blog-main">
+          <div class="blog-post">
+          <table cellpadding="5" cellspacing="5">
+            <tr>
+              <td><img src="medium/medium-logo.png" alt="Medium" style='padding:1px; border:1px solid #021a40; width: 90%; height: 90%'>
+              </td>
+              <td><p><b>For more tech and data science insights, find me on Medium.com</b><br>Give it a clap or many!</p></td>
+            </tr>
+          </table>
+          <BR>
+           <table cellpadding="10" cellspacing="10">
+              <tr>
+              <td>
+              <p><a href='https://medium.com/@amunategui/executive-time-management-dont-suffocate-the-creative-process-8c99aaa8a7fd' target='_blank'>
+              <b>Executive Time Management — Don’t Suffocate the Creative Process</b>
+              Who’s stuck in meetings all day long and chronically strapped for time? Yes, the executive. If you know one, lack of time to think and…
+              <br><i>Jun 13, 2018</i></a></p>
+              </td>
+              </tr><tr>
+              <td>
+              <p><a href='https://medium.com/@amunategui/staying-relevant-in-tech-aeb19fe74716' target='_blank'>
+              <b>Staying Relevant in Tech, Telltale Signs That You’re on Track</b>
+              You know the Millennium Falcon and its hyperdrive? Where stars in the sky stretch out and passengers sink in their seats with constipated…
+              <br><i>Jun 8, 2018</i></a></p>
+              </td>
+              </tr><tr>
+              <td>
+              <p><a href='https://medium.com/@amunategui/coding-with-boxing-gloves-fighting-for-your-customers-happiness-9c68bc36894d' target='_blank'>
+              <b>Coding With Boxing Gloves & The Fight For Your Customer’s Happiness</b>
+              About 10 years ago, while working on Wall Street (literally, our office leaned against the American Stock Exchange), I bumped into a…
+              <br><i>Jun 2, 2018</i></a></p>
+              </td>
+              </tr><tr>
+              <td>
+              <p><a href='https://medium.com/@amunategui/the-workflow-of-the-highly-trained-professional-the-last-fortress-against-a-i-21e601a171c3' target='_blank'>
+              <b>The Workflow of the Highly-Trained Professional, The Last Fortress Against A.I.</b>
+              Let me reassure those who fear the world of the human professional is about to end. I spent a few years as a data scientist working for a…
+              <br><i>May 29, 2018</i></a></p>
+              </td>
+              </tr><tr>
+              <td>
+              <p><a href='https://medium.com/@amunategui/find-your-next-programming-language-by-measuring-the-knowledge-gap-32e1d5a46ff4' target='_blank'>
+              <b>Find Your Next Programming Language By Measuring “The Knowledge Gap” on StackOverflow.com</b>
+              Ten years ago, I was in the mood for a new programming language. The statement may sound casual and easy, but it was anything but that. I…
+              <br><i>May 24, 2018</i></a></p>
+              </td>
+              </tr><tr>
+              <td>
+              <p><a href='https://medium.com/@amunategui/my-1-piece-of-advice-for-aspiring-data-scientists-6aac56545fcd' target='_blank'>
+              <b>My #1 Piece of Advice for Aspiring Data Scientists</b>
+              Whenever I am asked how to break into this field, I reply, ‘push it out into the public domain on a regular basis’.
+              <br><i>May 21, 2018</i></a></p>
+              </td>
+              </tr><tr>
+              <td>
+              <p><a href='https://medium.com/@amunategui/understanding-your-stance-on-a-i-ethics-after-the-fact-thats-ok-ab4d027eaa' target='_blank'>
+              <b>Understanding Your Stance On A.I. Ethics After The Fact? That’s OK</b>
+              It’s certainly a lot better than not thinking about it at all. As a software producer for many years now, a trick I have relied on time and…
+              <br><i>May 18, 2018</i></a></p>
+              </td>
+              </tr>
+        </table>
+ 
+              
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='fast-gpu-gcloud'>
+              <h2 class="blog-post-title">GPUs on Google Cloud - the Fast Way & the Slow Way</h2>
+              <p class="blog-post-meta">Jun 16, 2018</p>
+              <p style="text-align:center">
+              <img src="fast-gpu-gcloud/img/intro-gpus-gcp.png" alt="rescue bot"
+                   style='padding:1px; border:1px solid #021a40; width: 40%; height: 40%'>
+              </p>
+              <p>Here are the notes on the two methods presented in the video to get GPUs up-and-running for Tensorflow on Google Cloud. A quick one using pre-built Jetware instances and another from scratch using a VM.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+
+          <div class="blog-post">
+            <a href='pairing-rl-and-ml'>
+              <h2 class="blog-post-title">Pairing Reinforcement Learning and Machine Learning, an Enhanced Emergency Response Scenario</h2>
+              <p class="blog-post-meta">Jun 4, 2018</p>
+              <p style="text-align:center">
+              <img src="pairing-rl-and-ml/img/image001.jpg" alt="rescue bot"
+                   style='padding:1px; border:1px solid #021a40; width: 40%; height: 40%'>
+              </p>
+              <p>Extending Reinforcement Learning/Q-Learning with ML and IoT to benefit from the best aspects of each modeling technique.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='Extracting-Chatbot-Scenarios-From-Customer-Service-Scripts'>
+              <h2 class="blog-post-title">Chatbot Conversations From Customer Service Transcripts</h2>
+              <p class="blog-post-meta">Apr 29, 2018</p>
+              <p style="text-align:center">
+              <img src="Extracting-Chatbot-Scenarios-From-Customer-Service-Scripts/Images/Pasted%20Graphic%205.png" alt="Dialogflow"
+                   style='padding:1px; border:1px solid #021a40; width: 30%; height: 30%'>
+              </p>
+              <p>Chatbots are all the rage these days and we get a lot of requests for them at SpringML. They not only have that “AI” chic, they also offer faster customer service at a much cheaper cost - a huge win-win. Though chatbot technology is mature and available today, see Dialogflow from Google as an example of how easy it is to implement, building a good one is no trivial task. The last thing you want to do is anger customers that are reaching out for help.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+          <div class="blog-post">
+            <a href='simple-flask-on-azure'>
+              <h2 class="blog-post-title">Serverless Hosting On Microsoft Azure - A Simple Flask Example</h2>
+              <p class="blog-post-meta">Apr 8, 2018</p>
+              <p style="text-align:center">
+              <img src="simple-flask-on-azure/img/azure-logo.png" alt="Serverless Hosting on Azure"
+                   style='padding:1px; border:1px solid #021a40; width: 30%; height: 30%'>
+              </p>
+              <p>Let’s see how we can run the basic "Hello World" Flask application on Microsoft Azure’s serverless Web Apps. We'll keep things as simple as possible to get a feel of the minimum steps needed to get up-and-running on the web.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+         <div class="blog-post">
+            <a href='google-video-transfer-learning'>
+              <h2 class="blog-post-title">Google Video Intelligence, TensorFlow And Inception V3 - Recognizing Not-So-Famous-People</h2>
+              <p class="blog-post-meta">Mar 30, 2018</p>
+              <p style="text-align:center">
+              <img src="google-video-transfer-learning/img/app-engine-output.png" alt="video facial recognition"
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>This is the second part to the previous blog entry <i>Google's Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Biographies in Real Time</i>. The celebrity pipeline could chew through a celebrity video faster than we can say protagonist! Can we divert some of that speed and instight towards something other than finding celebrities? What if you we wanted to identify regular people? Or any other entity not currently offered with Google Video Intelligence? Yes, we can!</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+         <div class="blog-post">
+            <a href='rapid-prototyping-app-engine-yelp/index.html'>
+              <h2 class="blog-post-title">Rapid Prototyping on Google App Engine - Trip Planner with Google Maps and Yelp</h2>
+              <p class="blog-post-meta">Jan 20, 2018</p>
+              <p style="text-align:center">
+              <img src="rapid-prototyping-app-engine-yelp/img/Portland-Boise-Florists.png" alt="Portland to Boise one Florist at a time"
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>Easily Extend your Python ML Models into Interactive Web Applications - Let's build a web application to map out trips and plot specific businesses along the route every fifty miles or so using Yelp and Google App Engine.  </p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='yelp-v3-cross-country-trip/index.html'>
+              <h2 class="blog-post-title">Yelp v3 and a Romantic Trip Across the USA, One Florist at a Time</h2>
+              <p class="blog-post-meta">Jan 6, 2018</p>
+              <p style="text-align:center">
+              <img src="yelp-v3-cross-country-trip/img/zipping-across-us.png" alt="art album"
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>Just in time for Valentine’s Day, if you happen to be planning a trip across the United States and want to offer your companion a rose at every degree of latitude traveled, then this walk-through is for you! <BR><BR>
+
+We'll use the Yelp v3 API to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times. This is an updated take on the previous walk-though I did 3 years ago. This one uses the new Yelp v3 API and is written in Python. The second part will extend this into an interactive web-app on Google Cloud. </p>
+              </a>
+          </div><!-- /.blog-post -->
+  
+        <div class="blog-post">
+            <a href='free-website-on-github/index.html'>
+              <h2 class="blog-post-title">Show it to the World! Build a Free Art Portfolio Website on GitHub.io in 20 Minutes!</h2>
+              <p class="blog-post-meta">Jan 1, 2018</p>
+              <p style="text-align:center">
+              <img src="free-website-on-github/img/art-album.png" alt="art album"
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>GitHub.io is a great option if you want to host a static website for free. With basic tools such as HTML, JavaScript, Jekyll and Bootstrap you can make a professional-looking site in no time.
+                <BR><BR>
+Let's build a site that displays pictures or artwork using thumbnails with the ability to click on them to see larger versions of the images. This will make a perfect portfolio website for that budding artist in your family (which is where I got the idea in the first place with my artistically-inclined son). </p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+
+        <div class="blog-post">
+            <a href='google-actor-recognition/index.html'>
+              <h2 class="blog-post-title">Google Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Biographies in Real Time</h2>
+              <p class="blog-post-meta">Dec 16, 2017</p>
+              <p style="text-align:center">
+              <img src="google-actor-recognition/img/blade-young.png" alt="recognizing actors"
+                   style='padding:1px; border:1px solid #021a40; width: 60%; height: 60%'>
+              </p>
+              <p>For around 200 lines of code you can process a popular movie-clip down to the actor's face and biography in a fully automated pipeline! This may seem like a lot of code, but just five years ago it would have required tens of thousands of lines and a headache.<BR><BR>
+
+              At SpringML, we’ve built many solutions using the versatile Google Cloud suite of APIs but some of the funnest projects have been working with the Google Video Intelligence and Vision APIs in particular. Leveraging these two powerful APIs is like having an army of convolutional neural-network PhDs at your beck and call.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+        <div class="blog-post">
+            <a href='life-expectancy/index.html'>
+              <h2 class="blog-post-title">Life Coefficients - Modeling Life Expectancy and Prototyping it on the Web with Flask and PythonAnywhere</h2>
+              <p class="blog-post-meta">Dec 2, 2017</p>
+              <p style="text-align:center">
+              <img src="life-expectancy/img/header-image2.png" alt="life expectancy"
+                   style='padding:1px; border:1px solid #021a40; width: 60%; height: 60%'>
+              </p>
+              <p>I’m going to walk through a simple linear regression model on estimating life expectancy in Python and build it into an interactive web application using Flask and PythonAnywhere. Check out a version that I built at TimeLeftToLive.com. I see this topic as an important awareness tool but I apologize in advance if I’m going to depress anybody. It’s up there with those interactive banking tools reminding you how much money you don’t have to properly retire. This is a surprisingly easy model to build using solid data curated by top statisticians. Two top sources are the World Health Organization (WHO) and the Central Intelligence Agency (CIA).</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='unconventional-convolutional-networks/index.html'>
+              <h2 class="blog-post-title">Convolutional Neural Networks And Unconventional Data - Predicting The Stock Market Using Images</h2>
+              <p class="blog-post-meta">Nov 2, 2017</p>
+              <p style="text-align:center">
+              <img src="unconventional-convolutional-networks/img/data_transform2.png" alt="creating thousands of synthetic charts"
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>This post is about taking numerical data, transforming it into images and modeling it with convolutional neural networks. In other words, we are creating synthetic image-representation of quantitative data, and seeing if a CNN brings any additional modeling understanding, accuracy, a boost via ensembling, etc. CNN’s are hyper-contextually aware - they know what’s going on above, below, to the right and to the left, even what is going on in front and behind if you use image depth.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+
+        <div class="blog-post">
+            <a href='fallacy-venn-diagram/index.html'>
+              <h2 class="blog-post-title">The Fallacy of the Data Scientist's Venn Diagram</h2>
+              <p class="blog-post-meta">Nov 1, 2017</p>
+              <p style="text-align:center">
+              <img src="fallacy-venn-diagram/img/data-science-venn.png" alt="original data science venn diagram" 
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>Well, fallacy may be a strong word, how about incomplete? I’m talking about the Venn diagram that depicts the skills needed to be a data scientist. Today, after a few years as a data scientist, this is how I would draw it...</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='reinforcement-learning/index.html'>
+              <h2 class="blog-post-title">Reinforcement Learning - A Simple Python Example and a Step Closer to AI with Assisted Q-Learning</h2>
+              <p class="blog-post-meta">Sep 30, 2017</p>
+              <p style="text-align:center">
+              <img src="reinforcement-learning/img/looking-for-honey.png" alt="looking for honey" 
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>Machine learning used to be either supervised or unsupervised, but today it can be reinforcement learning as well! Here we’ll start with a very simple Python example of Q-learning to find the shortest path between two points. Then we'll explore a more conceptual example to think about ways to intelligently extend Q-Learning to today's problems.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='simple-heuristics/index.html'>
+              <h2 class="blog-post-title">Simple Heuristics - Graphviz and Decision Trees to Quickly Find Patterns in your Data</h2>
+              <p class="blog-post-meta">Sep 13, 2017</p>
+              <p style="text-align:center">
+              <img src="simple-heuristics/img/iris-two-deep.png" alt="iris data splits" 
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>Before breaking out the big algos on a new dataset, it is a good idea to first explore the simple, intuitive patterns (i.e. heuristics). This will pay off in droves. It not only exposes you to your data, it makes you understand it and gives you that critical 'business knowledge'. People you work with will ask you general questions about the data, and this is how you can get to it. In this post will explore how to find the important values that explain a particular target outcome. We'll use sklearn's DecisionTreeClassifier and graphviz for exporting and visualizing resulting trees.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+        <div class="blog-post">
+            <a href='office-automation-part3/index.html'>
+              <h2 class="blog-post-title">Office Automation Part 3 - Classifying Enron Emails with Google's Tensorflow Deep Neural Network Classifier</h2>
+              <p class="blog-post-meta">Jul 2, 2017</p>
+              <p style="text-align:center">
+              <img src="office-automation/img/word-vectors.png" alt="Word Vectors" 
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>This is the last video/post in the Enron and word2vec series - thanks for hanging in and hopefully you'll find this fun. This is where we bring it all together and come up with a production-grade, classification solution to routing emails automatically.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+        <div class="blog-post">
+            <a href='office-automation-part2/index.html'>
+              <h2 class="blog-post-title">Office Automation Part 2 - Using Pre-Trained Word-Embedded Vectors to Categorize the Enron Email Dataset</h2>
+              <p class="blog-post-meta">June 18, 2017</p>
+              <p style="text-align:center">
+              <img src="office-automation/img/word-vectors.png" alt="Word Vectors" 
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>Second video of 3, here we use pre-trained word-embedded vectors to find clear logical and thematic clusters in the Enron email dataset.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='office-automation/index.html'>
+              <h2 class="blog-post-title">Office Automation Part 1 - Sorting Departmental Emails with Tensorflow and Word-Embedded Vectors</h2>
+              <p class="blog-post-meta">June 14, 2017</p>
+              <p style="text-align:center">
+              <img src="office-automation/img/word-vectors.png" alt="Word Vectors" 
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>First part out of 3, word2vec on Tensorflow and modeling the Enron Email Dataset. We'll clean up the emails, model it with word2vec skip-gram and cluster it to discover themes.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+ 
+         <div class="blog-post">
+            <a href='market-profile/index.html'>
+              <h2 class="blog-post-title">Easy Market Profile in Python: Grasp Price Action Quickly</h2>
+              <p class="blog-post-meta">April 21, 2017</p>
+              <p style="text-align:center">
+              <img src="market-profile/img/market_profile_gld.png" alt="Market Profile" 
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>Let’s build a market profile chart using Python in about 30 lines of code. This is a bare version of J.P Steidlmayer’s charting system, but should give you a good idea of market distribution within a particular time frame and where the market spent most of its time.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+
+         <div class="blog-post">
+            <a href='what-if/index.html'>
+              <h2 class="blog-post-title">What-if Roadmap - Assessing Live Opportunities and their Paths to Success or Failure</h2>
+              <p class="blog-post-meta">March 5, 2017</p>
+              <p style="text-align:center">
+              <img src="what-if/img/choices.png" alt="Choices" 
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>In the pursuit of actionable insights, we can use historical closed opportunities that are similar to open ones and analyze what made one win and another lose. This doesn’t necessarily have to be sales data, it can be anything that hasn’t reached some outcome or end point - where there is an unknown outcome and a desire to coax it in a particular direction.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+
+
+         <div class="blog-post">
+            <a href='C50-rules/index.html'>
+              <h2 class="blog-post-title">Where Are Your Customers Coming From And Where Are They Going - Reporting On Complex Customer Behavior In Plain English With C5.0</h2>
+              <p class="blog-post-meta">December 26, 2016</p>
+              <p style="text-align:center">
+              <img src="C50-rules/img/C50-globe.png" alt="C50 Globe" 
+                   style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+              </p>
+              <p>C5.0 outputs a set of complex, non-linear rules describing what features and at what level provide the most lift to a model. With minimal prep-work, see how we can easily automate the reporting of results using a structure similar to the spoken language, something that anybody can understand - no statistics degree required!</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+
+        <div class="blog-post">
+            <a href='databricks-spark-bayes/index.html'>
+              <h2 class="blog-post-title">Databricks, SparkR and Distributed Naive Bayes Modeling</h2>
+              <p class="blog-post-meta">November 26, 2016</p>
+              <p style="text-align:center">
+              <img src="databricks-spark-bayes/img/heads_or_tails.png" alt="r and azure" 
+                   style='padding:1px; border:1px solid #021a40; width: 35%; height: 35%'>
+              </p>
+              <p>One of the recent additions to SparkR is the Naive Bayes classification model. It's simple, fast and accurate - perfect for working with large data sets in distributed environments - yep, perfect for Spark!  Here is a look at the model in action with some of its limitations and workarounds.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+
+        <div class="blog-post">
+            <a href='r-and-azureml/index.html'>
+              <h2 class="blog-post-title">R and Azure ML - Your One-Stop Modeling Pipeline in The Cloud!</h2>
+              <p class="blog-post-meta">November 20, 2016</p>
+              <p style="text-align:center">
+              <img src="r-and-azureml/img/azure_and_r.jpg" alt="r and azure" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>At the risk of being accused of only using Amazon Web Services, here is a look at modeling using Microsoft Azure Machine Learning Studio along with the R programming language. It is chock-full of data munging, modeling, and delivery functions!</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+         <div class="blog-post">
+            <a href='pseudo-coefficients/index.html'>
+              <h2 class="blog-post-title">Get Your "all-else-held-equal" Odds-Ratio Story for Non-Linear Models!</h2>
+              <p class="blog-post-meta">November 15, 2016</p>
+              <p style="text-align:center">
+              <img src="pseudo-coefficients/img/pseudo.png" alt="pseudo coefficients" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>On one hand we have tree-based classifiers and deep-belief networks and on the other, linear regression models. What the latter lacks in terms of coolness and precision certainly makes up in transparency and actionability. People just love their coefficients and odd ratios. Here is an approach to extract odds out of tree-based classifiers so you too can say 'all else held equal, a one unit change in x, will result in a pseudo-coefficient change of something in y'. The bonus here is that we capture non-linear movements - this can yield a lot of intelligence out of your variables!</p>
+              </a>
+          </div><!-- /.blog-post -->
+          
+          <div class="blog-post">
+            <a href='markov-chains/index.html'>
+              <h2 class="blog-post-title">Predict Stock-Market Behavior using Markov Chains and R</h2>
+              <p class="blog-post-meta">August 31, 2016</p>
+              <p style="text-align:center">
+              <img src="markov-chains/img/markov.png" alt="Markov" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>We apply Markov Chains to map and understand stock-market behavior using the R programming language. 
+                By using 2 transition matrices instead of one, we are able to weigh the probability of a 
+                binary outcome.</p>
+              </a>
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='all-hacker-news/index.html'>
+              <h2 class="blog-post-title">Big Data Surveillance: Use EC2, PostgreSQL and 
+                Python to Download all Hacker News Data!</h2>
+              <p class="blog-post-meta">July 20, 2016</p>
+              <p style="text-align:center">
+              <img src="all-hacker-news/img/big-data-surveillance.png" alt="Big Data Surveillance" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>We'll first look at the Algolia API and Max Woolf's scripts to download all Hacker News data using EC2 and 
+                PostgreSQL, then we'll look at the Firebase/Hacker News API web service to pull specific content by ID.</p>
+            </a>
+          </div><!-- /.blog-post -->
+          
+
+
+          <div class="blog-post">
+            <a href='peter_norvig_magic_spell_checker/index.html'>
+              <h2 class="blog-post-title">The Peter Norvig Magic Spell Checker in R</h2>
+              <p class="blog-post-meta">June 16, 2016</p>
+              <p style="text-align:center">
+              <img src="peter_norvig_magic_spell_checker/img/wizard-spell.png" alt="Peter Norvig Magic Spell Checker" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Peter Norvig, Director of Research at Google, offers a clever way for any of us to create a good spell checker
+                with nothing more than a few lines of code and some text data.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+
+
+           <div class="blog-post">
+            <a href='actionable-instights/index.html'>
+              <h2 class="blog-post-title">Actionable Insights: Getting Variable Importance at the Prediction Level in R</h2>
+              <p class="blog-post-meta">May 2, 2016</p>
+              <p style="text-align:center">
+              <img src="actionable-instights/img/ROBOT.png" alt="Actionable Insights" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Here is an easy way to get the top and bottom features contributing to a prediction. This affords a level of transparency to the report reader in understanding why the model chose a particular probability for an observation.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+           <div class="blog-post">
+            <a href='survival-ensembles/index.html'>
+              <h2 class="blog-post-title">Survival Ensembles: Survival Plus Classification for Improved Time-Based Predictions in R</h2>
+              <p class="blog-post-meta">March 19, 2016</p>
+              <p style="text-align:center">
+              <img src="survival-ensembles/img/suviving-suvival-models.png" alt="Survival Ensembles" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>In this post we'll look at extracting AUC scores from survival models, blending and ensembling random forest survival with gradient boosting classification models, and measuring improvements on time-based predictions.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='anomaly-detection-h2o/index.html'>
+              <h2 class="blog-post-title">Anomaly Detection: Increasing Classification Accuracy with H2O's Autoencoder and R</h2>
+              <p class="blog-post-meta">January 11, 2016</p>
+              <p style="text-align:center">
+              <img src="anomaly-detection-h2o/img/encoding_squeeze.png" alt="Anomaly Detection" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Use H2O's anomaly detection with R to separate data into easy and hard to model subsets and gain predictive insight.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+ 
+          <div class="blog-post">
+            <a href='h2o-on-aws/index.html'>
+              <h2 class="blog-post-title">H2O & RStudio Server on Amazon Web Services (AWS), the Easy Way!</h2>
+              <p class="blog-post-meta">December 27, 2015</p>
+              <p style="text-align:center">
+              <img src="h2o-on-aws/img/river.png" alt="H2O on AWS" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>See how easy it is to install H2O and RStudio Server on Amazon Web Services (AWS) from scratch. No need of customized AMIs or third party tools - no training wheels here! And the best part is that we can do everything from the Amazon Web Service wizard, no need to tunnel or putty anywhere!</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='accessing-the-gutenberg-library/index.html'>
+              <h2 class="blog-post-title">Analyze Classic Works of Literature from Around the World with Project Gutenberg and R</h2>
+              <p class="blog-post-meta">December 12, 2015</p>
+              <p style="text-align:center">
+              <img src="accessing-the-gutenberg-library/img/shakespeare.jpg" alt="Project Gutenberg" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Project Gutenberg offers and easy way to download over 50,000 classic works of literature from around the world in digital format using the R language.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='speak-like-a-doctor/index.html'>
+              <h2 class="blog-post-title">Speak Like a Doctor - Use Natural Language Processing to Predict Medical Words in R</h2>
+              <p class="blog-post-meta">November 22, 2015</p>
+              <p style="text-align:center">
+              <img src="speak-like-a-doctor/img/binary-doctor.png" alt="NLP" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Using R, natural language processing (NLP), a medical corpus, and a Shiny application, we build an interactive tool to predict what a doctor will say next.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+      <div class="blog-post">
+            <a href='sparkr/index.html'>
+              <h2 class="blog-post-title">Supercharge R with Spark: Getting Apache's SparkR Up and Running on Amazon Web Services (AWS)</h2>
+              <p class="blog-post-meta">September 30, 2015</p>
+              <p style="text-align:center">
+              <img src="sparkr/img/Spark.png" alt="RSpark" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>See how easy it is to set up a few SparkR clusters and to control them from RStudio. In this first installment, we'll set up multiple clusters on Amazon's AWS EC2 and control them via RStudio.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+         <div class="blog-post">
+            <a href='excel-data-dumps/index.html'>
+              <h2 class="blog-post-title">R and Excel: Making Your Data Dumps Pretty with XLConnect</h2>
+              <p class="blog-post-meta">July 7, 2015</p>
+              <p style="text-align:center">
+              <img src="excel-data-dumps/img/r-and-excel.png" alt="R and Excel" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>When it comes to exporting data, one has many formats to choose from. But if you're looking for something more sophisticated than a comma-delimited file but aren't ready for an off-the-shelf content-management system, then Excel may be what you need in presenting content in a more digestible format.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+         <div class="blog-post">
+            <a href='idea-to-pitch/index.html'>
+              <h2 class="blog-post-title">Going from an Idea to a Pitch: Hosting your Python Application using Flask and Amazon Web Services (AWS)</h2>
+              <p class="blog-post-meta">June 12, 2015</p>
+              <p style="text-align:center">
+              <img src="idea-to-pitch/img/flask.png" alt="Flask and AWS" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>This walk-through is about demonstrating how easy it is to transform an idea into a web application. This is for those who want to quickly pitch their application to the world without getting bogged down by technical details. This is for the weekend warrior. If the application is a success, people with real skills will be brought in to do the job right, in the meantime we want it fast, cheap and easy. We'll use Python, Flask, and EC2 Amazon Web Services to migrate an program into a web application.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='pubmed-query/index.html'>
+              <h2 class="blog-post-title">Getting PubMed Medical Text with R and Package {RISmed}</h2>
+              <p class="blog-post-meta">April 17, 2015</p>
+              <p style="text-align:center">
+              <img src="pubmed-query/img/pubmed.png" alt="PubMed Medical Text" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>PubMed is a great source of medical literature. If you are working on a Natural Language Processing (NLP) project and need 100's or 1000's of topic-based medical text, the RISmed package can simplify and automate that process.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='variable-importance-shuffler/index.html'>
+              <h2 class="blog-post-title">Find Variable Importance for any Model - Prediction Shuffling with R</h2>
+              <p class="blog-post-meta">March 27, 2015</p>
+              <p style="text-align:center">
+              <img src="variable-importance-shuffler/img/shuffler.png" alt="Variable Importance" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>You model and predict once to get a benchmark score, then predict hundreds of times for each variable while randomizing it each time. If the variable being randomized hurts the model's benchmark score, then its an important variable. If nothing changes then its a useless variable.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='bagging-in-R/index.html'>
+              <h2 class="blog-post-title">Bagging / Bootstrap Aggregation with R</h2>
+              <p class="blog-post-meta">March 7, 2015</p>
+              <p style="text-align:center">
+                <img src="bagging-in-R/img/PotOfGold.png" alt="Bagging & Bootstrap" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Bagging is the not-so-secret edge of the competitive modeler. By sampling and modeling a training data set hundreds of times and averaging its predictions, you may just get that accuracy boost that puts you above the fray.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+ 
+          <div class="blog-post">
+            <a href='feature-hashing/index.html'>
+              <h2 class="blog-post-title">Feature Hashing (a.k.a. The Hashing Trick) With R</h2>
+              <p class="blog-post-meta">February 21, 2015</p>
+              <p style="text-align:center">
+                <img src="feature-hashing/img/factors.png" alt="Feature Hashing" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Feature hashing is a clever way of modeling data sets containing large amounts of factor and character data. It uses less memory and requires little pre-processing. In this walkthrough, we model a large healthcare data set by first using dummy variables and then feature hashing.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='yelp-cross-country-trip/index.html'>
+              <h2 class="blog-post-title">Yelp, httr and a Romantic Trip Across the United States, One Florist at a Time</h2>
+              <p class="blog-post-meta">January 14, 2015</p>
+              <p style="text-align:center">
+                <img src="yelp-cross-country-trip/img/cross-country-florist2.png" alt="Yelp & R" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>The title says it all, we are going to use Yelp to cross the United States from San Francisco, CA to New York City, NY, and be 60 miles from a florist at all times.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='supervised-summarizer/index.html'>
+              <h2 class="blog-post-title">Quantifying the Spread: Measuring Strength and Direction of Predictors with the Summary Function</h2>
+              <p class="blog-post-meta">December 27, 2014</p>
+              <p style="text-align:center">
+                <img src="supervised-summarizer/img/summarized-summary-plots.png" alt="Measuring Predictiors" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Use the Summary() function to quickly and intuitively measure predictors. By splitting the data into two sets, one for each outcome, and summarizing them individually, we can plot and measure behaviors towards the outcome variable. Simple, easy, and fast!</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='google-trends-walkthrough/index.html'>
+              <h2 class="blog-post-title">Downloading Data from Google Trends And Analyzing It With R</h2>
+              <p class="blog-post-meta">December 17, 2014</p>
+              <p style="text-align:center">
+                <img src="google-trends-walkthrough/img/googletrends.png" alt="Google Trends" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>In this walkthrough, I introduce Google Trends by querying it directly through the web, downloading a comma-delimited file of the results, and analyzing it in R.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='stringdist/index.html'>
+              <h2 class="blog-post-title">Using String Distance {stringdist} To Handle Large Text Factors, Cluster Them Into Supersets
+
+</h2>
+              <p class="blog-post-meta">November 30, 2014</p>
+              <p style="text-align:center">
+                <img src="stringdist/img/unnamed-chunk-6.png" alt="stringdist" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>{stringdist} can help make sense of large, text-based factor variables by clustering them into supersets. This approach preserves some of the content's substance without having to resort to full-on, natural language processing.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+
+          <div class="blog-post">
+            <a href='smote/index.html'>
+              <h2 class="blog-post-title">SMOTE - Supersampling Rare Events in R</h2>
+              <p class="blog-post-meta">November 13, 2014</p>
+              <p style="text-align:center">
+                <img src="smote/img/title.png" alt="SMOTE" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Brief introduction of the SMOTE package and over-sampling imbalanced data sets. SMOTE uses bootstrapping and k-nearest neighbor to synthetically create additional observations.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+          <div class="blog-post">
+            <a href='wallstreet/index.html'>
+              <h2 class="blog-post-title">Let's Get Rich! See how {quantmod} And R Can Enrich Your Knowledge Of The Financial Markets!</h2>
+              <p class="blog-post-meta">November 10, 2014</p>
+              <p style="text-align:center">
+                <img src="wallstreet/img/unnamed-chunk-11.png" alt="Quantmod" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>See how easy it is display great looking current stock charts in 2 lines of code and then stock market data and use it all to build a complex market model.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+      <div class="blog-post">
+            <a href='dealing-with-large-files/index.html'>
+              <h2 class="blog-post-title">How To Work With Files Too Large For A Computer’s RAM? Using R To Process Large Data In Chunks</h2>
+              <p class="blog-post-meta">November 4, 2014</p>
+              <p style="text-align:center">
+                <img src="dealing-with-large-files/img/memory.png" alt="Dealing with large data sets" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Using the function read.table(), we break file into chunks in order to process them. This allows processing files of any size beyond what the machine's RAM can handle.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='multinomial-neuralnetworks-walkthrough/index.html'>
+              <h2 class="blog-post-title">Predicting Multiple Discrete Values with Multinomials, Neural Networks and the {nnet} Package</h2>
+              <p class="blog-post-meta">November 1, 2014</p>
+              <p style="text-align:center">
+                <img src="multinomial-neuralnetworks-walkthrough/img/converged.png" alt="Predicting Multiple Discrete Values" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Using R and the multinom function from the nnet package, we can easily predict discrete values (factors) of more than 2 levels. We also use Repeated Cross Validation to get an accurate model score and to understand the importance of allowing the model to converge (reaching global minima).</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+
+        <div class="blog-post">
+            <a href='binary-outcome-modeling/index.html'>
+              <h2 class="blog-post-title">Modeling 101 - Predicting Binary Outcomes with R, gbm, glmnet, and {caret}
+
+</h2>
+              <p class="blog-post-meta">October 22, 2014</p>
+              <p style="text-align:center">
+                <img src="binary-outcome-modeling/img/classification.png" alt="Caret Variable Importance" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>This walkthrough shows how to easily model binary outcomes using caret models, how to evaluate the predictions, and how to display variable importance.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+      <div class="blog-post">
+            <a href='high-demensions-pca/index.html'>
+              <h2 class="blog-post-title">Reducing High Dimensional Data with Principle Component Analysis (PCA) and prcomp</h2>
+              <p class="blog-post-meta">October 13, 2014</p>
+              <p style="text-align:center">
+                <img src="high-demensions-pca/img/pca.png" alt="Principle Component Analysis" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>In this R walkthrough, we'll see how PCA can reduce a 1000+ variable data set into 10 variables and barely lose accuracy! This is incredible, and everytime I play around with this, I still get amazed!</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+      <div class="blog-post">
+            <a href='sparse-matrix-glmnet/index.html'>
+              <h2 class="blog-post-title">The Sparse Matrix and {glmnet}</h2>
+              <p class="blog-post-meta">October 8, 2014</p>
+              <p style="text-align:center">
+                <img src="sparse-matrix-glmnet/img/sparse.png" alt="sparse glmnet" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Walkthrough of sparse matrices in R and basic use of the glmnet package. This will show how to create them, find the best probabilities through the glmnet model, and how a sparse matrix deals with categorical values.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='dummyVar-Walkthrough/index.html'>
+              <h2 class="blog-post-title">Brief Walkthrough Of The dummyVars Function From {caret}</h2>
+              <p class="blog-post-meta">October 2, 2014</p>
+              <p style="text-align:center">
+                <img src="dummyVar-Walkthrough/img/factor4.png" alt="Caret dummyVars Function" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>The dummyVars function streamlines the creation of dummy variables by quickly hunting down character and factor variables and transforming them into binaries, with or without full rank.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='fscaret-Walkthrough/index.html'>
+              <h2 class="blog-post-title">Ensemble Feature Selection On Steroids: {fscaret} Package</h2>
+              <p class="blog-post-meta">October 1, 2014</p>
+              <p style="text-align:center">
+                <img src="fscaret-Walkthrough/img/titanic.png" alt="fscaret" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Give fscaret an ensemble of models and some data, and it will have the ensemble vote on the importance of each feature to find the strongest ones. In this walkthrough, we use R and the classic Titanic data set to predict survivorship.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='ggmap-example/index.html'>
+              <h2 class="blog-post-title">Mapping The United States Census With {ggmap}</h2>
+              <p class="blog-post-meta">September 29, 2014</p>
+              <p style="text-align:center">
+                <img src="ggmap-example/img/unnamed-chunk-10.png" alt="ggmap example" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>ggmap enables you to easily map data anywhere around the world as long as you give it geographical coordinates. Here we overlay census data over a Google map of the United States.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='Exploring-Your-Data-Set/index.html'>
+              <h2 class="blog-post-title">Using Correlations To Understand Your Data</h2>
+              <p class="blog-post-meta">September 27, 2014</p>
+              <p style="text-align:center">
+                <img src="Exploring-Your-Data-Set/img/unnamed-chunk-9.png" alt="correlations" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>A great way to explore new data in R is to use a pairwise correlation matrix. This will pair every combination of your variables and measure the correlation between them.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+
+        <div class="blog-post">
+            <a href='EC2-RStudioServer/index.html'>
+              <h2 class="blog-post-title">Brief Guide On Running RStudio Server On Amazon Web Services</h2>
+              <p class="blog-post-meta">May 15, 2014</p>
+              <p style="text-align:center">
+                <img src="EC2-RStudioServer/img/runninginstance.png" alt="RStudio Server on AWS" 
+                   style='padding:1px; border:1px solid #021a40; width: 25%; height: 25%'>
+              </p>
+              <p>Steps you through installing pre-configured AMIs with RStudio Server on AWS EC2, interacting with the web interface, and uploading and downloading files to/from your instance.</p>
+            </a>
+          </div><!-- /.blog-post -->
+
+ 
+
+        </div><!-- /.blog-main -->
+
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+          <div class="sidebar-module sidebar-module-inset">
+            <h4>About <BR><B>Manuel Amunategui</B></h4>
+            <p>
+            <p><img src="https://en.gravatar.com/userimage/33909058/3cd1f8559ccb482feefc737a1c7917ef.png" alt="Manuel Amunategui" title="My mug"  class="img-thumbnail floatLeft" /></p>      
+            Hello! I am VP of Data Science at <a href='http://www.springml.com/' target='_blank'>SpringML</a>. I have worked as a data scientist in healthcare, finance, and sales<BR><BR>Invite me to speak at your company or school on Applied Machine Learning and Analytics, I love talking about this stuff! Reach me at manuel.amunategui@springml.com<BR><BR>Thanks!
+            </p>
+          </div>
+         <div class="sidebar-module">
+            <h5>Be the first to know about new posts, videos, and classes!              
+             <BR><BR>Enter your email address:</h5>
+            <p><form action="//formspree.io/amunategui@gmail.com" method="POST">
+                  <input type="email" name="_replyto" style="border: solid 1px #CCC; height: 21px; width: 200px; font-size: 15px; color: #999; padding-left: 5px; vertical-align: bottom"><BR>
+                  <input type="submit" value="Sign up" style="border: solid 1px #CCC; height: 25px; width: 115px; color: white;">
+                  <input type="hidden" name="_next" value="http://amunategui.github.io/" />
+            </form></p>
+           </div>
+            
+           <div class="sidebar-module">
+             <h5>All Walkthroughs:</h5>
+            <ol class="list-unstyled">
+
+             <li><p><a href='fast-gpu-gcloud/index.html'>GPUs on Google Cloud - the Fast Way & the Slow Way</a></p></li>  
+
+             <li><p><a href='pairing-rl-and-ml/index.html'>Pairing Reinforcement Learning and Machine Learning, an Enhanced Emergency Response Scenario</a></p></li>  
+
+            <li><p><a href='Extracting-Chatbot-Scenarios-From-Customer-Service-Scripts/index.html'>Chatbot Conversations From Customer Service Transcripts</a></p></li>
+
+            <li><p><a href='simple-flask-on-azure/index.html'>Serverless Hosting On Microsoft Azure - A Simple Flask Example</a></p></li>
+
+            <li><p><a href='google-video-transfer-learning/index.html'>Google Video Intelligence, TensorFlow And Inception V3 - Recognizing Not-So-Famous-People</a></p></li>
+   
+            <li><p><a href='rapid-prototyping-app-engine-yelp/index.html'>Rapid Prototyping on Google App Engine - Build a Trip Planner with Google Maps and Yelp</a></p></li>
+            
+            <li><p><a href='yelp-v3-cross-country-trip/index.html'>Yelp v3 and a Romantic Trip Across the USA, One Florist at a Time</a></p></li>
+            
+            <li><p><a href='free-website-on-github/index.html'>Show it to the World! Build a Free Art Portfolio Website on GitHub.io in 20 Minutes!</a></p></li>
+
+            <li><p><a href='google-actor-recognition/index.html'>Google Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Biographies in Real Time</a></p></li>
+
+            <li><p><a href='life-expectancy/index.html'>Life Coefficients - Modeling Life Expectancy and Prototyping it on the Web with Flask and PythonAnywhere</a></p></li>
+            
+            <li><p><a href='unconventional-convolutional-networks/index.html'>Convolutional Neural Networks And Unconventional Data - Predicting The Stock Market Using Images</a></p></li>
+            
+            <li><p><a href='fallacy-venn-diagram/index.html'>The Fallacy of the Data Scientist's Venn Diagram</a></p></li>
+            
+            <li><p><a href='reinforcement-learning/index.html'>Reinforcement Learning - A Simple Python Example and a Step Closer to AI with Assisted Q-Learning</a></p></li>
+
+            <li><p><a href='simple-heuristics/index.html'>Simple Heuristics - Graphviz and Decision Trees to Quickly Find Patterns in your Data</a></p></li>
+
+            <li><p><a href='office-automation-part3/index.html'>Office Automation Part 3 - Classifying Enron Emails with Google's Tensorflow Deep Neural Network Classifier</a></p></li>
+
+            <li><p><a href='office-automation-part2/index.html'>Office Automation Part 2 - Using Pre-Trained Word-Embedded Vectors to Categorize the Enron Email Dataset</a></p></li>
+
+            <li><p><a href='office-automation/index.html'>Office Automation Part 1 - Sorting Departmental Emails with Tensorflow and Word-Embedded Vectors</a></p></li>
+            
+            <li><p><a href='market-profile/index.html'>Easy Market Profile in Python: Grasp Price Action Quickly</a></p></li>
+
+            <li><p><a href='what-if/index.html'>What-if Roadmap - Assessing Live Opportunities and their Paths to Success or Failure</a></p></li>
+
+            <li><p><a href='C50-rules/index.html'>Where Are Your Customers Coming From And Where Are They Going - Reporting On Complex Customer Behavior In Plain English With C5.0</a></p></li>
+
+            <li><p><a href='databricks-spark-bayes/index.html'>Databricks, SparkR and Distributed Naive Bayes Modeling</a></p></li>
+
+            <li><p><a href='r-and-azureml/index.html'>R and Azure ML - Your One-Stop Modeling Pipeline in The Cloud!</a></p></li>
+
+            <li><p><a href='pseudo-coefficients/index.html'>Get Your "all-else-held-equal" Odds-Ratio Story for Non-Linear Models!</a></p></li>
+            
+            <li><p><a href='markov-chains/index.html'>Predict Stock-Market Behavior using Markov Chains and R</a></p></li>
+            
+            <li><p><a href="all-hacker-news/index.html">Big Data Surveillance: Use EC2, PostgreSQL and Python to Download all Hacker News Data!</a></p></li>
+            
+            <li><p><a href='peter_norvig_magic_spell_checker/index.html'>The Peter Norvig Magic Spell Checker in R</a></p></li>
+            
+            <li><p><a href='actionable-instights/index.html'>Actionable Insights: Getting Variable Importance at the Prediction Level in R</a></p></li>
+ 
+           <li><p><a href='survival-ensembles/index.html'>Survival Ensembles: Survival Plus Classification for Improved Time-Based Predictions in R</a></p></li>
+
+           <li><p><a href='anomaly-detection-h2o/index.html'>Anomaly Detection: Increasing Classification Accuracy with H2O's Autoencoder and R</a></p></li>
+
+           <li><p><a href='h2o-on-aws/index.html'>H2O & RStudio Server on Amazon Web Services (AWS), the Easy Way!</a></p></li>
+
+           <li><p><a href='accessing-the-gutenberg-library/index.html'>Analyze Classic Works of Literature from Around the World with Project Gutenberg and R</a></p></li>
+
+           <li><p><a href='speak-like-a-doctor/index.html'>Speak Like a Doctor - Use Natural Language Processing to Predict Medical Words in R</a></p></li>
+
+            <li><p><a href='sparkr/index.html'>Supercharge R with Spark: Getting Apache's SparkR Up and Running on Amazon Web Services (AWS)</a></p></li>
+
+
+            <li><p><a href='excel-data-dumps/index.html'>R and Excel: Making Your Data Dumps Pretty with XLConnect</a></p></li>
+
+
+            <li><p><a href='idea-to-pitch/index.html'>Going from an Idea to a Pitch: Hosting your Python Application using Flask and Amazon Web Services (AWS)</a></p></li>
+
+            <li><p><a href='pubmed-query/index.html'>Getting PubMed Medical Text with R and Package {RISmed}</a></p></li>
+
+
+            <li><p><a href='variable-importance-shuffler/index.html'>Find Variable Importance for any Model - Prediction Shuffling with R</a></p></li>
+
+            <li><p><a href='bagging-in-R/index.html'>Bagging / Bootstrap Aggregation with R</a></p></li>
+
+            <li><p><a href='feature-hashing/index.html'>Feature Hashing (a.k.a. The Hashing Trick) With R</a></p></li>
+
+            <li><p><a href='yelp-cross-country-trip/index.html'>Yelp, httr and a Romantic Trip Across the United States, One Florist at a Time</a></p></li>
+
+            <li><p><a href='supervised-summarizer/index.html'>Quantifying the Spread: Measuring Strength and Direction of Predictors with the Summary Function</a></p></li>
+
+            <li><p><a href='google-trends-walkthrough/index.html'>Downloading Data from Google Trends And Analyzing It With R</a></p></li>
+
+            <li><p><a href='stringdist/index.html'>Using String Distance {stringdist} To Handle Large Text Factors, Cluster Them Into Supersets</a></p></li>
+
+            <li><p><a href='smote/index.html'>SMOTE - Supersampling Rare Events in R</a></p></li>
+
+            <li><p><a href='wallstreet/index.html'>Let's Get Rich! See how {quantmod} And R Can Enrich Your Knowledge Of The Financial Markets!</a></p></li>
+
+
+            <li><p><a href='dealing-with-large-files/index.html'>How To Work With Files Too Large For A Computer’s RAM? Using R To Process Large Data In Chunks</a></p></li>
+
+            <li><p><a href='multinomial-neuralnetworks-walkthrough/index.html'>Predicting Multiple Discrete Values with Multinomials, Neural Networks and the {nnet} Package</a></p></li>
+
+            <li><p><a href='binary-outcome-modeling/index.html'>Modeling 101 - Predicting Binary Outcomes with R, gbm, glmnet, and {caret}</a></p></li>
+
+            <li><p><a href='high-demensions-pca/index.html'>Reducing High Dimensional Data with Principle Component Analysis (PCA) and prcomp</a></p></li>
+
+            <li><p><a href='sparse-matrix-glmnet/index.html'>The Sparse Matrix and {glmnet}</a></p></li>
+
+            <li><p><a href='dummyVar-Walkthrough/index.html'>Brief Walkthrough Of The dummyVars Function From {caret}</a></p></li>
+
+            <li><p><a href='fscaret-Walkthrough/index.html'>Ensemble Feature Selection On Steroids: {fscaret} Package</a></p></li>
+
+
+            <li><p><a href='ggmap-example/index.html'>Mapping The United States Census With {ggmap}</a></p></li>
+
+            <li><p><a href='Exploring-Your-Data-Set/index.html'>Using Correlations To Understand Your Data</a></p></li>
+
+
+            <li><p><a href='EC2-RStudioServer/index.html'>Brief Guide On Running RStudio Server On Amazon Web Services</a></p></li>
+
+
+            </ol>
+          </div>
+         
+        </div><!-- /.blog-sidebar -->
+
+      </div><!-- /.row -->
+
+    </div><!-- /.container -->
+
+    <footer class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>
