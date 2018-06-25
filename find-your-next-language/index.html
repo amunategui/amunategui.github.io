@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title>Tips From a Data Scientist</title>
+  <meta name="Author" content="Manuel Amunategui">
+  <meta name="CreationTime" content="2018-06-24T20:51:43Z">
+  <meta name="ModificationTime" content="2018-06-24T20:51:43Z">
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1561.4">
+  <style type="text/css">a:link {text-decoration:none;}
+a:visited {text-decoration:none;}
+a:hover {text-decoration:none;}
+
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 18.0px; font: 16.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.54); -webkit-text-stroke: rgba(0, 0, 0, 0.54); background-color: #ffffff}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 18.0px; font: 20.0px 'Helvetica Neue'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); min-height: 24.0px}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 23.0px; font: 20.0px 'Helvetica Neue'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); min-height: 24.0px}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 23.0px; font: 20.0px 'Helvetica Neue'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; line-height: 22.0px; font: 16.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.68); -webkit-text-stroke: rgba(0, 0, 0, 0.68)}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 33.0px; font: 21.0px Georgia; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff; min-height: 24.0px}
+    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 33.0px; font: 14.0px Georgia; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff}
+    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 33.0px; font: 14.0px Georgia; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff; min-height: 16.0px}
+    p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 33.0px; font: 14.0px Georgia; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); min-height: 16.0px}
+    p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 23.0px; font: 14.0px 'Helvetica Neue'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); min-height: 16.0px}
+    p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 23.0px; font: 14.0px 'Helvetica Neue'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)}
+    p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; line-height: 22.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.68); -webkit-text-stroke: rgba(0, 0, 0, 0.68)}
+    li.li8 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 33.0px; font: 14.0px Georgia; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff}
+    li.li10 {margin: 0.0px 0.0px 14.0px 0.0px; line-height: 33.0px; font: 14.0px Georgia; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)}
+    span.s1 {font-kerning: none}
+    span.s2 {font: 16.0px 'Lucida Grande'; font-kerning: none; color: rgba(0, 0, 0, 0.54); -webkit-text-stroke: 0px rgba(0, 0, 0, 0.54)}
+    span.s3 {font-kerning: none; background-color: #ffffff}
+    span.s4 {font: 14.0px 'Lucida Grande'; font-kerning: none}
+    span.s5 {font: 14.0px Georgia; font-kerning: none}
+    span.s6 {background-color: #ffffff}
+    ul.ul1 {list-style-type: disc}
+  </style>
+</head>
+<body>
+<div style="width: 600px; margin: 0 auto">
+
+<h1 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 43.0px; font: 42.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff"><span class="s1"><b>Find Your Next Programming Language By Measuring “The Knowledge Gap” on StackOverflow.com</b></span></h1>
+<p class="p2"><span class="s1">Published on May 24, 2018 on <a href="https://medium.com/@amunategui/find-your-next-programming-language-by-measuring-the-knowledge-gap-32e1d5a46ff4"><span class="s2">Medium.com</span></a></span></p>
+<p class="p3"><span class="s1"></span><br></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p5"><span class="s1"><img src="Images/1*b5xHZ3sic02kes6CUXVsoQ.jpg" width="100%" alt="Image"></span></p>
+<p class="p6"><span class="s3">(Source: Lucas Amunategui)</span></p>
+<p class="p7"><span class="s1"></span><br></p>
+<p class="p8"><span class="s1">Ten years ago, I was in the mood for a new programming language. The statement may sound casual and easy, but it was anything but that. I had cut my teeth on .net and ASP for a few years and was ready for something new and fresh, but not too experimental, as I wanted to grow my professional skillset and career prospects.</span></p>
+<p class="p9"><span class="s1"></span><br></p>
+<p class="p8"><span class="s1">I couldn’t ask those around me as we were all working under the same framework and using the same languages</span><span class="s4"> </span><span class="s1">—</span><span class="s4"> </span><span class="s1">it would’ve been about as useful as asking it to myself. And the prospects of asking for opinions, like which is better R or Python, and suffering through the resulting long circular monologues, sounded horrendous and of little help.</span></p>
+<p class="p8"><span class="s1">I sent out an email campaign to distant contacts and carried some conversations with people outside my company. This was the best I could come up with to avoid technical bias and social conformism.</span></p>
+<p class="p9"><span class="s1"></span><br></p>
+<p class="p8"><span class="s1">Things are different today as we have access to Stack Overflow, a phenomenal tool.</span></p>
+<p class="p9"><span class="s1"></span><br></p>
+<p class="p8"><span class="s1">As part of the site’s web stats, they break down the number of unanswered questions by programming language. In essence, they have invented a unit of measure, ‘the knowledge gap’. Check it out at <a href="https://stackoverflow.com/unanswered"><span class="s5">https://stackoverflow.com/unanswered</span></a> and look in the lower right of the page. When you think about it, you are getting two critical pieces of information:</span></p>
+<p class="p9"><span class="s1"></span><br></p>
+<ul class="ul1">
+  <li class="li10"><span class="s6"></span><span class="s3">How popular is the language</span></li>
+  <li class="li8"><span class="s1">How many are struggling with it</span></li>
+</ul>
+<p class="p11"><span class="s1"></span><br></p>
+<p class="p8"><span class="s1">If lots are struggling and it isn’t a popular language, then you conclude that the language is flawed and learning it is a bad career move. If it is popular but nobody has issues, then its probably a crowded field and not a good career move either. But when popularity and unanswered questions are aligned, boom, you’ve got a winner!</span></p>
+<p class="p8"><span class="s1">Currently, there’s almost 2 million unanswered questions and JavaScript is leading the pack.</span></p>
+<p class="p12"><span class="s1"></span><br></p>
+<p class="p12"><span class="s1"></span><br></p>
+<p class="p13"><span class="s1"><img src="Images/1*iKi_mRPUE48IqqT4uNofug.png" width="100%" alt="Image"></span></p>
+<p class="p9"><span class="s1"></span><br></p>
+<p class="p8"><span class="s1">For those that aren’t familiar with Stack Overflow, it is the lifeline of the tech community. We go there to whine and unload our troubles</span><span class="s4"> </span><span class="s1">—</span><span class="s4"> </span><span class="s1">like a psychoanalyst for programmers. If you post your questions and they are well formed, you’ll copy/paste you’re way out with a solution, if not, you’ll get slapped around</span><span class="s4"> </span><span class="s1">—</span><span class="s4"> </span><span class="s1">it’s very humbling. But if you’re like me with an endless supply of questions, you quickly grow a thick skin</span><span class="s4"> </span><span class="s1">—</span><span class="s4"> </span><span class="s1">as this is a huge time saver and its all free!</span></p>
+<p class="p9"><span class="s1"></span><br></p>
+<p class="p8"><span class="s1">I recommend going there on a regular basis if you want to keep abreast of trends and track what is moving up or moving down the unanswered list. This is not only useful for those seeking to learn a new language, it can help recruiters, tool builders, CTO deciding on new technology, etc.</span></p>
+<p class="p9"><span class="s1"></span><br></p>
+<p class="p8"><span class="s1">Using the Wayback Machine and traveling back 10 years (right around when SO launched), we see that they had some 2,000 unanswered questions with C# leading the pack.</span></p>
+<p class="p12"><span class="s1"></span><br></p>
+<p class="p12"><span class="s1"></span><br></p>
+<p class="p13"><span class="s1"><img src="Images/1*mrEDQTu_kmpfV7SdBHK1BA.png" width="100%" alt="Image"></span></p>
+<p class="p8"><span class="s1">More interesting, in February 2010, with much more data to analyze, we see some 69,000 unanswered questions. C# still leading the pack but iPhone and PHP appear and moving up fast. Even Python makes a timid appearance.</span></p>
+<p class="p12"><span class="s1"></span><br></p>
+<p class="p12"><span class="s1"></span><br></p>
+<p class="p13"><span class="s1"><img src="Images/1*cEKjacZX9wuDKBau_g2hHw.png" width="100%" alt="Image"></span></p>
+<p class="p8"><span class="s1">I’d like to think that this data would have made me look more seriously into Java and JavaScript. But in the end, I successfully transitioned to R and Python and fell in love with both. But it is nice to know we have some cold, hard facts about what people are using and what people are struggling with. Beats asking your peers whether its best going SAS or open source</span><span class="s4"> </span><span class="s1">—</span><span class="s4"> </span><span class="s1">and feeling your eyes glaze over and instantly regret the ask amidst the long winded, and entirely subjective lecture.</span></p>
+<p class="p9"><span class="s1"></span><br></p>
+<p class="p8"><span class="s1">One more nugget from the good folks at Stack Overflow</span><span class="s4"> </span><span class="s1">—</span><span class="s4"> </span><span class="s1">I’ve been keeping the best for last</span><span class="s4"> </span><span class="s1">—</span><span class="s4"> </span><span class="s1">the Insights Survey (<a href="https://insights.stackoverflow.com/survey/2018/"><span class="s5">https://insights.stackoverflow.com/survey/2018/</span></a>). This list compliments the “unanswered questions” list by throwing in salary and experience. If you look for the biggest circle, closest to the top-left, you’ll draw yourself a treasure map to the best paying job with the smallest learning curve! Wow, where was that 10 years ago!!!</span></p>
+<p class="p12"><span class="s1"></span><br></p>
+<p class="p12"><span class="s1"></span><br></p>
+<p class="p13"><span class="s1"><img src="Images/1*cokKsv3ohgKjWBdsS0VsdQ.png" width="100%" alt="Image"></span></p>
+<p class="p14"><span class="s3">(Source: Stackoverflow.com)</span></p>
+<p class="p9"><span class="s1"></span><br></p>
+<p class="p8"><span class="s1">Thanks for reading!</span></p>
+<p class="p8"><span class="s1">Manuel Amunategui</span></p>
+<p class="p8"><span class="s1"><a href="http://amunategui.github.io">amunategui.github.io</a></span></p>
+</div>
+</body>
+</html>
