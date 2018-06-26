@@ -1,0 +1,110 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Data Exploration & Machine Learning, Hands-on</title>
+
+    <!-- Bootstrap core CSS -->
+ 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/4.1/examples/album/album.css" rel="stylesheet">
+  </head>
+
+     <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55202104-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-55202104-1');
+  </script>
+
+  
+
+<body>
+
+<main role="main">
+
+{% include header.html %}
+
+<div style="width: 600px; margin: 0 auto">
+
+<h1 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 43.0px; font: 42.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)"><span class="s1"><b>TensorFlow Won the Attention Battle, Who’s Next?</b></span></h1>
+<p class="p2"><span class="s1">Published on Jun 23, 2018 on <a href="https://medium.com/@amunategui/tensorflow-won-the-attention-battle-whos-next-8f93a3af1f32"><span class="s2">Medium.com</span></a></span></p>
+<p class="p3"><span class="s3"></span><br></p>
+<p class="p4"><span class="s3"><img src="Images/1*xjEtOCX54CxQ95U26GP7GQ.jpg" width="100%" alt="Image"></span></p>
+<p class="p5"><span class="s1">(Source: Lucas Amunategui)</span></p>
+<p class="p6"><span class="s3"></span><br></p>
+<p class="p7"><span class="s1">At a recent conference, a European university presented a gigantic TensorFlow network cluster. One attendee asked if they tried the same approach with Caffe or MXNet, to which the presenter shrugged and explained that TensorFlow won the attention battle and, for a university program like his that runs on volunteers, that attention, the cool frameworks, things that kids want to learn, is his only currency.</span></p>
+<p class="p8"><span class="s3"></span><br></p>
+<p class="p7"><span class="s1">That comment got me thinking; he needs student-volunteers to keep his research going, and he pays them by offering real experience using technologies that will, in turn, get the <i>attention</i> of recruiters.</span></p>
+<p class="p8"><span class="s3"></span><br></p>
+<p class="p7"><span class="s1">When do we know that a technology has reached critical mass? How can we measure new comers and gauge their chances of adoption so we can stay a step ahead? I use visualization to help me extend a promising technology into the future.</span></p>
+<p class="p9"><span class="s3"></span><br></p>
+<p class="p9"><span class="s3"></span><br></p>
+<p class="p10"><span class="s3"><img src="Images/1*HIDPotGpgszIXHkdJJIQ8g.png" width="100%" alt="Image"></span></p>
+<p class="p7"><span class="s1">Each stage is equally interesting and analyzing the “who’s who at what stage” can be strategic in many ways. Let’s work our way backwards and start from the end</span><span class="s4"> </span><span class="s1">—</span><span class="s4"> </span><span class="s1">the victory stage.</span></p>
+<h3 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 39.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff; min-height: 17.0px"><span class="s3"><b></b></span><br></h3>
+<h3 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 39.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)"><span class="s1"><b>Victors</b></span></h3>
+<p class="p7"><span class="s1">TensorFlow won this round, other domains won theirs. Take JavaScript, “For the sixth year in a row, JavaScript is the most commonly used programming language” or Python, “Python has a solid claim to being the fastest-growing major programming language”, all according to <a href="https://insights.stackoverflow.com/survey/2018#most-popular-technologies"><span class="s5">StackOverflow’s 2018 Insights Survey</span></a>.</span></p>
+<p class="p8"><span class="s3"></span><br></p>
+<p class="p7"><span class="s1">Though a bit obvious after the fact, it can be helpful when you’re searching for developers. If you’re like that university and need volunteers, or have a limited budget or in an industry that has a tough time recruiting, stick to certified ‘cool’ languages and frameworks, you’ll be surprised at how many young folks or those changing careers will appreciate the exposure. It’s a win-win, and its the “<b>victory</b>” stage.</span></p>
+<h3 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 39.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff; min-height: 17.0px"><span class="s3"><b></b></span><br></h3>
+<h3 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 39.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)"><span class="s1"><b>Still Fighting</b></span></h3>
+<p class="p7"><span class="s1">The “<b>battle</b>” stage is the Cambrian explosion of different technologies trying to be first, trying to be different, pounding their chests, and begging for adoption. Here, the idea gained interest but the technologies around it are still emerging and creators are duking it out</span><span class="s4"> </span><span class="s1">—</span><span class="s4"> </span><span class="s1">think cryptos, blockchains, chatbots, automated ml tools, 3D printing</span><span class="s4"> </span><span class="s1">—</span><span class="s4"> </span><span class="s1">nobody has won yet and its bloody!! Just look at all those outlandish promises posted on LinkedIn…</span></p>
+<p class="p8"><span class="s3"></span><br></p>
+<p class="p7"><span class="s1">You can use all sorts of tools to gauge how a particular implementation is doing. Look at how much money they’ve raised, what people are writing about on Reddit, TechCrunch, or Medium sites. Take a look at their Github pages, the number of forks, comments and related StackOverflow issues. Picking winners at this stage takes observation skills, foresight, and a systematic ear-to-the-ground attitude (and we know it isn’t always the best tech that wins).</span></p>
+<h3 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 39.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff; min-height: 17.0px"><span class="s3"><b></b></span><br></h3>
+<h3 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 39.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)"><span class="s1"><b>Conceptual &amp; Unknown</b></span></h3>
+<p class="p7"><span class="s1">This is the “<b>idea</b>” phase, and its fascinating. Let’s spend some time here. The tech is either highly experimental, going on in some lab at MIT, or theoretical, with AI visionaries debating merit and impact. There, I said it, “<b>AI</b>”. Yes, anything on artificial intelligence lies in this stage. Machine learning, deep neural networks, etc. have made great strides, but so far, no robot has taken my job, telltale sign that singularity ain’t here yet.</span></p>
+<p class="p8"><span class="s3"></span><br></p>
+<p class="p7"><span class="s1">The “<b>idea</b>” phase, especially on AI is clearly in the realm of the thinker and everybody is thinking about it. Just drop the term on Amazon search and good luck working through the results…</span></p>
+<p class="p9"><span class="s3"></span><br></p>
+<p class="p9"><span class="s3"></span><br></p>
+<p class="p10"><span class="s3"><img src="Images/1*uY-a0LsnRZxl6teiVxeuYA.png" width="559px" height="174px" alt="Image"></span></p>
+<h3 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 39.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff; min-height: 17.0px"><span class="s3"><b></b></span><br></h3>
+<h3 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 39.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)"><span class="s1"><b>Visualizing the Future</b></span></h3>
+<p class="p7"><span class="s1">But you don’t have to delve into metaphysics or watch sci-fi to get strategic insights into how things may turn out. By taking a realistic and disruptive technology, like “<b>autonomous driving</b>” or “<b>robotic surgery</b>”, and thinking through the ripple effects it would cause if it was firmly in the “<b>victory</b>” phase, can yield clues.</span></p>
+<p class="p7"><span class="s1">Visualization can help, imagine the full adoption of a promising technology, then imagine subsequent rippling technologies reaching adoption too, then the ripples of ripples doing the same, and so on and so forth. Keep attaching one imagined outcome onto another and see where it takes you. Avoid getting sucked into the gloom, unless it leads you to new opportunities.</span></p>
+<p class="p8"><span class="s3"></span><br></p>
+<p class="p7"><span class="s1">For example, imagine the full adoption of autonomous, ride-sharing fleets. These are driverless, never idle, never parked, scurrying the streets 24/7 to pick us up and drop us off on our whims. Only when they’re batteries are low, dirty or sensing mechanical issues do they stop servicing customers and disappear into some industrial lot on the outskirts of the city for attention. This technology has become so popular that hardly anybody owns a car in big cities. Here are some of the highlights from my visualization exercises (full piece shown at end):</span></p>
+<h4 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 31.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff; min-height: 17.0px"><span class="s3"><b></b></span><br></h4>
+<h4 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 31.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)"><span class="s1"><b>STARTING POINT</b></span></h4>
+<p class="p7"><span class="s1">Car-ownership drop in cities after safe adoption of autonomous driving technolog<i>y</i></span></p>
+<h4 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 31.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84); background-color: #ffffff; min-height: 17.0px"><span class="s3"><b></b></span><br></h4>
+<h4 style="margin: 0.0px 0.0px 0.0px 0.0px; line-height: 31.0px; font: 14.0px 'Lucida Grande'; color: #000000; color: rgba(0, 0, 0, 0.84); -webkit-text-stroke: rgba(0, 0, 0, 0.84)"><span class="s1"><b>VISUALIZATIONS</b></span></h4>
+<p class="p7"><span class="s1"><b><i>Seamless office</i></b></span><span class="s4"> </span><span class="s1"><i>—</i></span><span class="s4"> </span><span class="s1"><i>virtual environments blurring desk chair and car seat</i></span></p>
+<p class="p7"><span class="s1"><b><i>Urban retrofit industry</i></b></span><span class="s4"> </span><span class="s1"><i>—</i></span><span class="s4"> </span><span class="s1"><i>reclaiming large streets, gas stations and parking lots</i></span></p>
+<p class="p7"><span class="s1"><b><i>Facial recognition</i></b></span><span class="s4"> </span><span class="s1"><i>—</i></span><span class="s4"> </span><span class="s1"><i>automated re-routes to police station</i></span></p>
+<p class="p7"><span class="s1"><b><i>Giant to mini delivery vehicle design</i></b></span><span class="s4"><b> </b></span><span class="s1"><b><i>—</i></b></span><span class="s4"><b> </b></span><span class="s1"><i>sized to payload</i></span></p>
+<p class="p7"><span class="s1"><b><i>Advertising</i></b></span><span class="s4"> </span><span class="s1"><i>—</i></span><span class="s4"> </span><span class="s1"><i>Free/discounted rides catering to travelers destination</i></span></p>
+<p class="p7"><span class="s1"><b><i>Special needs transportation</i></b></span><span class="s4"> </span><span class="s1"><i>—</i></span><span class="s4"> </span><span class="s1"><i>cheaper medical, housing, meal transportation services</i></span></p>
+<p class="p8"><span class="s3"></span><br></p>
+<p class="p7"><span class="s1">This is the result of a 20 minute run and entirely subjective. Whatever the starting point, 3D printing, flying taxis, etc. should lead to an avalanche of fun, scary, interesting ideas</span><span class="s4"> </span><span class="s1">—</span><span class="s4"> </span><span class="s1">you too can come up with distant visions of the future, just like thought leaders, and maybe even do some early bargain shopping…</span></p>
+<p class="p8"><span class="s3"></span><br></p>
+<p class="p7"><span class="s1">Full exercise:</span></p>
+<p class="p9"><span class="s3"></span><br></p>
+<p class="p9"><span class="s3"></span><br></p>
+<p class="p10"><span class="s3"><img src="Images/1*OOHhbg869zOfvMNJfALynA.png" width="100%" alt="Image"></span></p>
+<p class="p8"><span class="s3"></span><br></p>
+<p class="p15"><span class="s3">Thanks for reading!</span></p>
+<p class="p15"><span class="s3">Manuel Amunategui</span></p>
+<p class="p15"><span class="s3"><a href="http://amunategui.github.io">amunategui.github.io</a></span></p>
+</div>
+</main>
+
+{% include footer.html %}
+  </body>
+</html>
