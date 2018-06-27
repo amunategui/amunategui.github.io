@@ -1,0 +1,746 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Data Exploration & Machine Learning, Hands-on</title>
+
+    <!-- Bootstrap core CSS -->
+ 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/4.1/examples/album/album.css" rel="stylesheet">
+  </head>
+
+     <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-55202104-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-55202104-1');
+  </script>
+
+  
+
+<body>
+
+<main role="main">
+
+{% include header.html %}
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">Hosting a Flask Application on AWS Beanstalk</h1>
+    <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
+  </div>
+
+
+
+<div class=WordSection1>
+ 
+
+<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:12.0pt;font-family:Helvetica;mso-bidi-font-family:ArialMT;
+mso-no-proof:yes'><!--[if gte vml 1]><v:shapetype id="_x0000_t75" coordsize="21600,21600"
+ o:spt="75" o:preferrelative="t" path="m@4@5l@4@11@9@11@9@5xe" filled="f"
+ stroked="f">
+ <v:stroke joinstyle="miter"/>
+ <v:formulas>
+  <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+  <v:f eqn="sum @0 1 0"/>
+  <v:f eqn="sum 0 0 @1"/>
+  <v:f eqn="prod @2 1 2"/>
+  <v:f eqn="prod @3 21600 pixelWidth"/>
+  <v:f eqn="prod @3 21600 pixelHeight"/>
+  <v:f eqn="sum @0 0 1"/>
+  <v:f eqn="prod @6 1 2"/>
+  <v:f eqn="prod @7 21600 pixelWidth"/>
+  <v:f eqn="sum @8 21600 0"/>
+  <v:f eqn="prod @7 21600 pixelHeight"/>
+  <v:f eqn="sum @10 21600 0"/>
+ </v:formulas>
+ <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
+ <o:lock v:ext="edit" aspectratio="t"/>
+</v:shapetype><v:shape id="_x0000_i1035" type="#_x0000_t75" alt="" style='width:156pt;
+ height:89pt;mso-width-percent:0;mso-height-percent:0;mso-width-percent:0;
+ mso-height-percent:0' o:allowincell="f">
+ <v:imagedata src="aws-beanstalk-intro.fld/image001.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img width=156 height=89
+src="aws-beanstalk-intro.fld/image002.jpg" v:shapes="_x0000_i1035"><![endif]></span><span
+style='font-size:28.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<h1><span style='mso-bidi-font-size:12.0pt;line-height:115%;mso-bidi-font-family:
+ArialMT'>1 - Get an Account on Amazon AWS<o:p></o:p></span></h1>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>Amazon AWS offers an “AWS Free Tier” account that allows you to try
+some of its services for free. For more information on creating an account, go
+to: <u><span style='color:blue'><a href="https://aws.amazon.com/free/"><span
+style='color:blue'>https://aws.amazon.com/free/</span></a></span></u><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<h1><span style='mso-bidi-font-size:12.0pt;line-height:115%;mso-bidi-font-family:
+ArialMT'>2 - Download Source Files <a
+href="https://github.com/rapidprototypingml/book/tree/master/Introduction/Introducing-Microsoft-Azure"><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:115%;font-family:
+Palatino-Roman;color:blue;font-weight:normal'><o:p></o:p></span></a></span></h1>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>Create a folder named “<b style='mso-bidi-font-weight:normal'><span
+style='color:black'>serverless-hosting-on-amazon-<span class=SpellE>aws</span></span></b><span
+style='color:black'>”</span>, and two files. One “<b style='mso-bidi-font-weight:
+normal'>application.py</b>” and another “<b style='mso-bidi-font-weight:normal'>requirements.txt</b>”<o:p></o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><b style='mso-bidi-font-weight:normal'><span
+style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:ArialMT'>application.py<o:p></o:p></span></b></p>
+
+<p class=CodeBlock><o:p>&nbsp;</o:p></p>
+
+<p class=CodeBlock>from flask import Flask</p>
+
+<p class=CodeBlock>application = Flask(__name__)</p>
+
+<p class=CodeBlock><o:p>&nbsp;</o:p></p>
+
+<p class=CodeBlock>@<span class=SpellE>application.route</span>(&quot;/&quot;)</p>
+
+<p class=CodeBlock>def hello():</p>
+
+<p class=CodeBlock><span style='mso-spacerun:yes'>    </span>return &quot;Hello
+World!&quot;</p>
+
+<p class=CodeBlock><o:p>&nbsp;</o:p></p>
+
+<p class=CodeBlock>if __name__ == '__main__':</p>
+
+<p class=CodeBlock><span style='mso-spacerun:yes'>    </span><span
+class=SpellE>application.run</span>()</p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><b style='mso-bidi-font-weight:normal'><span
+style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:ArialMT'>requirements.txt</span></b><span
+style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock>flask<span style='font-family:"ArialMT",sans-serif'><a
+href="https://github.com/rapidprototypingml/book/tree/master/Introduction/Introducing-Google-Cloud"><span
+style='font-family:Menlo-Regular;mso-bidi-font-family:"Times New Roman";
+color:blue'><o:p></o:p></span></a></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>The folder structure should look like:<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>serverless-hosting-on-amazon-<span class=SpellE>aws</span>/<o:p></o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>├── application.py<o:p></o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>└── requirements.txt<o:p></o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<h1><span style='mso-bidi-font-size:12.0pt;line-height:115%;mso-bidi-font-family:
+ArialMT'>3 - Install Supporting Tools and Libraries</span><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:115%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p></o:p></span></h1>
+
+<h2 style='tab-stops:.5in'><span style='mso-bidi-font-size:12.0pt;line-height:
+115%;mso-bidi-font-family:ArialMT'>Start A Virtual Environment Session<o:p></o:p></span></h2>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>This isn’t an obligation but will help you keeps things clean and neat
+by segregating this environment from the rest of your machine (google “<span
+class=SpellE><b style='mso-bidi-font-weight:normal'>venv</b></span>” for Python
+3).<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>$ python3 -m <span class=SpellE>venv</span> <span class=SpellE><span
+style='color:black'>beanstalk_demo</span></span><span style='color:black'><o:p></o:p></span></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>$ source <span class=SpellE><span style='color:black'>beanstalk_demo</span></span>/bin/activate</span><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<h2><span style='mso-bidi-font-size:12.0pt;line-height:115%;mso-bidi-font-family:
+ArialMT'>Install Flask<o:p></o:p></span></h2>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>Install Flask using “<b style='mso-bidi-font-weight:normal'>pip3
+install</b>” or however you normally install Python libraries on your operating
+system. This will help you get the latest version of Flask and also run the
+application locally (which we already did in an earlier section).<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>$ pip3 install Flask<span style='color:#FB0017'><o:p></o:p></span></span></p>
+
+<p class=CodeBlock><span style='font-size:13.0pt;mso-bidi-font-size:12.0pt;
+font-family:Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT;color:#FB0017'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><b style='mso-bidi-font-weight:normal'><span
+style='font-size:18.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></b></p>
+
+<h1><span style='mso-bidi-font-size:12.0pt;line-height:115%;mso-bidi-font-family:
+ArialMT'>4 - Create an Access Account for Elastic Beanstalk</span><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:115%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT;font-weight:normal'><o:p></o:p></span></h1>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>Log into AWS web console and go to the Identity and Access Management
+(IAM) console. A quick way there is to simply type 'IAM' in the AWS services
+search box on the landing page. Select “<b style='mso-bidi-font-weight:normal'>Users</b>”
+in the navigation section and click the “<b style='mso-bidi-font-weight:normal'>Add
+user</b>” button.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:12.0pt;font-family:Helvetica;mso-bidi-font-family:ArialMT;
+mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="_x0000_i1034" type="#_x0000_t75"
+ alt="" style='width:325pt;height:152pt;mso-width-percent:0;
+ mso-height-percent:0;mso-width-percent:0;mso-height-percent:0' o:allowincell="f">
+ <v:imagedata src="aws-beanstalk-intro.fld/image003.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=325 height=152
+src="aws-beanstalk-intro.fld/image004.jpg" v:shapes="_x0000_i1034"><![endif]></span><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>Select a user name - here we enter “<span class=SpellE><b
+style='mso-bidi-font-weight:normal'>ebuser</b></span>” and check “<b
+style='mso-bidi-font-weight:normal'>Access type: Programmatic access</b>”.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:12.0pt;font-family:Helvetica;mso-bidi-font-family:ArialMT;
+mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="_x0000_i1033" type="#_x0000_t75"
+ alt="" style='width:425pt;height:251pt;mso-width-percent:0;
+ mso-height-percent:0;mso-width-percent:0;mso-height-percent:0' o:allowincell="f">
+ <v:imagedata src="aws-beanstalk-intro.fld/image005.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=425 height=251
+src="aws-beanstalk-intro.fld/image006.jpg" v:shapes="_x0000_i1033"><![endif]></span><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst>Click on the blue “<b style='mso-bidi-font-weight:normal'>Next:
+Permissions</b>” button. This will take you to the “<b style='mso-bidi-font-weight:
+normal'>Set permissions</b>” page, click on the “<b style='mso-bidi-font-weight:
+normal'>Add user to group</b>” large menu button then click on “<b
+style='mso-bidi-font-weight:normal'>Create group</b>”. Create a group name, “<span
+class=SpellE><b style='mso-bidi-font-weight:normal'>ebadmins</b></span>” in
+this case and assign it the policy name “<span class=SpellE><b
+style='mso-bidi-font-weight:normal'>WSElasticBeanstalkFullAccess</b></span>”.
+Then click on the “<b style='mso-bidi-font-weight:normal'>Create group</b>”
+button to finalize the group.</p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:12.0pt;font-family:Helvetica;mso-bidi-font-family:ArialMT;
+mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="_x0000_i1032" type="#_x0000_t75"
+ alt="" style='width:530pt;height:274pt;mso-width-percent:0;
+ mso-height-percent:0;mso-width-percent:0;mso-height-percent:0' o:allowincell="f">
+ <v:imagedata src="aws-beanstalk-intro.fld/image007.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=530 height=274
+src="aws-beanstalk-intro.fld/image008.jpg" v:shapes="_x0000_i1032"><![endif]></span><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst>Click on the “<b style='mso-bidi-font-weight:normal'>Next:
+review</b>” blue button and, on the following page, click on the blue “<b
+style='mso-bidi-font-weight:normal'>Create user</b>” button </p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:12.0pt;font-family:Helvetica;mso-bidi-font-family:ArialMT;
+mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="_x0000_i1031" type="#_x0000_t75"
+ alt="" style='width:397pt;height:245pt;mso-width-percent:0;
+ mso-height-percent:0;mso-width-percent:0;mso-height-percent:0' o:allowincell="f">
+ <v:imagedata src="aws-beanstalk-intro.fld/image009.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=397 height=245
+src="aws-beanstalk-intro.fld/image010.jpg" v:shapes="_x0000_i1031"><![endif]></span><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextCont><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst>Once you see the “<b style='mso-bidi-font-weight:normal'>Success</b>”
+message, this means you have successfully created the “<span class=SpellE><b
+style='mso-bidi-font-weight:normal'>ebuser</b></span>” account. Make sure you
+download the “<b style='mso-bidi-font-weight:normal'>.csv</b>” file to your
+local machine by clicking on the “<b style='mso-bidi-font-weight:normal'>Download
+.csv</b>” button. This file is important as it holds your key and secret code.
+Store it in a known location on your local machine as you will need that
+information to connect and Secure Shell (SSH) into your EB (we won’t need SSH
+in this section but will in subsequent ones).</p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<h1><span style='mso-bidi-font-size:12.0pt;line-height:115%;mso-bidi-font-family:
+ArialMT'>5 - Install Elastic Beanstalk (EB)</span><span style='font-size:13.0pt;
+mso-bidi-font-size:12.0pt;line-height:115%;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT;font-weight:normal'><o:p></o:p></span></h1>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>Install the “<span class=SpellE><b style='mso-bidi-font-weight:normal'>awsebcli</b></span>”
+library to interact and manage our EB service on AWS. For mac and <span
+class=SpellE>linux</span> users (if it complains about the 'user' parameter,
+try without it):<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>$ pip3 install <span class=SpellE>awscli</span><o:p></o:p></span></p>
+
+<p class=CodeBlock style='margin-left:0in'><span style='mso-bidi-font-size:
+12.0pt;mso-bidi-font-family:ArialMT'><span style='mso-tab-count:1'>     </span>$
+pip3 install <span class=SpellE>awsebcli</span> <span
+style='mso-spacerun:yes'> </span><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>For windows (if it complains about the 'user' parameter, try without
+it):<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><span style='mso-tab-count:1'>      </span><o:p></o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>$ pip3 install <span class=SpellE>awscli</span> --user<o:p></o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>$ pip3 install <span class=SpellE>awsebcli</span> --user<o:p></o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<h1><span style='mso-bidi-font-size:12.0pt;line-height:115%;mso-bidi-font-family:
+ArialMT'>6: <span class=SpellE>Eb</span> Command Line Interface<o:p></o:p></span></h1>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>Its’ time to initialize the Elastic Bean interface:<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>$ <span class=SpellE>eb</span> <span class=SpellE>init</span> -<span
+class=SpellE>i</span><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>This will ask you a series of questions and you can go with most of
+the defaults. Under “<b style='mso-bidi-font-weight:normal'>Enter Application
+name</b>” enter “<span class=SpellE><b style='mso-bidi-font-weight:normal'>AWSBeanstalkIntroduction</b></span>”.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:12.0pt;font-family:Helvetica;mso-bidi-font-family:ArialMT;
+mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="_x0000_i1030" type="#_x0000_t75"
+ alt="" style='width:480pt;height:141pt;mso-width-percent:0;
+ mso-height-percent:0;mso-width-percent:0;mso-height-percent:0' o:allowincell="f">
+ <v:imagedata src="aws-beanstalk-intro.fld/image011.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=480 height=141
+src="aws-beanstalk-intro.fld/image012.jpg" v:shapes="_x0000_i1030"><![endif]></span><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>If this is your first time running AWS on your computer, it will ask
+for your credentials. Open the “credentials.csv” that was downloaded on your
+machine when you created a user and enter the two fields required.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;line-height:110%;
+tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><i
+style='mso-bidi-font-style:normal'><span style='font-size:12.0pt;line-height:
+110%;font-family:"ArialNarrow",sans-serif;mso-bidi-font-family:ArialMT;
+mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="Picture_x0020_12" o:spid="_x0000_i1029"
+ type="#_x0000_t75" alt="" style='width:494pt;height:149pt;visibility:visible;
+ mso-wrap-style:square;mso-width-percent:0;mso-height-percent:0;
+ mso-width-percent:0;mso-height-percent:0'>
+ <v:imagedata src="aws-beanstalk-intro.fld/image013.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=494 height=149
+src="aws-beanstalk-intro.fld/image014.jpg" v:shapes="Picture_x0020_12"><![endif]></span></i><i
+style='mso-bidi-font-style:normal'><span style='font-size:12.0pt;line-height:
+110%;font-family:"ArialNarrow",sans-serif;mso-bidi-font-family:ArialMT'><o:p></o:p></span></i></p>
+
+<p class=FigureCaption><span style='font-size:13.0pt;mso-bidi-font-size:12.0pt;
+font-family:Palatino-Roman;mso-bidi-font-family:ArialMT;font-style:normal'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>Go with the Python defaults (it needs to be a 3.x version), ignore
+warnings, and say yes setting up SSH.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:12.0pt;font-family:Helvetica;mso-bidi-font-family:ArialMT;
+mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="_x0000_i1028" type="#_x0000_t75"
+ alt="" style='width:386pt;height:39pt;mso-width-percent:0;
+ mso-height-percent:0;mso-width-percent:0;mso-height-percent:0' o:allowincell="f">
+ <v:imagedata src="aws-beanstalk-intro.fld/image015.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=386 height=39
+src="aws-beanstalk-intro.fld/image016.jpg" v:shapes="_x0000_i1028"><![endif]></span><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst>Create a new <span class=SpellE>KeyPair</span> or select
+an existing one and keep going with the defaults. If you create a new key-pair,
+it will save it in a folder and tell you the location.</p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;line-height:110%;
+tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:12.0pt;line-height:110%;font-family:Helvetica;mso-bidi-font-family:
+ArialMT;mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="_x0000_i1027" type="#_x0000_t75"
+ alt="" style='width:475pt;height:135pt;mso-width-percent:0;
+ mso-height-percent:0;mso-width-percent:0;mso-height-percent:0' o:allowincell="f">
+ <v:imagedata src="aws-beanstalk-intro.fld/image017.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=475 height=135
+src="aws-beanstalk-intro.fld/image018.jpg" v:shapes="_x0000_i1027"><![endif]></span><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>Next you need to create your EB (use a unique name). This will zip up
+the data and upload it to the AWS cloud:<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>$ <span class=SpellE>eb</span> create <span class=SpellE>AWSBeanstalkIntroduction</span>
+<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<h1><span style='mso-bidi-font-size:12.0pt;line-height:115%;mso-bidi-font-family:
+ArialMT'>7 - Take if for a Spin<o:p></o:p></span></h1>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>It takes a few minutes and you should get a success message if all
+goes well. Then you can simply use the “<span class=SpellE><b style='mso-bidi-font-weight:
+normal'>eb</b></span><b style='mso-bidi-font-weight:normal'> open</b>” command
+to view the web application live. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>$ <span class=SpellE>eb</span> open <span class=SpellE>AWSBeanstalkIntroduction</span><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst>It may take a little bit of time to run the application
+the first time around and may even timeout. Run the “<span class=SpellE><b
+style='mso-bidi-font-weight:normal'>eb</b></span><b style='mso-bidi-font-weight:
+normal'> open</b>” one more time if it times out.</p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:12.0pt;font-family:Helvetica;mso-bidi-font-family:ArialMT;
+mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="_x0000_i1026" type="#_x0000_t75"
+ alt="" style='width:452pt;height:187pt;mso-width-percent:0;
+ mso-height-percent:0;mso-width-percent:0;mso-height-percent:0' o:allowincell="f">
+ <v:imagedata src="aws-beanstalk-intro.fld/image019.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=452 height=187
+src="aws-beanstalk-intro.fld/image020.jpg" v:shapes="_x0000_i1026"><![endif]></span><i
+style='mso-bidi-font-style:normal'><span style='font-size:12.0pt;font-family:
+"ArialNarrow",sans-serif;mso-bidi-font-family:ArialMT'><span
+style='mso-spacerun:yes'> </span></span></i><span style='font-size:13.0pt;
+mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>If things don’t go as planned, check out the logs for any error
+messages.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span class=SpellE><span style='mso-bidi-font-size:12.0pt;
+mso-bidi-font-family:ArialMT'>eb</span></span><span style='mso-bidi-font-size:
+12.0pt;mso-bidi-font-family:ArialMT'> logs<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<h1><span style='mso-bidi-font-size:12.0pt;line-height:115%;mso-bidi-font-family:
+ArialMT'>8: Don't Forget to Turn It Off!</span><span style='font-size:13.0pt;
+mso-bidi-font-size:12.0pt;line-height:115%;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT;font-weight:normal'><o:p></o:p></span></h1>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>Finally, we need to terminate the beanstalk instance as not to incur
+additional charges. This is an important reminder that most of these cloud
+services are not free. It will ask you to enter the name of the environment, in
+my case it is “<span class=SpellE><b style='mso-bidi-font-weight:normal'>AWSBeanstalkIntroduction</b></span>”.<o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span class=SpellE><span style='mso-bidi-font-size:12.0pt;
+mso-bidi-font-family:ArialMT'>eb</span></span><span style='mso-bidi-font-size:
+12.0pt;mso-bidi-font-family:ArialMT'> terminate <span class=SpellE>AWSBeanstalkIntroduction</span><span
+style='color:black'><o:p></o:p></span></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT;color:black'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst>It is a good idea to double check on your AWS dashboard
+that all services are indeed turned off. This is easy to do, simply log into
+your AWS account at <u><span style='color:blue'><a
+href="https://aws.amazon.com/"><span style='color:blue'>https://aws.amazon.com/</span></a></span></u>
+and make sure that your EC2 and Elastic Beanstalk accounts don’t have any
+active services you didn’t plan on having.</p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:12.0pt;font-family:Helvetica;mso-bidi-font-family:ArialMT;
+mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="_x0000_i1025" type="#_x0000_t75"
+ alt="" style='width:406pt;height:123pt;mso-width-percent:0;
+ mso-height-percent:0;mso-width-percent:0;mso-height-percent:0' o:allowincell="f">
+ <v:imagedata src="aws-beanstalk-intro.fld/image021.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=406 height=123
+src="aws-beanstalk-intro.fld/image022.jpg" v:shapes="_x0000_i1025"><![endif]></span><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
+mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>It does take a few minutes but will take the site down. And terminate
+your virtual environment on your local machine. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
+style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
+Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
+
+<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
+ArialMT'>$ deactivate <span class=SpellE><span style='color:black;background:
+white;mso-highlight:white'>amazon_aws_intro</span></span></span><span
+style='mso-bidi-font-size:12.0pt;font-family:"ArialMT",sans-serif;mso-bidi-font-family:
+ArialMT'><o:p></o:p></span></p>
+
+<h2><o:p>&nbsp;</o:p></h2>
+
+<h2><span style='font-size:11.0pt;mso-bidi-font-size:10.0pt;line-height:115%;
+font-family:"ArialMT",sans-serif'>For more information see:<o:p></o:p></span></h2>
+
+<p class=BodyTextCont style='text-indent:0in'><u><span style='mso-bidi-font-size:
+12.0pt;mso-bidi-font-family:ArialMT;color:blue'><a
+href="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-flask.html"><span
+style='color:blue'>https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-flask.html</span></a></span></u><span
+style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
+
+</div>
+
+</main>
+{% include footer.html %}
+  </body>
+</html>
+
