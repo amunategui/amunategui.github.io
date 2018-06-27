@@ -45,48 +45,16 @@
     <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
   </div>
 
-
-
-<div class=WordSection1>
  
-
-<p class=MsoNormal align=center style='text-align:center;tab-stops:28.0pt 56.0pt 84.0pt 112.0pt 140.0pt 168.0pt 196.0pt 224.0pt 3.5in 280.0pt 308.0pt 336.0pt'><span
-style='font-size:12.0pt;font-family:Helvetica;mso-bidi-font-family:ArialMT;
-mso-no-proof:yes'><!--[if gte vml 1]><v:shapetype id="_x0000_t75" coordsize="21600,21600"
- o:spt="75" o:preferrelative="t" path="m@4@5l@4@11@9@11@9@5xe" filled="f"
- stroked="f">
- <v:stroke joinstyle="miter"/>
- <v:formulas>
-  <v:f eqn="if lineDrawn pixelLineWidth 0"/>
-  <v:f eqn="sum @0 1 0"/>
-  <v:f eqn="sum 0 0 @1"/>
-  <v:f eqn="prod @2 1 2"/>
-  <v:f eqn="prod @3 21600 pixelWidth"/>
-  <v:f eqn="prod @3 21600 pixelHeight"/>
-  <v:f eqn="sum @0 0 1"/>
-  <v:f eqn="prod @6 1 2"/>
-  <v:f eqn="prod @7 21600 pixelWidth"/>
-  <v:f eqn="sum @8 21600 0"/>
-  <v:f eqn="prod @7 21600 pixelHeight"/>
-  <v:f eqn="sum @10 21600 0"/>
- </v:formulas>
- <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
- <o:lock v:ext="edit" aspectratio="t"/>
-</v:shapetype><v:shape id="_x0000_i1035" type="#_x0000_t75" alt="" style='width:156pt;
- height:89pt;mso-width-percent:0;mso-height-percent:0;mso-width-percent:0;
- mso-height-percent:0' o:allowincell="f">
- <v:imagedata src="aws-beanstalk-intro.fld/image001.png" o:title=""/>
-</v:shape><![endif]--><![if !vml]><img width=156 height=89
-src="aws-beanstalk-intro.fld/image002.jpg" v:shapes="_x0000_i1035"><![endif]></span><span
-style='font-size:28.0pt;mso-bidi-font-size:12.0pt;font-family:Palatino-Roman;
-mso-bidi-font-family:ArialMT'><o:p></o:p></span></p>
-
-<p class=MsoNormal style='line-height:110%;tab-stops:.25in .5in .75in 1.0in 1.25in 1.5in 2.0in 2.5in 3.0in'><span
-style='font-size:13.0pt;mso-bidi-font-size:12.0pt;line-height:110%;font-family:
-Palatino-Roman;mso-bidi-font-family:ArialMT'><o:p>&nbsp;</o:p></span></p>
-
-<h1><span style='mso-bidi-font-size:12.0pt;line-height:115%;mso-bidi-font-family:
-ArialMT'>1 - Get an Account on Amazon AWS<o:p></o:p></span></h1>
+<p style="text-align:center">
+<img src="img/beanstalk.png" alt="beanstalk" style="padding:1px; border:1px solid #021a40; width: 30%; height: 30%" /></p>
+<p><br /><br />
+<strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=bRbrOQHpvNc&amp;index=1&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+</ul>
+<p>
+<h1>1 - Get an Account on Amazon AWS</h1>
 
 <p class=BodyTextFirst><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
 ArialMT'>Amazon AWS offers an “AWS Free Tier” account that allows you to try
@@ -116,30 +84,19 @@ ArialMT'><o:p>&nbsp;</o:p></span></p>
 <p class=BodyTextFirst><b style='mso-bidi-font-weight:normal'><span
 style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:ArialMT'>application.py<o:p></o:p></span></b></p>
 
-<p class=CodeBlock><o:p>&nbsp;</o:p></p>
+<pre class="r"><code>
 
-<p class=CodeBlock>from flask import Flask</p>
+from flask import Flask
+application = Flask(__name__)
 
-<p class=CodeBlock>application = Flask(__name__)</p>
+@application.route("/")
+def hello():
+    return "Hello World!"
 
-<p class=CodeBlock><o:p>&nbsp;</o:p></p>
+if __name__ == '__main__':
+    application.run()
 
-<p class=CodeBlock>@<span class=SpellE>application.route</span>(&quot;/&quot;)</p>
-
-<p class=CodeBlock>def hello():</p>
-
-<p class=CodeBlock><span style='mso-spacerun:yes'>    </span>return &quot;Hello
-World!&quot;</p>
-
-<p class=CodeBlock><o:p>&nbsp;</o:p></p>
-
-<p class=CodeBlock>if __name__ == '__main__':</p>
-
-<p class=CodeBlock><span style='mso-spacerun:yes'>    </span><span
-class=SpellE>application.run</span>()</p>
-
-<p class=CodeBlock><span style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:
-ArialMT'><o:p>&nbsp;</o:p></span></p>
+</code></pre>
 
 <p class=BodyTextFirst><b style='mso-bidi-font-weight:normal'><span
 style='mso-bidi-font-size:12.0pt;mso-bidi-font-family:ArialMT'>requirements.txt</span></b><span
