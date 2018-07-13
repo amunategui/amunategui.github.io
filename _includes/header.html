@@ -1,4 +1,13 @@
 
+    <script>
+    //Add your images, we'll set the path in the next step
+        var images = ['become-datascientist-1.png', 'become-datascientist-2.png'];
+        
+    //Build the img, then do a bit of maths to randomize load and append to a div. Add a touch off css to fade them badboys in all sexy like.
+        $('<img class="fade-in" style="padding:1px; border:0px solid #021a40; width: 455px; height: 120px" src="https://amunategui.github.io/' + images[Math.floor(Math.random() * images.length)] + '">').appendTo('#banner-load');
+    
+    </script>
+
     <header>
       <div class="collapse bg-dark" id="navbarHeader">
         <div class="container">
@@ -52,8 +61,7 @@
          <p style="text-align:center">
           <a href='https://amunategui.github.io/tips-for-aspiring-datascientists.pdf' 
              target='_blank' onClick="ga('send','event','guides','tips-for-aspiring-datascientists.pdf',10);">
-            <img src="https://amunategui.github.io/become-datascientist-2.png" alt="Free e-book" 
-                   style='padding:1px; border:0px solid #021a40; width: 455px; height: 120px'>
+            <span id="banner-load"></span>
             </a>
           </p>
           <h1 class="blog-title">Data Exploration & Machine Learning, Hands-on</h1>
