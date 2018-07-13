@@ -1,12 +1,20 @@
 
-    <script>
-    //Add your images, we'll set the path in the next step
-        var images = ['become-datascientist-1.png', 'become-datascientist-2.png'];
-        
-    //Build the img, then do a bit of maths to randomize load and append to a div. Add a touch off css to fade them badboys in all sexy like.
-        $('<img style="padding:1px; border:0px solid #021a40; width: 455px; height: 120px" src="https://amunategui.github.io/' + images[Math.floor(Math.random() * images.length)] + '">').appendTo('#banner-load');
-    
-    </script>
+    <script type="text/javascript">
+  var imageURLs = [
+       "https://amunategui.github.io/become-datascientist-1.png"
+     , "https://amunategui.github.io/become-datascientist-1.png"
+  
+  ];
+  function getImageTag() {
+    var img = '<img style="padding:1px; border:0px solid #021a40; width: 455px; height: 120px" src=\"';
+    var randomIndex = Math.floor(Math.random() * imageURLs.length);
+    img += imageURLs[randomIndex];
+    img += '\" alt=\"Free e-book\"/>';
+    return img;
+  }
+</script>
+
+
 
     <header>
       <div class="collapse bg-dark" id="navbarHeader">
@@ -61,7 +69,9 @@
          <p style="text-align:center">
           <a href='https://amunategui.github.io/tips-for-aspiring-datascientists.pdf' 
              target='_blank' onClick="ga('send','event','guides','tips-for-aspiring-datascientists.pdf',10);">
-            <span id="banner-load"></span>
+            <script type="text/javascript">
+              document.write(getImageTag());
+            </script>
             </a>
           </p>
           <h1 class="blog-title">Data Exploration & Machine Learning, Hands-on</h1>
