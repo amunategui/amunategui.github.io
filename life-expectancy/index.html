@@ -80,7 +80,7 @@ simple_life_dataset.head()</code></pre>
 <p style="text-align:center">
 <img src="img/simple-data-set.png" alt="simple life-expectancy data set" style='padding:1px; border:1px solid #021a40; width: 20%; height: 20%'>
 </p>
-<p><BR>Now let’s feed that data into the <b>stats.linregress</b> function. We’ll only use two of its output, the <b>slope</b> and <b>intercept</b>. Those two values and the <a href="https://www.mathsisfun.com/equation_of_line.html" target="_blank">y = mx+b</a> line equation, give us everything we need to estimate life-expectancy for any age.</p>
+<p><BR>Now let’s feed that data into the <b>stats.linregress</b> function. We’ll only use two of its outputs, the <b>slope</b> and <b>intercept</b>. Those two values and the <a href="https://www.mathsisfun.com/equation_of_line.html" target="_blank">y = mx+b</a> line equation, give us everything we need to estimate life-expectancy for any age.</p>
 <pre class="r"><code>import numpy as np
 from scipy import stats
 slope, intercept, r_value, p_value, std_err = stats.linregress(simple_life_dataset['Age'],simple_life_dataset['Life Expectancy'])
@@ -136,7 +136,7 @@ who_list[who_list['COUNTRY (DISPLAY)']=='France'].head(10)</code></pre>
 <img src="img/head-who-data.png" alt="WHO data" style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
 </p>
 
-<p><BR>Let’s predict how many years of life I have left (yikes!). First let’s look at the data, this is really interesting. The life expectancy of a new born male in the USA using the latest data, is 77 years, while a 60-year-old male in the USA using the latest data is 22 years which totals 82 years, what gives? That’s one of the complexities of statistics, taking averages for a sixty-year-old implies that this person already survived 60 years, this is called <a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank">Survivorship bias</a>. And what the means for us here, is that the model will be slightly optimistic for those closer to zero and slightly pessimistic for those closer to 60.</p>
+<p><BR>Let’s predict how many years of life I have left (yikes!). First let’s look at the data, this is really interesting. The life expectancy of a new born male in the USA using the latest data, is 77 years, while a 60-year-old male in the USA using the latest data is 22 years which totals 82 years, what gives? That’s one of the complexities of statistics, taking averages for a sixty-year-old implies that this person already survived 60 years, this is called <a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank">Survivorship bias</a>. And what that means for us here, is that the model will be slightly optimistic for those closer to zero and slightly pessimistic for those closer to 60.</p>
 <pre class="r"><code>country = 'United States Of America'
 sex = 'Male'
 
@@ -415,7 +415,7 @@ def interact_life_expectancy():
 <img src="img/Yoga.png" alt="sport icon" style='padding:1px; border:1px solid #021a40;'>
 </p>
 <BR>
-You 'images' folder should look like the following:
+Your 'images' folder should look like the following:
 <BR><BR>
 <p style="text-align:center">
 <img src="img/pythonanywhere-images-folder.png" alt="image folder" style='padding:1px; border:1px solid #021a40; width: 80%; height: 80%'>
