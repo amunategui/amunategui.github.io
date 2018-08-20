@@ -11797,6 +11797,10 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Just like <a href='https://arxiv.org/abs/1504.08083' target='blank'>Fast R-CNN</a> and <a href='https://arxiv.org/abs/1703.06870' target='blank'>Mask-R CNN</a> evolved from Convolutional Neural Networks (CNN), Conditional Variational Autoencoders (CVAE) and Variational Autoencoders (VAE) evolved from the classic autoencoder. CVAEs are the latest incarnation of unsupervised neural network anomaly detection tools offering some new and interesting abilities over plain autoencoders.</p>
+
+<H2>Anomaly Detection on Financial Data</H2>
+<p>In this article, we're going to see how a CVAE can learn and generate the behavior of a particular stock's price action and use that as a model to detect unusual behavior. A CVAE can generate millions of data points and whenever real price action veers too far away from the bounds of these generated patterns we know that something different is happening.</p>
+
 <H2>The Autoencoder Can Reconstruct Data</H2><p>We’ll start with the root model, the autoencoder is an unsupervised neural network that combines a data encoder and decoder. The encoder will take data and learn to reduce it in an efficient manner into a lower-dimensional space, known as the latent space representation.</p>
 <p>The decoder will take this reduced representation and blow it back up to its original size. This comes in handy around file reduction for efficient storage and transportation while still retaining the original (or good-enough) data information.</p>
 <p>This is also used in anomaly detection. You train a model, feed new data into the encoder, compress it, then observe how well it rebuilds it. If the reconstruction error is abnormally high, that means the model struggled to rebuild the data and you may have an anomaly on your hands.</p>
