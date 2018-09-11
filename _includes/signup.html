@@ -1,0 +1,41 @@
+
+<style>
+	input[type=email], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;}
+
+	input[type=submit] {
+    width: 50%;
+    background-color: #008CBA;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;}
+</style>
+<div class="container">
+	<table border='1'><TR><Td>
+	<table border='0' bgcolor="#e7e7e7">
+		<tr><td>
+			<img src="https://amunategui.github.io/img/slim-data-become-a-datascientist.png" alt="Become a Data Scientist Essential Tips" title="Become a Data Scientist Essential Tips" style="padding:0px; border:0px; width: 256px; height: 230px" />
+		</td>
+		<td style="text-align:center; vertical-align:bottom; width: 400px">
+	   		<form action="https://amunateguit.pythonanywhere.com/amunategui_signup" method="POST">
+	   			Enter your email address and I'll personally send you my free eBook:
+	            <input type="email" name="email_address">
+	            <input type="hidden" name="signup_page" value="{{ '/' + pagename + '.html'}}" /> 
+	            <input type="submit" value="Sign up">
+	            <BR>thanks,<br>Manuel Amunategui
+	            
+	       	</form>
+	    </td></td> 
+ 	</table>
+ 	</td></tr>
+ 	</table>
+</div>
