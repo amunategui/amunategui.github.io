@@ -43,7 +43,7 @@
 			<tr>
 				<td >
 				<img src="https://amunategui.github.io/img/slim-data-become-a-datascientist.png" alt="Become a Data Scientist Essential Tips" title="Become a Data Scientist Essential Tips" style="padding:0px; border:0px; width:100%; height: 100%;" />
-			</td>
+			</td> 
 
 				
 				
@@ -51,7 +51,7 @@
 					<form action="https://manuelamunategui.pythonanywhere.com/amunategui_signup" method="POST">
 						Hey there, sign up for the latest updates and I'll personally send you my free eBook:
 			        <input type="email" name="email_address">
-			        <input type="hidden" name="signup_page" value="http://amunategui.github.io/" />
+			        <input type="hidden" name="signup_page" value="{{ page.url | absolute_url }}" /> 
 			        <input type="submit" value="Sign up">
 			        <BR>Thanks for your interest in the amunategui.github.io blog!! Best, Manuel
 
