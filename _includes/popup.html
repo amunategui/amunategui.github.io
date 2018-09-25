@@ -1,15 +1,16 @@
 <script type="text/javascript">
   setTimeout(function() {
       $('#myModal').modal('show');
-  }, 2000);
+  }, 5000);
 </script>
 
 <div id="myModal" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" >&times;  </button>
+
                 <h4 class="modal-title">My Book Is Out! You Can Get It Today!</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button> 
             </div>
             <div class="modal-body">
                <a href='http://www.viralml.com/monetizing-machine-learning?page={{ page.url | absolute_url }}' target='_blank'>
@@ -18,7 +19,7 @@
                  </a>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default"  onclick="location.href='https://www.apress.com/us/book/9781484238721'">Check Out The Book</button>
+                <button type="button" class="btn btn-default"  onclick="location.href='http://www.viralml.com/monetizing-machine-learning?page={{ page.url | absolute_url }}'">Check Out The Book</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Not Now</button>
             </div>
           
