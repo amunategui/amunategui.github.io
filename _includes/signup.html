@@ -38,9 +38,9 @@
 <img src="https://manuelamunategui.pythonanywhere.com/pixel.gif?page={{ page.url | absolute_url }}" style="width: 1px; height: 1px" />
  
 
- 
+
 	<div class="container">
-<div class="jumbotron vertical-center">
+ 
         <table border='1'>
         	<tr><td>
         		<table border='0' bgcolor="black" cellpadding="5">
@@ -61,7 +61,7 @@
         			 
         			   	<form action="https://manuelamunategui.pythonanywhere.com/amunategui_signup" method="POST">
                            <font color='silver'>Hey there, sign up for my newsletter:</font><Br>
-                            <input type="email" name="email_address">
+                            <input type="email" name="email_address" style='width:50%;'>
                             <input type="hidden" name="signup_page" value="{{ page.url | absolute_url }}" /> 
                             <input type="submit" value="Sign up"><br>
                              <font color='silver'>and I'll send you my free eBook <b>'Become a Data Scientist'</b></font>
@@ -72,7 +72,7 @@
         		</table>
         	</td></tr>
         </table>
-        </div>
+   
 	</div>
 	<BR><BR>
 
