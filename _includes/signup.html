@@ -1,17 +1,17 @@
 
 <style>
 	@media only screen and (max-width: 40em) {
-        thead th:not(:first-child) {
-            display: none;
-        }
+    thead th:not(:first-child) {
+        display: none;
+    }
 
-        td, th {
-            display: block;
-        }
+    td, th {
+        display: block;
+    }
 
-        td[data-th]:before  {
-            content: attr(data-th);
-        }
+    td[data-th]:before  {
+        content: attr(data-th);
+    }
 	}
 	
 
@@ -37,40 +37,42 @@
 
 <img src="https://manuelamunategui.pythonanywhere.com/pixel.gif?page={{ page.url | absolute_url }}" style="width: 1px; height: 1px" />
  
+
+ <div class="jumbotron vertical-center">
 	<div class="container">
 
-        <table border='1'>
-        	<tr><td>
-        		<table border='0' bgcolor="black" cellpadding="5">
+<table border='1'>
+	<tr><td>
+		<table border='0' bgcolor="black" cellpadding="5">
 
-        			<tr>
-        				<td style="text-align:center;">
-        					<H3><font color='gray'>Data Exploration & Machine Learning, Hands-on</font></H3>
-        					<p class="lead text-muted">Practical walkthroughs on machine learning, data exploration and insight finding</p>
-        				</td>
-        			</tr>
-        			<tr>
-        				<td>
-        					<img src="https://amunategui.github.io/Combined_Logo_Border.png" alt="The amunategui.github.io Applied Data Science Portal" title="The amunategui.github.io Applied Data Science Portal" style="padding:0px; border:0px; width:914px; height:272px" />
-        				</td>
-        			</tr>	
-        			<tr>
-        			<td style="text-align:center;">
-        			 
-        			   	<form action="https://manuelamunategui.pythonanywhere.com/amunategui_signup" method="POST">
-                           <font color='silver'>Hey there, sign up for my newsletter:</font><Br>
-                            <input type="email" name="email_address">
-                            <input type="hidden" name="signup_page" value="{{ page.url | absolute_url }}" /> 
-                            <input type="submit" value="Sign up"><br>
-                             <font color='silver'>and I'll send you my free eBook <b>'Become a Data Scientist'</b></font>
-                        </form>
+			<tr>
+				<td style="text-align:center;">
+					<H3><font color='gray'>Data Exploration & Machine Learning, Hands-on</font></H3>
+					<p class="lead text-muted">Practical walkthroughs on machine learning, data exploration and insight finding</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<img src="https://amunategui.github.io/Combined_Logo_Border.png" alt="The amunategui.github.io Applied Data Science Portal" title="The amunategui.github.io Applied Data Science Portal" style="padding:0px; border:0px; width:914px; height:272px" />
+				</td>
+			</tr>	
+			<tr>
+			<td style="text-align:center;">
+			 
+			   	<form action="https://manuelamunategui.pythonanywhere.com/amunategui_signup" method="POST">
+                   <font color='silver'>Hey there, sign up for my newsletter:</font><Br>
+                    <input type="email" name="email_address">
+                    <input type="hidden" name="signup_page" value="{{ page.url | absolute_url }}" /> 
+                    <input type="submit" value="Sign up"><br>
+                     <font color='silver'>and I'll send you my free eBook <b>'Become a Data Scientist'</b></font>
+                </form>
 
-        			</td>
-        		</tr>
-        		</table>
-        	</td></tr>
-        </table>
-
+			</td>
+		</tr>
+		</table>
+	</td></tr>
+</table>
+</div>
 	</div>
 	<BR><BR>
 
