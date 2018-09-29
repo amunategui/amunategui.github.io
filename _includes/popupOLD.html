@@ -1,10 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<style>
+.no-active { visibility: hidden }
+
+#B div:not(:first-child) {
+  display: none;
+}
+
+</style>
 <script type="text/javascript">
- // setTimeout(function() {
- //    $('#myModal').modal('show');
- //     $("#myModal").css("z-index", "1500");
- //     $('#myModal').appendTo("body").modal('show');
- // }, 8000);
+
+    $(function() {
+      var n = 0;
+      n = Math.floor((Math.random() * 3));
+      $("#B div").hide();
+          $("#B").find('div:eq('+n+')').show();
+      
+    });
+
 </script>
+
+<BODY>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
+<div id="B">
+  <div>AN APPLE</div>
+  <div>PARIS</div>
+  <div>PICASSO</div>
+</div>
+
 
 <div id="myModal" class="modal fade">
     <div class="modal-dialog">
@@ -28,3 +56,6 @@
         </div>
     </div>
 </div>
+
+</BODY>
+</html>
