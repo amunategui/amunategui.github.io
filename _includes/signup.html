@@ -35,6 +35,19 @@
     cursor: pointer;}
 </style>
 
+  <script type="text/javascript">
+ 
+
+ $(function(){
+    var random = Math.floor(Math.random() * $('.item').length);
+    $('.item').eq(random).show();    
+});
+
+
+</script>
+
+
+
 {% include popup.html %}
 
       <section class="text-center" style="background-color:black">
@@ -89,7 +102,7 @@
                           <td style="text-align:center;">
                         <BR>
                         <BR>
-                         <div id="images">
+                         <div class="item">
                               <H3><font class="text-white"><a href='https://www.apress.com/us/book/9781484238721' target='_blank'>Hey, 20% off my new book!</a></font></H3><BR><BR>
                                <a href='https://www.apress.com/us/book/9781484238721' target='_blank'>
                                                    <img src="https://amunategui.github.io/monetize-ml-apress-coupon.png"
@@ -100,6 +113,19 @@
                             <H3><font class="text-white"><a href='https://www.apress.com/us/book/9781484238721' target='_blank'>From Apress Books for a limited time!!</a></font></H3>
 
                         </div>
+                        <div class="item">
+                              <H3><font class="text-white"><a href='http://www.viralml.com/create-ml-apps-for-free' target='_blank'>Check out my new free eBook and Class!</a></font></H3><BR><BR>
+                               <a href='https://www.apress.com/us/book/9781484238721' target='_blank'>
+                                                   <img src="https://amunategui.github.io/monetize-ml-apress-coupon.png"
+                                                   alt="Get my new book Monetizing Machine Learning on Apress today!"
+                                                   title="Get my new book Monetizing Machine Learning on Apress today!"
+                                                   style="padding:0px; border:0px; width: 40%; height: 40%" />
+                                                </a><BR><BR>
+                            <H3><font class="text-white"><a href='http://www.viralml.com/create-ml-apps-for-free' target='_blank'>Sign up and I'll send it to you.</a></font></H3>
+
+                        </div>
+
+
                         <BR>
                           </td>
                                 </tr>
