@@ -38,9 +38,8 @@
   <script type="text/javascript">
  
 
- $(function(){
-    var random = Math.floor(Math.random() * $('.item').length);
-    $('.item').eq(random).show();    
+$(function(){
+    $(".various"+(new Date().getTime() % 2 +1)).css("display", "block");
 });
 
 
@@ -102,7 +101,12 @@
                           <td style="text-align:center;">
                         <BR>
                         <BR>
-                         <div class="item">
+
+                        <div id-="fancy_box">
+                            <div id="inline" class="various1" style="display:none;">
+
+
+                          
                               <H3><font class="text-white"><a href='https://www.apress.com/us/book/9781484238721' target='_blank'>Hey, 20% off my new book!</a></font></H3><BR><BR>
                                <a href='https://www.apress.com/us/book/9781484238721' target='_blank'>
                                                    <img src="https://amunategui.github.io/monetize-ml-apress-coupon.png"
@@ -113,7 +117,7 @@
                             <H3><font class="text-white"><a href='https://www.apress.com/us/book/9781484238721' target='_blank'>From Apress Books for a limited time!!</a></font></H3>
 
                         </div>
-                        <div class="item">
+                        <div id="inline" class="various2" style="display:none;">
                               <H3><font class="text-white"><a href='http://www.viralml.com/create-ml-apps-for-free' target='_blank'>Check out my new free eBook and Class!</a></font></H3><BR><BR>
                                <a href='http://www.viralml.com/create-ml-apps-for-free' target='_blank'>
                                                    <img src="create-ml-apps-for-free"
