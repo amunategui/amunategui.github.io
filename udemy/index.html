@@ -22,6 +22,12 @@
 
 <main role="main">
 
+{% for post in site.posts %}
+    {% if post.tag contains 'referrer' %}
+         YES!!!!!
+    {% endif%}
+{% endfor %}
+
 {% include header.html %}
    
 {% include signup.html %}
