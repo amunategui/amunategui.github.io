@@ -179,6 +179,9 @@ Let’s turn on <code class="highlighter-rouge">fullRank</code> and try our data
 <li>You can dummify large, free-text columns. Before running the function, look for repeated words or sentences, only take the top 50 of them and replace the rest with 'others'. This will allow you to use that field without delving deeply into NLP.</li>
 
 <p><br /><br />            <br />
+
+{% include share-the-love.html %}
+
 <a id="sourcecode">Full source code (<a href="https://github.com/amunategui/Walkthrough-of-the-dummyVars-Function" target="_blank">also on GitHub</a>)</a>:</p>
 
 <div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">survey</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">service</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'very unhappy'</span><span class="p">,</span><span class="s1">'unhappy'</span><span class="p">,</span><span class="s1">'neutral'</span><span class="p">,</span><span class="s1">'happy'</span><span class="p">,</span><span class="s1">'very happy'</span><span class="p">))</span><span class="w">
