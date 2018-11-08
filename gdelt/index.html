@@ -82,8 +82,16 @@ style='padding:1px; border:1px solid #021a40; width:270px; height:294px'>
 <BR><BR>
 <H3>Let's Get Querying!</H3>
 
-<p>Here is a very simple query and simple visualiztion. Let's pull the longitude and lattitude of the latest 1,000 events 
+<p>Here is a very simple query and simple visualiztion. Let's pull the longitude and lattitude of the latest 1,000 events</p>
 
+<blockquote>
+SELECT ActionGeo_Lat, ActionGeo_Long FROM `gdelt-bq.gdeltv2.events_partitioned` 
+WHERE _PARTITIONTIME >= TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 2 day))
+AND _PARTITIONTIME <= TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 1 day))
+and ActionGeo_CountryCode='US'
+ORDER BY DATEADDED DESC
+LIMIT 1000
+</blockquote>
 
 <BR><BR>
 <p>Thanks for reading!</p>
