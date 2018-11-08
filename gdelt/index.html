@@ -1,0 +1,122 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    
+    <meta property="og:description" content="It Contains Some 40 Years of News Worldwide Sources Begging for Your Questions, Analysis, and Discoveries">
+    <meta name="description" content="It Contains Some 40 Years of News Worldwide Sources Begging for Your Questions, Analysis, and Discoveries">
+    <meta name="title" content="GDELT - World Events at Your Finger Tips and for Free!">
+    <meta name="og:title" content="GDELT - World Events at Your Finger Tips and for Free!">
+
+    <meta name="author" content="Manuel Amunategui">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>GDELT - World Events at Your Finger Tips and for Free!</title>
+
+    {% include externals.html %}
+  
+  </head>
+
+<style>
+  code {
+    background-color: #eee;
+    border-radius: 3px;
+    font-family: courier, monospace;
+    padding: 0 3px;
+}
+</style>
+
+ 
+<body>
+
+<main role="main">
+
+{% include header.html %}
+   
+{% include signup.html %}
+
+<div class="container">
+  <div class="blog-header">
+    <h1 class="blog-title">How to Create Your Own Free Email Signup Form and Enjoy 100% Creative Freedom - For Static & Semi-Static Web Sites</h1>
+  </div>
+ 
+<p><br /><br />
+<strong>Resources</strong></p>
+<ul>
+<li type="square"><a href="https://www.youtube.com/watch?v=-L21skX9DL8&index=1&list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
+</ul>
+
+<BR>
+<p style="text-align:center">
+<img src="img/gdelt-glob.gif.png" alt="gdelt glob" 
+style='padding:1px; border:1px solid #021a40; width: 70%; height: 70%'>
+</p>
+<BR><BR>
+
+<BR><BR>
+<H2>The Global Database of Events, Language and Tone contains Some 40 Years of News Worldwide Sources Begging for Your Questions, Analysis, and Discoveries</H2>
+
+
+
+
+
+<p>Yep, you're serving server-side web content for free! Now, let's change that silly message with our email-signup form.</p>
+
+<H2>Setting Up Your Web Server </H2>
+<BR>
+
+<p>OK, now let's create the real deal. Add a new folder in your files section called <b>'email-signup-form'</b>.
+
+<p>Create three files and paste the following code:</p>
+
+<p>Right under the directory, create <b>"main.py"</b> and add the following code:</p>
+
+<code>
+<pre name="6b23" id="6b23" class="graf graf--pre graf-after--pre">#!/usr/bin/env python<br>from flask import Flask, redirect, request, render_template<br>import logging, io, base64, os, datetime, time<br>from datetime import datetime</pre><pre name="3529" id="3529" class="graf graf--pre graf-after--pre">app = Flask(__name__)</pre><pre name="046c" id="046c" class="graf graf--pre graf-after--pre"><a href="http://twitter.com/app" data-href="http://twitter.com/app" class="markup--anchor markup--pre-anchor" title="Twitter profile for @app" rel="noopener nofollow" target="_blank">@app</a>.route(&quot;/amunategui_signup&quot;, methods=[&#39;POST&#39;, &#39;GET&#39;])<br>def signup_page():<br>    if request.method == &#39;POST&#39;:<br>        email_param = request.form[&#39;email_address&#39;]<br>        signup_page_param = request.form[&#39;signup_page&#39;]<br>        if email_param is not None and signup_page_param is not None:<br>            st = datetime.fromtimestamp(time.time()).strftime(&#39;%Y-%m-%d %H:%M:%S&#39;)<br>            # save to file and send thank you note<br>            with open(&quot;email_repo.txt&quot;,&quot;a&quot;) as myfile:<br>                myfile.write(&#39;Timestamp: &#39; + st + &#39; email:&#39; + email_param + &#39; source:&#39; + signup_page_param + &#39;\n&#39;)<br><br>    return redirect(signup_page_param)</pre><pre name="892d" id="892d" class="graf graf--pre graf-after--pre"><a href="http://twitter.com/app" data-href="http://twitter.com/app" class="markup--anchor markup--pre-anchor" title="Twitter profile for @app" rel="noopener nofollow" target="_blank">@app</a>.route(&#39;/&#39;)<br>def welcome():<br>    return render_template(&#39;signup-plugin.html&#39;)</pre>
+</code>
+
+<p>Create a <b>"templates"</b> folder and add the following file and code <b>"signup-plugin.html"</b> (and don't forget to change all the links that state my sites or my PythonAnywhere accounts):</p>
+
+<code>
+
+<pre name="a16b" id="a16b" class="graf graf--pre graf-after--p">&lt;!DOCTYPE html&gt;<br>&lt;html lang=&quot;en&quot;&gt;<br>  &lt;head&gt;<br>    &lt;meta charset=&quot;utf-8&quot;&gt;<br>    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;<br>    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;<br>    &lt;!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --&gt;<br>    &lt;meta name=&quot;description&quot; content=&quot;Machine Learning, R Programming, Statistics, Artificial Intelligence&quot;&gt;<br>    &lt;meta name=&quot;author&quot; content=&quot;Manuel Amunategui&quot;&gt;<br>    &lt;link rel=&quot;icon&quot; href=&quot;favicon.ico&quot;&gt;</pre><pre name="55a6" id="55a6" class="graf graf--pre graf-after--pre">&lt;title&gt;Data Exploration, Machine Learning and AI walkthroughs in Python and R, Hands-on&lt;/title&gt;</pre><pre name="d420" id="d420" class="graf graf--pre graf-after--pre">&lt;!-- Bootstrap core CSS --&gt;<br> &lt;link rel=&quot;stylesheet&quot; href=&quot;<a href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" data-href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" class="markup--anchor markup--pre-anchor" rel="nofollow noopener" target="_blank">https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css</a>&quot; integrity=&quot;sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4&quot; crossorigin=&quot;anonymous&quot;&gt;<br> &lt;link href=&quot;<a href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" data-href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" class="markup--anchor markup--pre-anchor" rel="nofollow noopener" target="_blank">https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css</a>&quot; rel=&quot;stylesheet&quot;&gt;<br> &lt;!-- Custom styles for this template --&gt;<br> &lt;link href=&quot;<a href="https://getbootstrap.com/docs/4.1/examples/album/album.css" data-href="https://getbootstrap.com/docs/4.1/examples/album/album.css" class="markup--anchor markup--pre-anchor" rel="nofollow noopener" target="_blank">https://getbootstrap.com/docs/4.1/examples/album/album.css</a>&quot; rel=&quot;stylesheet&quot;&gt;<br> &lt;!-- End Bootstrap core CSS --&gt;<br> <br> &lt;style&gt;</pre><pre name="8e94" id="8e94" class="graf graf--pre graf-after--pre"><a href="http://twitter.com/media" data-href="http://twitter.com/media" class="markup--anchor markup--pre-anchor" title="Twitter profile for @media" rel="nofollow noopener" target="_blank">@media</a> only screen and (max-width: 40em) {<br>        thead th:not(:first-child) {<br>            display: none;<br>        }<br>    <br>        td, th {<br>            display: block;<br>        }<br>    <br>        td[data-th]:before  {<br>            content: attr(data-th);<br>            }<br>        }<br>        <br>        <br>         body {font-family:sans-serif;<br>          line-height:1.15;}<br>        <br>         input[type=email], select {<br>            width: 100%;<br>            padding: 12px 20px;<br>            margin: 8px 0;<br>            display: inline-block;<br>            border: 1px solid #ccc;<br>            border-radius: 4px;<br>            box-sizing: border-box;}<br>        <br>         input[type=submit] {<br>            width: 50%;<br>            background-color: #008CBA;<br>            color: white;<br>            padding: 14px 20px;<br>            margin: 8px 0;<br>            border: none;<br>            border-radius: 4px;<br>            cursor: pointer;}<br>    &lt;/style&gt;<br>&lt;/head&gt;<br>&lt;body&gt;</pre><pre name="7258" id="7258" class="graf graf--pre graf-after--pre">&lt;div class=&quot;container&quot;&gt;<br>    &lt;table border=&#39;5&#39;&gt;<br>     &lt;tr&gt;&lt;td&gt;<br>      &lt;table border=&#39;0&#39; bgcolor=&quot;#e7e7e7&quot;&gt;<br>       &lt;tr&gt;<br>        &lt;td &gt;<br>        &lt;img src=&quot;<a href="https://amunategui.github.io/img/slim-data-become-a-datascientist.png" data-href="https://amunategui.github.io/img/slim-data-become-a-datascientist.png" class="markup--anchor markup--pre-anchor" rel="nofollow noopener nofollow noopener" target="_blank">https://amunategui.github.io/img/slim-data-become-a-datascientist.png</a>&quot; <br>        alt=&quot;Become a Data Scientist Essential Tips&quot; title=&quot;Become a Data Scientist Essential Tips&quot; <br>        style=&quot;padding:0px; border:0px; width:100%; height: 100%;&quot; /&gt;<br>       &lt;/td&gt;<br>    <br>       &lt;td style=&quot;text-align:center;  width: 400px&quot;&gt;<br>         &lt;form action=&quot;<a href="https://manuelamunategui.pythonanywhere.com/amunategui_signup" data-href="https://manuelamunategui.pythonanywhere.com/amunategui_signup" class="markup--anchor markup--pre-anchor" rel="nofollow noopener nofollow noopener" target="_blank">https://amunateguit.pythonanywhere.com/amunategui_signup</a>&quot; method=&quot;POST&quot;&gt;<br>          Hey there, sign up for the latest updates and I&#39;ll personally send you my free eBook:<br>               &lt;input type=&quot;email&quot; name=&quot;email_address&quot;&gt;<br>               &lt;input type=&quot;hidden&quot; name=&quot;signup_page&quot; value=&quot;<a href="https://manuelamunategui.pythonanywhere.com/static/thanks.html" data-href="https://manuelamunategui.pythonanywhere.com/static/thanks.html" class="markup--anchor markup--pre-anchor" rel="nofollow noopener nofollow noopener" target="_blank">https://manuelamunategui.pythonanywhere.com/static/thanks.html</a>&quot; /&gt; &lt;!--value=&quot;<a href="http://amunategui.github.io/" data-href="http://amunategui.github.io/" class="markup--anchor markup--pre-anchor" rel="nofollow noopener nofollow noopener" target="_blank">http://amunategui.github.io/</a>&quot;--&gt;<br>               &lt;input type=&quot;submit&quot; value=&quot;Sign up&quot;&gt;<br>               &lt;BR&gt;Thanks for your interest in the amunategui.github.io blog!! Best, Manuel<br>    <br>           &lt;/form&gt;<br>       &lt;/td&gt;<br>                &lt;td align=&#39;right&#39;&gt;<br>                    &lt;img src=&quot;<a href="https://amunategui.github.io/img/github.png" data-href="https://amunategui.github.io/img/github.png" class="markup--anchor markup--pre-anchor" rel="nofollow noopener nofollow noopener" target="_blank">https://amunategui.github.io/img/github.png</a>&quot; alt=&quot;The Amunategui.GitHub.io Applied Data Science Portal&quot; <br>                    title=&quot;The Amunategui.github.io Applied Data Science Portal&quot; style=&quot;padding:0px; border:0px; width: 75%; height: 75%;&quot; /&gt;<br>       &lt;/td&gt;<br>      &lt;/tr&gt;<br>      &lt;/table&gt;<br>     &lt;/td&gt;&lt;/tr&gt;<br>    &lt;/table&gt;<br>    &lt;/div&gt;</pre><pre name="c7fd" id="c7fd" class="graf graf--pre graf-after--pre">&lt;/body&gt;<br>&lt;/html&gt;</pre>
+
+</code>
+
+<p>Go back to the folder <b>"email-signup-form"</b> and create a new folder called <b>"static"</b> and a new file under it called <b>"thanks.html"</b>:</p>
+
+<code>
+<pre name="ecf1" id="ecf1" class="graf graf--pre graf-after--p">&lt;!doctype html&gt;<br>&lt;html lang=&quot;en-US&quot;&gt;</pre><pre name="7f94" id="7f94" class="graf graf--pre graf-after--pre">&lt;!DOCTYPE html&gt;<br>&lt;html lang=&quot;en&quot;&gt;<br>  &lt;head&gt;<br>    &lt;meta charset=&quot;utf-8&quot;&gt;<br>    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;<br>    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;<br>    &lt;!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags --&gt;<br>    &lt;meta name=&quot;description&quot; content=&quot;Machine Learning, R Programming, Statistics, Artificial Intelligence&quot;&gt;<br>    &lt;meta name=&quot;author&quot; content=&quot;Manuel Amunategui&quot;&gt;<br>    &lt;link rel=&quot;icon&quot; href=&quot;favicon.ico&quot;&gt;</pre><pre name="dd32" id="dd32" class="graf graf--pre graf-after--pre">&lt;title&gt;Data Exploration, Machine Learning and AI walkthroughs in Python and R, Hands-on&lt;/title&gt;</pre><pre name="355f" id="355f" class="graf graf--pre graf-after--pre">&lt;!-- Bootstrap core CSS --&gt;<br> &lt;link rel=&quot;stylesheet&quot; href=&quot;<a href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" data-href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" class="markup--anchor markup--pre-anchor" rel="nofollow noopener" target="_blank">https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css</a>&quot; integrity=&quot;sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4&quot; crossorigin=&quot;anonymous&quot;&gt;<br> &lt;link href=&quot;<a href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" data-href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" class="markup--anchor markup--pre-anchor" rel="nofollow noopener" target="_blank">https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css</a>&quot; rel=&quot;stylesheet&quot;&gt;<br> &lt;!-- Custom styles for this template --&gt;<br> &lt;link href=&quot;<a href="https://getbootstrap.com/docs/4.1/examples/album/album.css" data-href="https://getbootstrap.com/docs/4.1/examples/album/album.css" class="markup--anchor markup--pre-anchor" rel="nofollow noopener" target="_blank">https://getbootstrap.com/docs/4.1/examples/album/album.css</a>&quot; rel=&quot;stylesheet&quot;&gt;<br> &lt;!-- End Bootstrap core CSS --&gt;</pre><pre name="d985" id="d985" class="graf graf--pre graf-after--pre">&lt;style&gt;</pre><pre name="ced8" id="ced8" class="graf graf--pre graf-after--pre"><a href="http://twitter.com/media" data-href="http://twitter.com/media" class="markup--anchor markup--pre-anchor" title="Twitter profile for @media" rel="nofollow noopener" target="_blank">@media</a> only screen and (max-width: 40em) {<br>        thead th:not(:first-child) {<br>            display: none;<br>        }</pre><pre name="f461" id="f461" class="graf graf--pre graf-after--pre">td, th {<br>            display: block;<br>        }</pre><pre name="0d81" id="0d81" class="graf graf--pre graf-after--pre">td[data-th]:before  {<br>            content: attr(data-th);<br>        }<br>    }</pre><pre name="6134" id="6134" class="graf graf--pre graf-after--pre">body {font-family:sans-serif;<br>      line-height:1.15;}</pre><pre name="67a5" id="67a5" class="graf graf--pre graf-after--pre">    &lt;/style&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br> &lt;div class=&quot;container&quot;&gt;<br>        &lt;table border=&#39;5&#39;&gt;<br>         &lt;tr&gt;&lt;td&gt;<br>          &lt;table border=&#39;0&#39; bgcolor=&quot;#e7e7e7&quot;&gt;<br>           &lt;tr&gt;<br>            &lt;td &gt;<br>            &lt;img src=&quot;<a href="https://amunategui.github.io/img/slim-data-become-a-datascientist.png" data-href="https://amunategui.github.io/img/slim-data-become-a-datascientist.png" class="markup--anchor markup--pre-anchor" rel="nofollow noopener nofollow noopener" target="_blank">https://amunategui.github.io/img/slim-data-become-a-datascientist.png</a>&quot; alt=&quot;Become a Data Scientist Essential Tips&quot;<br>            title=&quot;Become a Data Scientist Essential Tips&quot; style=&quot;padding:0px; border:0px; width:100%; height: 100%;&quot; /&gt;<br>           &lt;/td&gt;</pre><pre name="2993" id="2993" class="graf graf--pre graf-after--pre">&lt;td style=&quot;text-align:center;  width: 400px&quot;&gt;<br>             You are signed up!! Thanks for your interest in the amunategui.github.io blog!! &lt;BR&gt;&lt;BR&gt;Best, Manuel&lt;BR&gt;&lt;BR&gt;Hit your back button to get back to where you came from and thanks again!</pre><pre name="6400" id="6400" class="graf graf--pre graf-after--pre">&lt;/td&gt;<br>                    &lt;td align=&#39;right&#39;&gt;<br>                            &lt;img src=&quot;<a href="https://amunategui.github.io/img/github.png" data-href="https://amunategui.github.io/img/github.png" class="markup--anchor markup--pre-anchor" rel="nofollow noopener nofollow noopener" target="_blank">https://amunategui.github.io/img/github.png</a>&quot; alt=&quot;The Amunategui.GitHub.io Applied Data Science Portal&quot;<br>                            title=&quot;The Amunategui.github.io Applied Data Science Portal&quot; style=&quot;padding:0px; border:0px; width: 75%; height: 75%;&quot; /&gt;<br>           &lt;/td&gt;<br>          &lt;/tr&gt;<br>          &lt;/table&gt;<br>         &lt;/td&gt;&lt;/tr&gt;<br>        &lt;/table&gt;<br> &lt;/div&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;</pre>
+</code>
+<br>
+<h3 name="93ae" id="93ae" class="graf graf--h3 graf-after--pre">Your Folder Structure</h3><p name="496a" id="496a" class="graf graf--p graf-after--h3"><strong class="markup--strong markup--p-strong">email-signup-form</strong></p><p name="4a4b" id="4a4b" class="graf graf--p graf-after--p">├<strong class="markup--strong markup--p-strong">──main.py</strong></p><p name="482b" id="482b" class="graf graf--p graf-after--p">├<strong class="markup--strong markup--p-strong">──templates ──signup-plugin.html</strong></p><p name="251a" id="251a" class="graf graf--p graf-after--p"><strong class="markup--strong markup--p-strong">└──static──thanks.html</strong></p>
+
+<H2>Reset Your Web Server</H2>
+<p>That's the big green button we clicked on earlier and then travel to your <b>"signup-plugin.html"</b> page.</p>
+
+<p>That's it!!! You can embed the "signup-plugin.html" code directly into a page like I did on "amunategui.github.io". </p>
+
+<p>And to check out your emails:</p>
+<BR> 
+<p style="text-align:center">
+<img src="img/pythonanywhere-email-repository.png" alt="Your Email Repository" style='padding:1px; border:1px solid #021a40; width: 50%; height: 50%'>
+</p>
+<BR><BR>
+
+{% include mid_point_ad.html %}
+
+
+</div>
+
+
+
+</main>
+{% include footer.html %}
+  </body>
+</html>
+
