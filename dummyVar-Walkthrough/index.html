@@ -177,10 +177,10 @@ Let’s turn on <code class="highlighter-rouge">fullRank</code> and try our data
 <strong>Things to keep in mind</strong><br /></p>
 <li>Don't dummy a large data set full of zip codes; you more than likely don't have the computing muscle to add an extra 43,000 columns to your data set.</li>
 <li>You can dummify large, free-text columns. Before running the function, look for repeated words or sentences, only take the top 50 of them and replace the rest with 'others'. This will allow you to use that field without delving deeply into NLP.</li>
-
+{% include follow-me.html %}
 <p><br /><br />            <br />
 
-<a id="sourcecode">Full source code (<a href="https://github.com/amunategui/Walkthrough-of-the-dummyVars-Function" target="_blank">also on GitHub</a>)</a>:</p>
+<a id="sourcecode"><b>Full source code (<a href="https://github.com/amunategui/Walkthrough-of-the-dummyVars-Function" target="_blank">also on GitHub</a>)</a></b>:</p>
 
 <div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">survey</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">service</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'very unhappy'</span><span class="p">,</span><span class="s1">'unhappy'</span><span class="p">,</span><span class="s1">'neutral'</span><span class="p">,</span><span class="s1">'happy'</span><span class="p">,</span><span class="s1">'very happy'</span><span class="p">))</span><span class="w">
 </span><span class="n">print</span><span class="p">(</span><span class="n">survey</span><span class="p">)</span><span class="w">

@@ -110,6 +110,7 @@ Here is a smoothed plot of the pseudo odds ratios for YearsWorked with direction
 </p>
 
 <BR>
+{% include follow-me.html %}
 <H2>Step 4: Calculating Odds</H2>
 <p>
 Each rectangle represents the odds ratio for that area. To turn it into odds we need to apply a little math. The x-value is easy, its the right-end point of each rectangle, and, at that point, the y-value is the cumulative sum of the area of that rectangle. We then find the median box (the one where the median value of the feature fits best) and adjust the vertical level of the odds line according to that box so the median sits at value 1.

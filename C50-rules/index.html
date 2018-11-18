@@ -116,6 +116,7 @@ str(churn_data)</code></pre>
 ##  $ number_customer_service_calls: int  1 1 0 2 3 0 3 0 1 0 ...
 ##  $ churn                        : Factor w/ 2 levels &quot;Does_Churn&quot;,&quot;Stays&quot;: 2 2 2 2 2 2 2 2 2 2 ...</code></pre>
 <BR><BR>
+{% include follow-me.html %}
 <h2>Straight up C5.0</h2>
 <p>Let’s first look at the default summary output from C5.0:</p>
 <pre class="r"><code>c50_model &lt;- C5.0(x=churn_data[,setdiff(names(churn_data), outcome_name)], y=churn_data[,outcome_name])

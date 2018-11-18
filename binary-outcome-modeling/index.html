@@ -233,6 +233,7 @@ As with most modeling projects, we need to split our data into two portions: a <
 </span><span class="n">testDF</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">titanicDF</span><span class="p">[</span><span class="o">-</span><span class="n">splitIndex</span><span class="p">,]</span><span class="w">
 </span></code></pre>
 </div>
+{% include follow-me.html %}
 <p><br /><br />
 <strong>Caret</strong> offers many tuning functions to help you get as much as possible out of your models; the <a href="http://www.inside-r.org/packages/cran/caret/docs/trainControl" target="_blank">trainControl</a> function allows you to control the resampling of your data. This will split the training data set internally and do it’s own train/test runs to figure out the best settings for your model. In this case, we’re going to cross-validate the data 3 times, therefore training it 3 times on different portions of the data before settling on the best tuning parameters (for <strong>gbm</strong> it is <code class="highlighter-rouge">trees</code>, <code class="highlighter-rouge">shrinkage</code>, and <code class="highlighter-rouge">interaction depth</code>). You can also set these values yourself if you don’t trust the function.</p>
 

@@ -121,6 +121,9 @@ similar_metrics &lt;- Reduce(`+`,Map(stringdist, dplyr::select(historical_df, -c
 
 head(similar_metrics)</code></pre>
 <pre><code>## [1]  9.166667 13.911905 15.102381 12.379762 14.668723 12.484199</code></pre>
+
+{% include follow-me.html %}
+
 <p><BR><BR> A good next step is to add our distance metrics back to the historical data set and pull the closest matches with our focus row for both positive and negative outcomes.</p>
 <pre class="r"><code># print focus row for comparaisoin 
 live_row</code></pre>
