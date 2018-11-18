@@ -128,6 +128,7 @@ The Google Video Intelligence API
     return(sorted(set(frame_offsets)))</code></pre>
 <BR><BR>
 <H4>
+{% include follow-me.html %}￼
 FFmpeg and the Google Vision API
 </H4>
 <p>Once we have a list of time stamps marking each person in the video clip, the next set is to extract those frames into PNG images using <a href="https://www.ffmpeg.org/" target="_blank">FFmpeg</a> and feeding them into the <a href="cloud.google.com/Vision_API">Google Vision API</a>. FFmpeg is a powerhouse in-of-itself and does a great job extracting stills from video. The Vision API is also chock-full-of-features and, at this point in the pipeline, we’re only interested in getting coordinates of a face.</p>

@@ -106,6 +106,7 @@ This takes a vector of two sets of geo-spatial coordinates, the upper left point
 <H3>MakeAMove</H3>
 MakeAMove is the central relay that communicates with the other functions. It will get the next coordinates via GetPossibleCoordinates, figure out if it should try up or down first depending on where it is in relation to the end point’s latitude, and call on the Yelp API. If it finds a florist, it will report back the pertinent information such as the florist’s name, state, and coordinates. If it can’t find one, it will report back a None.
 <BR><BR>
+{% include follow-me.html %}￼
 <H3>And a Big A** Loop</H3>
 The main logic is a big loop that loops one round for every move (and attempted moves) on the map. Here we set a search term <b>florist</b>, and a bounded square size unit, 1 degree in this case. <b>made_it</b> is the boolean flag that keeps the while loop going until we make it close to our final destination (or if we fail after x tries). <b>time.sleep(0.5)</b> will pause the code between each loop, this is critical so you don’t flood the Yelp server and get yourself banned.
 <BR><BR>
