@@ -51,7 +51,7 @@
 <p style="text-align:center">
 <img src="img/lucas_hammock.jpg" alt="The Python and Flask Rest API, Abstracting Functions for Web Applications and SaaS" 
 title="The Python and Flask Rest API, Abstracting Functions for Web Applications and SaaS" 
-style='padding:1px; border:1px solid #021a40; width:270px; height:294px'>
+style='padding:1px; border:1px solid #021a40; width:623px; height:467px'>
 </p>
 
 <H2>Learn How to Abstract Functions using Rest APIs and Extend Your Web Applications and Saas</H2>
@@ -64,26 +64,80 @@ To learn about REST APIs, let’s build a simple project using Python, Flask, py
 
 <H3>Install flask-restful and Postman</H3>
 
-pip install flask-restful
- 
-
-Install the free version of Postman https://www.getpostman.com
-
-First a simple example:
-
+Install the flask-restful library by running the below command in your terminal window. This Flask extension will abstract a lot of of the coding and best practices for our REST API for us (such creating classes and adding resource API end points).
 
 <pre>
-The following command must be run outside of the IPython shell:
-
     $ pip install flask-restful
-
-The Python package manager (pip) can only be used from outside of IPython.
-Please reissue the `pip` command in a separate terminal or command prompt.
-
-See the Python documentation for more information on how to install packages:
-
-    https://docs.python.org/3/installing/
 </pre>
+ <p>
+Install the free version of <a href='https://www.getpostman.com' target='_blank'>
+Postman at https://www.getpostman.com</a>. This tool allows you to easily test your API points and a whole lot more.
+</p>
+<BR><BR>
+<H3>A First Simple Example</H3>
+<p>Enter the following code, save it to your local machine as 'main.py' and kick off a Flask session (run python3 main.py):
+<pre>
+from flask import Flask, request
+from flask_restful import Resource, Api
+
+app = Flask(__name__)
+api = Api(app)
+
+class HelloWorld(Resource):
+    def get(self):
+        return {'about': 'Hello World!’}
+
+api.add_resource(HelloWorld, '/‘)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+</pre>
+<p>
+Run the above example in Postman.
+</p>
+<BR><BR>
+
+<p style="text-align:center">
+<img src="img/postman.png" alt="Testing our Flask REST API function in Postman" 
+title="Testing our Flask REST API function in Postman" 
+style='padding:1px; border:1px solid #021a40; width:815px; height:548px'>
+</p>
+
+<BR><BR>
+<H3>And Now for a More Involved Example</H3>
+
+<pre>
+from flask import Flask, request
+from flask_restful import Resource, Api
+from datetime import datetime
+import pytz
+from urllib.parse import unquote
+
+app = Flask(__name__)
+api = Api(app)
+
+class WorldTime(Resource):
+  def get(self, timezone):
+    timezone = unquote(timezone)
+    if timezone in pytz.all_timezones:
+      tz = pytz.timezone(timezone)
+      tz_now = datetime.now(tz)
+      fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+      return {'Server time zone': str(tz_now.strftime(fmt))}
+    else:
+      return {'Server time zone': str(timezone)}
+  
+
+api.add_resource(WorldTime, '/WorldTime/<string:timezone>')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+</pre>
+
+
+
+
 
 
 <BR><BR>
