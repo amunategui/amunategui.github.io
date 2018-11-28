@@ -153,14 +153,13 @@ class WorldTime(Resource):
       fmt = '%Y-%m-%d %H:%M:%S %Z%z'
       return {'WorldTime': str(tz_now.strftime(fmt))}
     else:
-      return {'WorldTime': str(timezone)}
+      return {'WorldTime': 'error'}
   
 
-api.add_resource(WorldTime, '/WorldTime/<string:timezone>')
+api.add_resource(WorldTime, '/WorldTime')
 
 if __name__ == '__main__':
   app.run(debug=True)
-
 </pre>
 
 <BR><BR>
