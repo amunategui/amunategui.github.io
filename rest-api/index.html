@@ -86,13 +86,13 @@ app = Flask(__name__)
 api = Api(app)
 
 class HelloWorld(Resource):
-    def get(self):
-        return {'somekey': 'Hello World!'}
+  def get(self):
+    return {'somekey': 'Hello World!'}
 
 api.add_resource(HelloWorld, '/')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+  app.run(debug=True)
 </pre>
 <p>
 Run the above example in Postman:
@@ -164,7 +164,7 @@ class WorldTime(Resource):
 api.add_resource(WorldTime, '/WorldTime/<string:timezone>')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+  app.run(debug=True)
 
 </pre>
 
