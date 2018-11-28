@@ -117,18 +117,26 @@ utc = pytz.utc
 
 # get your local time zone
 print(utc.zone)
- 
-# list all time zones
-pytz.all_timezones
+<BR>
+UTC
+<BR><BR>
+
+# print last time zones
+print(pytz.all_timezones[-15:])
+<BR>
+In [82]: print(pytz.all_timezones[-15:]) 
+['US/Arizona', 'US/Central', 'US/East-Indiana', 'US/Eastern', 'US/Hawaii', 'US/Indiana-Starke', 'US/Michigan', 'US/Mountain', 'US/Pacific', 'US/Samoa', 'UTC', 'Universal', 'W-SU', 'WET', 'Zulu'] 
+<BR><BR>
 
 # get local time in Amsterdam
 amsterdam = pytz.timezone('Europe/Amsterdam')
 amsterdam_now = datetime.now(amsterdam)
 fmt = '%Y-%m-%d %H:%M:%S %Z%z'
-print('Amsterdam time': str(amsterdam_now.strftime(fmt)))
-
-
+print('Amsterdam time:', str(amsterdam_now.strftime(fmt)))
+<br>
+Amsterdam time: 2018-11-28 01:14:30 CET+0100
 </pre>
+
 <BR><BR>
 <p>Now replace your previous 'main.py' code with following code:
 
