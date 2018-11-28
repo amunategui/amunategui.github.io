@@ -151,9 +151,9 @@ class WorldTime(Resource):
       tz = pytz.timezone(timezone)
       tz_now = datetime.now(tz)
       fmt = '%Y-%m-%d %H:%M:%S %Z%z'
-      return {'Server time zone': str(tz_now.strftime(fmt))}
+      return {'WorldTime': str(tz_now.strftime(fmt))}
     else:
-      return {'Server time zone': str(timezone)}
+      return {'WorldTime': str(timezone)}
   
 
 api.add_resource(WorldTime, '/WorldTime/<string:timezone>')
