@@ -54,27 +54,29 @@ title="The Python and Flask Rest API, Abstracting Functions for Web Applications
 style='padding:1px; border:1px solid #021a40; width:623px; height:467px'>
 </p>
 
-<H2>Learn How to Abstract Functions using Rest APIs and Extend Your Web Applications and Saas</H2>
+<H2>Let's Abstract Functions using Rest APIs and Extend Your Web Applications and Saas</H2>
+<BR><BR>
 <p>
 The Restful API (or REST API) is based on the representational state transfer architecture, a definition of data interoperability over the Internet using web services. In simple terms, it uses a set of commands such as get, post, delete, update, etc. and passes the data over the internet atop the HTTP protocol. This allows it to piggyback over an existing technology normally used to generate web pages. This technology can be very useful to abstract complex processing away from a web application's code. It can even allow you to bring in advanced predictive analytics and machine learining into simple sites like GitHub.io Pages or WordPress pages. 
 </p>
 <p>
 To learn about REST APIs, let’s build a simple project using Python, Flask, pytz, flask_restful and Postman. I am going to assume you have done some simple Flask before, if you haven’t, go over to the <a href="http://flask.pocoo.org/docs/1.0/quickstart/" target='_blank'>official Flask documentation and go through the first example</a>. 
 </p>
-
+<BR><BR>
 <H3>Install flask-restful and Postman</H3>
 
 Install the flask-restful library by running the below command in your terminal window. This Flask extension will abstract a lot of of the coding and best practices for our REST API for us (such creating classes and adding resource API end points).
-
+<BR><BR>
 <pre>
     $ pip install flask-restful
 </pre>
  <p>
 Install the free version of <a href='https://www.getpostman.com' target='_blank'>
-Postman at https://www.getpostman.com</a>. This tool allows you to easily test your API points and a whole lot more.
+Postman at getpostman.com</a>. This tool allows you to easily test your API points and a whole lot more.
 </p>
 <BR><BR>
-<H3>A First Simple Example</H3>
+<H3>A Simple Example</H3>
+<BR><BR>
 <p>Enter the following code, save it to your local machine as 'main.py' and kick off a Flask session (run python3 main.py):
 <pre>
 from flask import Flask, request
@@ -93,7 +95,7 @@ if __name__ == '__main__':
     app.run(debug=True)
 </pre>
 <p>
-Run the above example in Postman.
+Run the above example in Postman:
 </p>
 <BR><BR>
 
@@ -105,6 +107,30 @@ style='padding:1px; border:1px solid #021a40; width:815px; height:548px'>
 
 <BR><BR>
 <H3>And Now for a More Involved Example</H3>
+<BR><BR>
+<p>Here we will use the pytz library to access current times in different times zones. You can play around with this library with the following code:
+<pre>
+
+from datetime import datetime
+import pytz
+utc = pytz.utc
+
+# get your local time zone
+print(utc.zone)
+ 
+# list all time zones
+pytz.all_timezones
+
+# get local time in Amsterdam
+amsterdam = pytz.timezone('Europe/Amsterdam')
+amsterdam_now = datetime.now(amsterdam)
+fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+print('Amsterdam time': str(amsterdam_now.strftime(fmt)))
+
+
+</pre>
+<BR><BR>
+<p>Now replace your previous 'main.py' code with following code:
 
 <pre>
 from flask import Flask, request
@@ -135,10 +161,12 @@ if __name__ == '__main__':
 
 </pre>
 
-
-
-
-
+<BR><BR>
+<p>To test it out, you can enter the below URL in either Postman or your browser. Note that we are encoding the forward slash for "US/Eastern" with double forward slash %252F to not confuse the URL:
+<pre>
+http://127.0.0.1:5000/WorldTime/US%252FEastern
+</pre>
+ 
 
 <BR><BR>
 <p>Thanks for reading and please share!!!</p>
