@@ -166,7 +166,7 @@ class WorldTime(Resource):
       return {'WorldTime': 'error'}
   
 
-api.add_resource(WorldTime, '/WorldTime/<string:timezone>')
+api.add_resource(WorldTime, '/WorldTime/&lt;string:timezone>')
 
 if __name__ == '__main__':
   app.run(debug=True)
