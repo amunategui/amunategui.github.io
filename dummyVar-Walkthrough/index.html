@@ -33,10 +33,10 @@
     <p class="lead blog-description">Practical walkthroughs on machine learning, data exploration and finding insight.</p>
   </div>
    
-<p><strong>Resources</strong></p>
+<p><strong>Video and code:</strong></p>
 <ul>
 <li type="square"><a href="https://www.youtube.com/watch?v=7rgzCjrIA-o&amp;list=UUq4pm1i_VZqxKVVOz5qRBIA" target="_blank">YouTube Companion Video</a></li>
-<li type="square"><a href="#sourcecode">Full Source Code</a></li>
+<li type="square"><a href="https://www.viralml.com/video-content.html?v=7rgzCjrIA-o">Get Full Source Code</a></li>
 </ul>
 <p><br />
 <strong>Packages Used in this Walkthrough</strong></p>
@@ -180,43 +180,10 @@ Let’s turn on <code class="highlighter-rouge">fullRank</code> and try our data
 {% include follow-me.html %}
 <p><br /><br />            <br />
 
-<a id="sourcecode"><b>Full source code (<a href="https://github.com/amunategui/Walkthrough-of-the-dummyVars-Function" target="_blank">also on GitHub</a>)</a></b>:</p>
+<b><a href="https://www.viralml.com/video-content.html?v=7rgzCjrIA-o" target="_blank">Get full source code and video</a></b>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">survey</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">service</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'very unhappy'</span><span class="p">,</span><span class="s1">'unhappy'</span><span class="p">,</span><span class="s1">'neutral'</span><span class="p">,</span><span class="s1">'happy'</span><span class="p">,</span><span class="s1">'very happy'</span><span class="p">))</span><span class="w">
-</span><span class="n">print</span><span class="p">(</span><span class="n">survey</span><span class="p">)</span><span class="w">
-
-</span><span class="n">survey</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">service</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'very unhappy'</span><span class="p">,</span><span class="s1">'unhappy'</span><span class="p">,</span><span class="s1">'neutral'</span><span class="p">,</span><span class="s1">'happy'</span><span class="p">,</span><span class="s1">'very happy'</span><span class="p">),</span><span class="w"> </span><span class="n">rank</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">))</span><span class="w">
-</span><span class="n">print</span><span class="p">(</span><span class="n">survey</span><span class="p">)</span><span class="w">
-
-</span><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w">
-
-</span><span class="o">?</span><span class="n">dummyVars</span><span class="w"> </span><span class="c1"># many options
-</span><span class="w">
-</span><span class="n">customers</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="w">
-        </span><span class="n">id</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">10</span><span class="p">,</span><span class="m">20</span><span class="p">,</span><span class="m">30</span><span class="p">,</span><span class="m">40</span><span class="p">,</span><span class="m">50</span><span class="p">),</span><span class="w">
-        </span><span class="n">gender</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'male'</span><span class="p">,</span><span class="s1">'female'</span><span class="p">,</span><span class="s1">'female'</span><span class="p">,</span><span class="s1">'male'</span><span class="p">,</span><span class="s1">'female'</span><span class="p">),</span><span class="w">
-        </span><span class="n">mood</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s1">'happy'</span><span class="p">,</span><span class="s1">'sad'</span><span class="p">,</span><span class="s1">'happy'</span><span class="p">,</span><span class="s1">'sad'</span><span class="p">,</span><span class="s1">'happy'</span><span class="p">),</span><span class="w">
-        </span><span class="n">outcome</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">))</span><span class="w">
-
-</span><span class="n">dmy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dummyVars</span><span class="p">(</span><span class="s2">" ~ ."</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customers</span><span class="p">)</span><span class="w">
-</span><span class="n">trsf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">dmy</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customers</span><span class="p">))</span><span class="w">
-</span><span class="n">print</span><span class="p">(</span><span class="n">trsf</span><span class="p">)</span><span class="w">
-</span><span class="n">print</span><span class="p">(</span><span class="n">str</span><span class="p">(</span><span class="n">trsf</span><span class="p">))</span><span class="w">
-
-</span><span class="c1"># works only on factors
-</span><span class="n">customers</span><span class="o">$</span><span class="n">outcome</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">customers</span><span class="o">$</span><span class="n">outcome</span><span class="p">)</span><span class="w">
-
-</span><span class="c1"># tranform just gender
-</span><span class="n">dmy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dummyVars</span><span class="p">(</span><span class="s2">" ~ gender"</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customers</span><span class="p">)</span><span class="w">
-</span><span class="n">trsf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">dmy</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customers</span><span class="p">))</span><span class="w">
-</span><span class="n">print</span><span class="p">(</span><span class="n">trsf</span><span class="p">)</span><span class="w">
-
-</span><span class="c1"># use fullRank to avoid the 'dummy trap'
-</span><span class="n">dmy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dummyVars</span><span class="p">(</span><span class="s2">" ~ ."</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customers</span><span class="p">,</span><span class="w"> </span><span class="n">fullRank</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
-</span><span class="n">trsf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">predict</span><span class="p">(</span><span class="n">dmy</span><span class="p">,</span><span class="w"> </span><span class="n">newdata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customers</span><span class="p">))</span><span class="w">
-</span><span class="n">print</span><span class="p">(</span><span class="n">trsf</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+Thanks for reading this and sign up for my newsletter at: <a href="https://www.viralml.com" target="_blank">Get full source code</a></b>
+	ViralML.com</a></b>
 		
 </div>
 <p>Manuel Amunategui - Follow me on Twitter: @amunategui</p>
