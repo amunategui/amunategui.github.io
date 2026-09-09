@@ -1,627 +1,790 @@
----
----
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="Machine Learning, R Programming, Statistics, Artificial Intelligence">
-    <meta name="author" content="Manuel Amunategui">
-    <meta name="google-site-verification" content="yy8668FW9DWhvb23iFhRiwRiFoo89Wtmg6sL8MNEvsM" />
-    <link rel="icon" href="favicon.ico">
-    
-    <script data-ad-client="ca-pub-3719956521755493" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AETHER-1 — Emotional Space Dance Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#050a21; --bg1:#0a0521; --grad:#160f39;
+  --ink:#e6e6e1; --cream:#f1e9dd;
+  --acc:#8642ff; --acc2:#9a92d9; --deep:#362669; --glow:#9262E8;
+  --line:rgba(154,146,217,.16);
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'Space Grotesk',-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+::-webkit-scrollbar{width:0;height:0}
+body{
+  background:radial-gradient(1200px 800px at 72% -12%, var(--grad) 0%, var(--bg1) 46%, var(--bg0) 100%);
+  color:var(--ink); font-family:var(--sans); overflow:hidden;
+  user-select:none;-webkit-user-select:none;
+}
+#viz{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
 
-    <title>Data Exploration, Machine Learning and AI walkthroughs in Python and R, Hands-on</title>
+/* ---------- header ---------- */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:6;
+  display:flex;align-items:flex-end;justify-content:space-between;
+  padding:20px 28px 0;pointer-events:none;
+}
+header>*{pointer-events:auto}
+.brand{font-weight:700;font-size:22px;letter-spacing:.06em;color:var(--cream)}
+.brand em{font-style:normal;color:var(--acc);text-shadow:0 0 18px rgba(134,66,255,.8)}
+.tagline{
+  font-family:var(--mono);font-size:10px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--acc2);margin-top:5px;
+}
+.readouts{display:flex;gap:26px}
+.ro label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.28em;color:var(--acc2);text-transform:uppercase}
+.ro b{font-family:var(--mono);font-weight:500;font-size:15px;color:var(--cream);letter-spacing:.08em;text-shadow:0 0 12px rgba(146,98,232,.5)}
 
-    {% include externals_no_google_ads.html %}
-  
+/* ---------- big word ---------- */
+#bigword{
+  position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);z-index:2;pointer-events:none;
+  font-weight:700;font-size:clamp(38px,7vw,96px);letter-spacing:.42em;text-indent:.42em;
+  color:var(--cream);opacity:.10;text-transform:uppercase;white-space:nowrap;
+  transition:opacity .8s ease;
+}
+#bigword.hot{opacity:.22;text-shadow:0 0 60px rgba(134,66,255,.55)}
+
+/* ---------- deck ---------- */
+#deck{
+  position:fixed;left:0;right:0;bottom:0;z-index:6;
+  display:flex;align-items:stretch;flex-wrap:nowrap;overflow-x:auto;
+  background:rgba(10,5,33,.58);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);
+}
+.module{padding:16px 24px 18px;border-right:1px solid var(--line);flex:0 0 auto}
+.module:last-child{border-right:none}
+.module h3{
+  font-family:var(--mono);font-weight:500;font-size:9px;letter-spacing:.32em;
+  color:var(--acc2);text-transform:uppercase;margin-bottom:14px;
+}
+
+/* transport */
+.transport{display:flex;flex-direction:column;gap:12px;min-width:190px}
+#playBtn{
+  font-family:var(--mono);font-size:12px;letter-spacing:.3em;text-indent:.3em;text-transform:uppercase;
+  color:var(--cream);background:transparent;border:1px solid var(--acc2);border-radius:999px;
+  padding:11px 0;cursor:pointer;transition:all .25s ease;
+}
+#playBtn:hover{background:rgba(134,66,255,.14);box-shadow:0 0 22px rgba(134,66,255,.35)}
+#playBtn.on{background:var(--acc);border-color:var(--acc);box-shadow:0 0 30px rgba(134,66,255,.6)}
+#journeyBtn{
+  font-family:var(--mono);font-size:9px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--acc2);background:none;border:none;cursor:pointer;padding:2px 0;text-align:left;
+  transition:color .2s;
+}
+#journeyBtn:hover{color:var(--cream)}
+.bpmRow{display:flex;align-items:center;gap:12px}
+.bpmRow output{font-family:var(--mono);font-size:13px;color:var(--cream);min-width:34px;text-align:right}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;flex:1;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,var(--acc) var(--fill,50%),var(--deep) var(--fill,50%));
+  outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:var(--cream);box-shadow:0 0 12px rgba(146,98,232,.9);cursor:grab;
+}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-radius:50%;background:var(--cream);box-shadow:0 0 12px rgba(146,98,232,.9);cursor:grab}
+
+/* knobs */
+.knobGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 22px}
+.knob{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:ns-resize;touch-action:none}
+.knob .wrap{position:relative;width:62px;height:62px}
+.knob svg{position:absolute;inset:0;transform:rotate(135deg)}
+.knob svg .track{fill:none;stroke:var(--deep);stroke-width:3;stroke-linecap:round}
+.knob svg .val{fill:none;stroke:var(--acc);stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 5px rgba(134,66,255,.8))}
+.knob .body{
+  position:absolute;inset:9px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%, #241a4d, #0d0728 70%);
+  border:1px solid rgba(154,146,217,.28);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.6), 0 4px 14px rgba(0,0,0,.45);
+}
+.knob .dot{
+  position:absolute;left:50%;top:50%;width:3px;height:15px;border-radius:2px;
+  background:var(--cream);box-shadow:0 0 8px rgba(241,233,221,.9);
+  transform-origin:50% 0;
+}
+.knob .lab{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--acc2);text-transform:uppercase}
+.knob .num{font-family:var(--mono);font-size:10px;color:var(--cream);opacity:.85}
+
+/* faders */
+.faders{display:flex;gap:26px;height:100%}
+.fader{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:ns-resize;touch-action:none}
+.fader .rail{position:relative;width:4px;height:104px;border-radius:2px;background:var(--deep)}
+.fader .fillb{position:absolute;bottom:0;left:0;right:0;border-radius:2px;background:linear-gradient(180deg,var(--glow),var(--acc));box-shadow:0 0 10px rgba(134,66,255,.6)}
+.fader .cap{
+  position:absolute;left:50%;width:22px;height:12px;border-radius:3px;transform:translate(-50%,50%);
+  background:linear-gradient(180deg,#2c2160,#150d33);border:1px solid rgba(154,146,217,.4);
+  box-shadow:0 2px 8px rgba(0,0,0,.5);
+}
+.fader .cap::after{content:'';position:absolute;left:3px;right:3px;top:50%;height:1px;background:var(--cream);opacity:.8}
+.fader .lab{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--acc2);text-transform:uppercase}
+
+/* structure */
+.structure{min-width:280px}
+.secBtns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.secBtn{
+  font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--acc2);background:transparent;border:1px solid var(--line);border-radius:3px;
+  padding:8px 12px;cursor:pointer;transition:all .2s;
+}
+.secBtn:hover{color:var(--cream);border-color:var(--acc2)}
+.secBtn.cur{color:var(--cream);border-color:var(--acc);background:rgba(134,66,255,.16);box-shadow:0 0 16px rgba(134,66,255,.35)}
+.secBtn.queued{color:var(--bg0);background:var(--acc2);border-color:var(--acc2)}
+.autoRow{display:flex;align-items:center;gap:9px;margin-bottom:12px;cursor:pointer}
+.autoRow input{display:none}
+.autoRow .tog{width:30px;height:16px;border-radius:9px;border:1px solid var(--acc2);position:relative;transition:background .2s}
+.autoRow .tog::after{content:'';position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:var(--acc2);transition:all .2s}
+.autoRow input:checked+.tog{background:rgba(134,66,255,.3);border-color:var(--acc)}
+.autoRow input:checked+.tog::after{left:16px;background:var(--cream);box-shadow:0 0 8px rgba(146,98,232,.9)}
+.autoRow span{font-family:var(--mono);font-size:9px;letter-spacing:.26em;color:var(--acc2);text-transform:uppercase}
+.barLeds{display:flex;gap:4px}
+.barLeds i{width:14px;height:4px;border-radius:2px;background:var(--deep);transition:background .15s}
+.barLeds i.done{background:var(--acc);box-shadow:0 0 6px rgba(134,66,255,.7)}
+.hint{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:rgba(154,146,217,.55);margin-top:12px;line-height:1.7;text-transform:uppercase}
+
+@media (max-width:900px){
+  .readouts{gap:14px}
+  #bigword{top:38%}
+  .module{padding:14px 16px}
+}
+</style>
+<base target="_blank">
 </head>
-
 <body>
- 
-<main role="main">
-
-{% include header.html %}
-
-{% include signup.html %}
-
-      <div class="album py-5 bg-light">
-
-      <!-- row -->
-  
-        <div class="container">
-
-    <h1>Welcome to <b>amunategui.github.io</b>, your portal for practical data science walkthroughs in the Python and R programming languages</h1>
-    <br>
-    <h2>I attempt to break down complex machine learning ideas and algorithms into practical applications using clear steps and publicly available data sets. If you're looking for applied walkthroughs of ML and AI concepts, you've come to the right place - happy learning!</h2>
-    <br><BR>
-   
-
-          <h5>Popular/New Posts:</h5>
-
-
-          <div class="row">
-
-             <!-- row starts-->
-
-              <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='titanic-web-app/index.html' target='_blank'>
-                 <img src="titanic-web-app/img/titanic-small-2.png" alt="Design Titanic Passengers Web App" 
-                    title="Design Titanic Passengers Web App" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Let's Build a Web App to Design Titanic Passengers - Walk Through of Chapter 3 from My Book Monetizing Machine Learning</p>
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-             <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='discord-pager/index.html' target='_blank'>
-                 <img src="discord-pager/img/discord-pager-long.png" alt="One Line of Code to Send Messages to a Discord Server" 
-                    title="One Line of Code to Send Messages to a Discord Server" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">One Line of Code to Send Messages to a Discord Server</p>
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='http://www.viralml.com/grow-your-web-brand.html' target='_blank'>
-                 <img src="https://amunategui.github.io/grow-your-traffic.png" alt="Grow Your Web Brand, Visibility & Traffic Organically - 5 Years of amunategui.github.io" 
-                    title="Grow Your Web Brand, Visibility & Traffic Organically - 5 Years of amunategui.github.io" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Grow Your Web Brand, Visibility & Traffic Organically - 5 Years of amunategui.github.io</p>
-                </div>
-              </a>
-              </div>
-            </div>
- 
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='rest-api/index.html' target='_blank'>
-                 <img src="rest-api/img/lucas_hammock.jpg" alt="The Python and Flask Rest API, Abstracting Functions for Web Applications and SaaS" 
-                    title="The Python and Flask Rest API, Abstracting Functions for Web Applications and SaaS" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">The Python and Flask Rest API, Abstracting Functions for Web Applications and SaaS</p>
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-             <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='what-most-data-scientists-are-missing/index.html' target='_blank'>
-                 <img src="what-most-data-scientists-are-missing/img/missing-in-data-science.png" alt="What they Didn’t Teach at Data Science School" 
-                    title="What they Didn’t Teach at Data Science School" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">What they Didn’t Teach at Data Science School, and How to Fix It to 10x Your Career</p>
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='gdelt/index.html' target='_blank'>
-                 <img src="gdelt/img/gdelt-glob.gif" alt="GDELT news globe" title="GDELT news globe" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">GDELT - World Events at Your Finger Tips and for Free!</p>
-                </div>
-              </a>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='we-can-all-be-internet-moguls/index.html' target='_blank'>
-                 <img src="we-can-all-be-internet-moguls/img/Video cover Create ML for free.png" alt="How to create your own ML web application" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">We Can All Be Internet Moguls — How to Create and Sell Your Machine Learning Product Online and For Free</p>
-                </div>
-              </a>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='your-own-signup-form/index.html' target='_blank'>
-                 <img src="your-own-signup-form/img/your-own-signup-form.png" alt="Your very own email signup form" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">How to Create Your Own Free Email Signup Form and Enjoy 100% Creative Freedom</p>
-                </div>
-              </a>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='cvae-in-finance/index.html' target='_blank'>
-                 <img src="cvae-in-finance/img/aapl-anomalies.png" alt="anomalies CVAE" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">From Financial Compliance to Fraud Detection with Conditional Variational Autoencoders (CVAE) and Tensorflow</p>
-                </div>
-              </a>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='https://medium.com/@amunategui/how-blogging-and-making-youtube-videos-landed-me-the-best-job-19353e4fdf90' target='_blank'>
-                 <img src="medium/blogging-landed-best-job.jpg" alt="blogging" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">How Blogging and Making YouTube Videos Landed Me the Best Job</p>
-
-                </div>
-              </a>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='what-your-git-commits-say-about-you/index.html' target='_blank'>
-                 <img src="what-your-git-commits-say-about-you/img/git-commits-good-habits.png" alt="git commits" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Your Git Commit Comments, and What They Reveal About You</p>
-
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='concepts-in-pair-trading/index.html' target='_blank'>
-                 <img src="concepts-in-pair-trading/img/title-page.png" alt="pair trading" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Exploring Some Pair-Trading Concepts with Python</p>
-
-                </div>
-              </a>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='favorite-free-classes/index.html' target='_blank'>
-                 <img src="favorite-free-classes/img/image001.jpg" alt="free classes" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">My Six Favorite Free Data Science Classes and the Giants Behind Them</p>
-
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='reinforcement-learning/index.html' target='_blank'>
-                 <img src="reinforcement-learning/img/looking-for-honey.png" alt="looking for honey" 
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Reinforcement Learning - A Simple Python Example and a Step Closer to AI with Assisted Q-Learning</p>
-
-                </div>
-              </a>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='fast-gpu-gcloud/index.html' target='_blank'>
-                 <img src="fast-gpu-gcloud/img/intro-gpus-gcp.png" alt="GPUs in Google Cloud"
-                     style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                  <div class="card-body">
-                    <p class="card-text">GPUs on Google Cloud - the Fast Way & the Slow Way</p>
-           
-                  </div>
-                </a>
-              </div>
-            </div>
-
- 
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='number-one-piece-of-advice/index.html' target='_blank'>
-               <img src="number-one-piece-of-advice/Images/1*7QWzIh3ytZDHgEYdG2QjfA.jpeg" alt="number one piece of adice"
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">My #1 Piece of Advice for Aspiring Data Scientists</p>
-         
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='executive-time-management/index.html' target='_blank'>
-               <img src="executive-time-management/Images/1*QAjnux0xih6CJn_DlW4lnQ.jpg" alt="Executive Time Management"
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Executive Time Management — Don’t Suffocate the Creative Process</p>
-         
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-           <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='unconventional-convolutional-networks/index.html' target='_blank'>
-                 <img src="unconventional-convolutional-networks/img/data_transform2.png" alt="creating thousands of synthetic charts"
-                     style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                  <div class="card-body">
-                    <p class="card-text">Convolutional Neural Networks And Unconventional Data - Predicting The Stock Market Using Images</p>
-           
-                  </div>
-                </a>
-              </div>
-            </div>
-
- 
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='find-your-next-language/index.html' target='_blank'>
-               <img src="find-your-next-language/Images/1*b5xHZ3sic02kes6CUXVsoQ.jpg" alt="Find Your Next Programming Language"
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Find Your Next Programming Language By Measuring “The Knowledge Gap”</p>
-         
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='aws-beanstalk/index.html' target='_blank'>
-               <img src="aws-beanstalk/img/beanstalk.png" alt="Hosting a Flask Application on AWS Beanstalk"
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Hosting a Flask Application on AWS Beanstalk</p>
-         
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-           <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='simple-flask-on-azure/index.html' target='_blank'>
-                 <img src="simple-flask-on-azure/img/azure-logo.png" alt="Serverless Hosting On Microsoft Azure"
-                     style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                  <div class="card-body">
-                    <p class="card-text">Serverless Hosting On Microsoft Azure - A Simple Flask Example</p>
-           
-                  </div>
-                </a>
-              </div>
-            </div>
-
- 
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='rapid-prototyping-app-engine-yelp/index.html' target='_blank'>
-               <img src="rapid-prototyping-app-engine-yelp/img/Portland-Boise-Florists.png" alt="Rapid Prototyping on Google App Engine"
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Rapid Prototyping on Google App Engine - Easily Extend your Python ML Models into Interactive Web Applications</p>
-         
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='tensorflow-won/index.html' target='_blank'>
-               <img src="tensorflow-won/Images/1*xjEtOCX54CxQ95U26GP7GQ.jpg" alt="TensorFlow won the attention battle"
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">TensorFlow Won the Attention Battle, Who’s Next?</p>
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='Extracting-Chatbot-Scenarios-From-Customer-Service-Scripts/index.html' target='_blank'>
-               <img src="Extracting-Chatbot-Scenarios-From-Customer-Service-Scripts/Images/Pasted%20Graphic%205.png" alt="Chatbot conversations"
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Chatbot Conversations From Customer Service Transcripts</p>
-                </div>
-              </a>
-              </div>
-            </div>
- 
- 
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='google-actor-recognition/index.html' target='_blank'>
-               <img src="google-actor-recognition/img/blade-young.png" alt="Recognizing famous actors"
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Google Video Intelligence - Recognize Actors in Real Time</p>
-                </div>
-              </a>
-              </div>
-            </div>
-         
- 
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='markov-chains/index.html' target='_blank'>
-               <img src="markov-chains/img/markov.png" alt="Predicting the stock market with Markov Chains"
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Predict Stock-Market Behavior using Markov Chains and R</p>
-         
-                </div>
-              </a>
-              </div>
-            </div>
-
-
-           <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='smote/index.html' target='_blank'>
-               <img src="smote/img/title.png" alt="MOTE - Supersampling Rare Events in R"
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">SMOTE - Supersampling Rare Events in R</p>
-         
-                </div>
-              </a>
-              </div>
-            </div>
-   
-
-            <div class="col-md-4">
-              <div class="card mb-4 box-shadow" style="height:300px;">
-                <a href='wallstreet/index.html' target='_blank'>
-               <img src="wallstreet/img/unnamed-chunk-11.png" alt="Lets get rich with quantmod"
-                   style='padding:1px; border:1px solid #021a40; width: 100%; height: 200px'>
-                <div class="card-body">
-                  <p class="card-text">Let's Get Rich! See how {quantmod} And R Can Enrich Your Knowledge Of The Financial Markets!</p>
-         
-                </div>
-              </a>
-              </div>
-            </div>
-
-  <!-- cap image rows -->     
- 
-        </div>
-      </div>
-
-<!-- signup form -->
-<!--<script type="text/javascript" src="https://app.getresponse.com/view_webform_v2.js?u=zQcLH&webforms_id=B5AVZ"></script>-->
-
-<!-- full link history -->
-    <BR><BR>
-     <div class="container">
-         <h5>All Posts:</h5>
-            <ol class="list-unstyled">
-
-            <li><p><a href='titanic-web-app/index.html' target='_blank'>Let's Build a Web App to Design Titanic Passengers - Walk Through of Chapter 3 from My Book Monetizing Machine Learning</a></p></li> 
-
-            <li><p><a href='discord-pager/index.html' target='_blank'>One Line of Code to Send Messages to a Discord Server</a></p></li> 
-
-            <li><p><a href='http://www.viralml.com/grow-your-web-brand.html' target='_blank'>Grow Your Web Brand, Visibility & Traffic Organically - 5 Years of amunategui.github.io</a></p></li> 
-
-            <li><p><a href='rest-api/index.html' target='_blank'>The Python and Flask Rest API, Abstracting Functions for Web Applications and SaaS</a></p></li> 
-
-            <li><p><a href='what-most-data-scientists-are-missing/index.html' target='_blank'>What they Didn’t Teach at Data Science School, and How to Fix It to 10x Your Career</a></p></li> 
-
-            <li><p><a href='gdelt/index.html' target='_blank'>GDELT - World Events at Your Finger Tips and for Free!</a></p></li> 
-
-            <li><p><a href='we-can-all-be-internet-moguls/index.html' target='_blank'>We Can All Be Internet Moguls — How to Create and Sell Your Machine Learning Product Online and For Free</a></p></li> 
-
-            <li><p><a href='your-own-signup-form/index.html' target='_blank'>How to Create Your Own Free Email Signup Form and Enjoy 100% Creative Freedom - For Static & Semi-Static Web Sites</a></p></li> 
-
-            <li><p><a href='cvae-in-finance/index.html' target='_blank'>From Financial Compliance to Fraud Detection with Conditional Variational Autoencoders (CVAE) and Tensorflow</a></p></li> 
-      
-            <li><p><a href='https://medium.com/@amunategui/how-blogging-and-making-youtube-videos-landed-me-the-best-job-19353e4fdf90' target='_blank'>How Blogging and Making YouTube Videos Landed Me the Best Job</a></p></li> 
-
-            <li><p><a href='http://amunategui.github.io/what-your-git-commits-say-about-you/index.html' target='_blank'>Your Git Commit Comments, and What They Reveal About You</a></p></li> 
-
-            <li><p><a href='concepts-in-pair-trading/index.html' target='_blank'>Exploring Some Pair-Trading Concepts with Python</a></p></li> 
-
-            <li><p><a href='favorite-free-classes/index.html' target='_blank'>My Six Favorite Free Data Science Classes and the Giants Behind Them</a></p></li> 
-
-            <li><p><a href='aws-beanstalk/index.html' target='_blank'>Hosting a Flask Application on AWS Beanstalk</a></p></li> 
-
-            <li><p><a href='tensorflow-won/index.html' target='_blank'>TensorFlow Won the Attention Battle, Who’s Next?</a></p></li> 
-
-             <li><p><a href='fast-gpu-gcloud/index.html' target='_blank'>GPUs on Google Cloud - the Fast Way & the Slow Way</a></p></li> 
-
-             <li><p><a href='executive-time-management/index.html' target='_blank'>Executive Time Management — Don’t Suffocate the Creative Process</a></p></li>  
-
-             <li><p><a href='pairing-rl-and-ml/index.html' target='_blank'>Pairing Reinforcement Learning and Machine Learning, an Enhanced Emergency Response Scenario</a></p></li>  
-
-            <li><p><a href='find-your-next-language/index.html' target='_blank'>Find Your Next Programming Language By Measuring “The Knowledge Gap” on StackOverflow.com</a></p></li>  
-
-            <li><p><a href='number-one-piece-of-advice/index.html' target='_blank'>My #1 Piece of Advice for Aspiring Data Scientists</a></p></li>  
-
-            <li><p><a href='Extracting-Chatbot-Scenarios-From-Customer-Service-Scripts/index.html' target='_blank'>Chatbot Conversations From Customer Service Transcripts</a></p></li>
-
-            <li><p><a href='simple-flask-on-azure/index.html' target='_blank'>Serverless Hosting On Microsoft Azure - A Simple Flask Example</a></p></li>
-
-            <li><p><a href='google-video-transfer-learning/index.html' target='_blank'>Google Video Intelligence, TensorFlow And Inception V3 - Recognizing Not-So-Famous-People</a></p></li>
-   
-            <li><p><a href='rapid-prototyping-app-engine-yelp/index.html' target='_blank'>Rapid Prototyping on Google App Engine - Build a Trip Planner with Google Maps and Yelp</a></p></li>
-            
-            <li><p><a href='yelp-v3-cross-country-trip/index.html' target='_blank'>Yelp v3 and a Romantic Trip Across the USA, One Florist at a Time</a></p></li>
-            
-            <li><p><a href='free-website-on-github/index.html' target='_blank'>Show it to the World! Build a Free Art Portfolio Website on GitHub.io in 20 Minutes!</a></p></li>
-
-            <li><p><a href='google-actor-recognition/index.html' target='_blank'>Google Video Intelligence and Vision APIs - Automatically Recognize Actors and Download their Biographies in Real Time</a></p></li>
-
-            <li><p><a href='life-expectancy/index.html' target='_blank'>Life Coefficients - Modeling Life Expectancy and Prototyping it on the Web with Flask and PythonAnywhere</a></p></li>
-            
-            <li><p><a href='unconventional-convolutional-networks/index.html' target='_blank'>Convolutional Neural Networks And Unconventional Data - Predicting The Stock Market Using Images</a></p></li>
-            
-            <li><p><a href='fallacy-venn-diagram/index.html' target='_blank'>The Fallacy of the Data Scientist's Venn Diagram</a></p></li>
-            
-            <li><p><a href='reinforcement-learning/index.html' target='_blank'>Reinforcement Learning - A Simple Python Example and a Step Closer to AI with Assisted Q-Learning</a></p></li>
-
-            <li><p><a href='simple-heuristics/index.html' target='_blank'>Simple Heuristics - Graphviz and Decision Trees to Quickly Find Patterns in your Data</a></p></li>
-
-            <li><p><a href='office-automation-part3/index.html' target='_blank'>Office Automation Part 3 - Classifying Enron Emails with Google's Tensorflow Deep Neural Network Classifier</a></p></li>
-
-            <li><p><a href='office-automation-part2/index.html' target='_blank'>Office Automation Part 2 - Using Pre-Trained Word-Embedded Vectors to Categorize the Enron Email Dataset</a></p></li>
-
-            <li><p><a href='office-automation/index.html' target='_blank'>Office Automation Part 1 - Sorting Departmental Emails with Tensorflow and Word-Embedded Vectors</a></p></li>
-            
-            <li><p><a href='market-profile/index.html' target='_blank'>Easy Market Profile in Python: Grasp Price Action Quickly</a></p></li>
-
-            <li><p><a href='what-if/index.html' target='_blank'>What-if Roadmap - Assessing Live Opportunities and their Paths to Success or Failure</a></p></li>
-
-            <li><p><a href='C50-rules/index.html' target='_blank'>Where Are Your Customers Coming From And Where Are They Going - Reporting On Complex Customer Behavior In Plain English With C5.0</a></p></li>
-
-            <li><p><a href='databricks-spark-bayes/index.html' target='_blank'>Databricks, SparkR and Distributed Naive Bayes Modeling</a></p></li>
-
-            <li><p><a href='r-and-azureml/index.html' target='_blank'>R and Azure ML - Your One-Stop Modeling Pipeline in The Cloud!</a></p></li>
-
-            <li><p><a href='pseudo-coefficients/index.html' target='_blank'>Get Your "all-else-held-equal" Odds-Ratio Story for Non-Linear Models!</a></p></li>
-            
-            <li><p><a href='markov-chains/index.html' target='_blank'>Predict Stock-Market Behavior using Markov Chains and R</a></p></li>
-            
-            <li><p><a href="all-hacker-news/index.html">Big Data Surveillance: Use EC2, PostgreSQL and Python to Download all Hacker News Data!</a></p></li>
-            
-            <li><p><a href='peter_norvig_magic_spell_checker/index.html' target='_blank'>The Peter Norvig Magic Spell Checker in R</a></p></li>
-            
-            <li><p><a href='actionable-instights/index.html' target='_blank'>Actionable Insights: Getting Variable Importance at the Prediction Level in R</a></p></li>
- 
-           <li><p><a href='survival-ensembles/index.html' target='_blank'>Survival Ensembles: Survival Plus Classification for Improved Time-Based Predictions in R</a></p></li>
-
-           <li><p><a href='anomaly-detection-h2o/index.html' target='_blank'>Anomaly Detection: Increasing Classification Accuracy with H2O's Autoencoder and R</a></p></li>
-
-           <li><p><a href='h2o-on-aws/index.html' target='_blank'>H2O & RStudio Server on Amazon Web Services (AWS), the Easy Way!</a></p></li>
-
-           <li><p><a href='accessing-the-gutenberg-library/index.html' target='_blank'>Analyze Classic Works of Literature from Around the World with Project Gutenberg and R</a></p></li>
-
-           <li><p><a href='speak-like-a-doctor/index.html' target='_blank'>Speak Like a Doctor - Use Natural Language Processing to Predict Medical Words in R</a></p></li>
-
-            <li><p><a href='sparkr/index.html' target='_blank'>Supercharge R with Spark: Getting Apache's SparkR Up and Running on Amazon Web Services (AWS)</a></p></li>
-
-
-            <li><p><a href='excel-data-dumps/index.html' target='_blank'>R and Excel: Making Your Data Dumps Pretty with XLConnect</a></p></li>
-
-
-            <li><p><a href='idea-to-pitch/index.html' target='_blank'>Going from an Idea to a Pitch: Hosting your Python Application using Flask and Amazon Web Services (AWS)</a></p></li>
-
-            <li><p><a href='pubmed-query/index.html' target='_blank'>Getting PubMed Medical Text with R and Package {RISmed}</a></p></li>
-
-
-            <li><p><a href='variable-importance-shuffler/index.html' target='_blank'>Find Variable Importance for any Model - Prediction Shuffling with R</a></p></li>
-
-            <li><p><a href='bagging-in-R/index.html' target='_blank'>Bagging / Bootstrap Aggregation with R</a></p></li>
-
-            <li><p><a href='feature-hashing/index.html' target='_blank'>Feature Hashing (a.k.a. The Hashing Trick) With R</a></p></li>
-
-            <li><p><a href='yelp-cross-country-trip/index.html' target='_blank'>Yelp, httr and a Romantic Trip Across the United States, One Florist at a Time</a></p></li>
-
-            <li><p><a href='supervised-summarizer/index.html' target='_blank'>Quantifying the Spread: Measuring Strength and Direction of Predictors with the Summary Function</a></p></li>
-
-            <li><p><a href='google-trends-walkthrough/index.html' target='_blank'>Downloading Data from Google Trends And Analyzing It With R</a></p></li>
-
-            <li><p><a href='stringdist/index.html' target='_blank'>Using String Distance {stringdist} To Handle Large Text Factors, Cluster Them Into Supersets</a></p></li>
-
-            <li><p><a href='smote/index.html' target='_blank'>SMOTE - Supersampling Rare Events in R</a></p></li>
-
-            <li><p><a href='wallstreet/index.html' target='_blank'>Let's Get Rich! See how {quantmod} And R Can Enrich Your Knowledge Of The Financial Markets!</a></p></li>
-
-
-            <li><p><a href='dealing-with-large-files/index.html' target='_blank'>How To Work With Files Too Large For A Computer’s RAM? Using R To Process Large Data In Chunks</a></p></li>
-
-            <li><p><a href='multinomial-neuralnetworks-walkthrough/index.html' target='_blank'>Predicting Multiple Discrete Values with Multinomials, Neural Networks and the {nnet} Package</a></p></li>
-
-            <li><p><a href='binary-outcome-modeling/index.html' target='_blank'>Modeling 101 - Predicting Binary Outcomes with R, gbm, glmnet, and {caret}</a></p></li>
-
-            <li><p><a href='high-demensions-pca/index.html' target='_blank'>Reducing High Dimensional Data with Principle Component Analysis (PCA) and prcomp</a></p></li>
-
-            <li><p><a href='sparse-matrix-glmnet/index.html' target='_blank'>The Sparse Matrix and {glmnet}</a></p></li>
-
-            <li><p><a href='dummyVar-Walkthrough/index.html' target='_blank'>Brief Walkthrough Of The dummyVars Function From {caret}</a></p></li>
-
-            <li><p><a href='fscaret-Walkthrough/index.html' target='_blank'>Ensemble Feature Selection On Steroids: {fscaret} Package</a></p></li>
-
-
-            <li><p><a href='ggmap-example/index.html' target='_blank'>Mapping The United States Census With {ggmap}</a></p></li>
-
-            <li><p><a href='Exploring-Your-Data-Set/index.html' target='_blank'>Using Correlations To Understand Your Data</a></p></li>
-
-
-            <li><p><a href='EC2-RStudioServer/index.html' target='_blank'>Brief Guide On Running RStudio Server On Amazon Web Services</a></p></li>
-
-
-            </ol>
-          </div>
-
-    </main>
- 
-<!-- <script type="text/javascript" src="https://app.getresponse.com/view_webform_v2.js?u=zQcLH&webforms_id=B5AVZ"></script>-->
-
-    <footer class="text-muted">
-      <div class="container">
-        <p class="float-right">
-          <a href="#">Back to top</a>
-        </p>
-        <p>&copy; Manuel Amunategui</p>
-        <p>All articles and walkthroughs are posted for entertainment and education only - use at your own risk. I unfortunately don't have time to respond to support questions, please post them on Stackoverflow or in the comments of the corresponding YouTube videos and the community may help you out. Also, for Europeans, we use cookies to control our popup windows so they don't popup too much and for no other reason. Happy learning!</p>
-      </div>
-    </footer>
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
-     <script src="https://holderjs.com/holder.js"></script>
-  </body>
+<canvas id="viz"></canvas>
+
+<header>
+  <div>
+    <div class="brand">AETHER<em>-1</em></div>
+    <div class="tagline">Emotional Space Dance Machine</div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><label>BPM</label><b id="roBpm">122</b></div>
+    <div class="ro"><label>Key</label><b id="roKey">A MIN</b></div>
+    <div class="ro"><label>Section</label><b id="roSec">STANDBY</b></div>
+    <div class="ro"><label>Bar</label><b id="roBar">—</b></div>
+  </div>
+</header>
+
+<div id="bigword">READY</div>
+
+<div id="deck">
+  <div class="module transport">
+    <h3>Transport</h3>
+    <button id="playBtn">Play</button>
+    <div class="bpmRow">
+      <input type="range" id="bpm" min="96" max="140" value="122" step="1">
+      <output id="bpmVal">122</output>
+    </div>
+    <button id="journeyBtn">↻ New Journey</button>
+  </div>
+
+  <div class="module">
+    <h3>Sculpt</h3>
+    <div class="knobGrid" id="knobs"></div>
+  </div>
+
+  <div class="module">
+    <h3>Mix</h3>
+    <div class="faders" id="faders"></div>
+  </div>
+
+  <div class="module structure">
+    <h3>Structure</h3>
+    <div class="secBtns" id="secBtns"></div>
+    <label class="autoRow"><input type="checkbox" id="auto" checked><span class="tog"></span><span>Autopilot</span></label>
+    <div class="barLeds" id="barLeds"></div>
+    <div class="hint">Autopilot flies intro → build → drop → break → outro.<br>Turn it off and trigger sections yourself.</div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ============================================================
+   AETHER-1 · generative emotional space-dance engine
+   ============================================================ */
+
+// ---------- seeded rng ----------
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let seed=(Math.random()*1e9)|0, rng=mulberry32(seed);
+
+// ---------- parameters (live, driven by UI) ----------
+const P={bpm:122,energy:.7,space:.55,brightness:.6,density:.65,motion:.5,emotion:.4,master:.8};
+const MIX={drums:.85,bass:.8,pads:.75,lead:.7};
+
+// ---------- audio graph ----------
+let AC=null,master,comp,analyser,djFilter,duck,
+    gDrum,gBass,gPad,gLead,revSend,dlySend,dly,dlyFb,dlyFilt,conv,noiseBuf;
+const liveSrcs=new Set();
+
+function initAudio(){
+  AC=new (window.AudioContext||window.webkitAudioContext)();
+  master=AC.createGain(); master.gain.value=P.master;
+  analyser=AC.createAnalyser(); analyser.fftSize=1024; analyser.smoothingTimeConstant=.82;
+  comp=AC.createDynamicsCompressor();
+  comp.threshold.value=-14; comp.knee.value=22; comp.ratio.value=5; comp.attack.value=.004; comp.release.value=.22;
+  master.connect(analyser); analyser.connect(comp); comp.connect(AC.destination);
+
+  djFilter=AC.createBiquadFilter(); djFilter.type='lowpass'; djFilter.frequency.value=9000; djFilter.Q.value=.6;
+  djFilter.connect(master);
+
+  duck=AC.createGain(); duck.connect(djFilter);            // sidechained bus (bass+pads)
+  gDrum=AC.createGain(); gDrum.connect(djFilter);
+  gBass=AC.createGain(); gBass.connect(duck);
+  gPad =AC.createGain(); gPad.connect(duck);
+  gLead=AC.createGain(); gLead.connect(djFilter);
+
+  // reverb (generated impulse)
+  conv=AC.createConvolver(); conv.buffer=makeImpulse(3.8,2.6);
+  revSend=AC.createGain(); revSend.gain.value=.5;
+  revSend.connect(conv); conv.connect(master);
+
+  // dotted-eighth feedback delay
+  dly=AC.createDelay(2); dlyFb=AC.createGain(); dlyFb.gain.value=.42;
+  dlyFilt=AC.createBiquadFilter(); dlyFilt.type='lowpass'; dlyFilt.frequency.value=4200;
+  dlySend=AC.createGain(); dlySend.gain.value=.3;
+  dlySend.connect(dly); dly.connect(dlyFilt); dlyFilt.connect(dlyFb); dlyFb.connect(dly);
+  dlyFilt.connect(master); dlyFilt.connect(revSend);
+
+  // shared noise buffer
+  noiseBuf=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);
+  const d=noiseBuf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  applyMix();
+}
+function makeImpulse(dur,decay){
+  const len=AC.sampleRate*dur,buf=AC.createBuffer(2,len,AC.sampleRate);
+  for(let c=0;c<2;c++){const ch=buf.getChannelData(c);
+    for(let i=0;i<len;i++)ch[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
+  return buf;
+}
+function applyMix(){
+  if(!AC)return;
+  gDrum.gain.value=MIX.drums; gBass.gain.value=MIX.bass;
+  gPad.gain.value=MIX.pads;   gLead.gain.value=MIX.lead;
+  master.gain.value=P.master;
+  revSend.gain.value=.12+P.space*.85;
+  dlySend.gain.value=P.space*.55;
+  dly.delayTime.setTargetAtTime((60/P.bpm)*.75,AC.currentTime,.05);
+}
+function track(src,stopAt){liveSrcs.add(src);src.onended=()=>liveSrcs.delete(src);if(stopAt)src.stop(stopAt);}
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+
+// ---------- voices ----------
+function kick(t){
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.type='sine';
+  o.frequency.setValueAtTime(155,t); o.frequency.exponentialRampToValueAtTime(42,t+.11);
+  g.gain.setValueAtTime(.95,t); g.gain.exponentialRampToValueAtTime(.001,t+.34);
+  o.connect(g); g.connect(gDrum); o.start(t); track(o,t+.36);
+  // click
+  const n=AC.createBufferSource(); n.buffer=noiseBuf;
+  const hp=AC.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=2500;
+  const ng=AC.createGain(); ng.gain.setValueAtTime(.25,t); ng.gain.exponentialRampToValueAtTime(.001,t+.03);
+  n.connect(hp); hp.connect(ng); ng.connect(gDrum); n.start(t); track(n,t+.05);
+  // sidechain duck
+  duck.gain.cancelScheduledValues(t);
+  duck.gain.setValueAtTime(.28,t);
+  duck.gain.linearRampToValueAtTime(1,t+.26);
+  vizQ.push({at:t,type:'kick'});
+}
+function hat(t,open,vel){
+  const n=AC.createBufferSource(); n.buffer=noiseBuf; n.playbackRate.value=1.4;
+  const hp=AC.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=8200;
+  const g=AC.createGain(), dur=open?.22:.045;
+  g.gain.setValueAtTime(vel,t); g.gain.exponentialRampToValueAtTime(.001,t+dur);
+  n.connect(hp); hp.connect(g); g.connect(gDrum); n.start(t); track(n,t+dur+.02);
+}
+function clap(t,vel=.6){
+  for(let i=0;i<3;i++){
+    const tt=t+i*.011, n=AC.createBufferSource(); n.buffer=noiseBuf;
+    const bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1750; bp.Q.value=1.1;
+    const g=AC.createGain();
+    g.gain.setValueAtTime(vel*(i===2?1:.55),tt);
+    g.gain.exponentialRampToValueAtTime(.001,tt+(i===2?.24:.03));
+    n.connect(bp); bp.connect(g); g.connect(gDrum); g.connect(revSend);
+    n.start(tt); track(n,tt+.3);
+  }
+  vizQ.push({at:t,type:'clap'});
+}
+function bassNote(t,midi,dur){
+  const cut=220+P.brightness*900+P.energy*500;
+  const o=AC.createOscillator(),sub=AC.createOscillator(),g=AC.createGain();
+  const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=cut; f.Q.value=4;
+  o.type='sawtooth'; o.frequency.value=mtof(midi);
+  sub.type='sine'; sub.frequency.value=mtof(midi-12);
+  const sg=AC.createGain(); sg.gain.value=.7;
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.5,t+.012);
+  g.gain.setTargetAtTime(0,t+dur*.6,.05);
+  o.connect(f); sub.connect(sg); sg.connect(f); f.connect(g); g.connect(gBass);
+  o.start(t); sub.start(t); track(o,t+dur+.3); track(sub,t+dur+.3);
+}
+function padChord(t,midis,dur){
+  const cut=320+P.brightness*1600;
+  const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=.7;
+  f.frequency.setValueAtTime(cut*.4,t); f.frequency.linearRampToValueAtTime(cut,t+dur*.5);
+  const g=AC.createGain();
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.16,t+dur*.3);
+  g.gain.setValueAtTime(.16,t+dur*.7); g.gain.linearRampToValueAtTime(0,t+dur);
+  f.connect(g); g.connect(gPad); g.connect(revSend);
+  midis.forEach(m=>{
+    [ -6,6 ].forEach(det=>{
+      const o=AC.createOscillator(); o.type='sawtooth';
+      o.frequency.value=mtof(m); o.detune.value=det;
+      o.connect(f); o.start(t); track(o,t+dur+.1);
+    });
+    const o2=AC.createOscillator(); o2.type='triangle'; o2.frequency.value=mtof(m+12);
+    const g2=AC.createGain(); g2.gain.value=.35; o2.connect(g2); g2.connect(f);
+    o2.start(t); track(o2,t+dur+.1);
+  });
+}
+function pluck(t,midi,vel){
+  const o=AC.createOscillator(); o.type='square'; o.frequency.value=mtof(midi);
+  const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=6;
+  const peak=700+P.brightness*5200;
+  f.frequency.setValueAtTime(peak,t); f.frequency.exponentialRampToValueAtTime(380,t+.28);
+  const g=AC.createGain();
+  g.gain.setValueAtTime(vel*.34,t); g.gain.exponentialRampToValueAtTime(.001,t+.3);
+  o.connect(f); f.connect(g); g.connect(gLead); g.connect(dlySend);
+  const rg=AC.createGain(); rg.gain.value=.35; g.connect(rg); rg.connect(revSend);
+  o.start(t); track(o,t+.35);
+  vizQ.push({at:t,type:'pluck'});
+}
+function riser(t,dur){
+  const n=AC.createBufferSource(); n.buffer=noiseBuf; n.loop=true;
+  const bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=1.4;
+  bp.frequency.setValueAtTime(320,t); bp.frequency.exponentialRampToValueAtTime(6800,t+dur);
+  const g=AC.createGain();
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.24,t+dur*.92);
+  g.gain.linearRampToValueAtTime(0,t+dur+.05);
+  n.connect(bp); bp.connect(g); g.connect(gDrum); g.connect(revSend);
+  n.start(t); track(n,t+dur+.1);
+}
+function crash(t){
+  const n=AC.createBufferSource(); n.buffer=noiseBuf;
+  const hp=AC.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=5200;
+  const g=AC.createGain();
+  g.gain.setValueAtTime(.4,t); g.gain.exponentialRampToValueAtTime(.001,t+1.8);
+  n.connect(hp); hp.connect(g); g.connect(gDrum); g.connect(revSend);
+  n.start(t); track(n,t+1.9);
+  vizQ.push({at:t,type:'crash'});
+}
+
+// ---------- music theory ----------
+const ROOT=45; // A2
+const SCALES={
+  minor:   [0,2,3,5,7,8,10],
+  dorian:  [0,2,3,5,7,9,10],
+  harmonic:[0,2,3,5,7,8,11],
+};
+const CHORDS={ // semitone offset + quality
+  i:{r:0,m:true}, III:{r:3,m:false}, iv:{r:5,m:true}, IV:{r:5,m:false},
+  v:{r:7,m:false}, VI:{r:8,m:false}, VII:{r:10,m:false},
+};
+const PROGS=[
+  {name:'wistful',  seq:['i','VI','III','VII']},
+  {name:'euphoric', seq:['i','VII','VI','VII']},
+  {name:'aching',   seq:['i','iv','VI','v']},
+  {name:'weightless',seq:['i','III','VII','IV']},
+];
+function chordMidis(deg,oct){
+  const c=CHORDS[deg], third=c.m?3:4;
+  return [ROOT+12*oct+c.r, ROOT+12*oct+c.r+third, ROOT+12*oct+c.r+7, ROOT+12*oct+c.r+14];
+}
+function currentScale(){
+  return P.emotion<.34?SCALES.harmonic : P.emotion<.67?SCALES.minor : SCALES.dorian;
+}
+function currentProg(){
+  return PROGS[Math.min(3,Math.floor(P.emotion*4))];
+}
+
+// ---------- generated material ----------
+let arpSeqs, leadBars, bassPat, hatPat;
+function generate(){
+  rng=mulberry32(seed);
+  const prog=currentProg();
+  // arp: one 16-step sequence per chord, note cycling with per-step strength
+  arpSeqs=prog.seq.map(deg=>{
+    const tones=chordMidis(deg,3).concat(chordMidis(deg,3).map(m=>m+12));
+    const mode=rng()<.5?'up':'updown';
+    const seq=[]; let idx=Math.floor(rng()*4);
+    for(let s=0;s<16;s++){
+      if(mode==='up') idx=(idx+1)%tones.length;
+      else idx=[0,1,2,3,4,3,2,1][s%8]%tones.length;
+      seq.push({midi:tones[idx], str:rng()});
+    }
+    return seq;
+  });
+  // lead: sparse random-walk phrases per chord bar
+  leadBars=prog.seq.map(()=>{
+    const bar=new Array(16).fill(null);
+    let pos=4+Math.floor(rng()*3);
+    for(let s=0;s<16;s++){
+      if(rng()<.32 && s%2===0){
+        const sc=currentScale();
+        bar[s]={midi:ROOT+36+sc[pos%sc.length]+12*Math.floor(pos/sc.length), str:rng()};
+        pos+=Math.floor(rng()*5)-2; pos=Math.max(0,Math.min(10,pos));
+      }
+    }
+    return bar;
+  });
+  // bass: 8th-note pattern with octave/color jumps
+  const offs=[0,0,12,0, 0,7,12,0];
+  bassPat=offs.map(o=>({off:o, str:rng()*.8}));
+  // hats: offbeat + 16th strengths
+  hatPat=[]; for(let s=0;s<16;s++) hatPat.push(s%4===2?0:rng());
+}
+
+// ---------- section state machine ----------
+const SEC_LEN={INTRO:8,BUILD:8,DROP:16,BREAK:8,OUTRO:8};
+const JOURNEY=['INTRO','BUILD','DROP','BREAK','BUILD','DROP','OUTRO'];
+let playing=false, gStep=0, nextTime=0, timer=null;
+let sec='INTRO', secBar=0, journeyIdx=0, queued=null, autopilot=true;
+const barDur=()=>60/P.bpm*4, stepDur=()=>60/P.bpm/4;
+
+function scheduleStep(step,t){
+  const s16=step%16, bar=Math.floor(step/16);
+  const prog=currentProg(), ci=bar%4, deg=prog.seq[ci];
+  const secProg=secBar/SEC_LEN[sec];
+  const drumsOn=(sec==='BUILD'||sec==='DROP')||(sec==='OUTRO'&&secBar<SEC_LEN.OUTRO/2);
+
+  // --- pads: chord at each bar start (skip in late outro fade)
+  if(s16===0 && !(sec==='OUTRO'&&secBar>=SEC_LEN.OUTRO-2)){
+    const oct=(sec==='BREAK'||sec==='INTRO')?2:2;
+    padChord(t,chordMidis(deg,oct),barDur()*1.05);
+  }
+  // --- drums
+  if(drumsOn){
+    if(s16%4===0) kick(t);
+    if(s16%4===2) hat(t,s16===14,.28+P.energy*.2);
+    // 16th hats gated by energy
+    if(s16%2===1 && hatPat[s16]<P.energy-.25) hat(t,false,.12+P.energy*.12);
+    // claps
+    if(sec==='DROP'&&(s16===4||s16===12)) clap(t,.5+P.energy*.25);
+    if(sec==='BUILD'&&secBar>=SEC_LEN.BUILD-4&&(s16===4||s16===12)) clap(t,.4);
+    // snare roll, last 2 bars of build
+    if(sec==='BUILD'&&secBar>=SEC_LEN.BUILD-2){
+      const rp=((secBar-(SEC_LEN.BUILD-2))*16+s16)/32;
+      const hits=1+Math.floor(rp*3);
+      for(let h=0;h<hits;h++) clap(t+h*stepDur()/hits,.14+rp*.3);
+    }
+  }
+  // --- bass
+  if((sec==='DROP'||sec==='BUILD'||(sec==='OUTRO'&&secBar<2)) && s16%2===0){
+    const bp=bassPat[(s16/2)%8];
+    if(bp.str<P.energy+.15){
+      const root=ROOT+CHORDS[deg].r;
+      bassNote(t,root+bp.off,stepDur()*1.8);
+    }
+  }
+  // --- arp
+  const arpEvery=P.motion<.33?4:P.motion<.72?2:1;
+  const arpOn=sec!=='OUTRO'||secBar<SEC_LEN.OUTRO-3;
+  if(arpOn && s16%arpEvery===0){
+    const n=arpSeqs[ci][s16];
+    const dens=P.density*(sec==='BREAK'?.5:sec==='INTRO'?.6:1);
+    if(n.str<dens){
+      const octUp=(sec==='DROP'&&P.energy>.7&&s16%8>=4)?12:0;
+      pluck(t,n.midi+octUp,.5+P.energy*.4);
+    }
+  }
+  // --- lead phrases (drop + sparsely in break)
+  if(sec==='DROP'||sec==='BREAK'){
+    const n=leadBars[ci][s16];
+    if(n && n.str<(sec==='DROP'?P.density:P.density*.35)) pluck(t,n.midi+12,.55);
+  }
+  // --- dj filter
+  let m=1;
+  if(sec==='INTRO') m=.3+.25*secProg;
+  else if(sec==='BUILD') m=.35+.9*secProg;
+  else if(sec==='BREAK') m=.22;
+  else if(sec==='OUTRO') m=Math.max(.08,1-.95*secProg);
+  const cut=Math.min(16000,Math.max(120,180*Math.pow(2,P.brightness*7.4)*m));
+  djFilter.frequency.setTargetAtTime(cut,t,.04);
+}
+
+function scheduler(){
+  while(nextTime<AC.currentTime+.14){
+    scheduleStep(gStep,nextTime);
+    gStep++; nextTime+=stepDur();
+    if(gStep%16===0) onBar();
+  }
+}
+function onBar(){
+  secBar++;
+  if(queued){ setSection(queued); queued=null; return; }
+  if(secBar>=SEC_LEN[sec]){
+    if(autopilot){
+      journeyIdx++;
+      if(journeyIdx>=JOURNEY.length){ // journey complete → new world
+        seed=(Math.random()*1e9)|0; generate(); journeyIdx=0;
+      }
+      setSection(JOURNEY[journeyIdx]);
+    } else secBar=0; // loop current section
+  }
+}
+function setSection(s){
+  sec=s; secBar=0;
+  const t=nextTime;
+  if(s==='BUILD') riser(t,SEC_LEN.BUILD*barDur());
+  if(s==='DROP') crash(t);
+  updateSecUI();
+}
+
+// ---------- transport ----------
+function start(){
+  if(!AC){initAudio(); applyMix();}
+  if(AC.state==='suspended')AC.resume();
+  if(playing)return;
+  playing=true; gStep=0; secBar=0; journeyIdx=0; queued=null;
+  setSection('INTRO');
+  nextTime=AC.currentTime+.08;
+  timer=setInterval(scheduler,25);
+  document.getElementById('playBtn').classList.add('on');
+  document.getElementById('playBtn').textContent='Stop';
+}
+function stop(){
+  playing=false; clearInterval(timer);
+  liveSrcs.forEach(s=>{try{s.stop()}catch(e){}}); liveSrcs.clear();
+  if(AC){duck.gain.cancelScheduledValues(AC.currentTime); duck.gain.value=1;}
+  document.getElementById('playBtn').classList.remove('on');
+  document.getElementById('playBtn').textContent='Play';
+  document.getElementById('roSec').textContent='STANDBY';
+  document.getElementById('roBar').textContent='—';
+  document.getElementById('bigword').textContent='READY';
+  document.getElementById('bigword').classList.remove('hot');
+}
+
+// ============================================================
+//  UI — knobs, faders, structure
+// ============================================================
+const KNOBS=[
+  {id:'energy',   lab:'Energy'},
+  {id:'space',    lab:'Space'},
+  {id:'brightness',lab:'Bright'},
+  {id:'density',  lab:'Density'},
+  {id:'motion',   lab:'Motion'},
+  {id:'emotion',  lab:'Emotion'},
+  {id:'master',   lab:'Master'},
+];
+const knobGrid=document.getElementById('knobs');
+KNOBS.forEach(k=>{
+  const el=document.createElement('div'); el.className='knob';
+  el.innerHTML=`<div class="wrap">
+    <svg viewBox="0 0 62 62">
+      <circle class="track" cx="31" cy="31" r="28" pathLength="100" stroke-dasharray="75 100"/>
+      <circle class="val" cx="31" cy="31" r="28" pathLength="100" stroke-dasharray="0 100"/>
+    </svg>
+    <div class="body"></div><div class="dot"></div></div>
+    <span class="lab">${k.lab}</span><span class="num"></span>`;
+  knobGrid.appendChild(el);
+  const val=el.querySelector('.val'), dot=el.querySelector('.dot'), num=el.querySelector('.num');
+  const render=()=>{
+    const v=P[k.id];
+    val.setAttribute('stroke-dasharray',`${v*75} 100`);
+    dot.style.transform=`translateX(-50%) rotate(${-135+v*270}deg)`;
+    num.textContent=Math.round(v*100);
+  };
+  render();
+  let dragging=false,lastY=0;
+  el.addEventListener('pointerdown',e=>{dragging=true;lastY=e.clientY;el.setPointerCapture(e.pointerId);});
+  el.addEventListener('pointermove',e=>{
+    if(!dragging)return;
+    P[k.id]=Math.max(0,Math.min(1,P[k.id]+(lastY-e.clientY)*.006));
+    lastY=e.clientY; render(); applyMix();
+    if(k.id==='emotion'&&playing) regenerateSoft();
+  });
+  el.addEventListener('pointerup',()=>dragging=false);
+  el.addEventListener('dblclick',()=>{P[k.id]=k.id==='master'?.8:.5;render();applyMix();});
+});
+// regenerate patterns when emotion moves (keeps it musical)
+let regenT=null;
+function regenerateSoft(){clearTimeout(regenT);regenT=setTimeout(generate,400);}
+
+// faders
+const FADERS=[{id:'drums',lab:'Drums'},{id:'bass',lab:'Bass'},{id:'pads',lab:'Pads'},{id:'lead',lab:'Lead'}];
+const fWrap=document.getElementById('faders');
+FADERS.forEach(f=>{
+  const el=document.createElement('div'); el.className='fader';
+  el.innerHTML=`<div class="rail"><div class="fillb"></div><div class="cap"></div></div><span class="lab">${f.lab}</span>`;
+  fWrap.appendChild(el);
+  const fill=el.querySelector('.fillb'), cap=el.querySelector('.cap');
+  const render=()=>{const v=MIX[f.id];fill.style.height=(v*100)+'%';cap.style.bottom=(v*100)+'%';};
+  render();
+  let dragging=false;
+  const set=e=>{
+    const r=el.querySelector('.rail').getBoundingClientRect();
+    MIX[f.id]=Math.max(0,Math.min(1,1-(e.clientY-r.top)/r.height));
+    render(); applyMix();
+  };
+  el.addEventListener('pointerdown',e=>{dragging=true;el.setPointerCapture(e.pointerId);set(e);});
+  el.addEventListener('pointermove',e=>{if(dragging)set(e);});
+  el.addEventListener('pointerup',()=>dragging=false);
+});
+
+// structure buttons
+const SECS=['INTRO','BUILD','DROP','BREAK','OUTRO'];
+const secBtnWrap=document.getElementById('secBtns');
+SECS.forEach(s=>{
+  const b=document.createElement('button'); b.className='secBtn'; b.textContent=s; b.dataset.sec=s;
+  b.onclick=()=>{ if(!playing){start(); queued=s;} else queued=s; updateSecUI(); };
+  secBtnWrap.appendChild(b);
+});
+function updateSecUI(){
+  document.querySelectorAll('.secBtn').forEach(b=>{
+    b.classList.toggle('cur',playing&&b.dataset.sec===sec);
+    b.classList.toggle('queued',b.dataset.sec===queued);
+  });
+  document.getElementById('roSec').textContent=playing?sec:'STANDBY';
+  const bw=document.getElementById('bigword');
+  bw.textContent=playing?sec:'READY';
+  bw.classList.toggle('hot',playing&&(sec==='DROP'||sec==='BUILD'));
+  buildLeds();
+}
+function buildLeds(){
+  const w=document.getElementById('barLeds'); w.innerHTML='';
+  for(let i=0;i<SEC_LEN[sec];i++){const led=document.createElement('i');w.appendChild(led);}
+}
+setInterval(()=>{ // led + bar readout refresh
+  if(!playing)return;
+  document.getElementById('roBar').textContent=(secBar+1)+' / '+SEC_LEN[sec];
+  const leds=document.getElementById('barLeds').children;
+  for(let i=0;i<leds.length;i++)leds[i].classList.toggle('done',i<secBar);
+},60);
+
+// transport controls
+document.getElementById('playBtn').onclick=()=>playing?stop():start();
+document.getElementById('journeyBtn').onclick=()=>{
+  seed=(Math.random()*1e9)|0; generate();
+  if(playing){journeyIdx=0; setSection('INTRO');}
+};
+const bpmEl=document.getElementById('bpm');
+bpmEl.addEventListener('input',()=>{
+  P.bpm=+bpmEl.value;
+  document.getElementById('bpmVal').textContent=P.bpm;
+  document.getElementById('roBpm').textContent=P.bpm;
+  bpmEl.style.setProperty('--fill',((P.bpm-96)/44*100)+'%');
+  applyMix();
+});
+bpmEl.style.setProperty('--fill',((122-96)/44*100)+'%');
+document.getElementById('auto').addEventListener('change',e=>autopilot=e.target.checked);
+window.addEventListener('keydown',e=>{
+  if(e.code==='Space'&&e.target===document.body){e.preventDefault();playing?stop():start();}
+});
+
+// ============================================================
+//  VISUALIZER — starfield + reactive orb + waveform ribbon
+// ============================================================
+const vizQ=[];
+const cv=document.getElementById('viz'), g2d=cv.getContext('2d');
+let W,H,DPR;
+function resize(){
+  DPR=Math.min(2,window.devicePixelRatio||1);
+  W=innerWidth; H=innerHeight;
+  cv.width=W*DPR; cv.height=H*DPR; g2d.setTransform(DPR,0,0,DPR,0,0);
+}
+resize(); addEventListener('resize',resize);
+
+const stars=[]; for(let i=0;i<190;i++)stars.push({x:Math.random(),y:Math.random(),z:.3+Math.random()*.7,ph:Math.random()*7});
+const parts=[], rings=[];
+const freq=new Uint8Array(512), wave=new Uint8Array(1024);
+const SEC_TINT={INTRO:[70,60,140],BUILD:[146,98,232],DROP:[134,66,255],BREAK:[40,70,180],OUTRO:[90,80,160]};
+let tint=[70,60,140], lastBeat=0;
+
+function drawViz(ts){
+  requestAnimationFrame(drawViz);
+  const t=ts/1000;
+  g2d.fillStyle='rgba(5,10,33,.42)'; g2d.fillRect(0,0,W,H);
+
+  // stars
+  for(const s of stars){
+    s.x-= .00004*s.z*60/60; if(s.x<0)s.x=1;
+    const a=.25+.55*Math.abs(Math.sin(t*1.3*s.z+s.ph));
+    g2d.fillStyle=`rgba(230,230,225,${a*s.z})`;
+    g2d.fillRect(s.x*W,s.y*H,s.z*1.6,s.z*1.6);
+  }
+
+  const cxp=W/2, cyp=H*.42;
+  let level=0;
+  if(AC&&playing){
+    analyser.getByteFrequencyData(freq); analyser.getByteTimeDomainData(wave);
+    for(let i=0;i<64;i++)level+=freq[i]; level/=64*255;
+  }
+  // consume scheduled viz events
+  if(AC){
+    while(vizQ.length&&vizQ[0].at<=AC.currentTime+.02){
+      const e=vizQ.shift();
+      if(e.type==='kick'){rings.push({r:20,life:1});lastBeat=AC.currentTime;}
+      if(e.type==='pluck'){const a=Math.random()*Math.PI*2;
+        parts.push({x:cxp+Math.cos(a)*90,y:cyp+Math.sin(a)*90,vx:Math.cos(a)*1.6,vy:Math.sin(a)*1.6-.4,life:1});}
+      if(e.type==='crash')for(let i=0;i<26;i++){const a=Math.random()*Math.PI*2,v=1+Math.random()*3;
+        parts.push({x:cxp,y:cyp,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:1.4});}
+    }
+  }
+  // section tint lerp
+  const tgt=SEC_TINT[playing?sec:'INTRO'];
+  for(let i=0;i<3;i++)tint[i]+=(tgt[i]-tint[i])*.03;
+  const beatPulse=AC?Math.max(0,1-(AC.currentTime-lastBeat)/(60/P.bpm)):0;
+  const grd=g2d.createRadialGradient(cxp,cyp,10,cxp,cyp,300+level*220);
+  grd.addColorStop(0,`rgba(${tint[0]|0},${tint[1]|0},${tint[2]|0},${.10+level*.22+beatPulse*.06})`);
+  grd.addColorStop(1,'rgba(5,10,33,0)');
+  g2d.fillStyle=grd; g2d.fillRect(0,0,W,H);
+
+  // orb — frequency-driven radial polygon
+  const R=Math.min(W,H)*.16;
+  g2d.beginPath();
+  const N=72;
+  for(let i=0;i<=N;i++){
+    const a=i/N*Math.PI*2-Math.PI/2;
+    const v=playing?freq[Math.floor(i/N*80)]/255:0;
+    const wob=Math.sin(a*3+t*.7)*6+Math.sin(a*5-t*1.1)*4;
+    const r=R*(0.9+v*.55+beatPulse*.08)+wob;
+    const x=cxp+Math.cos(a)*r, y=cyp+Math.sin(a)*r;
+    i===0?g2d.moveTo(x,y):g2d.lineTo(x,y);
+  }
+  g2d.closePath();
+  g2d.strokeStyle=`rgba(${tint[0]|0},${tint[1]|0},${tint[2]|0},.9)`;
+  g2d.lineWidth=1.6; g2d.shadowColor='rgba(146,98,232,.9)'; g2d.shadowBlur=26;
+  g2d.stroke(); g2d.shadowBlur=0;
+  g2d.fillStyle=`rgba(${tint[0]|0},${tint[1]|0},${tint[2]|0},.05)`; g2d.fill();
+
+  // waveform ribbon
+  if(playing){
+    g2d.beginPath();
+    for(let i=0;i<wave.length;i+=4){
+      const x=i/wave.length*W, y=H*.72+(wave[i]-128)/128*46;
+      i===0?g2d.moveTo(x,y):g2d.lineTo(x,y);
+    }
+    g2d.strokeStyle='rgba(241,233,221,.28)'; g2d.lineWidth=1; g2d.stroke();
+  }
+  // rings + particles
+  for(let i=rings.length-1;i>=0;i--){const r=rings[i];
+    r.r+=3.2; r.life-=.02;
+    if(r.life<=0){rings.splice(i,1);continue;}
+    g2d.beginPath(); g2d.arc(cxp,cyp,r.r,0,7);
+    g2d.strokeStyle=`rgba(154,146,217,${r.life*.5})`; g2d.lineWidth=1.2; g2d.stroke();
+  }
+  for(let i=parts.length-1;i>=0;i--){const p=parts[i];
+    p.x+=p.vx; p.y+=p.vy; p.vy+=.015; p.life-=.012;
+    if(p.life<=0){parts.splice(i,1);continue;}
+    g2d.fillStyle=`rgba(230,230,225,${p.life*.8})`;
+    g2d.fillRect(p.x,p.y,2,2);
+  }
+}
+requestAnimationFrame(drawViz);
+
+// ---------- boot ----------
+generate();
+buildLeds();
+</script>
+</body>
 </html>
