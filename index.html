@@ -291,20 +291,39 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 
 /* ---------- GLOBAL RUN COUNTER ---------- */
 (function setupCounter(){
-  const namespace = (window.location.hostname || 'localhost').replace(/[^a-zA-Z0-9_-]/g, '_');
-  const key = 'aether-runs';
+  const key = 'amunategui-aether-1';
+  const el = document.getElementById('roVisits');
 
-  fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
-    .then(r => r.json())
+  const setDisplay = (val) => {
+    if (el) el.textContent = Number(val).toLocaleString();
+  };
+
+  const localFallback = () => {
+    try {
+      const stored = (parseInt(localStorage.getItem('aether_plays') || '0', 10) + 1);
+      localStorage.setItem('aether_plays', stored);
+      setDisplay(stored);
+    } catch(e) {
+      setDisplay(1);
+    }
+  };
+
+  fetch(`https://countapi.mileshilliard.com/api/v1/hit/${key}`)
+    .then(r => {
+      if (!r.ok) throw new Error('Status ' + r.status);
+      return r.json();
+    })
     .then(data => {
-      const el = document.getElementById('roVisits');
-      if (el && data.count !== undefined) {
-        el.textContent = data.count.toLocaleString();
+      const val = data.value !== undefined ? data.value : data.count;
+      if (val !== undefined) {
+        setDisplay(val);
+        try { localStorage.setItem('aether_plays', val); } catch(e) {}
+      } else {
+        localFallback();
       }
     })
     .catch(() => {
-      const el = document.getElementById('roVisits');
-      if (el) el.textContent = '1';
+      localFallback();
     });
 })();
 
