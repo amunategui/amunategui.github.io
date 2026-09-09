@@ -26,6 +26,33 @@ body{
 }
 #viz{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
 
+/* ---------- top center contact link ---------- */
+.top-contact{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  color:var(--acc2);
+  text-decoration:none;
+  padding:6px 14px;
+  border-radius:999px;
+  border:1px solid rgba(154,146,217,.25);
+  background:rgba(10,5,33,.45);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  transition:all .25s ease;
+}
+.top-contact:hover{
+  color:var(--cream);
+  border-color:var(--acc);
+  box-shadow:0 0 16px rgba(134,66,255,.45);
+}
+
 /* ---------- header ---------- */
 header{
   position:fixed;top:0;left:0;right:0;z-index:6;
@@ -155,12 +182,16 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border:none;border-ra
   .readouts{gap:14px}
   #bigword{top:38%}
   .module{padding:14px 16px}
+  .top-contact{top:12px;font-size:9px;padding:4px 10px}
 }
 </style>
 <base target="_blank">
 </head>
 <body>
 <canvas id="viz"></canvas>
+
+<!-- Top center contact link -->
+<a href="mailto:amunategui@gmail.com" class="top-contact" target="_self">contact</a>
 
 <header>
   <div>
