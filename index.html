@@ -79,7 +79,7 @@ header>*{pointer-events:auto}
 .tBtn{
   font-family:var(--mono);font-size:9px;letter-spacing:.24em;text-transform:uppercase;
   color:var(--acc2);background:none;border:none;cursor:pointer;padding:2px 0;text-align:left;
-  transition:color .2s;text-decoration:none;
+  transition:color .2s;text-decoration:none;display:inline-block;
 }
 .tBtn:hover{color:var(--cream)}
 .tBtn.armed{color:var(--hot);text-shadow:0 0 10px rgba(255,126,207,.7)}
@@ -215,6 +215,7 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
     <div class="tagline">Music Making · Generative Space-Dance Engine</div>
   </div>
   <div class="readouts">
+    <div class="ro"><label>Plays</label><b id="roVisits">—</b></div>
     <div class="ro"><label>BPM</label><b id="roBpm">122</b></div>
     <div class="ro"><label>Key</label><b id="roKey">—</b></div>
     <div class="ro"><label>Section</label><b id="roSec">STANDBY</b></div>
@@ -236,7 +237,6 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
     <button class="tBtn" id="mutateBtn">✦ Mutate</button>
     <button class="tBtn" id="journeyBtn">↻ New Journey</button>
     <button class="tBtn" id="recBtn">● Record</button>
-    <!-- ADDED EMAILTO BULLET -->
     <a class="tBtn" href="mailto:amunategui@gmail.com">✉ Contact</a>
   </div>
 
@@ -289,35 +289,23 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 <script>
 'use strict';
 
-/* ---------- VISITOR TRACKING TELEMETRY ---------- */
-(function setupTelemetry(){
-  const LOG_ENDPOINT = 'https://YOUR_LOGGING_WORKER.workers.dev/log'; // <-- Replace with your real worker endpoint
-  const startTime = Date.now();
-  let clientIP = 'unknown';
+/* ---------- GLOBAL RUN COUNTER ---------- */
+(function setupCounter(){
+  const namespace = (window.location.hostname || 'localhost').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const key = 'aether-runs';
 
-  // Fetch client IP through public lookup
-  fetch('https://api.ipify.org?format=json')
+  fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
     .then(r => r.json())
-    .then(d => { clientIP = d.ip; })
-    .catch(() => {});
-
-  // Append entry when user navigates away or closes the tab
-  window.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-      const duration = Math.round((Date.now() - startTime) / 1000);
-      const payload = JSON.stringify({
-        ip: clientIP,
-        durationSeconds: duration,
-        timestamp: new Date().toISOString()
-      });
-
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(LOG_ENDPOINT, new Blob([payload], { type: 'application/json' }));
-      } else {
-        fetch(LOG_ENDPOINT, { method: 'POST', body: payload, keepalive: true, headers: {'Content-Type':'application/json'} });
+    .then(data => {
+      const el = document.getElementById('roVisits');
+      if (el && data.count !== undefined) {
+        el.textContent = data.count.toLocaleString();
       }
-    }
-  });
+    })
+    .catch(() => {
+      const el = document.getElementById('roVisits');
+      if (el) el.textContent = '1';
+    });
 })();
 
 /* ============================================================
