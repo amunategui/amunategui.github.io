@@ -79,7 +79,7 @@ header>*{pointer-events:auto}
 .tBtn{
   font-family:var(--mono);font-size:9px;letter-spacing:.24em;text-transform:uppercase;
   color:var(--acc2);background:none;border:none;cursor:pointer;padding:2px 0;text-align:left;
-  transition:color .2s;
+  transition:color .2s;text-decoration:none;
 }
 .tBtn:hover{color:var(--cream)}
 .tBtn.armed{color:var(--hot);text-shadow:0 0 10px rgba(255,126,207,.7)}
@@ -236,6 +236,8 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
     <button class="tBtn" id="mutateBtn">✦ Mutate</button>
     <button class="tBtn" id="journeyBtn">↻ New Journey</button>
     <button class="tBtn" id="recBtn">● Record</button>
+    <!-- ADDED EMAILTO BULLET -->
+    <a class="tBtn" href="mailto:amunategui@gmail.com">✉ Contact</a>
   </div>
 
   <div class="module">
@@ -286,14 +288,40 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 
 <script>
 'use strict';
+
+/* ---------- VISITOR TRACKING TELEMETRY ---------- */
+(function setupTelemetry(){
+  const LOG_ENDPOINT = 'https://YOUR_LOGGING_WORKER.workers.dev/log'; // <-- Replace with your real worker endpoint
+  const startTime = Date.now();
+  let clientIP = 'unknown';
+
+  // Fetch client IP through public lookup
+  fetch('https://api.ipify.org?format=json')
+    .then(r => r.json())
+    .then(d => { clientIP = d.ip; })
+    .catch(() => {});
+
+  // Append entry when user navigates away or closes the tab
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      const duration = Math.round((Date.now() - startTime) / 1000);
+      const payload = JSON.stringify({
+        ip: clientIP,
+        durationSeconds: duration,
+        timestamp: new Date().toISOString()
+      });
+
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(LOG_ENDPOINT, new Blob([payload], { type: 'application/json' }));
+      } else {
+        fetch(LOG_ENDPOINT, { method: 'POST', body: payload, keepalive: true, headers: {'Content-Type':'application/json'} });
+      }
+    }
+  });
+})();
+
 /* ============================================================
    AETHER 1 — Music Making
-   One unified generative space-dance engine combining:
-   · live oscillator synthesis (Cosmic kit, Glass pads, Pluck arp)
-   · baked analog sample modeling (Analog kit, FM bells, FM keys)
-   · unison supersaw voice engine (Stacked kit, Supersaw pads, Anthem lead)
-   · two arrangement approaches: free Journey autopilot / fixed 72-bar Arc
-   · plate reverb · ping-pong delay · chorus · tape drive · sidechain
    ============================================================ */
 
 // ---------- utils ----------
@@ -338,7 +366,6 @@ let rng=mulberry32(song.seed);
 
 function scaleName(){const s=song.scale;
   return s===SCALES.dorian?'DORIAN':s===SCALES.harmonic?'HARMONIC':s===SCALES.phrygian?'PHRYGIAN':s===SCALES.lydian?'LYDIAN':'MINOR';}
-// stack scale-thirds from a degree — always diatonic
 function chordTones(degree,count=4){
   const sc=song.scale,out=[];
   for(let i=0;i<count;i++){
@@ -368,7 +395,6 @@ function makeSong(newSeed){
     : SCALES.aeolian;
   song.prog=pick(rng()<P.emotion?PROG_BRIGHT:PROG_DARK);
   newMotif();
-  // sparse random-walk lead phrases, one bar per chord (pluck lead mode)
   song.leadBars=song.prog.map(()=>{
     const bar=new Array(16).fill(null);
     let pos=4+Math.floor(rng()*3);
@@ -393,10 +419,6 @@ function printHarmony(){
 
 /* ============================================================
    AUDIO GRAPH
-   drumBus ──────────────────────────┐
-   duckBus → chorus → duckGain ──────┤→ color → drive → shelfEQ → sweep ─┬→ dry ────────┐
-                                                                     ├→ plate verb ──┤→ glue → limiter → master → out (+recorder)
-                                                                     └→ pingpong dly ┘
    ============================================================ */
 let AC=null,master,analyser,glue,limiter,dryG,revSend,revGain,dlySend,dlyGain,
     convolver,colorBus,driveShaper,driveOut,lowShelf,highShelf,sweep,
@@ -411,7 +433,6 @@ function initAudio(){
   noiseBuf=AC.createBuffer(2,AC.sampleRate*3,AC.sampleRate);
   for(let c=0;c<2;c++){const d=noiseBuf.getChannelData(c);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;}
 
-  // band-limited periodic waves (analog-style oscillators, no aliasing fizz)
   const periodic=(kind,harm)=>{
     const re=new Float32Array(harm+1),im=new Float32Array(harm+1);
     for(let i=1;i<=harm;i++){
@@ -426,13 +447,11 @@ function initAudio(){
   master=AC.createGain(); master.gain.value=P.master;
   analyser=AC.createAnalyser(); analyser.fftSize=2048; analyser.smoothingTimeConstant=.8;
 
-  // two-stage dynamics: musical glue, then a fast limiter so drops never clip
   glue=AC.createDynamicsCompressor();
   glue.threshold.value=-16; glue.knee.value=20; glue.ratio.value=3; glue.attack.value=.006; glue.release.value=.22;
   limiter=AC.createDynamicsCompressor();
   limiter.threshold.value=-2.5; limiter.knee.value=0; limiter.ratio.value=20; limiter.attack.value=.001; limiter.release.value=.06;
 
-  // saturation stage — tape-style drive
   colorBus=AC.createGain();
   driveShaper=AC.createWaveShaper(); driveShaper.oversample='4x';
   driveOut=AC.createGain();
@@ -443,7 +462,6 @@ function initAudio(){
   drumBus=AC.createGain();
   duckBus=AC.createGain(); duckGain=AC.createGain(); duckGain.gain.value=1;
 
-  // mix-level layer gains feeding the buses
   gPadM=AC.createGain(); gBassM=AC.createGain(); gLeadM=AC.createGain();
   gPadM.connect(duckBus); gBassM.connect(duckBus); gLeadM.connect(duckBus);
 
@@ -470,7 +488,6 @@ function initAudio(){
   applyMix(); updateFX();
 }
 
-// plate-ish impulse: pre-delay, early reflections, damped darkening tail
 function makeImpulse(seconds,decay,damp){
   const rate=AC.sampleRate,len=Math.floor(rate*seconds);
   const b=AC.createBuffer(2,len,rate), pre=Math.floor(rate*.022);
@@ -489,7 +506,6 @@ function makeImpulse(seconds,decay,damp){
   }
   return b;
 }
-// three modulated taps panned wide — a synth in a room, not an oscillator in a browser
 function makeChorus(){
   const input=AC.createGain(),output=AC.createGain();
   const wet=AC.createGain(); wet.gain.value=.45;
@@ -544,7 +560,7 @@ function updateFX(){
   revSend.gain.setTargetAtTime(.8,t,.05);
   dlyGain.gain.setTargetAtTime(lerp(0,.62,P.delay)*lerp(.6,1.15,P.space),t,.06);
   dlySend.gain.setTargetAtTime(.6,t,.05);
-  const beat=60/P.bpm, dt=beat*.75;   // dotted eighth, the trance default
+  const beat=60/P.bpm, dt=beat*.75;
   pingpong.dL.delayTime.setTargetAtTime(dt,t,.1);
   pingpong.dR.delayTime.setTargetAtTime(dt,t,.1);
   const fb=lerp(.12,.52,P.delay);
@@ -552,7 +568,6 @@ function updateFX(){
   pingpong.fbR.gain.setTargetAtTime(fb,t,.1);
 }
 
-// ---------- shared voice plumbing ----------
 function fire(src,when,dur){
   live.add(src);
   src.onended=()=>{live.delete(src);try{src.disconnect();}catch(e){}};
@@ -566,7 +581,7 @@ function envGain(when,a,h,r,peak){
   g.gain.exponentialRampToValueAtTime(.0001,when+a+h+Math.max(.02,r));
   return g;
 }
-function osc(kind){ // 'sine' or band-limited 'saw'|'square'|'tri'
+function osc(kind){
   const o=AC.createOscillator();
   if(kind==='sine')o.type='sine'; else o.setPeriodicWave(waves[kind]);
   return o;
@@ -584,7 +599,6 @@ function noiseSrc(when){
   s.playbackRate.value=rand(.92,1.08); s.loop=true;
   return s;
 }
-// sidechain shaped like a real compressor release — melodic bus only
 function duck(when){
   const amt=P.sidechain; if(amt<.02)return;
   const beat=60/P.bpm, floorG=lerp(1,.18,amt);
@@ -593,7 +607,7 @@ function duck(when){
   duckGain.gain.linearRampToValueAtTime(floorG,when+.012);
   duckGain.gain.setTargetAtTime(1,when+.018,beat*.16);
 }
-// unison supersaw voice: detuned stack → per-voice pan → filter env → amp ADSR
+
 const MAX_VOICES=130; let voiceCount=0;
 function unisonVoice(freq,when,dur,o){
   if(voiceCount>MAX_VOICES)return;
@@ -640,11 +654,6 @@ function unisonVoice(freq,when,dur,o){
 const unisonCount=base=>Math.max(1,Math.round(1+P.unison*base));
 const detuneAmt=()=>lerp(5,30,P.unison);
 
-/* ============================================================
-   ANALOG SAMPLE BANK — baked drum models (Analog kit)
-   kicks: swept-sine FM-ish body · claps: staggered burst trains
-   hats: 10-partial inharmonic metal · crash · shaker · reverse cymbal
-   ============================================================ */
 function normBuf(data,peak=.92){
   let m=0; for(let i=0;i<data.length;i++)m=Math.max(m,Math.abs(data[i]));
   if(m<1e-6)return data; const g=peak/m;
@@ -737,9 +746,6 @@ function buildSamples(){
   };
 }
 
-/* ============================================================
-   DRUM KITS — three genuinely different sound-design approaches
-   ============================================================ */
 function kick(t,vel){
   if(!LAYERS.drums)return;
   if(ENG.drums==='analog'){
@@ -760,7 +766,7 @@ function kick(t,vel){
     const cs=noiseSrc(t),hp=AC.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=2200;
     const cg=AC.createGain(); cg.gain.setValueAtTime(.22*vel,t); cg.gain.exponentialRampToValueAtTime(.0001,t+.014);
     cs.connect(hp).connect(cg).connect(drumBus); fire(cs,t,.03);
-  }else{ // cosmic — pure oscillator synthesis
+  }else{
     const o=AC.createOscillator(),g=AC.createGain(); o.type='sine';
     o.frequency.setValueAtTime(155,t); o.frequency.exponentialRampToValueAtTime(42,t+.11);
     g.gain.setValueAtTime(.95*vel,t); g.gain.exponentialRampToValueAtTime(.001,t+.34);
@@ -789,7 +795,7 @@ function clap(t,vel){
       g.gain.exponentialRampToValueAtTime(.0001,t+dt+(i===3?.19:.05));
       s.connect(g).connect(p).connect(bp); fire(s,t+dt,.22);
     });
-  }else{ // cosmic
+  }else{
     for(let i=0;i<3;i++){
       const tt=t+i*.011,n=noiseSrc(tt);
       const bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1750; bp.Q.value=1.1;
@@ -802,7 +808,7 @@ function clap(t,vel){
   }
   vizQ.push({at:t,type:'clap'});
 }
-function snare(t,vel){ // stacked-style acoustic snare; other kits fall back to clap rolls
+function snare(t,vel){
   if(!LAYERS.drums)return;
   if(ENG.drums!=='stacked'){clap(t,vel);return;}
   const t1=AC.createOscillator(),t2=AC.createOscillator(),tg=AC.createGain();
@@ -823,7 +829,7 @@ function hat(t,open,vel){
   if(ENG.drums==='analog'){
     playBuf(open?pick(samples.open):pick(samples.closed),t,drumBus,vel*(open?.42:.28),
       {playbackRate:.97+Math.random()*.07,pan:(Math.random()-.5)*.3});
-  }else if(ENG.drums==='stacked'){ // six-oscillator metallic hat
+  }else if(ENG.drums==='stacked'){
     const bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=10000; bp.Q.value=.9;
     const hp=AC.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=open?6800:8200;
     const g=AC.createGain(),p=AC.createStereoPanner(); p.pan.value=rand(-.3,.3)*P.width;
@@ -833,7 +839,7 @@ function hat(t,open,vel){
     g.gain.exponentialRampToValueAtTime(.0001,t+dur);
     bp.connect(hp).connect(g).connect(p).connect(drumBus);
     HAT_RATIOS.forEach(r=>{const o=AC.createOscillator();o.type='square';o.frequency.value=40*r;o.connect(bp);fire(o,t,dur+.02);});
-  }else{ // cosmic — filtered noise
+  }else{
     const n=noiseSrc(t); n.playbackRate.value=1.4;
     const hp=AC.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=8200;
     const g=AC.createGain(),dur=open?.22:.045;
@@ -846,7 +852,6 @@ function shaker(t,vel){
   playBuf(pick(samples.shakers),t,drumBus,.16*vel,{pan:Math.random()<.5?-.45:.45,playbackRate:.96+Math.random()*.1});
 }
 
-/* ---------- transition FX ---------- */
 function crash(t,vel){
   if(!LAYERS.fx)return;
   if(ENG.drums==='analog'){playBuf(samples.crash,t,drumBus,.42*vel);}
@@ -891,7 +896,7 @@ function riser(t,dur,vel){
   const la=AC.createGain(); la.gain.value=.8;
   lfo.connect(la).connect(p.pan); lfo.start(t); lfo.stop(t+dur);
   s.connect(bp).connect(g).connect(p).connect(duckBus); fire(s,t,dur);
-  // pitch riser underneath the noise riser
+
   const o=AC.createOscillator(),og=AC.createGain(); o.type='sawtooth';
   o.frequency.setValueAtTime(mtof(song.root+12),t);
   o.frequency.exponentialRampToValueAtTime(mtof(song.root+36),t+dur);
@@ -909,15 +914,10 @@ function downlifter(t,dur,vel){
   s.connect(bp).connect(g).connect(duckBus); fire(s,t,dur);
 }
 
-/* ============================================================
-   MELODIC VOICES
-   ============================================================ */
-
-/* --- PADS: three engines --- */
 function padChord(t,degree,dur,level,energy){
   if(!LAYERS.pad)return;
   const tones=chordTones(degree,P.emotion>.55?5:4);
-  if(ENG.pad==='supersaw'){           // unison stacks (claude approach)
+  if(ENG.pad==='supersaw'){
     tones.forEach((m,i)=>{
       unisonVoice(mtof(m+12),t+rand(0,.02),dur,{
         type:i%2?'sawtooth':'triangle',
@@ -934,7 +934,7 @@ function padChord(t,degree,dur,level,energy){
         attack:1.6,decay:1,sustain:.6,release:3,cutoff:6500,q:.6,pan:rand(-.5,.5),dest:gPadM
       });
     }
-  }else if(ENG.pad==='analog'){       // band-limited unison, 3-voice (grok approach)
+  }else if(ENG.pad==='analog'){
     const cutoff=lerp(900,3400,clamp(energy,0,1))+P.motion*900+P.brightness*600;
     const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=.55;
     f.frequency.setValueAtTime(cutoff,t);
@@ -950,7 +950,7 @@ function padChord(t,degree,dur,level,energy){
         o.connect(g).connect(pan).connect(f); fire(o,t,dur+3.2);
       }
     });
-  }else{                              // glass — detuned saws + octave triangle (kimi approach)
+  }else{
     const cut=320+P.brightness*1600+energy*600;
     const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=.7;
     f.frequency.setValueAtTime(cut*.4,t); f.frequency.linearRampToValueAtTime(cut,t+dur*.5);
@@ -971,7 +971,6 @@ function padChord(t,degree,dur,level,energy){
   }
 }
 
-/* --- BASS: reese (detuned saws) + clean mono sub --- */
 function bassNote(t,degree,dur,level,accent){
   if(!LAYERS.bass)return;
   const root=chordTones(degree)[0];
@@ -986,7 +985,6 @@ function bassNote(t,degree,dur,level,accent){
   });
 }
 
-/* --- ARP: three engines --- */
 function arpMidi(degree,step){
   const pat=song.arpPattern;
   let idx=pat[step%pat.length];
@@ -998,7 +996,7 @@ function arpMidi(degree,step){
 function arpNote(t,degree,dur,level,step){
   if(!LAYERS.arp)return;
   const m=arpMidi(degree,step);
-  if(ENG.arp==='fm'){                 // FM bell (grok approach)
+  if(ENG.arp==='fm'){
     const freq=mtof(m),c=osc('sine'),mo=osc('sine'),mg=AC.createGain();
     c.frequency.setValueAtTime(freq,t); mo.frequency.setValueAtTime(freq*2.007,t);
     mg.gain.setValueAtTime(freq*lerp(1.1,2.4,P.space),t);
@@ -1009,7 +1007,7 @@ function arpNote(t,degree,dur,level,step){
     c.connect(g).connect(pan).connect(duckBus);
     fire(c,t,dur+.7); fire(mo,t,dur+.7);
     vizQ.push({at:t,type:'pluck'});
-  }else if(ENG.arp==='saw'){          // unison plucked 16ths (claude approach)
+  }else if(ENG.arp==='saw'){
     unisonVoice(mtof(m),t,dur,{
       type:P.emotion>.5?'sawtooth':'triangle',unison:unisonCount(1),detune:9,spread:.5,
       gain:.028*level,attack:.003,decay:lerp(.08,.3,P.space),sustain:.12,
@@ -1018,7 +1016,7 @@ function arpNote(t,degree,dur,level,step){
       pan:((step*7)%5)/4-.5,dest:duckBus
     });
     vizQ.push({at:t,type:'pluck'});
-  }else{                              // pluck — square through sweeping LP (kimi approach)
+  }else{
     const o=AC.createOscillator(); o.type='square'; o.frequency.value=mtof(m);
     const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=6;
     const peak=700+P.brightness*5200;
@@ -1032,7 +1030,6 @@ function arpNote(t,degree,dur,level,step){
   }
 }
 
-/* --- LEAD: anthem supersaw / pluck phrases --- */
 function leadNote(t,degree,dur,level,k){
   if(!LAYERS.lead||ENG.lead==='off')return;
   const m=toneAt(degree,song.motif[k%song.motif.length])+24;
@@ -1047,7 +1044,7 @@ function leadNote(t,degree,dur,level,k){
       type:'sawtooth',unison:Math.max(2,unisonCount(2)),detune:detuneAmt()*.6,spread:.4,
       gain:.022*level,attack:.02,decay:.3,sustain:.6,release:.4,cutoff:2200,envAmt:1.4,q:1.2,dest:gLeadM
     });
-  }else{ // pluck lead — brighter, louder cousin of the arp pluck
+  }else{
     const o=AC.createOscillator(); o.type='square'; o.frequency.value=mtof(m);
     const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=5;
     const peak=900+P.brightness*5600;
@@ -1060,7 +1057,6 @@ function leadNote(t,degree,dur,level,k){
   vizQ.push({at:t,type:'pluck'});
 }
 
-/* --- FM KEYS: soft electric-piano stabs for breaks (grok approach) --- */
 function fmKeys(t,degree,dur,level){
   if(!LAYERS.pad)return;
   const root=chordTones(degree)[0];
@@ -1077,9 +1073,7 @@ function fmKeys(t,degree,dur,level){
 }
 
 /* ============================================================
-   SEQUENCER — two arrangement approaches
-   JOURNEY: free state machine, queueable sections, autopilot
-   ARC:     fixed 72-bar performance with pre-drop silence
+   SEQUENCER
    ============================================================ */
 const PROF={
   INTRO:  {e:.20,drums:.12,arp:.28,pad:1,bass:.22,lead:0},
@@ -1123,17 +1117,14 @@ function scheduleStep(gStep,t){
   const p=PROF[name];
   const secPos=secLen>1?(bar-secStart)/(secLen-1):1;
   const gE=P.energy*p.e;
-  // groove swing + humanize jitter
   if(inBar%2===1)t+=P.groove*.2*(beat/2);
   t+=(Math.random()-.5)*.007*(.3+P.chaos);
 
   const degree=song.prog[Math.floor(bar/2)%song.prog.length];
   const lastBar=(ARR==='ARC')?(bar===arcSecAt(bar).end-1):(jsecBar===secLen-1);
   const barStart=(ARR==='ARC')?(bar===arcSecAt(bar).start):(jsecBar===0);
-  // pre-drop silence: one beat of nothing is worth more than any riser (ARC)
   const gap=ARR==='ARC'&&isBuild(name)&&lastBar&&inBar>=13;
 
-  // master filter automation: the tension/release curve
   let cut=lerp(1200,15000,clamp(gE,0,1))*lerp(.6,1.25,P.brightness);
   if(isBuild(name))cut*=lerp(.5,1.3,secPos*P.build);
   if(name==='BREAK')cut*=.38;
@@ -1142,43 +1133,36 @@ function scheduleStep(gStep,t){
   if(gap)cut*=.3;
   sweep.frequency.setTargetAtTime(clamp(cut,400,16000),t,.04);
 
-  /* --- section entrances --- */
   if(inBar===0){
     if(ARR==='ARC'&&barStart){
       if(isBuild(name))riser(t,beat*4*secLen*.96,P.build);
       if(isDrop(name)){impact(t,.9);crash(t,1);}
       if(name==='BREAK'||name==='OUTRO')downlifter(t,beat*4,.8);
     }
-    // reverse cymbal two bars before the drop (analog kit)
     if(ENG.drums==='analog'&&LAYERS.fx&&isBuild(name)){
       const nearEnd=(ARR==='ARC')?(bar===arcSecAt(bar).end-2):(jsecBar===secLen-2);
       if(nearEnd)playBuf(samples.reverse,t,drumBus,.28*P.build);
     }
-    // FM keys color quiet sections
     if((name==='BREAK'||name==='OUTRO'||name==='INTRO')&&gE<.5)fmKeys(t,degree,beat*1.9,.55*p.pad);
-    // pad chord at each bar start
     if(!gap)padChord(t,degree,beat*3.9,p.pad*lerp(.6,1,clamp(gE,0,1)),clamp(gE,0,1));
   }
   if(gap)return;
 
-  /* --- drums --- */
   const dOn=p.drums;
   if(dOn>.3&&inBar%4===0)kick(t,clamp(.7+gE*.4,0,1.1));
   else if(dOn>.08&&inBar===0)kick(t,.55);
-  if(dOn>.8&&inBar===15&&P.density>.7&&rng()<.3)kick(t,.5); // ghost kick
+  if(dOn>.8&&inBar===15&&P.density>.7&&rng()<.3)kick(t,.5);
   if(dOn>.28&&(inBar===4||inBar===12))clap(t,dOn*.9);
   if(dOn>.2&&inBar%4===2)hat(t,false,dOn*lerp(.5,.9,P.energy));
   if(dOn>.4&&inBar%2===1&&rng()<P.density)hat(t,false,dOn*.45);
   if(dOn>.6&&inBar%8===6)hat(t,true,dOn*.7);
   if(ENG.drums==='analog'&&dOn>.35&&inBar%2===1&&rng()<P.density*.7)shaker(t,dOn);
-  // accelerating snare roll through builds
   if(isBuild(name)&&secPos>.45){
     const div=secPos>.9?1:secPos>.72?2:4;
     if(inBar%div===0)snare(t,lerp(.25,.8,secPos)*P.build);
     if(secPos>.95)snare(t+sixteenth/2,.55*P.build);
   }
 
-  /* --- bass: offbeat engine room + density-gated extra hits --- */
   if(p.bass>.15&&gE>.18){
     const lvl=p.bass*clamp(gE+.25,0,1.1);
     if(isDrop(name)||(isBuild(name)&&secPos>.4)){
@@ -1190,13 +1174,11 @@ function scheduleStep(gStep,t){
     }
   }
 
-  /* --- arp: the motion layer --- */
   const stride=P.motion>.68?1:2;
   const arpProb=p.arp*lerp(.3,1,P.density)*lerp(.6,1,P.motion);
   if(inBar%stride===0&&rng()<arpProb)
     arpNote(t,degree,sixteenth*lerp(1.15,2.6,P.space),clamp(gE+.2,0,1),gStep);
 
-  /* --- lead --- */
   if(LAYERS.lead&&ENG.lead!=='off'&&p.lead>.05){
     if(ENG.lead==='anthem'){
       const barIdx=bar-secStart;
@@ -1205,7 +1187,7 @@ function scheduleStep(gStep,t){
         if(rng()>p.lead*(isDrop(name)?1:.7))return;
         leadNote(t,degree,sixteenth*len*.92,p.lead*clamp(gE+.2,0,1.1),k+barIdx);
       });
-    }else{ // pluck phrases — sparse random walk, mostly in drops and breaks
+    }else{
       const ci=Math.floor(bar/2)%song.prog.length;
       const n=song.leadBars[ci][inBar];
       if(n&&n.str<(isDrop(name)?P.density:P.density*.4)*Math.max(p.lead,.3))
@@ -1213,7 +1195,7 @@ function scheduleStep(gStep,t){
     }
   }
 }
-function leadPluckPhrase(t,midi,vel){ // kimi-style phrase voice via lead bus
+function leadPluckPhrase(t,midi,vel){
   const o=AC.createOscillator(); o.type='square'; o.frequency.value=mtof(midi);
   const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=6;
   const peak=700+P.brightness*5200;
@@ -1235,7 +1217,7 @@ function scheduler(){
 function onBar(){
   if(ARR==='ARC'){
     const bar=Math.floor(step/16);
-    if(bar>=ARC_TOTAL){ // loop the arc, mutating the motif slightly each pass
+    if(bar>=ARC_TOTAL){
       step=0; nextTime+=.01;
       song.motif=song.motif.map((v,i)=>i===0?v:(rng()<.3?clamp(v+pick([-2,-1,1,2]),0,7):v));
       printHarmony();
@@ -1264,7 +1246,6 @@ function setJourneySection(s){
   updateSecUI();
 }
 
-/* ---------- transport ---------- */
 async function start(){
   if(!AC)initAudio();
   if(AC.state==='suspended')await AC.resume();
@@ -1309,7 +1290,6 @@ function newJourney(){
   }
 }
 
-/* ---------- recording (MediaRecorder → webm download) ---------- */
 document.getElementById('recBtn').addEventListener('click',()=>{
   if(!AC)initAudio();
   const btn=document.getElementById('recBtn');
@@ -1336,12 +1316,8 @@ document.getElementById('recBtn').addEventListener('click',()=>{
   }
 });
 
-/* ============================================================
-   UI — knobs, sliders, engines, faders, layers, structure
-   ============================================================ */
 const $=s=>document.querySelector(s);
 
-/* knobs */
 const KNOBS=[
   {id:'emotion',lab:'Emotion'},{id:'space',lab:'Space'},{id:'chaos',lab:'Chaos'},{id:'motion',lab:'Motion'},
   {id:'energy',lab:'Energy'},{id:'brightness',lab:'Bright'},{id:'density',lab:'Density'},{id:'master',lab:'Master'}
@@ -1376,7 +1352,6 @@ KNOBS.forEach(k=>{
   el.addEventListener('dblclick',()=>{P[k.id]=k.id==='master'?.8:.5;render();applyMix();updateFX();});
 });
 
-/* mini sliders */
 function buildSliders(wrapId,defs){
   const wrap=$(wrapId);
   defs.forEach(d=>{
@@ -1400,7 +1375,6 @@ const SPACE=buildSliders('#space',[
   {id:'reverb',lab:'Reverb'},{id:'delay',lab:'Delay'},{id:'sidechain',lab:'Sidechain'}
 ]);
 
-/* engine selectors */
 const ENGINES=[
   {key:'drums',lab:'Drums',opts:[['cosmic','Cosmic'],['analog','Analog'],['stacked','Stacked']]},
   {key:'pad',  lab:'Pad',  opts:[['glass','Glass'],['supersaw','Supersaw'],['analog','Analog']]},
@@ -1424,7 +1398,6 @@ ENGINES.forEach(e=>{
   engWrap.appendChild(row);
 });
 
-/* faders */
 const FADERS=[{id:'drums',lab:'Drums'},{id:'bass',lab:'Bass'},{id:'pads',lab:'Pads'},{id:'lead',lab:'Lead'}];
 const fWrap=$('#faders');
 FADERS.forEach(f=>{
@@ -1445,7 +1418,6 @@ FADERS.forEach(f=>{
   el.addEventListener('pointerup',()=>dragging=false);
 });
 
-/* layer toggles */
 const LAYER_DEFS=[
   ['pad','Pads'],['bass','Bass'],['arp','Arp'],['lead','Lead'],['drums','Drums'],['fx','FX']
 ];
@@ -1457,7 +1429,6 @@ LAYER_DEFS.forEach(([id,lab])=>{
   layWrap.appendChild(l);
 });
 
-/* structure: arrangement mode + section buttons */
 const arrRow=$('#arrRow');
 [['JOURNEY','Journey'],['ARC','Arc']].forEach(([id,lab])=>{
   const b=document.createElement('button'); b.className='engBtn'+(ARR===id?' cur':''); b.textContent=lab;
@@ -1502,7 +1473,7 @@ function buildLeds(){
   for(let i=0;i<len;i++){const led=document.createElement('i');w.appendChild(led);}
 }
 $('#auto').addEventListener('change',e=>autopilot=e.target.checked);
-setInterval(()=>{ // bar LEDs + readouts refresh
+setInterval(()=>{
   if(!playing)return;
   let barIn,len;
   if(ARR==='ARC'){const bar=Math.floor(step/16)%ARC_TOTAL,sec=arcSecAt(bar);barIn=bar-sec.start;len=sec.bars;}
@@ -1516,7 +1487,6 @@ setInterval(()=>{ // bar LEDs + readouts refresh
   for(let i=0;i<leds.length;i++)leds[i].classList.toggle('done',i<barIn);
 },60);
 
-/* presets — merged from both desks */
 const PRESETS={
   'lonely-night':{label:'Lonely Night',emotion:.74,space:.88,chaos:.3,motion:.46,bpm:116,energy:.64,groove:.44,density:.52,build:.8,drive:.38,reverb:.78,delay:.42,brightness:.76,sidechain:.48},
   'warehouse-dawn':{label:'Warehouse Dawn',emotion:.36,space:.42,chaos:.22,motion:.72,bpm:126,energy:.84,groove:.26,density:.8,build:.86,drive:.62,reverb:.38,delay:.22,brightness:.46,sidechain:.74},
@@ -1539,7 +1509,6 @@ Object.entries(PRESETS).forEach(([id,p])=>{
   chipsWrap.appendChild(b);
 });
 
-/* sync every control from P */
 const bpmEl=$('#bpm');
 function syncUI(){
   document.querySelectorAll('.knob').forEach(k=>k._render&&k._render());
@@ -1549,7 +1518,6 @@ function syncUI(){
   bpmEl.style.setProperty('--fill',((P.bpm-92)/48*100)+'%');
 }
 
-/* transport wiring */
 $('#playBtn').onclick=()=>playing?stop():start();
 $('#mutateBtn').onclick=mutate;
 $('#journeyBtn').onclick=newJourney;
@@ -1567,7 +1535,7 @@ window.addEventListener('keydown',e=>{
 });
 
 /* ============================================================
-   VISUALIZER — starfield + reactive orb + waveform ribbon
+   VISUALIZER
    ============================================================ */
 const vizQ=[];
 const cv=$('#viz'),g2d=cv.getContext('2d');
@@ -1621,7 +1589,6 @@ function drawViz(ts){
   grd.addColorStop(1,'rgba(5,10,33,0)');
   g2d.fillStyle=grd; g2d.fillRect(0,0,W,H);
 
-  // orb — frequency-driven radial polygon
   const R=Math.min(W,H)*.16;
   g2d.beginPath();
   const N=72;
@@ -1639,7 +1606,6 @@ function drawViz(ts){
   g2d.stroke(); g2d.shadowBlur=0;
   g2d.fillStyle=`rgba(${tint[0]|0},${tint[1]|0},${tint[2]|0},.05)`; g2d.fill();
 
-  // waveform ribbon
   if(playing){
     g2d.beginPath();
     for(let i=0;i<wave.length;i+=4){
