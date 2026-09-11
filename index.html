@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AETHER 1 - Music Making</title>
+<title>AETHER 2 - Music Making</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -137,9 +137,9 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 .fader .lab{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--acc2);text-transform:uppercase}
 
 /* engine selectors */
-.engRow{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.engRow{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;max-width:430px}
 .engRow:last-child{margin-bottom:0}
-.engRow .elab{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--acc2);text-transform:uppercase;min-width:46px}
+.engRow .elab{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--acc2);text-transform:uppercase;min-width:46px;flex:0 0 46px}
 .engBtn{
   font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;
   color:var(--acc2);background:transparent;border:1px solid var(--line);border-radius:3px;
@@ -221,12 +221,12 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 
 <header>
   <div>
-    <div class="brand">AETHER <em>1</em></div>
-    <div class="tagline">Music Making · Generative Electronica Engine</div>
+    <div class="brand">AETHER <em>2</em></div>
+    <div class="tagline">Music Making · Generative Electronica Engine · Deep Sound Edition</div>
   </div>
   <div class="readouts">
     <div class="ro"><label>Plays</label><b id="roVisits">—</b></div>
-    <div class="ro"><label>BPM</label><b id="roBpm">122</b></div>
+    <div class="ro"><label>BPM</label><b id="roBpm">124</b></div>
     <div class="ro"><label>Key</label><b id="roKey">—</b></div>
     <div class="ro"><label>Section</label><b id="roSec">STANDBY</b></div>
     <div class="ro"><label>Bar</label><b id="roBar">—</b></div>
@@ -241,8 +241,8 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
     <h3>Transport</h3>
     <button id="playBtn">Play</button>
     <div class="bpmRow">
-      <input type="range" id="bpm" min="60" max="180" value="122" step="1">
-      <output id="bpmVal">122</output>
+      <input type="range" id="bpm" min="60" max="180" value="124" step="1">
+      <output id="bpmVal">124</output>
     </div>
     <button class="tBtn" id="mutateBtn">✦ Mutate</button>
     <button class="tBtn" id="journeyBtn">↻ New Journey</button>
@@ -328,7 +328,7 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 })();
 
 /* ============================================================
-   AETHER 1 — Music Making
+   AETHER 2 — Music Making
    ============================================================ */
 
 // ---------- utils ----------
@@ -345,12 +345,13 @@ const midiName=m=>NAMES[((m%12)+12)%12]+(Math.floor(m/12)-1);
 const seedHex=s=>(s>>>0).toString(16).toUpperCase().padStart(4,"0").slice(-4);
 
 // ---------- parameters ----------
-const P={bpm:122,emotion:.55,space:.66,chaos:.28,motion:.58,energy:.68,brightness:.6,density:.62,
-         groove:.3,build:.74,drive:.45,unison:.6,width:.72,air:.56,
-         reverb:.62,delay:.38,sidechain:.6,master:.78};
-const MIX={drums:.85,bass:.8,pads:.75,lead:.7};
+const P={bpm:124,emotion:.55,space:.70,chaos:.28,motion:.60,energy:.70,brightness:.60,density:.62,
+         groove:.30,build:.76,drive:.46,unison:.62,width:.76,air:.58,sub:.82,sweeps:.72,
+         reverb:.64,delay:.40,sidechain:.64,master:.78};
+const MIX={drums:.84,bass:.86,pads:.74,lead:.68};
 const LAYERS={pad:true,bass:true,arp:true,lead:true,drums:true,fx:true};
-const ENG={drums:'cosmic',pad:'glass',arp:'pluck',lead:'anthem'};
+// ENG chooses timbre; GENRES separately choose rhythmic behavior.
+const ENG={drums:'cosmic',pad:'glass',arp:'pluck',lead:'anthem',bass:'house',fx:'orbital'};
 
 // ---------- music theory (unified) ----------
 const SCALES={
@@ -359,6 +360,11 @@ const SCALES={
 };
 const PROG_DARK=[[0,5,3,6],[0,3,5,4],[0,6,3,5],[0,3,6,5]];
 const PROG_BRIGHT=[[5,6,0,0],[0,5,2,6],[5,2,6,0],[0,5,6,3]];
+const PROG_FLOAT=[[0,3,6,4],[0,5,3,6],[0,2,5,3],[0,4,6,3]];
+const PROG_HOUSE=[[0,5,3,4],[0,3,4,5],[0,6,5,3],[0,4,3,5]];
+const PROG_EUPHORIC=[[0,5,6,3],[5,2,6,0],[0,3,5,6],[5,6,3,0]];
+const PROG_MACHINE=[[0,0,6,0],[0,3,0,5],[0,6,0,3],[0,0,5,3]];
+const PROG_POOLS={dark:PROG_DARK,bright:PROG_BRIGHT,float:PROG_FLOAT,house:PROG_HOUSE,euphoric:PROG_EUPHORIC,machine:PROG_MACHINE};
 const ARP_PATTERNS=[
   [0,1,2,3,4,3,2,1],[0,2,1,3,2,4,3,5],[0,1,2,4,3,2,1,0],[0,3,1,4,2,5,3,6],[0,2,4,2,1,3,5,3]
 ];
@@ -394,13 +400,17 @@ function newMotif(){
 function makeSong(newSeed){
   if(newSeed){song.seed=(Math.random()*1e9)|0;}
   rng=mulberry32(song.seed);
-  song.root=pick([33,35,36,38,40,41,43,45]);
-  song.scale= P.emotion>.82?SCALES.lydian
+  const rootPool=(typeof G!=='undefined'&&G.roots)?G.roots:[33,35,36,38,40,41,43,45];
+  song.root=pick(rootPool);
+  const gScales=(typeof G!=='undefined'&&G.scales&&G.scales.length)?G.scales:null;
+  song.scale=gScales?SCALES[pick(gScales)]
+    : P.emotion>.82?SCALES.lydian
     : P.emotion>.62?(rng()<.5?SCALES.dorian:SCALES.aeolian)
     : P.emotion<.22?SCALES.phrygian
     : P.emotion<.4?(rng()<.5?SCALES.harmonic:SCALES.aeolian)
     : SCALES.aeolian;
-  song.prog=pick(rng()<P.emotion?PROG_BRIGHT:PROG_DARK);
+  const progPool=(typeof G!=='undefined'&&G.prog&&PROG_POOLS[G.prog])?PROG_POOLS[G.prog]:(rng()<P.emotion?PROG_BRIGHT:PROG_DARK);
+  song.prog=pick(progPool);
   newMotif();
   song.leadBars=song.prog.map(()=>{
     const bar=new Array(16).fill(null);
@@ -430,7 +440,7 @@ function printHarmony(){
 let AC=null,master,analyser,glue,limiter,dryG,revSend,revGain,dlySend,dlyGain,
     convolver,colorBus,driveShaper,driveOut,lowShelf,highShelf,sweep,
     drumBus,duckBus,duckGain,chorus,pingpong,noiseBuf,waves,samples,
-    gPadM,gBassM,gLeadM,recDest,recorder,recChunks=[];
+    gPadM,gBassM,gLeadM,bassDrive,bassDriveOut,bassShelf,recDest,recorder,recChunks=[];
 const live=new Set();
 
 function initAudio(){
@@ -470,7 +480,12 @@ function initAudio(){
   duckBus=AC.createGain(); duckGain=AC.createGain(); duckGain.gain.value=1;
 
   gPadM=AC.createGain(); gBassM=AC.createGain(); gLeadM=AC.createGain();
-  gPadM.connect(duckBus); gBassM.connect(duckBus); gLeadM.connect(duckBus);
+  bassDrive=AC.createWaveShaper(); bassDrive.oversample='4x';
+  bassDriveOut=AC.createGain();
+  bassShelf=AC.createBiquadFilter(); bassShelf.type='lowshelf'; bassShelf.frequency.value=105; bassShelf.gain.value=5;
+  gPadM.connect(duckBus);
+  gBassM.connect(bassDrive).connect(bassDriveOut).connect(bassShelf).connect(duckBus);
+  gLeadM.connect(duckBus);
 
   chorus=makeChorus();
   pingpong=makePingPong();
@@ -561,6 +576,11 @@ function updateFX(){
   const t=AC.currentTime;
   driveShaper.curve=driveCurve(P.drive*P.drive*.9+.05);
   driveOut.gain.setTargetAtTime(lerp(1,.58,P.drive),t,.05);
+  // Parallel bass-specific saturation keeps the sub audible without making pads harsh.
+  bassDrive.curve=driveCurve(.055+P.sub*.16+P.drive*.07);
+  bassDriveOut.gain.setTargetAtTime(lerp(.92,.66,P.sub),t,.06);
+  bassShelf.gain.setTargetAtTime(lerp(1.5,9,P.sub),t,.06);
+  lowShelf.gain.setTargetAtTime(lerp(1.5,4.5,P.sub),t,.06);
   highShelf.gain.setTargetAtTime(lerp(-4,8.5,P.air),t,.05);
   chorus.wet.gain.setTargetAtTime(P.width*.75,t,.05);
   revGain.gain.setTargetAtTime(lerp(0,.95,P.reverb)*lerp(.7,1.25,P.space),t,.06);
@@ -904,32 +924,52 @@ function impact(t,vel){
 }
 function riser(t,dur,vel){
   if(!LAYERS.fx)return;
-  const s=noiseSrc(t),bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=2.2;
-  bp.frequency.setValueAtTime(320,t); bp.frequency.exponentialRampToValueAtTime(11000,t+dur);
+  const mode=ENG.fx||'orbital';
+  const amt=clamp(vel*(.45+P.sweeps*.8),0,1.25);
+  const s=noiseSrc(t),bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=mode==='spectral'?7:mode==='vacuum'?.7:2.2;
+  const lo=mode==='vacuum'?90:mode==='spectral'?520:260;
+  const hi=mode==='vacuum'?6200:mode==='spectral'?14500:11800;
+  bp.frequency.setValueAtTime(lo,t); bp.frequency.exponentialRampToValueAtTime(hi,t+dur);
   const g=AC.createGain();
-  g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.075*vel,t+dur*.88);
+  g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime((mode==='vacuum'?.055:.085)*amt,t+dur*.88);
   g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   const p=AC.createStereoPanner();
-  const lfo=AC.createOscillator(); lfo.frequency.value=.7;
-  const la=AC.createGain(); la.gain.value=.8;
+  const lfo=AC.createOscillator(); lfo.frequency.value=mode==='spectral'?1.35:.35+P.motion*.9;
+  const la=AC.createGain(); la.gain.value=mode==='vacuum'?.45:.9;
   lfo.connect(la).connect(p.pan); lfo.start(t); lfo.stop(t+dur);
-  s.connect(bp).connect(g).connect(p).connect(duckBus); fire(s,t,dur);
+  s.connect(bp).connect(g).connect(p).connect(duckBus); g.connect(revSend); fire(s,t,dur);
 
-  const o=AC.createOscillator(),og=AC.createGain(); o.type='sawtooth';
-  o.frequency.setValueAtTime(mtof(song.root+12),t);
-  o.frequency.exponentialRampToValueAtTime(mtof(song.root+36),t+dur);
-  const of=AC.createBiquadFilter(); of.type='lowpass'; of.frequency.value=2600; of.Q.value=5;
-  og.gain.setValueAtTime(.0001,t); og.gain.exponentialRampToValueAtTime(.03*vel,t+dur*.9);
-  og.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  o.connect(of).connect(og).connect(duckBus); fire(o,t,dur);
+  if(mode!=='vacuum'){
+    const o=AC.createOscillator(),og=AC.createGain(); o.type=mode==='pulse'?'square':'sawtooth';
+    o.frequency.setValueAtTime(mtof(song.root+(mode==='spectral'?24:12)),t);
+    o.frequency.exponentialRampToValueAtTime(mtof(song.root+(mode==='spectral'?60:43)),t+dur);
+    const of=AC.createBiquadFilter(); of.type='lowpass'; of.frequency.value=mode==='spectral'?7200:3200; of.Q.value=mode==='pulse'?9:4.5;
+    og.gain.setValueAtTime(.0001,t); og.gain.exponentialRampToValueAtTime((mode==='pulse'?.018:.032)*amt,t+dur*.9);
+    og.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(of).connect(og).connect(duckBus); og.connect(dlySend); fire(o,t,dur);
+  }
 }
 function downlifter(t,dur,vel){
   if(!LAYERS.fx)return;
-  const s=noiseSrc(t),bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=1.6;
-  bp.frequency.setValueAtTime(9000,t); bp.frequency.exponentialRampToValueAtTime(220,t+dur);
+  const mode=ENG.fx||'orbital';
+  const s=noiseSrc(t),bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=mode==='spectral'?5:1.4;
+  bp.frequency.setValueAtTime(mode==='vacuum'?5200:12000,t);
+  bp.frequency.exponentialRampToValueAtTime(mode==='spectral'?120:45,t+dur);
   const g=AC.createGain();
-  g.gain.setValueAtTime(.07*vel,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  s.connect(bp).connect(g).connect(duckBus); fire(s,t,dur);
+  g.gain.setValueAtTime((mode==='vacuum'?.045:.075)*vel*(.5+P.sweeps*.7),t);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  const p=AC.createStereoPanner(); p.pan.setValueAtTime(.75*P.width,t); p.pan.linearRampToValueAtTime(-.75*P.width,t+dur);
+  s.connect(bp).connect(g).connect(p).connect(duckBus); g.connect(revSend); fire(s,t,dur);
+}
+function atmosphereSweep(t,dur,vel,up=true){
+  if(!LAYERS.fx||P.sweeps<.08)return;
+  const s=noiseSrc(t),f=AC.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.1+P.motion*3.5;
+  const a=up?140:6200,b=up?7600:120;
+  f.frequency.setValueAtTime(a,t); f.frequency.exponentialRampToValueAtTime(b,t+dur);
+  const g=AC.createGain(),p=AC.createStereoPanner();
+  g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.02*vel,t+dur*.45); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  p.pan.setValueAtTime(up?-.7:.7,t); p.pan.linearRampToValueAtTime(up?.7:-.7,t+dur);
+  s.connect(f).connect(g).connect(p).connect(duckBus); g.connect(revSend); fire(s,t,dur);
 }
 
 function padChord(t,degree,dur,level,energy){
@@ -953,28 +993,65 @@ function padChord(t,degree,dur,level,energy){
       });
     }
   }else if(ENG.pad==='analog'){
-    const cutoff=lerp(900,3400,clamp(energy,0,1))+P.motion*900+P.brightness*600;
-    const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=.55;
-    f.frequency.setValueAtTime(cutoff,t);
-    f.frequency.linearRampToValueAtTime(cutoff*lerp(.85,1.15,P.motion),t+dur);
+    const cutoff=lerp(700,3600,clamp(energy,0,1))+P.motion*900+P.brightness*600;
+    const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=.65;
+    f.frequency.setValueAtTime(cutoff*.72,t);
+    f.frequency.linearRampToValueAtTime(cutoff*lerp(.9,1.3,P.motion),t+dur);
     f.connect(gPadM);
     tones.forEach((m,ni)=>{
       for(let u=0;u<3;u++){
         const o=osc(ni%2?'tri':'saw');
         o.frequency.setValueAtTime(mtof(m+12),t);
-        o.detune.value=(u-1)*lerp(7,16,P.space)+rand(-2.5,2.5);
+        o.detune.value=(u-1)*lerp(7,17,P.space)+rand(-2.5,2.5);
         const pan=AC.createStereoPanner(); pan.pan.value=(u-1)*.62*P.width+(ni%2?-.08:.08);
-        const g=envGain(t,1.35+P.space*.9,Math.max(.2,dur-.4),2.1+P.space*1.6,(.045*level)/(tones.length*.55));
-        o.connect(g).connect(pan).connect(f); fire(o,t,dur+3.2);
+        const g=envGain(t,1.2+P.space*.9,Math.max(.2,dur-.4),2.0+P.space*1.8,(.045*level)/(tones.length*.55));
+        o.connect(g).connect(pan).connect(f); fire(o,t,dur+3.5);
       }
     });
+  }else if(ENG.pad==='nebula'){
+    const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=1.2;
+    const c0=260+P.brightness*1200, c1=900+P.motion*4200;
+    f.frequency.setValueAtTime(c0,t); f.frequency.linearRampToValueAtTime(c1,t+dur*.62); f.frequency.linearRampToValueAtTime(c0*.8,t+dur);
+    f.connect(gPadM);
+    tones.slice(0,4).forEach((m,i)=>{
+      [-11,0,9].forEach((det,j)=>{
+        const o=AC.createOscillator(); o.type=j===1?'triangle':'sine'; o.frequency.value=mtof(m+12+(j===2?12:0)); o.detune.value=det+rand(-3,3);
+        const g=envGain(t+rand(0,.08),1.8+P.space*2,dur*.7,3.4+P.space*2,.018*level/(1+i*.16));
+        const p=AC.createStereoPanner(); p.pan.value=clamp((i-1.5)*.32+(j-1)*.18,-1,1)*P.width;
+        o.connect(g).connect(p).connect(f); fire(o,t,dur+7);
+      });
+    });
+    const n=noiseSrc(t),nf=AC.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=900+P.brightness*2600; nf.Q.value=.55;
+    const ng=envGain(t,2.2,dur*.65,3.8,.018*level*P.space); n.connect(nf).connect(ng).connect(revSend); fire(n,t,dur+6);
+  }else if(ENG.pad==='choir'){
+    tones.slice(0,4).forEach((m,i)=>{
+      const o=AC.createOscillator(); o.type='sawtooth'; o.frequency.value=mtof(m+12); o.detune.value=rand(-5,5);
+      const amp=envGain(t,1.4+P.space,Math.max(.5,dur*.6),2.4+P.space*2,.028*level/(1+i*.12));
+      const f1=AC.createBiquadFilter(),f2=AC.createBiquadFilter(),f3=AC.createBiquadFilter();
+      [f1,f2,f3].forEach(f=>{f.type='bandpass';f.Q.value=4;});
+      f1.frequency.value=650+P.brightness*220; f2.frequency.value=1050+P.emotion*420; f3.frequency.value=2450+P.air*850;
+      const a1=AC.createGain(),a2=AC.createGain(),a3=AC.createGain(); a1.gain.value=.85;a2.gain.value=.55;a3.gain.value=.25;
+      const p=AC.createStereoPanner(); p.pan.value=(i/(Math.max(1,tones.length-1))-.5)*1.3*P.width;
+      o.connect(amp); amp.connect(f1).connect(a1).connect(p); amp.connect(f2).connect(a2).connect(p); amp.connect(f3).connect(a3).connect(p); p.connect(gPadM); p.connect(revSend);
+      fire(o,t,dur+5);
+    });
+  }else if(ENG.pad==='shimmer'){
+    tones.slice(0,4).forEach((m,i)=>{
+      [12,24,31].forEach((oct,j)=>{
+        const o=AC.createOscillator(); o.type=j===0?'triangle':'sine'; o.frequency.value=mtof(m+oct); o.detune.value=rand(-8,8);
+        const g=envGain(t+rand(0,.12),1.3+P.space*1.8,dur*.55,3.8+P.space*2.2,.012*level/(j+1));
+        const p=AC.createStereoPanner(); p.pan.value=rand(-.9,.9)*P.width;
+        o.connect(g).connect(p).connect(gPadM); g.connect(revSend); fire(o,t,dur+7);
+      });
+    });
   }else{
+    // GLASS: slow filtered saw bed with a clean octave halo.
     const cut=320+P.brightness*1600+energy*600;
     const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=.7;
     f.frequency.setValueAtTime(cut*.4,t); f.frequency.linearRampToValueAtTime(cut,t+dur*.5);
     const g=AC.createGain();
-    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.16*level,t+dur*.3);
-    g.gain.setValueAtTime(.16*level,t+dur*.7); g.gain.linearRampToValueAtTime(0,t+dur);
+    g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(.16*level,t+dur*.3);
+    g.gain.setValueAtTime(.16*level,t+dur*.7); g.gain.linearRampToValueAtTime(.0001,t+dur);
     f.connect(g).connect(gPadM); g.connect(revSend);
     tones.forEach(m=>{
       [-6,6].forEach(det=>{
@@ -991,16 +1068,40 @@ function padChord(t,degree,dur,level,energy){
 
 function bassNote(t,degree,dur,level,accent){
   if(!LAYERS.bass)return;
-  const root=chordTones(degree)[0];
-  unisonVoice(mtof(root),t,dur,{
-    type:'sawtooth',unison:unisonCount(2),detune:lerp(8,22,P.unison),spread:.25,
-    gain:.10*level*accent,attack:.006,decay:.12,sustain:.72,release:.14,
-    cutoff:lerp(220,900,clamp(level,0,1))+P.motion*260+P.brightness*220,envAmt:2.6,q:4.5,pan:0,dest:gBassM
-  });
-  unisonVoice(mtof(root-12),t,dur*1.05,{
-    type:'sine',unison:1,gain:.14*level*accent,attack:.008,decay:.1,sustain:.85,release:.16,
-    cutoff:220,q:.5,pan:0,dest:gBassM
-  });
+  const root=chordTones(degree)[0], f=mtof(root), patch=ENG.bass||'house';
+  const lev=level*accent;
+  if(patch==='sub'){
+    unisonVoice(mtof(root-12),t,dur*1.05,{type:'sine',unison:1,gain:.19*lev*(.65+P.sub*.6),attack:.012,decay:.12,sustain:.9,release:.24,cutoff:180,q:.4,dest:gBassM});
+    unisonVoice(f,t,dur,{type:'triangle',unison:1,gain:.055*lev,attack:.01,decay:.18,sustain:.68,release:.18,cutoff:420+P.brightness*260,envAmt:1.1,q:1.2,dest:gBassM});
+  }else if(patch==='reese'){
+    const flt=AC.createBiquadFilter(); flt.type='lowpass'; flt.Q.value=5.5;
+    const cut=220+P.brightness*720+P.motion*260; flt.frequency.setValueAtTime(cut*1.3,t); flt.frequency.exponentialRampToValueAtTime(Math.max(85,cut*.52),t+dur);
+    flt.connect(gBassM);
+    [-1,0,1].forEach((x,i)=>{const o=AC.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=x*lerp(16,38,P.unison)+rand(-3,3);const g=envGain(t,.006,dur*.58,.16,(i===1?.07:.047)*lev);o.connect(g).connect(flt);fire(o,t,dur+.3);});
+    unisonVoice(mtof(root-12),t,dur,{type:'sine',unison:1,gain:.12*lev*(.7+P.sub*.4),attack:.006,decay:.1,sustain:.8,release:.18,cutoff:160,q:.5,dest:gBassM});
+  }else if(patch==='acid'){
+    const o=AC.createOscillator(); o.type='sawtooth'; o.frequency.value=f;
+    const sq=AC.createOscillator(); sq.type='square'; sq.frequency.value=f; sq.detune.value=7;
+    const mix=AC.createGain(); mix.gain.value=.65;
+    const flt=AC.createBiquadFilter(); flt.type='lowpass'; flt.Q.value=10+P.motion*12;
+    const c0=180+P.brightness*520,c1=900+P.motion*3200;
+    flt.frequency.setValueAtTime(c1,t); flt.frequency.exponentialRampToValueAtTime(c0,t+Math.max(.08,dur*.8));
+    const g=envGain(t,.004,dur*.42,.09,.09*lev);
+    o.connect(mix);sq.connect(mix);mix.connect(flt).connect(g).connect(gBassM); fire(o,t,dur+.18);fire(sq,t,dur+.18);
+    unisonVoice(mtof(root-12),t,dur,{type:'sine',unison:1,gain:.09*lev*P.sub,attack:.004,decay:.08,sustain:.65,release:.12,cutoff:150,q:.5,dest:gBassM});
+  }else if(patch==='fm'){
+    const c=AC.createOscillator(),m=AC.createOscillator(),mg=AC.createGain(); c.type=m.type='sine'; c.frequency.value=f; m.frequency.value=f*2.01;
+    mg.gain.setValueAtTime(f*lerp(.7,2.8,P.motion),t); mg.gain.exponentialRampToValueAtTime(.001,t+Math.max(.12,dur*.7)); m.connect(mg).connect(c.frequency);
+    const g=envGain(t,.005,dur*.5,.12,.13*lev); c.connect(g).connect(gBassM); fire(c,t,dur+.25);fire(m,t,dur+.25);
+    unisonVoice(mtof(root-12),t,dur,{type:'sine',unison:1,gain:.11*lev*P.sub,attack:.008,decay:.12,sustain:.8,release:.16,cutoff:160,q:.5,dest:gBassM});
+  }else if(patch==='cinema'){
+    unisonVoice(mtof(root-12),t,dur*1.25,{type:'sine',unison:1,gain:.17*lev*(.7+P.sub*.5),attack:.08,decay:.3,sustain:.86,release:.7,cutoff:130,q:.4,dest:gBassM});
+    unisonVoice(f,t,dur*1.1,{type:'triangle',unison:2,detune:5,spread:.18,gain:.055*lev,attack:.12,decay:.4,sustain:.7,release:.8,cutoff:520+P.brightness*500,envAmt:.6,q:1.1,dest:gBassM});
+  }else{
+    // HOUSE: punchy filtered mid-bass plus a clean octave-down sub.
+    unisonVoice(f,t,dur,{type:'sawtooth',unison:unisonCount(2),detune:lerp(8,22,P.unison),spread:.25,gain:.10*lev,attack:.006,decay:.12,sustain:.72,release:.14,cutoff:lerp(220,980,clamp(level,0,1))+P.motion*320+P.brightness*220,envAmt:2.8,q:4.5,pan:0,dest:gBassM});
+    unisonVoice(mtof(root-12),t,dur*1.05,{type:'sine',unison:1,gain:.15*lev*(.65+P.sub*.45),attack:.008,decay:.1,sustain:.85,release:.16,cutoff:180,q:.5,pan:0,dest:gBassM});
+  }
 }
 
 function stabChord(t,degree,dur,level){
@@ -1013,24 +1114,7 @@ function stabChord(t,degree,dur,level){
     });
   });
 }
-function reeseNote(t,degree,dur,level){
-  if(!LAYERS.bass)return;
-  const root=chordTones(degree)[0], f=mtof(root);
-  const flt=AC.createBiquadFilter(); flt.type='lowpass'; flt.Q.value=6;
-  const cut=260+P.brightness*520+P.drive*300;
-  flt.frequency.setValueAtTime(cut,t);
-  flt.frequency.exponentialRampToValueAtTime(Math.max(90,cut*.45),t+dur);
-  flt.connect(gBassM);
-  [-1,0,1].forEach((s,i)=>{
-    const o=AC.createOscillator(); o.type='sawtooth'; o.frequency.value=f;
-    o.detune.value=s*lerp(12,30,P.unison)+rand(-3,3);
-    const g=envGain(t,.008,dur*.55,.12,(i===1?.05:.036)*level);
-    o.connect(g).connect(flt); fire(o,t,dur+.22);
-  });
-  const sub=AC.createOscillator(); sub.type='sine'; sub.frequency.value=f;
-  const sg=envGain(t,.006,dur*.55,.14,.1*level);
-  sub.connect(sg).connect(gBassM); fire(sub,t,dur+.22);
-}
+function reeseNote(t,degree,dur,level){ bassNote(t,degree,dur,level,1); }
 
 function arpMidi(degree,step){
   const pat=song.arpPattern;
@@ -1042,64 +1126,54 @@ function arpMidi(degree,step){
 }
 function arpNote(t,degree,dur,level,step){
   if(!LAYERS.arp)return;
-  const m=arpMidi(degree,step);
-  if(ENG.arp==='fm'){
+  const m=arpMidi(degree,step), patch=ENG.arp;
+  if(patch==='crystal'){
+    const freq=mtof(m),c=osc('sine'),mo=osc('sine'),mg=AC.createGain();
+    c.frequency.value=freq; mo.frequency.value=freq*3.01; mg.gain.setValueAtTime(freq*2.6,t); mg.gain.exponentialRampToValueAtTime(.001,t+dur*1.8); mo.connect(mg).connect(c.frequency);
+    const g=envGain(t,.003,dur*.12,.65+P.space*.75,.034*level),p=AC.createStereoPanner(); p.pan.value=((step%8)-3.5)/4*P.width;
+    c.connect(g).connect(p).connect(duckBus); g.connect(dlySend); g.connect(revSend); fire(c,t,dur+1.6);fire(mo,t,dur+1.6);
+  }else if(patch==='fm'){
     const freq=mtof(m),c=osc('sine'),mo=osc('sine'),mg=AC.createGain();
     c.frequency.setValueAtTime(freq,t); mo.frequency.setValueAtTime(freq*2.007,t);
-    mg.gain.setValueAtTime(freq*lerp(1.1,2.4,P.space),t);
-    mg.gain.exponentialRampToValueAtTime(.001,t+dur*2.2);
-    mo.connect(mg).connect(c.frequency);
-    const g=envGain(t,.006,dur*.2,.28+P.space*.4,.045*level);
-    const pan=AC.createStereoPanner(); pan.pan.value=((step%8)-3.5)/5*P.width;
-    c.connect(g).connect(pan).connect(duckBus);
-    fire(c,t,dur+.7); fire(mo,t,dur+.7);
-    vizQ.push({at:t,type:'pluck'});
-  }else if(ENG.arp==='saw'){
-    unisonVoice(mtof(m),t,dur,{
-      type:P.emotion>.5?'sawtooth':'triangle',unison:unisonCount(1),detune:9,spread:.5,
-      gain:.028*level,attack:.003,decay:lerp(.08,.3,P.space),sustain:.12,
-      release:lerp(.16,.55,P.space),
-      cutoff:1800+P.motion*5200+P.brightness*1300,envAmt:4.5,q:3.2,
-      pan:((step*7)%5)/4-.5,dest:duckBus
-    });
-    vizQ.push({at:t,type:'pluck'});
+    mg.gain.setValueAtTime(freq*lerp(1.1,2.4,P.space),t); mg.gain.exponentialRampToValueAtTime(.001,t+dur*2.2); mo.connect(mg).connect(c.frequency);
+    const g=envGain(t,.006,dur*.2,.28+P.space*.4,.045*level),pan=AC.createStereoPanner(); pan.pan.value=((step%8)-3.5)/5*P.width;
+    c.connect(g).connect(pan).connect(duckBus); fire(c,t,dur+.7); fire(mo,t,dur+.7);
+  }else if(patch==='saw'){
+    unisonVoice(mtof(m),t,dur,{type:P.emotion>.5?'sawtooth':'triangle',unison:unisonCount(1),detune:9,spread:.5,gain:.028*level,attack:.003,decay:lerp(.08,.3,P.space),sustain:.12,release:lerp(.16,.55,P.space),cutoff:1800+P.motion*5200+P.brightness*1300,envAmt:4.5,q:3.2,pan:((step*7)%5)/4-.5,dest:duckBus});
+  }else if(patch==='pulse'){
+    const o=AC.createOscillator();o.type='square';o.frequency.value=mtof(m);
+    const f=AC.createBiquadFilter();f.type='bandpass';f.Q.value=8;f.frequency.setValueAtTime(900+P.brightness*6500,t);f.frequency.exponentialRampToValueAtTime(350,t+dur*.9);
+    const g=envGain(t,.002,dur*.08,.12,.026*level),p=AC.createStereoPanner();p.pan.value=((step%6)-2.5)/3*P.width;
+    o.connect(f).connect(g).connect(p).connect(duckBus);g.connect(dlySend);fire(o,t,dur+.2);
   }else{
     const o=AC.createOscillator(); o.type='square'; o.frequency.value=mtof(m);
     const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=6;
-    const peak=700+P.brightness*5200;
-    f.frequency.setValueAtTime(peak,t); f.frequency.exponentialRampToValueAtTime(380,t+.28);
-    const g=AC.createGain();
-    g.gain.setValueAtTime(level*.34,t); g.gain.exponentialRampToValueAtTime(.001,t+.3);
-    o.connect(f).connect(g).connect(duckBus); g.connect(dlySend);
-    const rg=AC.createGain(); rg.gain.value=.35; g.connect(rg).connect(revSend);
-    fire(o,t,.35);
-    vizQ.push({at:t,type:'pluck'});
+    const peak=700+P.brightness*5200; f.frequency.setValueAtTime(peak,t); f.frequency.exponentialRampToValueAtTime(380,t+.28);
+    const g=AC.createGain(); g.gain.setValueAtTime(level*.34,t); g.gain.exponentialRampToValueAtTime(.001,t+.3);
+    o.connect(f).connect(g).connect(duckBus); g.connect(dlySend); const rg=AC.createGain(); rg.gain.value=.35; g.connect(rg).connect(revSend); fire(o,t,.35);
   }
+  vizQ.push({at:t,type:'pluck'});
 }
 
 function leadNote(t,degree,dur,level,k){
   if(!LAYERS.lead||ENG.lead==='off')return;
-  const m=toneAt(degree,song.motif[k%song.motif.length])+24;
-  if(ENG.lead==='anthem'){
-    unisonVoice(mtof(m),t,dur,{
-      type:'sawtooth',unison:unisonCount(6),detune:detuneAmt()*1.25,spread:1,
-      gain:.05*level,attack:lerp(.02,.14,P.space),decay:.3,sustain:.68,
-      release:lerp(.25,.9,P.space),
-      cutoff:1500+level*4200+P.motion*3200,envAmt:2.4,q:1.6,pan:rand(-.12,.12),dest:gLeadM
-    });
-    unisonVoice(mtof(m-12),t,dur,{
-      type:'sawtooth',unison:Math.max(2,unisonCount(2)),detune:detuneAmt()*.6,spread:.4,
-      gain:.022*level,attack:.02,decay:.3,sustain:.6,release:.4,cutoff:2200,envAmt:1.4,q:1.2,dest:gLeadM
-    });
+  const m=toneAt(degree,song.motif[k%song.motif.length])+24, patch=ENG.lead;
+  if(patch==='anthem'){
+    unisonVoice(mtof(m),t,dur,{type:'sawtooth',unison:unisonCount(6),detune:detuneAmt()*1.25,spread:1,gain:.05*level,attack:lerp(.02,.14,P.space),decay:.3,sustain:.68,release:lerp(.25,.9,P.space),cutoff:1500+level*4200+P.motion*3200,envAmt:2.4,q:1.6,pan:rand(-.12,.12),dest:gLeadM});
+    unisonVoice(mtof(m-12),t,dur,{type:'sawtooth',unison:Math.max(2,unisonCount(2)),detune:detuneAmt()*.6,spread:.4,gain:.022*level,attack:.02,decay:.3,sustain:.6,release:.4,cutoff:2200,envAmt:1.4,q:1.2,dest:gLeadM});
+  }else if(patch==='vapor'){
+    unisonVoice(mtof(m),t,dur*1.15,{type:'triangle',unison:3,detune:16,spread:.9,gain:.035*level,attack:.08+P.space*.18,decay:.45,sustain:.72,release:1.1+P.space*1.7,cutoff:900+P.brightness*3800,envAmt:.8,q:2.2,pan:rand(-.35,.35),dest:gLeadM});
+    unisonVoice(mtof(m+12),t,dur*.75,{type:'sine',unison:2,detune:9,spread:.7,gain:.012*level,attack:.16,decay:.4,sustain:.45,release:1.4,cutoff:6500,q:.8,pan:rand(-.6,.6),dest:gLeadM});
+  }else if(patch==='acid'){
+    const o=AC.createOscillator();o.type='sawtooth';o.frequency.value=mtof(m);
+    const f=AC.createBiquadFilter();f.type='lowpass';f.Q.value=12+P.motion*10;f.frequency.setValueAtTime(4200+P.brightness*5000,t);f.frequency.exponentialRampToValueAtTime(480,t+Math.max(.16,dur));
+    const g=envGain(t,.004,dur*.55,.16,.055*level);o.connect(f).connect(g).connect(gLeadM);g.connect(dlySend);fire(o,t,dur+.3);
   }else{
     const o=AC.createOscillator(); o.type='square'; o.frequency.value=mtof(m);
     const f=AC.createBiquadFilter(); f.type='lowpass'; f.Q.value=5;
-    const peak=900+P.brightness*5600;
-    f.frequency.setValueAtTime(peak,t); f.frequency.exponentialRampToValueAtTime(500,t+Math.max(.2,dur*.8));
-    const g=AC.createGain();
-    g.gain.setValueAtTime(level*.3,t); g.gain.exponentialRampToValueAtTime(.001,t+dur+.25);
-    o.connect(f).connect(g).connect(gLeadM); g.connect(dlySend);
-    fire(o,t,dur+.3);
+    const peak=900+P.brightness*5600; f.frequency.setValueAtTime(peak,t); f.frequency.exponentialRampToValueAtTime(500,t+Math.max(.2,dur*.8));
+    const g=AC.createGain(); g.gain.setValueAtTime(level*.3,t); g.gain.exponentialRampToValueAtTime(.001,t+dur+.25);
+    o.connect(f).connect(g).connect(gLeadM); g.connect(dlySend); fire(o,t,dur+.3);
   }
   vizQ.push({at:t,type:'pluck'});
 }
@@ -1192,6 +1266,9 @@ function scheduleStep(gStep,t){
     }
     if((name==='BREAK'||name==='OUTRO'||name==='INTRO')&&gE<.5)fmKeys(t,degree,beat*1.9,.55*p.pad);
     if(!gap)padChord(t,degree,beat*3.9,p.pad*lerp(.6,1,clamp(gE,0,1)),clamp(gE,0,1));
+    const fxEvery=(G&&G.fxEvery)||4;
+    if(LAYERS.fx&&P.sweeps>.12&&!lastBar&&bar%fxEvery===0&&rng()<(.45+P.sweeps*.45))
+      atmosphereSweep(t,beat*4*lerp(.8,2.2,P.space),P.sweeps*(name==='INTRO'||name==='BREAK'?1:.55),((bar/fxEvery)|0)%2===0);
   }
   if(gap)return;
 
@@ -1272,7 +1349,7 @@ function scheduleStep(gStep,t){
     arpNote(t,degree,sixteenth*lerp(1.15,2.6,P.space),clamp(gE+.2,0,1),gStep);
 
   if(LAYERS.lead&&ENG.lead!=='off'&&p.lead>.05){
-    if(ENG.lead==='anthem'){
+    if(ENG.lead==='anthem'||ENG.lead==='vapor'||ENG.lead==='acid'){
       const barIdx=bar-secStart;
       song.leadRhythm.forEach(([s,len],k)=>{
         if(s!==inBar)return;
@@ -1394,7 +1471,7 @@ document.getElementById('recBtn').addEventListener('click',()=>{
       const blob=new Blob(recChunks,{type:recorder.mimeType||'audio/webm'});
       const a=document.createElement('a');
       a.href=URL.createObjectURL(blob);
-      a.download='aether-1-'+Date.now()+'.webm';
+      a.download='aether-2-'+Date.now()+'.webm';
       a.click();
       setTimeout(()=>URL.revokeObjectURL(a.href),4000);
       btn.classList.remove('armed'); btn.textContent='● Record';
@@ -1461,17 +1538,19 @@ function buildSliders(wrapId,defs){
 }
 const MECH=buildSliders('#mech',[
   {id:'groove',lab:'Groove'},{id:'build',lab:'Build'},{id:'drive',lab:'Drive'},
-  {id:'unison',lab:'Unison'},{id:'width',lab:'Width'},{id:'air',lab:'Air'}
+  {id:'unison',lab:'Unison'},{id:'width',lab:'Width'},{id:'air',lab:'Air'},{id:'sub',lab:'Sub Depth'}
 ]);
 const SPACE=buildSliders('#space',[
-  {id:'reverb',lab:'Reverb'},{id:'delay',lab:'Delay'},{id:'sidechain',lab:'Sidechain'}
+  {id:'reverb',lab:'Reverb'},{id:'delay',lab:'Delay'},{id:'sidechain',lab:'Sidechain'},{id:'sweeps',lab:'Sweeps'}
 ]);
 
 const ENGINES=[
   {key:'drums',lab:'Drums',opts:[['cosmic','Cosmic'],['analog','Analog'],['stacked','Stacked'],['hard','Hard']]},
-  {key:'pad',  lab:'Pad',  opts:[['glass','Glass'],['supersaw','Supersaw'],['analog','Analog']]},
-  {key:'arp',  lab:'Arp',  opts:[['pluck','Pluck'],['fm','FM Bell'],['saw','Saw']]},
-  {key:'lead', lab:'Lead', opts:[['anthem','Anthem'],['pluck','Pluck'],['off','Off']]}
+  {key:'bass', lab:'Bass', opts:[['sub','Sub'],['house','House'],['reese','Reese'],['acid','Acid'],['fm','FM'],['cinema','Cinema']]},
+  {key:'pad',  lab:'Pad',  opts:[['glass','Glass'],['analog','Analog'],['supersaw','Supersaw'],['nebula','Nebula'],['choir','Choir'],['shimmer','Shimmer']]},
+  {key:'arp',  lab:'Arp',  opts:[['pluck','Pluck'],['fm','FM Bell'],['crystal','Crystal'],['saw','Saw'],['pulse','Pulse']]},
+  {key:'lead', lab:'Lead', opts:[['anthem','Anthem'],['pluck','Pluck'],['vapor','Vapor'],['acid','Acid'],['off','Off']]},
+  {key:'fx',   lab:'FX',   opts:[['orbital','Orbital'],['vacuum','Vacuum'],['spectral','Spectral'],['pulse','Pulse']]}
 ];
 const engWrap=$('#engines');
 ENGINES.forEach(e=>{
@@ -1494,34 +1573,46 @@ ENGINES.forEach(e=>{
    GENRE SYSTEM — one knob, soft → hard
    ============================================================ */
 const GENRES=[
-  {name:'DEEP SPACE',sub:'ambient',bpm:72,drum:'none',bass:'drone',ir:[6.8,2.2,.30],
-   eng:{drums:'cosmic',pad:'glass',arp:'fm',lead:'off'},
-   p:{emotion:.32,space:.96,chaos:.22,motion:.22,energy:.26,brightness:.52,density:.30,groove:.30,build:.50,drive:.12,unison:.45,width:.92,air:.50,reverb:.92,delay:.60,sidechain:0}},
-  {name:'BALEARIC',sub:'downtempo',bpm:96,drum:'halftime',bass:'deep',ir:[5.2,2.4,.32],
-   eng:{drums:'analog',pad:'glass',arp:'fm',lead:'pluck'},
-   p:{emotion:.62,space:.85,chaos:.18,motion:.40,energy:.42,brightness:.68,density:.44,groove:.50,build:.55,drive:.26,unison:.50,width:.80,air:.62,reverb:.74,delay:.50,sidechain:.28}},
-  {name:'DEEP HOUSE',sub:'afterhours',bpm:120,drum:'four',bass:'stab',ir:[3.4,2.6,.34],
-   eng:{drums:'analog',pad:'analog',arp:'pluck',lead:'off'},
-   p:{emotion:.58,space:.60,chaos:.20,motion:.55,energy:.60,brightness:.55,density:.60,groove:.48,build:.66,drive:.40,unison:.50,width:.60,air:.50,reverb:.50,delay:.34,sidechain:.52}},
-  {name:'COSMIC DANCE',sub:'space edm',bpm:122,drum:'four',bass:'pump',ir:[4.2,2.6,.34],
-   eng:{drums:'cosmic',pad:'glass',arp:'pluck',lead:'anthem'},
-   p:{emotion:.55,space:.66,chaos:.28,motion:.58,energy:.68,brightness:.60,density:.62,groove:.30,build:.74,drive:.45,unison:.60,width:.72,air:.56,reverb:.62,delay:.38,sidechain:.60}},
-  {name:'TRANCE',sub:'euphoric',bpm:136,drum:'four',bass:'offbeat',ir:[3.8,2.5,.33],
-   eng:{drums:'stacked',pad:'supersaw',arp:'saw',lead:'anthem'},
-   p:{emotion:.80,space:.55,chaos:.20,motion:.78,energy:.85,brightness:.72,density:.72,groove:.12,build:.92,drive:.55,unison:.85,width:.75,air:.68,reverb:.55,delay:.40,sidechain:.85}},
-  {name:'TECHNO',sub:'peak time',bpm:130,drum:'four',bass:'rolling',ir:[2.6,2.8,.36],
-   eng:{drums:'stacked',pad:'analog',arp:'saw',lead:'off'},
-   p:{emotion:.24,space:.42,chaos:.30,motion:.85,energy:.88,brightness:.42,density:.82,groove:.20,build:.85,drive:.72,unison:.40,width:.50,air:.40,reverb:.40,delay:.26,sidechain:.70}},
-  {name:'DRUM & BASS',sub:'rolling 174',bpm:174,drum:'breaks',bass:'reese',ir:[2.8,2.7,.35],
-   eng:{drums:'stacked',pad:'glass',arp:'saw',lead:'pluck'},
-   p:{emotion:.45,space:.50,chaos:.40,motion:.90,energy:.90,brightness:.58,density:.85,groove:.30,build:.88,drive:.62,unison:.65,width:.70,air:.55,reverb:.45,delay:.30,sidechain:.55}},
-  {name:'HARDCORE',sub:'gabber',bpm:178,drum:'gabber',bass:'offbeat',ir:[1.6,3.0,.40],
-   eng:{drums:'hard',pad:'analog',arp:'saw',lead:'pluck'},
-   p:{emotion:.30,space:.30,chaos:.55,motion:.95,energy:1.0,brightness:.60,density:.90,groove:.05,build:.96,drive:.95,unison:.50,width:.50,air:.55,reverb:.30,delay:.20,sidechain:.50}}
+  {name:'DEEP SPACE',sub:'weightless ambient',bpm:68,drum:'none',bass:'drone',fxEvery:2,prog:'float',scales:['aeolian','lydian'],roots:[33,35,38,40],ir:[7.6,2.1,.28],
+   eng:{drums:'cosmic',bass:'cinema',pad:'nebula',arp:'crystal',lead:'off',fx:'vacuum'},
+   p:{emotion:.42,space:.98,chaos:.24,motion:.18,energy:.20,brightness:.48,density:.26,groove:.34,build:.42,drive:.10,unison:.48,width:.96,air:.58,sub:.92,sweeps:.90,reverb:.96,delay:.66,sidechain:0}},
+  {name:'DARK AMBIENT',sub:'void drone',bpm:78,drum:'none',bass:'drone',fxEvery:2,prog:'dark',scales:['phrygian','aeolian','harmonic'],roots:[31,33,35,36,38],ir:[7.0,2.5,.26],
+   eng:{drums:'cosmic',bass:'cinema',pad:'choir',arp:'fm',lead:'off',fx:'spectral'},
+   p:{emotion:.18,space:.96,chaos:.42,motion:.26,energy:.24,brightness:.30,density:.28,groove:.28,build:.50,drive:.18,unison:.42,width:.92,air:.36,sub:.96,sweeps:.86,reverb:.94,delay:.54,sidechain:0}},
+  {name:'AMBIENT PULSE',sub:'slow electronica',bpm:94,drum:'halftime',bass:'deep',fxEvery:3,prog:'float',scales:['dorian','aeolian','lydian'],roots:[33,35,38,40,41],ir:[6.0,2.3,.30],
+   eng:{drums:'analog',bass:'sub',pad:'shimmer',arp:'crystal',lead:'vapor',fx:'vacuum'},
+   p:{emotion:.66,space:.92,chaos:.22,motion:.38,energy:.36,brightness:.68,density:.38,groove:.52,build:.54,drive:.22,unison:.54,width:.90,air:.72,sub:.88,sweeps:.82,reverb:.86,delay:.58,sidechain:.20}},
+  {name:'BALEARIC',sub:'sunset downtempo',bpm:104,drum:'halftime',bass:'deep',fxEvery:4,prog:'bright',scales:['dorian','lydian','aeolian'],roots:[35,38,40,41,43],ir:[5.2,2.4,.32],
+   eng:{drums:'analog',bass:'sub',pad:'glass',arp:'fm',lead:'vapor',fx:'orbital'},
+   p:{emotion:.72,space:.84,chaos:.16,motion:.42,energy:.44,brightness:.72,density:.46,groove:.58,build:.56,drive:.26,unison:.50,width:.82,air:.68,sub:.80,sweeps:.68,reverb:.74,delay:.50,sidechain:.30}},
+  {name:'DEEP HOUSE',sub:'afterhours',bpm:120,drum:'four',bass:'stab',fxEvery:4,prog:'house',scales:['dorian','aeolian'],roots:[33,35,36,38,40],ir:[3.4,2.6,.34],
+   eng:{drums:'analog',bass:'house',pad:'analog',arp:'pluck',lead:'off',fx:'orbital'},
+   p:{emotion:.56,space:.60,chaos:.18,motion:.58,energy:.62,brightness:.52,density:.62,groove:.52,build:.68,drive:.42,unison:.46,width:.62,air:.48,sub:.90,sweeps:.48,reverb:.50,delay:.32,sidechain:.60}},
+  {name:'ELECTRONICA',sub:'emotional machine',bpm:116,drum:'breaks',bass:'deep',fxEvery:3,prog:'float',scales:['aeolian','dorian','harmonic'],roots:[33,35,38,40,43],ir:[4.8,2.5,.31],
+   eng:{drums:'analog',bass:'fm',pad:'nebula',arp:'pulse',lead:'vapor',fx:'spectral'},
+   p:{emotion:.62,space:.78,chaos:.38,motion:.66,energy:.64,brightness:.58,density:.60,groove:.44,build:.72,drive:.40,unison:.58,width:.82,air:.58,sub:.82,sweeps:.74,reverb:.68,delay:.46,sidechain:.48}},
+  {name:'COSMIC DANCE',sub:'space edm',bpm:124,drum:'four',bass:'pump',fxEvery:4,prog:'euphoric',scales:['aeolian','dorian','lydian'],roots:[33,35,36,38,40,41,43],ir:[4.2,2.6,.34],
+   eng:{drums:'cosmic',bass:'house',pad:'glass',arp:'pluck',lead:'anthem',fx:'orbital'},
+   p:{emotion:.55,space:.70,chaos:.28,motion:.60,energy:.70,brightness:.60,density:.62,groove:.30,build:.76,drive:.46,unison:.62,width:.76,air:.58,sub:.84,sweeps:.72,reverb:.64,delay:.40,sidechain:.64}},
+  {name:'PROGRESSIVE',sub:'wide melodic',bpm:126,drum:'four',bass:'pump',fxEvery:4,prog:'euphoric',scales:['aeolian','dorian','lydian'],roots:[33,35,38,40,41,43],ir:[4.0,2.55,.33],
+   eng:{drums:'stacked',bass:'house',pad:'supersaw',arp:'crystal',lead:'anthem',fx:'orbital'},
+   p:{emotion:.76,space:.68,chaos:.18,motion:.70,energy:.78,brightness:.68,density:.68,groove:.20,build:.90,drive:.52,unison:.80,width:.80,air:.70,sub:.82,sweeps:.78,reverb:.60,delay:.42,sidechain:.80}},
+  {name:'TRANCE',sub:'euphoric',bpm:136,drum:'four',bass:'offbeat',fxEvery:4,prog:'euphoric',scales:['aeolian','dorian','lydian'],roots:[33,35,36,38,40],ir:[3.8,2.5,.33],
+   eng:{drums:'stacked',bass:'house',pad:'supersaw',arp:'saw',lead:'anthem',fx:'pulse'},
+   p:{emotion:.82,space:.56,chaos:.18,motion:.80,energy:.88,brightness:.74,density:.74,groove:.10,build:.94,drive:.58,unison:.88,width:.78,air:.72,sub:.78,sweeps:.82,reverb:.56,delay:.42,sidechain:.88}},
+  {name:'TECHNO',sub:'peak time',bpm:132,drum:'four',bass:'rolling',fxEvery:4,prog:'machine',scales:['aeolian','phrygian'],roots:[31,33,35,36,38],ir:[2.6,2.8,.36],
+   eng:{drums:'stacked',bass:'acid',pad:'analog',arp:'pulse',lead:'acid',fx:'spectral'},
+   p:{emotion:.22,space:.40,chaos:.34,motion:.88,energy:.92,brightness:.42,density:.84,groove:.18,build:.88,drive:.78,unison:.42,width:.54,air:.42,sub:.88,sweeps:.62,reverb:.38,delay:.24,sidechain:.74}},
+  {name:'DRUM & BASS',sub:'rolling 174',bpm:174,drum:'breaks',bass:'reese',fxEvery:4,prog:'dark',scales:['aeolian','dorian','phrygian'],roots:[33,35,38,40],ir:[2.8,2.7,.35],
+   eng:{drums:'stacked',bass:'reese',pad:'nebula',arp:'saw',lead:'pluck',fx:'spectral'},
+   p:{emotion:.44,space:.50,chaos:.42,motion:.92,energy:.92,brightness:.58,density:.86,groove:.30,build:.90,drive:.68,unison:.68,width:.72,air:.56,sub:.96,sweeps:.66,reverb:.44,delay:.30,sidechain:.60}},
+  {name:'HARDCORE',sub:'gabber',bpm:178,drum:'gabber',bass:'offbeat',fxEvery:4,prog:'machine',scales:['phrygian','harmonic','aeolian'],roots:[31,33,35,36],ir:[1.6,3.0,.40],
+   eng:{drums:'hard',bass:'acid',pad:'analog',arp:'pulse',lead:'acid',fx:'pulse'},
+   p:{emotion:.26,space:.28,chaos:.58,motion:.98,energy:1.0,brightness:.62,density:.92,groove:.04,build:.98,drive:.98,unison:.52,width:.52,air:.58,sub:.92,sweeps:.72,reverb:.28,delay:.18,sidechain:.56}}
 ];
-let G=GENRES[3],gIdx=3,gVal=gIdx/(GENRES.length-1);
+let G=GENRES[6],gIdx=6,gVal=gIdx/(GENRES.length-1);
 
-function syncEngUI(){document.querySelectorAll('.engBtn').forEach(b=>b.classList.toggle('cur',ENG[b.dataset.eng]===b.dataset.val));}
+function syncEngUI(){document.querySelectorAll('.engBtn[data-eng]').forEach(b=>b.classList.toggle('cur',ENG[b.dataset.eng]===b.dataset.val));}
 function applyGenre(i){
   i=clamp(i,0,GENRES.length-1);
   gIdx=i; gVal=i/(GENRES.length-1);
@@ -1558,7 +1649,7 @@ function renderGenre(){
     if(ni!==gIdx)applyGenre(ni); else renderGenre();
   });
   gk.addEventListener('pointerup',()=>dragging=false);
-  gk.addEventListener('dblclick',()=>applyGenre(3));
+  gk.addEventListener('dblclick',()=>applyGenre(6));
 })();
 
 const FADERS=[{id:'drums',lab:'Drums'},{id:'bass',lab:'Bass'},{id:'pads',lab:'Pads'},{id:'lead',lab:'Lead'}];
@@ -1651,20 +1742,24 @@ setInterval(()=>{
 },60);
 
 const PRESETS={
-  'lonely-night':{label:'Lonely Night',emotion:.74,space:.88,chaos:.3,motion:.46,bpm:116,energy:.64,groove:.44,density:.52,build:.8,drive:.38,reverb:.78,delay:.42,brightness:.76,sidechain:.48},
-  'warehouse-dawn':{label:'Warehouse Dawn',emotion:.36,space:.42,chaos:.22,motion:.72,bpm:126,energy:.84,groove:.26,density:.8,build:.86,drive:.62,reverb:.38,delay:.22,brightness:.46,sidechain:.74},
-  'tidal':{label:'Tidal',emotion:.86,space:.92,chaos:.16,motion:.34,bpm:108,energy:.48,groove:.52,density:.4,build:.58,drive:.28,reverb:.84,delay:.52,brightness:.82,sidechain:.32},
-  'soft-orbit':{label:'Soft Orbit',emotion:.58,space:.7,chaos:.24,motion:.6,bpm:120,energy:.7,groove:.34,density:.62,build:.7,drive:.44,reverb:.6,delay:.32,brightness:.64,sidechain:.56},
-  'deep-space':{label:'Deep Space Drift',emotion:.38,space:.92,chaos:.2,motion:.4,bpm:104,energy:.52,groove:.22,density:.44,build:.58,drive:.34,reverb:.82,delay:.56,brightness:.5,sidechain:.48,unison:.7,width:.86,air:.64},
-  'anthem':{label:'Euphoric Anthem',emotion:.86,space:.66,chaos:.22,motion:.74,bpm:132,energy:.88,groove:.14,density:.76,build:.92,drive:.6,reverb:.56,delay:.38,brightness:.72,sidechain:.82,unison:.82,width:.74,air:.66},
-  'melancholy':{label:'Late Night',emotion:.22,space:.8,chaos:.3,motion:.5,bpm:116,energy:.6,groove:.44,density:.54,build:.64,drive:.38,reverb:.72,delay:.52,brightness:.44,sidechain:.56,unison:.58,width:.68,air:.44},
-  'hard-orbit':{label:'Hard Orbit',emotion:.5,space:.48,chaos:.62,motion:.88,bpm:138,energy:.96,groove:.08,density:.88,build:.96,drive:.78,reverb:.4,delay:.26,brightness:.7,sidechain:.9,unison:.74,width:.6,air:.7}
+  'lonely-night':{label:'Lonely Night',emotion:.72,space:.92,chaos:.30,motion:.40,bpm:108,energy:.48,groove:.46,density:.44,build:.68,drive:.30,reverb:.86,delay:.54,brightness:.58,sidechain:.34,sub:.86,sweeps:.82,eng:{pad:'nebula',bass:'cinema',arp:'crystal',lead:'vapor',fx:'vacuum'}},
+  'warehouse-dawn':{label:'Warehouse Dawn',emotion:.34,space:.42,chaos:.24,motion:.76,bpm:126,energy:.86,groove:.24,density:.82,build:.88,drive:.68,reverb:.38,delay:.22,brightness:.46,sidechain:.76,sub:.90,sweeps:.44,eng:{pad:'analog',bass:'acid',arp:'pulse',lead:'off',fx:'spectral'}},
+  'tidal':{label:'Tidal',emotion:.86,space:.94,chaos:.16,motion:.34,bpm:102,energy:.42,groove:.54,density:.38,build:.56,drive:.24,reverb:.88,delay:.58,brightness:.82,sidechain:.28,sub:.78,sweeps:.88,eng:{pad:'shimmer',bass:'sub',arp:'crystal',lead:'vapor',fx:'vacuum'}},
+  'soft-orbit':{label:'Soft Orbit',emotion:.60,space:.76,chaos:.22,motion:.56,bpm:118,energy:.64,groove:.36,density:.56,build:.68,drive:.38,reverb:.68,delay:.38,brightness:.64,sidechain:.54,sub:.82,sweeps:.72,eng:{pad:'glass',bass:'house',arp:'fm',lead:'vapor',fx:'orbital'}},
+  'deep-space':{label:'Deep Space Drift',emotion:.38,space:.98,chaos:.20,motion:.24,bpm:72,energy:.26,groove:.24,density:.28,build:.48,drive:.16,reverb:.94,delay:.64,brightness:.48,sidechain:.08,unison:.62,width:.94,air:.62,sub:.96,sweeps:.94,eng:{pad:'nebula',bass:'cinema',arp:'crystal',lead:'off',fx:'vacuum'}},
+  'sub-ocean':{label:'Sub Ocean',emotion:.30,space:.84,chaos:.24,motion:.34,bpm:92,energy:.38,groove:.42,density:.34,build:.54,drive:.32,reverb:.78,delay:.36,brightness:.34,sidechain:.22,unison:.48,width:.84,air:.38,sub:1,sweeps:.78,eng:{pad:'choir',bass:'sub',arp:'fm',lead:'off',fx:'spectral'}},
+  'deep-house':{label:'Velvet House',emotion:.56,space:.58,chaos:.16,motion:.58,bpm:120,energy:.66,groove:.58,density:.62,build:.68,drive:.42,reverb:.48,delay:.28,brightness:.48,sidechain:.66,unison:.46,width:.62,air:.46,sub:.94,sweeps:.44,eng:{pad:'analog',bass:'house',arp:'pluck',lead:'off',fx:'orbital'}},
+  'anthem':{label:'Euphoric Anthem',emotion:.88,space:.66,chaos:.20,motion:.76,bpm:132,energy:.90,groove:.14,density:.78,build:.94,drive:.60,reverb:.58,delay:.42,brightness:.76,sidechain:.86,unison:.86,width:.78,air:.70,sub:.82,sweeps:.84,eng:{pad:'supersaw',bass:'house',arp:'saw',lead:'anthem',fx:'pulse'}},
+  'melancholy':{label:'Late Night',emotion:.22,space:.84,chaos:.30,motion:.48,bpm:112,energy:.52,groove:.46,density:.48,build:.62,drive:.32,reverb:.78,delay:.54,brightness:.42,sidechain:.48,unison:.58,width:.72,air:.46,sub:.86,sweeps:.78,eng:{pad:'choir',bass:'cinema',arp:'crystal',lead:'vapor',fx:'vacuum'}},
+  'hard-orbit':{label:'Hard Orbit',emotion:.48,space:.46,chaos:.62,motion:.90,bpm:140,energy:.98,groove:.08,density:.90,build:.98,drive:.84,reverb:.38,delay:.24,brightness:.70,sidechain:.92,unison:.76,width:.62,air:.70,sub:.92,sweeps:.70,eng:{pad:'supersaw',bass:'acid',arp:'pulse',lead:'acid',fx:'pulse'}}
 };
 const chipsWrap=$('#chips');
 Object.entries(PRESETS).forEach(([id,p])=>{
   const b=document.createElement('button'); b.className='chip'; b.textContent=p.label;
   b.onclick=()=>{
-    Object.keys(p).forEach(k=>{if(k!=='label'&&k in P)P[k]=p[k];});
+    Object.keys(p).forEach(k=>{if(k!=='label'&&k!=='eng'&&k in P)P[k]=p[k];});
+    if(p.eng)Object.assign(ENG,p.eng);
+    syncEngUI();
     chipsWrap.querySelectorAll('.chip').forEach(x=>x.classList.toggle('cur',x===b));
     syncUI(); applyMix(); updateFX(); printHarmony();
     newJourney();
