@@ -199,6 +199,16 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 
 .hint{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:rgba(154,146,217,.55);margin-top:10px;line-height:1.7;text-transform:uppercase}
 
+/* genre module */
+.genreMod{display:flex;flex-direction:column;align-items:center;min-width:138px}
+.genreMod .knob{margin-top:2px}
+.genreName{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--cream);margin-top:7px;text-shadow:0 0 12px rgba(146,98,232,.55);text-transform:uppercase;white-space:nowrap}
+.genreSub{font-family:var(--mono);font-size:8px;letter-spacing:.24em;color:var(--acc2);margin-top:3px;text-transform:uppercase;white-space:nowrap}
+.gDots{display:flex;gap:5px;margin-top:8px}
+.gDots i{width:5px;height:5px;border-radius:50%;background:var(--deep);transition:all .2s}
+.gDots i.on{background:var(--acc);box-shadow:0 0 8px rgba(134,66,255,.9)}
+.gAxis{display:flex;justify-content:space-between;width:100%;margin-top:7px;font-family:var(--mono);font-size:7px;letter-spacing:.22em;color:rgba(154,146,217,.55);text-transform:uppercase}
+
 @media (max-width:900px){
   .readouts{gap:13px}
   #bigword{top:36%}
@@ -212,7 +222,7 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 <header>
   <div>
     <div class="brand">AETHER <em>1</em></div>
-    <div class="tagline">Music Making · Generative Space-Dance Engine</div>
+    <div class="tagline">Music Making · Generative Electronica Engine</div>
   </div>
   <div class="readouts">
     <div class="ro"><label>Plays</label><b id="roVisits">—</b></div>
@@ -231,13 +241,22 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
     <h3>Transport</h3>
     <button id="playBtn">Play</button>
     <div class="bpmRow">
-      <input type="range" id="bpm" min="92" max="140" value="122" step="1">
+      <input type="range" id="bpm" min="60" max="180" value="122" step="1">
       <output id="bpmVal">122</output>
     </div>
     <button class="tBtn" id="mutateBtn">✦ Mutate</button>
     <button class="tBtn" id="journeyBtn">↻ New Journey</button>
     <button class="tBtn" id="recBtn">● Record</button>
     <a class="tBtn" href="mailto:amunategui@gmail.com">✉ Contact</a>
+  </div>
+
+  <div class="module genreMod">
+    <h3>Genre</h3>
+    <div class="knob" id="genreKnob"></div>
+    <div class="genreName" id="genreName">COSMIC DANCE</div>
+    <div class="genreSub" id="genreSub">space edm</div>
+    <div class="gDots" id="gDots"></div>
+    <div class="gAxis"><span>ambient</span><span>hardcore</span></div>
   </div>
 
   <div class="module">
@@ -291,39 +310,20 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 
 /* ---------- GLOBAL RUN COUNTER ---------- */
 (function setupCounter(){
-  const key = 'amunategui-aether-1';
-  const el = document.getElementById('roVisits');
+  const namespace = (window.location.hostname || 'localhost').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const key = 'aether-runs';
 
-  const setDisplay = (val) => {
-    if (el) el.textContent = Number(val).toLocaleString();
-  };
-
-  const localFallback = () => {
-    try {
-      const stored = (parseInt(localStorage.getItem('aether_plays') || '0', 10) + 1);
-      localStorage.setItem('aether_plays', stored);
-      setDisplay(stored);
-    } catch(e) {
-      setDisplay(1);
-    }
-  };
-
-  fetch(`https://countapi.mileshilliard.com/api/v1/hit/${key}`)
-    .then(r => {
-      if (!r.ok) throw new Error('Status ' + r.status);
-      return r.json();
-    })
+  fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
+    .then(r => r.json())
     .then(data => {
-      const val = data.value !== undefined ? data.value : data.count;
-      if (val !== undefined) {
-        setDisplay(val);
-        try { localStorage.setItem('aether_plays', val); } catch(e) {}
-      } else {
-        localFallback();
+      const el = document.getElementById('roVisits');
+      if (el && data.count !== undefined) {
+        el.textContent = data.count.toLocaleString();
       }
     })
     .catch(() => {
-      localFallback();
+      const el = document.getElementById('roVisits');
+      if (el) el.textContent = '1';
     });
 })();
 
@@ -755,7 +755,18 @@ function buildSamples(){
 
 function kick(t,vel){
   if(!LAYERS.drums)return;
-  if(ENG.drums==='analog'){
+  if(ENG.drums==='hard'){
+    const sh=AC.createWaveShaper(); sh.curve=driveCurve(.7+P.drive*.7); sh.oversample='4x';
+    const og=AC.createGain(); og.gain.value=.8; sh.connect(og).connect(drumBus);
+    const o=AC.createOscillator(),g=AC.createGain(); o.type='sine';
+    o.frequency.setValueAtTime(250,t); o.frequency.exponentialRampToValueAtTime(44,t+.06);
+    g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vel,t+.004);
+    g.gain.setValueAtTime(.55*vel,t+.1); g.gain.exponentialRampToValueAtTime(.0001,t+.5);
+    o.connect(g).connect(sh); fire(o,t,.55);
+    const n=noiseSrc(t),hp=AC.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=2800;
+    const ng=AC.createGain(); ng.gain.setValueAtTime(.2*vel,t); ng.gain.exponentialRampToValueAtTime(.0001,t+.02);
+    n.connect(hp).connect(ng).connect(drumBus); fire(n,t,.04);
+  }else if(ENG.drums==='analog'){
     playBuf(pick(samples.kicks),t,drumBus,clamp(vel,0,1.15)*.95,{playbackRate:.98+Math.random()*.04});
   }else if(ENG.drums==='stacked'){
     const shaper=AC.createWaveShaper(); shaper.curve=driveCurve(.55); shaper.oversample='2x';
@@ -992,6 +1003,35 @@ function bassNote(t,degree,dur,level,accent){
   });
 }
 
+function stabChord(t,degree,dur,level){
+  if(!LAYERS.bass)return;
+  chordTones(degree,3).forEach((m,i)=>{
+    unisonVoice(mtof(m+12),t,dur,{
+      type:'sawtooth',unison:2,detune:8,spread:.5,
+      gain:.03*level,attack:.004,decay:Math.max(.08,dur*.9),sustain:.05,release:.08,
+      cutoff:900+P.brightness*2600,envAmt:2,q:1.2,pan:(i-1)*.3*P.width,dest:gBassM
+    });
+  });
+}
+function reeseNote(t,degree,dur,level){
+  if(!LAYERS.bass)return;
+  const root=chordTones(degree)[0], f=mtof(root);
+  const flt=AC.createBiquadFilter(); flt.type='lowpass'; flt.Q.value=6;
+  const cut=260+P.brightness*520+P.drive*300;
+  flt.frequency.setValueAtTime(cut,t);
+  flt.frequency.exponentialRampToValueAtTime(Math.max(90,cut*.45),t+dur);
+  flt.connect(gBassM);
+  [-1,0,1].forEach((s,i)=>{
+    const o=AC.createOscillator(); o.type='sawtooth'; o.frequency.value=f;
+    o.detune.value=s*lerp(12,30,P.unison)+rand(-3,3);
+    const g=envGain(t,.008,dur*.55,.12,(i===1?.05:.036)*level);
+    o.connect(g).connect(flt); fire(o,t,dur+.22);
+  });
+  const sub=AC.createOscillator(); sub.type='sine'; sub.frequency.value=f;
+  const sg=envGain(t,.006,dur*.55,.14,.1*level);
+  sub.connect(sg).connect(gBassM); fire(sub,t,dur+.22);
+}
+
 function arpMidi(degree,step){
   const pat=song.arpPattern;
   let idx=pat[step%pat.length];
@@ -1143,7 +1183,7 @@ function scheduleStep(gStep,t){
   if(inBar===0){
     if(ARR==='ARC'&&barStart){
       if(isBuild(name))riser(t,beat*4*secLen*.96,P.build);
-      if(isDrop(name)){impact(t,.9);crash(t,1);}
+      if(isDrop(name)){if(G.drum==='none')downlifter(t,beat*4,.55);else{impact(t,.9);crash(t,1);}}
       if(name==='BREAK'||name==='OUTRO')downlifter(t,beat*4,.8);
     }
     if(ENG.drums==='analog'&&LAYERS.fx&&isBuild(name)){
@@ -1156,15 +1196,41 @@ function scheduleStep(gStep,t){
   if(gap)return;
 
   const dOn=p.drums;
-  if(dOn>.3&&inBar%4===0)kick(t,clamp(.7+gE*.4,0,1.1));
-  else if(dOn>.08&&inBar===0)kick(t,.55);
-  if(dOn>.8&&inBar===15&&P.density>.7&&rng()<.3)kick(t,.5);
-  if(dOn>.28&&(inBar===4||inBar===12))clap(t,dOn*.9);
-  if(dOn>.2&&inBar%4===2)hat(t,false,dOn*lerp(.5,.9,P.energy));
-  if(dOn>.4&&inBar%2===1&&rng()<P.density)hat(t,false,dOn*.45);
-  if(dOn>.6&&inBar%8===6)hat(t,true,dOn*.7);
-  if(ENG.drums==='analog'&&dOn>.35&&inBar%2===1&&rng()<P.density*.7)shaker(t,dOn);
-  if(isBuild(name)&&secPos>.45){
+  if(G.drum==='halftime'){
+    if(dOn>.15&&inBar===0)kick(t,clamp(.6+gE*.4,0,1.05));
+    if(dOn>.25&&inBar===10&&rng()<.75)kick(t,.5);
+    if(dOn>.25&&inBar===8)clap(t,dOn*.85);
+    if(dOn>.2&&inBar%4===2)hat(t,false,dOn*.55);
+    if(dOn>.45&&inBar===14&&rng()<P.density)hat(t,true,dOn*.5);
+    if(ENG.drums==='analog'&&dOn>.3&&inBar%2===1&&rng()<P.density*.6)shaker(t,dOn*.8);
+  }else if(G.drum==='breaks'){
+    if(dOn>.3){
+      if(inBar===0)kick(t,clamp(.75+gE*.35,0,1.1));
+      if(inBar===10)kick(t,.85);
+      if(inBar===7&&rng()<P.density*.5)kick(t,.5);
+      if(inBar===14&&rng()<P.density*.65)kick(t,.55);
+    }else if(dOn>.08&&inBar===0)kick(t,.5);
+    if(dOn>.25&&(inBar===4||inBar===12))snare(t,dOn*.95);
+    if(dOn>.2&&inBar%2===0)hat(t,false,dOn*lerp(.4,.85,P.energy));
+    if(dOn>.4&&inBar%2===1&&rng()<P.density*.6)hat(t,false,dOn*.32);
+    if(dOn>.5&&inBar===11&&rng()<.5)hat(t,true,dOn*.55);
+  }else if(G.drum==='gabber'){
+    if(dOn>.3&&inBar%4===0)kick(t,clamp(.85+gE*.3,0,1.15));
+    else if(dOn>.08&&inBar===0)kick(t,.6);
+    if(dOn>.28&&(inBar===4||inBar===12)&&rng()<.85)clap(t,dOn*.85);
+    if(dOn>.4&&inBar%4===2)hat(t,true,dOn*.8);
+    if(dOn>.6&&inBar===15&&rng()<P.density*.5)kick(t,.6);
+  }else if(G.drum!=='none'){
+    if(dOn>.3&&inBar%4===0)kick(t,clamp(.7+gE*.4,0,1.1));
+    else if(dOn>.08&&inBar===0)kick(t,.55);
+    if(dOn>.8&&inBar===15&&P.density>.7&&rng()<.3)kick(t,.5);
+    if(dOn>.28&&(inBar===4||inBar===12))clap(t,dOn*.9);
+    if(dOn>.2&&inBar%4===2)hat(t,false,dOn*lerp(.5,.9,P.energy));
+    if(dOn>.4&&inBar%2===1&&rng()<P.density)hat(t,false,dOn*.45);
+    if(dOn>.6&&inBar%8===6)hat(t,true,dOn*.7);
+    if(ENG.drums==='analog'&&dOn>.35&&inBar%2===1&&rng()<P.density*.7)shaker(t,dOn);
+  }
+  if(G.drum!=='none'&&isBuild(name)&&secPos>.45){
     const div=secPos>.9?1:secPos>.72?2:4;
     if(inBar%div===0)snare(t,lerp(.25,.8,secPos)*P.build);
     if(secPos>.95)snare(t+sixteenth/2,.55*P.build);
@@ -1172,12 +1238,31 @@ function scheduleStep(gStep,t){
 
   if(p.bass>.15&&gE>.18){
     const lvl=p.bass*clamp(gE+.25,0,1.1);
-    if(isDrop(name)||(isBuild(name)&&secPos>.4)){
-      if(inBar%4===2)bassNote(t,degree,beat*.4,lvl,1);
-      if(inBar===0)bassNote(t,degree,beat*.32,lvl,1.12);
-      if(P.density>.72&&(inBar===6||inBar===14))bassNote(t,degree,beat*.28,lvl*.8,.9);
-    }else if(inBar===0){
-      bassNote(t,degree,beat*3.6,lvl*.7,1);
+    const bs=G.bass;
+    if(bs==='drone'){
+      if(inBar===0&&bar%2===0)bassNote(t,degree,beat*7.6,lvl*.75,1);
+    }else if(bs==='deep'){
+      if(inBar===0)bassNote(t,degree,beat*3.4,lvl*.85,1);
+      else if(inBar===8&&rng()<.5)bassNote(t,degree,beat*1.5,lvl*.55,.9);
+    }else if(bs==='offbeat'){
+      if(inBar%4===2)bassNote(t,degree,beat*.26,lvl,1.05);
+      if(P.density>.7&&inBar===15&&rng()<.4)bassNote(t,degree,beat*.22,lvl*.8,.9);
+    }else if(bs==='rolling'){
+      const onBeat=inBar%4===0;
+      if(rng()<lerp(.5,1,P.density))bassNote(t,degree,beat*.21,lvl*(onBeat?1:.5),onBeat?1.1:.75);
+    }else if(bs==='stab'){
+      if(inBar===0)bassNote(t,degree,beat*.5,lvl*.9,1);
+      if((inBar===2||inBar===7||inBar===11)&&rng()<P.density*.9)stabChord(t,degree,beat*.24,lvl);
+    }else if(bs==='reese'){
+      if(inBar%2===0)reeseNote(t,degree,beat*.5,lvl*(inBar%4===0?1:.75));
+    }else{
+      if(isDrop(name)||(isBuild(name)&&secPos>.4)){
+        if(inBar%4===2)bassNote(t,degree,beat*.4,lvl,1);
+        if(inBar===0)bassNote(t,degree,beat*.32,lvl,1.12);
+        if(P.density>.72&&(inBar===6||inBar===14))bassNote(t,degree,beat*.28,lvl*.8,.9);
+      }else if(inBar===0){
+        bassNote(t,degree,beat*3.6,lvl*.7,1);
+      }
     }
   }
 
@@ -1247,7 +1332,7 @@ function setJourneySection(s){
   const t=nextTime;
   if(LAYERS.fx){
     if(s==='BUILD')riser(t,JOURNEY_LEN.BUILD*barDur(),P.build);
-    if(s==='DROP'){impact(t,.9);crash(t,1);}
+    if(s==='DROP'){if(G.drum==='none')downlifter(t,barDur(),.55);else{impact(t,.9);crash(t,1);}}
     if(s==='BREAK'||s==='OUTRO')downlifter(t,barDur(),.8);
   }
   updateSecUI();
@@ -1383,7 +1468,7 @@ const SPACE=buildSliders('#space',[
 ]);
 
 const ENGINES=[
-  {key:'drums',lab:'Drums',opts:[['cosmic','Cosmic'],['analog','Analog'],['stacked','Stacked']]},
+  {key:'drums',lab:'Drums',opts:[['cosmic','Cosmic'],['analog','Analog'],['stacked','Stacked'],['hard','Hard']]},
   {key:'pad',  lab:'Pad',  opts:[['glass','Glass'],['supersaw','Supersaw'],['analog','Analog']]},
   {key:'arp',  lab:'Arp',  opts:[['pluck','Pluck'],['fm','FM Bell'],['saw','Saw']]},
   {key:'lead', lab:'Lead', opts:[['anthem','Anthem'],['pluck','Pluck'],['off','Off']]}
@@ -1404,6 +1489,77 @@ ENGINES.forEach(e=>{
   });
   engWrap.appendChild(row);
 });
+
+/* ============================================================
+   GENRE SYSTEM — one knob, soft → hard
+   ============================================================ */
+const GENRES=[
+  {name:'DEEP SPACE',sub:'ambient',bpm:72,drum:'none',bass:'drone',ir:[6.8,2.2,.30],
+   eng:{drums:'cosmic',pad:'glass',arp:'fm',lead:'off'},
+   p:{emotion:.32,space:.96,chaos:.22,motion:.22,energy:.26,brightness:.52,density:.30,groove:.30,build:.50,drive:.12,unison:.45,width:.92,air:.50,reverb:.92,delay:.60,sidechain:0}},
+  {name:'BALEARIC',sub:'downtempo',bpm:96,drum:'halftime',bass:'deep',ir:[5.2,2.4,.32],
+   eng:{drums:'analog',pad:'glass',arp:'fm',lead:'pluck'},
+   p:{emotion:.62,space:.85,chaos:.18,motion:.40,energy:.42,brightness:.68,density:.44,groove:.50,build:.55,drive:.26,unison:.50,width:.80,air:.62,reverb:.74,delay:.50,sidechain:.28}},
+  {name:'DEEP HOUSE',sub:'afterhours',bpm:120,drum:'four',bass:'stab',ir:[3.4,2.6,.34],
+   eng:{drums:'analog',pad:'analog',arp:'pluck',lead:'off'},
+   p:{emotion:.58,space:.60,chaos:.20,motion:.55,energy:.60,brightness:.55,density:.60,groove:.48,build:.66,drive:.40,unison:.50,width:.60,air:.50,reverb:.50,delay:.34,sidechain:.52}},
+  {name:'COSMIC DANCE',sub:'space edm',bpm:122,drum:'four',bass:'pump',ir:[4.2,2.6,.34],
+   eng:{drums:'cosmic',pad:'glass',arp:'pluck',lead:'anthem'},
+   p:{emotion:.55,space:.66,chaos:.28,motion:.58,energy:.68,brightness:.60,density:.62,groove:.30,build:.74,drive:.45,unison:.60,width:.72,air:.56,reverb:.62,delay:.38,sidechain:.60}},
+  {name:'TRANCE',sub:'euphoric',bpm:136,drum:'four',bass:'offbeat',ir:[3.8,2.5,.33],
+   eng:{drums:'stacked',pad:'supersaw',arp:'saw',lead:'anthem'},
+   p:{emotion:.80,space:.55,chaos:.20,motion:.78,energy:.85,brightness:.72,density:.72,groove:.12,build:.92,drive:.55,unison:.85,width:.75,air:.68,reverb:.55,delay:.40,sidechain:.85}},
+  {name:'TECHNO',sub:'peak time',bpm:130,drum:'four',bass:'rolling',ir:[2.6,2.8,.36],
+   eng:{drums:'stacked',pad:'analog',arp:'saw',lead:'off'},
+   p:{emotion:.24,space:.42,chaos:.30,motion:.85,energy:.88,brightness:.42,density:.82,groove:.20,build:.85,drive:.72,unison:.40,width:.50,air:.40,reverb:.40,delay:.26,sidechain:.70}},
+  {name:'DRUM & BASS',sub:'rolling 174',bpm:174,drum:'breaks',bass:'reese',ir:[2.8,2.7,.35],
+   eng:{drums:'stacked',pad:'glass',arp:'saw',lead:'pluck'},
+   p:{emotion:.45,space:.50,chaos:.40,motion:.90,energy:.90,brightness:.58,density:.85,groove:.30,build:.88,drive:.62,unison:.65,width:.70,air:.55,reverb:.45,delay:.30,sidechain:.55}},
+  {name:'HARDCORE',sub:'gabber',bpm:178,drum:'gabber',bass:'offbeat',ir:[1.6,3.0,.40],
+   eng:{drums:'hard',pad:'analog',arp:'saw',lead:'pluck'},
+   p:{emotion:.30,space:.30,chaos:.55,motion:.95,energy:1.0,brightness:.60,density:.90,groove:.05,build:.96,drive:.95,unison:.50,width:.50,air:.55,reverb:.30,delay:.20,sidechain:.50}}
+];
+let G=GENRES[3],gIdx=3,gVal=gIdx/(GENRES.length-1);
+
+function syncEngUI(){document.querySelectorAll('.engBtn').forEach(b=>b.classList.toggle('cur',ENG[b.dataset.eng]===b.dataset.val));}
+function applyGenre(i){
+  i=clamp(i,0,GENRES.length-1);
+  gIdx=i; gVal=i/(GENRES.length-1);
+  const g=GENRES[i]; G=g;
+  Object.assign(P,g.p); P.bpm=g.bpm;
+  Object.assign(ENG,g.eng);
+  if(AC&&convolver)convolver.buffer=makeImpulse(g.ir[0],g.ir[1],g.ir[2]);
+  syncUI(); syncEngUI(); applyMix(); updateFX(); renderGenre();
+  newJourney();
+}
+const gk=$('#genreKnob');
+gk.innerHTML=`<div class="wrap">
+  <svg viewBox="0 0 56 56">
+    <circle class="track" cx="28" cy="28" r="25" pathLength="100" stroke-dasharray="75 100"/>
+    <circle class="val" cx="28" cy="28" r="25" pathLength="100" stroke-dasharray="0 100"/>
+  </svg>
+  <div class="body"></div><div class="dot"></div></div>`;
+const gDots=$('#gDots');
+GENRES.forEach(()=>{const d=document.createElement('i');gDots.appendChild(d);});
+function renderGenre(){
+  gk.querySelector('.val').setAttribute('stroke-dasharray',`${gVal*75} 100`);
+  gk.querySelector('.dot').style.transform=`translateX(-50%) rotate(${-135+gVal*270}deg)`;
+  $('#genreName').textContent=GENRES[gIdx].name;
+  $('#genreSub').textContent=GENRES[gIdx].sub;
+  [...gDots.children].forEach((d,i)=>d.classList.toggle('on',i===gIdx));
+}
+(function(){
+  let dragging=false,lastY=0;
+  gk.addEventListener('pointerdown',e=>{dragging=true;lastY=e.clientY;gk.setPointerCapture(e.pointerId);});
+  gk.addEventListener('pointermove',e=>{
+    if(!dragging)return;
+    gVal=clamp(gVal+(lastY-e.clientY)*.005,0,1); lastY=e.clientY;
+    const ni=Math.round(gVal*(GENRES.length-1));
+    if(ni!==gIdx)applyGenre(ni); else renderGenre();
+  });
+  gk.addEventListener('pointerup',()=>dragging=false);
+  gk.addEventListener('dblclick',()=>applyGenre(3));
+})();
 
 const FADERS=[{id:'drums',lab:'Drums'},{id:'bass',lab:'Bass'},{id:'pads',lab:'Pads'},{id:'lead',lab:'Lead'}];
 const fWrap=$('#faders');
@@ -1522,7 +1678,7 @@ function syncUI(){
   [...MECH,...SPACE].forEach(d=>d._el&&d._el._sync());
   bpmEl.value=P.bpm;
   $('#bpmVal').textContent=P.bpm; $('#roBpm').textContent=P.bpm;
-  bpmEl.style.setProperty('--fill',((P.bpm-92)/48*100)+'%');
+  bpmEl.style.setProperty('--fill',((P.bpm-60)/120*100)+'%');
 }
 
 $('#playBtn').onclick=()=>playing?stop():start();
@@ -1531,7 +1687,7 @@ $('#journeyBtn').onclick=newJourney;
 bpmEl.addEventListener('input',()=>{
   P.bpm=+bpmEl.value;
   $('#bpmVal').textContent=P.bpm; $('#roBpm').textContent=P.bpm;
-  bpmEl.style.setProperty('--fill',((P.bpm-92)/48*100)+'%');
+  bpmEl.style.setProperty('--fill',((P.bpm-60)/120*100)+'%');
   updateFX();
 });
 window.addEventListener('keydown',e=>{
@@ -1639,6 +1795,7 @@ requestAnimationFrame(drawViz);
 // ---------- boot ----------
 makeSong(false);
 syncUI();
+renderGenre();
 buildLeds();
 </script>
 </body>
