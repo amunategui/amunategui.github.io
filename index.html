@@ -123,6 +123,13 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 .sl label{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--acc2);text-transform:uppercase}
 .sl output{font-family:var(--mono);font-size:10px;color:var(--cream);text-align:right;font-variant-numeric:tabular-nums}
 
+/* global fuzz */
+.fuzzMod{min-width:182px}
+.fuzzMod .sliderCol{min-width:150px}
+.fuzzToggle{margin:9px 0 7px;width:max-content}
+.fuzzMod.off .sl{opacity:.42}
+.fuzzMod .hint{margin-top:8px}
+
 /* faders */
 .faders{display:flex;gap:24px;height:100%}
 .fader{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:ns-resize;touch-action:none}
@@ -215,6 +222,7 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
   .module{padding:12px 16px}
 }
 </style>
+<base target="_blank">
 </head>
 <body>
 <canvas id="viz"></canvas>
@@ -272,6 +280,13 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
   <div class="module">
     <h3>Space</h3>
     <div class="sliderCol" id="space"></div>
+  </div>
+
+  <div class="module fuzzMod" id="fuzzMod">
+    <h3>Fuzz / OD</h3>
+    <div class="sliderCol" id="fuzz"></div>
+    <label class="togRow fuzzToggle"><input type="checkbox" id="fuzzOn" checked><span class="tog"></span><span id="fuzzState">Enabled</span></label>
+    <div class="hint">Global saturation<br>Off = clean bus</div>
   </div>
 
   <div class="module">
@@ -346,10 +361,12 @@ const seedHex=s=>(s>>>0).toString(16).toUpperCase().padStart(4,"0").slice(-4);
 
 // ---------- parameters ----------
 const P={bpm:124,emotion:.55,space:.70,chaos:.28,motion:.60,energy:.70,brightness:.60,density:.62,
-         groove:.30,build:.76,drive:.46,unison:.62,width:.76,air:.58,sub:.82,sweeps:.72,
+         groove:.30,build:.76,drive:.46,fuzz:.55,unison:.62,width:.76,air:.58,sub:.82,sweeps:.72,
          reverb:.64,delay:.40,sidechain:.64,master:.78};
 const MIX={drums:.84,bass:.86,pads:.74,lead:.68};
 const LAYERS={pad:true,bass:true,arp:true,lead:true,drums:true,fx:true};
+let fuzzOn=true;
+const fuzzAmount=()=>fuzzOn?P.fuzz:0;
 // ENG chooses timbre; GENRES separately choose rhythmic behavior.
 const ENG={drums:'cosmic',pad:'glass',arp:'pluck',lead:'anthem',bass:'house',fx:'orbital'};
 
@@ -563,6 +580,15 @@ function driveCurve(amount){
   for(let i=0;i<n;i++){const x=i*2/n-1;c[i]=Math.tanh(k*x)/norm;}
   return c;
 }
+function setShaperDrive(shaper,amount){
+  const a=clamp(amount,0,1);
+  shaper.curve=a>.001?driveCurve(a):null;
+  return a;
+}
+function satBlend(x,amount){
+  const a=clamp(amount,0,1),clean=clamp(x,-.98,.98);
+  return a<=.001?clean:lerp(clean,tanh(x),a);
+}
 function applyMix(){
   if(!AC)return;
   drumBus.gain.setTargetAtTime(MIX.drums,AC.currentTime,.05);
@@ -574,11 +600,12 @@ function applyMix(){
 function updateFX(){
   if(!AC)return;
   const t=AC.currentTime;
-  driveShaper.curve=driveCurve(P.drive*P.drive*.9+.05);
-  driveOut.gain.setTargetAtTime(lerp(1,.58,P.drive),t,.05);
+  const fuzz=fuzzAmount();
+  const masterDrive=setShaperDrive(driveShaper,(P.drive*P.drive*.9+.05)*fuzz);
+  driveOut.gain.setTargetAtTime(masterDrive>.001?lerp(1,.58,P.drive*fuzz):1,t,.05);
   // Parallel bass-specific saturation keeps the sub audible without making pads harsh.
-  bassDrive.curve=driveCurve(.055+P.sub*.16+P.drive*.07);
-  bassDriveOut.gain.setTargetAtTime(lerp(.92,.66,P.sub),t,.06);
+  const bassSat=setShaperDrive(bassDrive,(.055+P.sub*.16+P.drive*.07)*fuzz);
+  bassDriveOut.gain.setTargetAtTime(bassSat>.001?lerp(.92,.66,P.sub):.92,t,.06);
   bassShelf.gain.setTargetAtTime(lerp(1.5,9,P.sub),t,.06);
   lowShelf.gain.setTargetAtTime(lerp(1.5,4.5,P.sub),t,.06);
   highShelf.gain.setTargetAtTime(lerp(-4,8.5,P.air),t,.05);
@@ -694,7 +721,7 @@ function metallic(sr,dur,decay,hpHz,jitter){
   let lp=0; const hpC=onePole(hpHz,sr);
   for(let i=0;i<n;i++){
     const t=i/sr; let s=0;
-    for(let k=0;k<freqs.length;k++){phases[k]+=(2*Math.PI*freqs[k])/sr;s+=tanh(Math.sin(phases[k])*4.5);}
+    for(let k=0;k<freqs.length;k++){phases[k]+=(2*Math.PI*freqs[k])/sr;s+=satBlend(Math.sin(phases[k])*4.5,fuzzAmount());}
     s/=freqs.length; lp=lp*hpC+s*(1-hpC);
     out[i]=(s-lp+(Math.random()*2-1)*.12*Math.exp(-t*40))*Math.exp(-t/decay);
   }
@@ -707,7 +734,7 @@ function makeKickBuf(v=0){
     const t=i/sr,freq=tune+(start-tune)*Math.exp(-t*26);
     phase+=(2*Math.PI*freq)/sr;
     const env=Math.exp(-t*4.8);
-    d[i]=tanh((Math.sin(phase)*env+Math.sin(phase*2)*Math.exp(-t*13)*.16)*1.7)
+    d[i]=satBlend((Math.sin(phase)*env+Math.sin(phase*2)*Math.exp(-t*13)*.16)*1.7,fuzzAmount())
       +(Math.random()*2-1)*Math.exp(-t*240)*.28
       +Math.sin(2*Math.PI*(2100+v*200)*t)*Math.exp(-t*95)*.16;
   }
@@ -722,7 +749,7 @@ function makeClapBuf(v=0){
       const t=i/sr; let env=0;
       for(let b=0;b<bursts.length;b++){const dt=t-bursts[b];if(dt>=0)env+=Math.exp(-dt*(b===bursts.length-1?18:90))*(b===bursts.length-1?.85:.7);}
       const w=Math.random()*2-1; lp=lp+(w-lp)*(1-a); hp=hp+(lp-hp)*.18;
-      d[i]=tanh((lp-hp)*env*3.2)*.7;
+      d[i]=satBlend((lp-hp)*env*3.2,fuzzAmount())*.7;
     }
     normBuf(d,.8);
   }
@@ -741,7 +768,7 @@ function makeCrashBuf(){
     let lp=0; const hpC=onePole(2400,sr);
     for(let i=0;i<n;i++){
       const t=i/sr; let s=0;
-      for(let k=0;k<freqs.length;k++){const f=freqs[k]*(1+(c*2-1)*.008);phases[k]+=(2*Math.PI*f)/sr;s+=tanh(Math.sin(phases[k])*3);}
+      for(let k=0;k<freqs.length;k++){const f=freqs[k]*(1+(c*2-1)*.008);phases[k]+=(2*Math.PI*f)/sr;s+=satBlend(Math.sin(phases[k])*3,fuzzAmount());}
       s/=freqs.length; lp=lp*hpC+s*(1-hpC);
       d[i]=(s-lp+(Math.random()*2-1)*.08*Math.exp(-t*6))*Math.exp(-t*1.55)*(.55+.45*Math.exp(-t*8));
     }
@@ -772,11 +799,16 @@ function buildSamples(){
     shakers:[makeShakerBuf(0),makeShakerBuf(1)]
   };
 }
+function refreshSaturationSamples(){
+  if(!AC)return;
+  samples=null;
+  buildSamples();
+}
 
 function kick(t,vel){
   if(!LAYERS.drums)return;
   if(ENG.drums==='hard'){
-    const sh=AC.createWaveShaper(); sh.curve=driveCurve(.7+P.drive*.7); sh.oversample='4x';
+    const sh=AC.createWaveShaper(); setShaperDrive(sh,(.7+P.drive*.7)*fuzzAmount()); sh.oversample='4x';
     const og=AC.createGain(); og.gain.value=.8; sh.connect(og).connect(drumBus);
     const o=AC.createOscillator(),g=AC.createGain(); o.type='sine';
     o.frequency.setValueAtTime(250,t); o.frequency.exponentialRampToValueAtTime(44,t+.06);
@@ -789,7 +821,7 @@ function kick(t,vel){
   }else if(ENG.drums==='analog'){
     playBuf(pick(samples.kicks),t,drumBus,clamp(vel,0,1.15)*.95,{playbackRate:.98+Math.random()*.04});
   }else if(ENG.drums==='stacked'){
-    const shaper=AC.createWaveShaper(); shaper.curve=driveCurve(.55); shaper.oversample='2x';
+    const shaper=AC.createWaveShaper(); setShaperDrive(shaper,.55*fuzzAmount()); shaper.oversample='2x';
     shaper.connect(drumBus);
     const body=AC.createOscillator(),bg=AC.createGain(); body.type='sine';
     body.frequency.setValueAtTime(190,t); body.frequency.exponentialRampToValueAtTime(52,t+.055);
@@ -1531,6 +1563,7 @@ function buildSliders(wrapId,defs){
     const fill=()=>inp.style.setProperty('--fill',inp.value+'%');
     fill();
     inp.addEventListener('input',()=>{P[d.id]=+inp.value/100;out.textContent=inp.value;fill();updateFX();});
+    inp.addEventListener('change',()=>{if(d.onCommit)d.onCommit();});
     inp._sync=()=>{inp.value=Math.round(P[d.id]*100);out.textContent=inp.value;fill();};
     d._el=inp;
   });
@@ -1540,6 +1573,20 @@ const MECH=buildSliders('#mech',[
   {id:'groove',lab:'Groove'},{id:'build',lab:'Build'},{id:'drive',lab:'Drive'},
   {id:'unison',lab:'Unison'},{id:'width',lab:'Width'},{id:'air',lab:'Air'},{id:'sub',lab:'Sub Depth'}
 ]);
+const FUZZ=buildSliders('#fuzz',[
+  {id:'fuzz',lab:'Amount',onCommit:refreshSaturationSamples}
+]);
+const fuzzMod=$('#fuzzMod'),fuzzOnEl=$('#fuzzOn'),fuzzState=$('#fuzzState');
+function syncFuzzUI(){
+  fuzzMod.classList.toggle('off',!fuzzOn);
+  fuzzOnEl.checked=fuzzOn;
+  fuzzState.textContent=fuzzOn?'Enabled':'Clean';
+}
+fuzzOnEl.addEventListener('change',()=>{
+  fuzzOn=fuzzOnEl.checked;
+  syncFuzzUI(); updateFX(); refreshSaturationSamples();
+});
+syncFuzzUI();
 const SPACE=buildSliders('#space',[
   {id:'reverb',lab:'Reverb'},{id:'delay',lab:'Delay'},{id:'sidechain',lab:'Sidechain'},{id:'sweeps',lab:'Sweeps'}
 ]);
@@ -1770,7 +1817,7 @@ Object.entries(PRESETS).forEach(([id,p])=>{
 const bpmEl=$('#bpm');
 function syncUI(){
   document.querySelectorAll('.knob').forEach(k=>k._render&&k._render());
-  [...MECH,...SPACE].forEach(d=>d._el&&d._el._sync());
+  [...MECH,...FUZZ,...SPACE].forEach(d=>d._el&&d._el._sync());
   bpmEl.value=P.bpm;
   $('#bpmVal').textContent=P.bpm; $('#roBpm').textContent=P.bpm;
   bpmEl.style.setProperty('--fill',((P.bpm-60)/120*100)+'%');
