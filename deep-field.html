@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Deep Field — cinematic ambient engine</title>
+<title>Deep Field — a mood-drifting ambient engine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --night:#070a11;
-  --deep:#0d1220;
-  --haze:#18202f;
-  --fog:#5a6880;
+  --night:#06080e;
+  --deep:#0c111d;
+  --fog:#61708a;
   --ice:#b9cfe1;
-  --amber:#e0a469;
-  --paper:#ebe7de;
-  --line:rgba(185,207,225,.14);
+  --accent:#e0a469;
+  --accent2:#7fb0d8;
+  --paper:#ece8df;
+  --line:rgba(185,207,225,.13);
   --serif:'Instrument Serif',Georgia,serif;
   --sans:'Jost',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
@@ -34,77 +34,106 @@ canvas#field{position:fixed;inset:0;width:100%;height:100%;z-index:0}
 
 /* ---------- title card ---------- */
 #card{
-  position:fixed;left:0;right:0;top:11vh;z-index:2;text-align:center;pointer-events:none;
+  position:fixed;left:0;right:0;top:9vh;z-index:2;text-align:center;pointer-events:none;
   transition:opacity 1.4s ease;
 }
 #title{
   font-family:var(--serif);font-size:clamp(38px,7.4vw,86px);line-height:1.04;
   color:var(--paper);letter-spacing:.005em;
 }
-#title i{font-style:italic;color:var(--ice)}
+#title i{font-style:italic;color:var(--ice);transition:color 3s linear}
 #sub{
-  margin-top:.9rem;font-size:clamp(12px,1.5vw,15px);letter-spacing:.12em;
+  margin-top:.9rem;font-size:clamp(12px,1.5vw,15px);letter-spacing:.1em;
   color:var(--fog);font-weight:300;
 }
 #nowplaying{
-  position:fixed;left:0;right:0;top:calc(11vh + 210px);z-index:2;text-align:center;pointer-events:none;
-  font-family:var(--serif);font-size:clamp(20px,2.6vw,30px);color:var(--ice);
-  opacity:.0;transition:opacity 1.2s ease;
+  position:fixed;left:0;right:0;top:calc(9vh + 205px);z-index:2;text-align:center;pointer-events:none;
+  font-family:var(--serif);font-size:clamp(19px,2.4vw,28px);color:var(--ice);
+  opacity:0;transition:opacity 1.2s ease,color 3s linear;
 }
-#nowplaying.on{opacity:.55}
+#nowplaying.on{opacity:.5}
 
 /* ---------- console ---------- */
 #console{
   position:fixed;left:0;right:0;bottom:0;z-index:4;
-  background:linear-gradient(to top,rgba(7,10,17,.94) 40%,rgba(7,10,17,.72) 78%,rgba(7,10,17,0));
-  padding:26px clamp(16px,4vw,46px) max(20px,env(safe-area-inset-bottom));
-  display:flex;flex-wrap:wrap;gap:clamp(20px,3vw,44px);align-items:flex-end;
-  max-height:56vh;overflow-y:auto;overscroll-behavior:contain;
+  background:linear-gradient(to top,rgba(6,8,14,.95) 42%,rgba(6,8,14,.74) 80%,rgba(6,8,14,0));
+  padding:22px clamp(14px,3.2vw,40px) max(18px,env(safe-area-inset-bottom));
+  display:flex;flex-wrap:wrap;gap:clamp(16px,2.4vw,34px);align-items:flex-end;
+  max-height:62vh;overflow-y:auto;overscroll-behavior:contain;
 }
 #console::-webkit-scrollbar{width:0}
 
-.transport{display:flex;align-items:center;gap:18px}
+.transport{display:flex;align-items:center;gap:16px}
 #play{
-  width:66px;height:66px;border-radius:50%;flex:0 0 auto;
-  border:1px solid rgba(224,164,105,.55);
-  background:radial-gradient(circle at 50% 35%,rgba(224,164,105,.22),rgba(224,164,105,.04) 70%);
-  color:var(--amber);cursor:pointer;position:relative;
-  transition:box-shadow .5s ease,border-color .5s ease,transform .2s ease;
+  width:62px;height:62px;border-radius:50%;flex:0 0 auto;
+  border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);
+  background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--accent) 22%,transparent),transparent 72%);
+  color:var(--accent);cursor:pointer;position:relative;
+  transition:box-shadow .5s ease,border-color .5s ease,transform .2s ease,color 3s linear;
 }
-#play:hover{box-shadow:0 0 34px rgba(224,164,105,.28);border-color:rgba(224,164,105,.8)}
+#play:hover{box-shadow:0 0 34px color-mix(in srgb,var(--accent) 30%,transparent)}
 #play:active{transform:scale(.96)}
 #play:focus-visible{outline:2px solid var(--ice);outline-offset:4px}
 #play::before{
   content:'';position:absolute;left:50%;top:50%;transform:translate(-42%,-50%);
-  border-left:17px solid currentColor;border-top:11px solid transparent;border-bottom:11px solid transparent;
+  border-left:16px solid currentColor;border-top:10px solid transparent;border-bottom:10px solid transparent;
 }
 #play.on::before{
-  border:none;width:15px;height:17px;transform:translate(-50%,-50%);
-  background:linear-gradient(to right,currentColor 0 5px,transparent 5px 10px,currentColor 10px 15px);
+  border:none;width:14px;height:16px;transform:translate(-50%,-50%);
+  background:linear-gradient(to right,currentColor 0 5px,transparent 5px 9px,currentColor 9px 14px);
 }
-.tlabel{font-size:13px;color:var(--fog);letter-spacing:.06em;max-width:150px;line-height:1.4}
+.tlabel{font-size:13px;color:var(--fog);letter-spacing:.05em;max-width:140px;line-height:1.45}
 .tlabel b{display:block;color:var(--paper);font-weight:400;font-size:15px}
 
-.group{display:flex;flex-direction:column;gap:10px;min-width:0}
-.gtitle{font-size:11px;letter-spacing:.18em;color:var(--fog);text-transform:lowercase;font-variant:small-caps}
+.group{display:flex;flex-direction:column;gap:9px;min-width:0}
+.gtitle{font-size:11.5px;letter-spacing:.16em;color:var(--fog);font-variant:small-caps}
 
-.moods{display:flex;flex-wrap:wrap;gap:6px 4px;max-width:400px}
-.mood{
-  background:none;border:1px solid transparent;border-radius:20px;
-  color:var(--fog);font-family:var(--sans);font-size:13.5px;font-weight:300;
-  padding:5px 13px;cursor:pointer;transition:color .3s,border-color .3s,background .3s;
-  white-space:nowrap;
+/* ---------- the mood field ---------- */
+.fieldbox{
+  display:flex;flex-direction:column;gap:8px;
 }
-.mood:hover{color:var(--ice)}
-.mood:focus-visible{outline:1px solid var(--ice);outline-offset:2px}
-.mood.on{color:var(--night);background:var(--ice);border-color:var(--ice)}
+#padwrap{
+  position:relative;width:clamp(200px,24vw,268px);height:clamp(132px,15vw,168px);
+  border:1px solid var(--line);border-radius:3px;overflow:hidden;
+  background:rgba(12,17,29,.5);cursor:crosshair;touch-action:none;
+}
+#padwrap:focus-visible{outline:1px solid var(--ice);outline-offset:3px}
+#pad{position:absolute;inset:0;width:100%;height:100%}
+.edge{
+  position:absolute;font-size:10.5px;letter-spacing:.14em;color:var(--fog);
+  pointer-events:none;font-variant:small-caps;opacity:.85;
+}
+.edge.n{top:5px;left:50%;transform:translateX(-50%)}
+.edge.s{bottom:5px;left:50%;transform:translateX(-50%)}
+.edge.w{left:6px;top:50%;transform:translateY(-50%) rotate(-90deg);transform-origin:left center}
+.edge.e{right:6px;top:50%;transform:translateY(-50%) rotate(90deg);transform-origin:right center}
+.fieldfoot{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#moodName{font-family:var(--serif);font-size:17px;color:var(--ice);transition:color 3s linear;line-height:1}
+.mini{
+  background:none;border:1px solid var(--line);border-radius:14px;color:var(--fog);
+  font-family:var(--sans);font-weight:300;font-size:12px;padding:3px 11px;cursor:pointer;
+  transition:color .3s,border-color .3s,background .3s;white-space:nowrap;
+}
+.mini:hover{color:var(--ice)}
+.mini:focus-visible{outline:1px solid var(--ice);outline-offset:2px}
+.mini.on{color:var(--night);background:var(--ice);border-color:var(--ice)}
 
-.dials{display:grid;grid-template-columns:repeat(3,minmax(92px,118px));gap:11px 16px}
-.dial{display:flex;flex-direction:column;gap:3px}
-.dial span{font-size:12px;color:var(--fog);display:flex;justify-content:space-between}
+.chips{display:flex;flex-wrap:wrap;gap:5px 4px;max-width:330px}
+.chip{
+  background:none;border:1px solid transparent;border-radius:16px;
+  color:var(--fog);font-family:var(--sans);font-size:13px;font-weight:300;
+  padding:4px 11px;cursor:pointer;transition:color .3s,border-color .3s,background .3s;white-space:nowrap;
+}
+.chip:hover{color:var(--ice)}
+.chip:focus-visible{outline:1px solid var(--ice);outline-offset:2px}
+.chip.on{color:var(--night);background:var(--ice);border-color:var(--ice)}
+
+.dials{display:grid;grid-template-columns:repeat(4,minmax(78px,102px));gap:9px 14px}
+.dial{display:flex;flex-direction:column;gap:2px}
+.dial span{font-size:12px;color:var(--fog);display:flex;justify-content:space-between;gap:6px}
 .dial span em{font-style:normal;color:var(--ice);font-size:11.5px}
 input[type=range]{
-  -webkit-appearance:none;appearance:none;width:100%;height:16px;background:none;cursor:pointer;
+  -webkit-appearance:none;appearance:none;width:100%;height:15px;background:none;cursor:pointer;
 }
 input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--line)}
 input[type=range]::-moz-range-track{height:1px;background:var(--line)}
@@ -115,7 +144,7 @@ input[type=range]::-webkit-slider-thumb{
 input[type=range]::-moz-range-thumb{width:9px;height:9px;border:none;border-radius:50%;background:var(--ice)}
 input[type=range]:focus-visible{outline:1px solid var(--ice);outline-offset:3px}
 
-.layers{display:grid;grid-template-columns:repeat(2,auto);gap:7px 18px}
+.layers{display:grid;grid-template-columns:repeat(2,auto);gap:6px 16px}
 .layer{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--fog);cursor:pointer}
 .layer input{position:absolute;opacity:0;pointer-events:none}
 .dot{width:7px;height:7px;border-radius:50%;background:rgba(185,207,225,.18);transition:background .35s,box-shadow .35s}
@@ -123,31 +152,34 @@ input[type=range]:focus-visible{outline:1px solid var(--ice);outline-offset:3px}
 .layer.on .dot{background:var(--ice);box-shadow:0 0 9px rgba(185,207,225,.75)}
 .layer input:focus-visible + .dot{outline:1px solid var(--ice);outline-offset:3px}
 
-.acts{display:flex;flex-direction:column;gap:7px;align-items:flex-start}
+.acts{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 .act{
   background:none;border:none;color:var(--fog);font-family:var(--sans);font-weight:300;
   font-size:13.5px;cursor:pointer;padding:2px 0;border-bottom:1px solid transparent;transition:color .3s,border-color .3s;
 }
 .act:hover{color:var(--ice);border-color:var(--line)}
 .act:focus-visible{outline:1px solid var(--ice);outline-offset:3px}
-.act.rec{color:var(--amber)}
+.act.rec{color:var(--accent);transition:color 3s linear}
+.act.rec.live{color:#e6675f}
 
 .readout{
-  position:fixed;right:clamp(16px,4vw,46px);top:26px;z-index:3;text-align:right;
-  font-size:12.5px;color:var(--fog);line-height:1.85;pointer-events:none;
+  position:fixed;right:clamp(14px,3.2vw,40px);top:22px;z-index:3;text-align:right;
+  font-size:12.5px;color:var(--fog);line-height:1.8;pointer-events:none;
 }
 .readout b{color:var(--ice);font-weight:400}
 #hint{
-  position:fixed;left:0;right:0;bottom:calc(56vh + 12px);text-align:center;z-index:3;
+  position:fixed;left:0;right:0;bottom:calc(62vh + 10px);text-align:center;z-index:3;
   font-size:13px;color:var(--fog);opacity:.7;transition:opacity .8s;pointer-events:none;
 }
-@media (max-width:760px){
-  #card{top:7vh}
-  #nowplaying{top:calc(7vh + 150px)}
-  #console{gap:18px;padding-top:18px}
-  .dials{grid-template-columns:repeat(2,1fr);width:100%}
-  .moods{max-width:100%}
+@media (max-width:860px){
+  #card{top:6vh}
+  #nowplaying{top:calc(6vh + 140px)}
+  #console{gap:16px;padding-top:15px;max-height:66vh}
+  .dials{grid-template-columns:repeat(3,1fr);width:100%}
+  .chips{max-width:100%}
+  #padwrap{width:min(78vw,300px);height:150px}
   #hint{display:none}
+  .readout{font-size:11.5px;line-height:1.7}
 }
 @media (prefers-reduced-motion:reduce){
   *{transition-duration:.01ms !important}
@@ -164,13 +196,14 @@ input[type=range]:focus-visible{outline:1px solid var(--ice);outline-offset:3px}
 <div id="nowplaying"></div>
 
 <div class="readout">
+  <div>mood <b id="roMood">—</b></div>
   <div>key <b id="roKey">—</b></div>
   <div>chord <b id="roChord">—</b></div>
   <div>passage <b id="roSec">—</b></div>
   <div>bar <b id="roBar">—</b></div>
 </div>
 
-<div id="hint">Headphones or a speaker with real low end. It starts quiet on purpose.</div>
+<div id="hint">Headphones, or a speaker with real low end. It starts quiet, and the mood moves on its own.</div>
 
 <div id="console">
   <div class="transport">
@@ -178,9 +211,24 @@ input[type=range]:focus-visible{outline:1px solid var(--ice);outline-offset:3px}
     <div class="tlabel"><b id="tState">Start</b><span id="tSub">nothing is playing</span></div>
   </div>
 
+  <div class="group fieldbox">
+    <div class="gtitle">mood field</div>
+    <div id="padwrap" tabindex="0" role="application" aria-label="Mood field. Drag to set the mood. Arrow keys nudge.">
+      <canvas id="pad"></canvas>
+      <span class="edge n">tense</span>
+      <span class="edge s">calm</span>
+      <span class="edge w">cold</span>
+      <span class="edge e">warm</span>
+    </div>
+    <div class="fieldfoot">
+      <div id="moodName">—</div>
+      <button class="mini on" id="driftToggle">drifting</button>
+    </div>
+  </div>
+
   <div class="group">
-    <div class="gtitle">mood</div>
-    <div class="moods" id="moods"></div>
+    <div class="gtitle">starting points</div>
+    <div class="chips" id="scenes"></div>
   </div>
 
   <div class="group">
@@ -199,143 +247,268 @@ input[type=range]:focus-visible{outline:1px solid var(--ice);outline-offset:3px}
       <button class="act" id="newBtn">New piece</button>
       <button class="act" id="driftBtn">Change passage</button>
       <button class="act rec" id="recBtn">Record</button>
-      <button class="act" id="linkBtn">Link · on</button>
     </div>
   </div>
 </div>
 <script>
-/* ============================================================
-   DEEP FIELD — cinematic ambient engine
-   Everything you'd want to tweak lives in CFG and MOODS below.
-   ============================================================ */
+/* ==================================================================
+   DEEP FIELD  —  a mood-drifting harmonic and melodic engine for
+   ambient, electronica and space music. Percussion lives outside this app.
+
+   The whole instrument is steered by one 2D field:
+
+        x :  cold  <------->  warm
+        y :  calm  <------->  tense
+
+   Nothing in the field ever jumps. Every value you see below is
+   reached with a long glide, and if "drifting" is on, the field
+   wanders on its own across periods of several minutes, so the
+   music changes character without ever announcing that it did.
+
+   All tunables live in CFG. Everything else reads from it.
+   ================================================================== */
 
 const CFG = {
-  masterVolume : 0.80,
+  masterVolume : 0.78,
 
-  /* --- the anti-harshness chain. these numbers are the whole point --- */
-  rumbleCut    : 26,      // Hz  highpass, kills inaudible sub mud
-  lowShelfHz   : 150,     // Hz  warmth shelf
-  lowShelfDb   : 3.2,
-  harshHz      : 2850,    // Hz  the "ear pain" band, notched on the master
+  /* --- the anti-harshness chain --- */
+  rumbleCut    : 24,
+  harshHz      : 2850,
   harshQ       : 1.05,
-  harshDb      : -4.0,
-  presenceHz   : 5400,    // Hz  second, gentler dip
-  presenceDb   : -2.6,
-  airRange     : [3600, 10500], // master lowpass range driven by the Air dial
-  satDrive     : 0.32,    // gentle tanh glue, 4x oversampled
+  harshDb      : -3.4,
+  presenceHz   : 5400,
+  presenceDb   : -2.2,
+  airRange     : [3000, 13500],
 
-  /* --- reverb: long and DARK. bright tails are what makes ambient fizz --- */
-  hallSeconds  : 7.5,
-  hallDamp     : [2600, 420],  // tail brightness at start -> end
-  hallPredelay : 0.045,
-  plateSeconds : 2.4,
-  plateDamp    : [3400, 900],
-  platePredelay: 0.018,
+  /* --- warmth tilt: driven by the field's x axis --- */
+  warmShelfHz  : 165,
+  warmShelfDb  : [0.6, 5.4],     // cold -> warm
+  tiltHiHz     : 4200,
+  tiltHiDb     : [2.2, -3.0],    // cold -> warm
+  satDrive     : [0.16, 0.46],   // cold -> warm
+
+  /* --- three spaces. dark tails only; bright tails are what fizz --- */
+  hallSeconds  : 8.5,  hallDamp :[2800, 380], hallPre :0.050,
+  plateSeconds : 2.6,  plateDamp:[3900, 880], platePre:0.016,
+  bloomSeconds : 15.0, bloomDamp:[1500, 190], bloomPre:0.140,
+
+  /* --- ensemble / chorus --- */
+  chorusTimes  : [0.0113, 0.0171, 0.0233],
+  chorusRates  : [0.083, 0.117, 0.061],
+  chorusDepth  : [0.0012, 0.0034],   // cold -> warm, seconds
+
+  /* --- tape wow and flutter --- */
+  tapeBase     : 0.006,
+  tapeWow      : 0.00055,
+  tapeFlutter  : 0.00006,
 
   /* --- echo --- */
   echoTimeBeats: 0.75,
-  echoFeedback : 0.42,
-  echoLow      : 260,     // Hz  keeps the low end out of the repeats
-  echoHigh     : 1900,    // Hz  keeps the repeats soft
+  echoFeedback : 0.44,
+  echoLow      : 230,
+  echoHigh     : 2500,
 
-  /* --- register policing: no shrill melodies, ever --- */
-  leadFloor    : 55,      // MIDI
-  leadCeil     : 80,      // MIDI  (~784 Hz ceiling — above this it starts to glare)
-  padFloor     : 50,
-  padCeil      : 77,
-  bassFloor    : 26,
-  bassCeil     : 45,
-  partialCap   : 6200,    // Hz  no partial is ever synthesised above this
+  /* --- register policing --- */
+  leadFloor    : 55, leadCeil : 81,
+  padFloor     : 46, padCeil  : 79,
+  bassFloor    : 24, bassCeil : 50,
+  seqFloor     : 57, seqCeil  : 86,
+  partialCap   : 7200,
 
-  lookahead    : 0.9,     // s
-  tickMs       : 60
+  /* --- the drift: six incommensurate periods, in seconds --- */
+  driftPeriods : [97, 151, 233, 113, 179, 271],
+  driftRange   : 0.34,
+  fieldGlide   : 11,       // seconds for the field to reach a new target
+  fieldTau     : 4.0,      // seconds for audio params to follow the field
+
+  lookahead    : 1.0,
+  tickMs       : 45
 };
 
-/* ---------- timbres: band-limited harmonic series, steep rolloff ---------- */
+/* ---------- timbres: band-limited harmonic series ---------- */
 const TIMBRES = {
   glass  : [1, .30, .12, .05, .022, .010],
   choir  : [1, .26, .40, .15, .085, .042, .020],
   strings: [1, .60, .38, .24, .150, .090, .052, .030, .017],
   reed   : [1, .44, .30, .10, .070, .028, .014],
-  wood   : [1, .18, .34, .06, .030, .012]
+  wood   : [1, .18, .34, .06, .030, .012],
+  vox    : [1, .52, .21, .34, .11, .06, .03, .015],
+  saw    : [1, .50, .333, .25, .20, .167, .143, .125, .111, .10, .091, .083, .077, .071],
+  pulse  : [1, .10, .55, .08, .35, .06, .24, .05, .17, .04, .12]
 };
 
-/* ---------- moods ---------- */
-const MOODS = [
-  { id:'deepfield', name:'Deep field', bpm:50,
-    modes:['aeolian','dorian'], padT:'choir', leadT:'glass', padCut:1000,
-    prog:[[0,'min9',4],[5,'maj7',4],[3,'maj9',4],[0,'min7',4]],
-    tone:.34, space:.86, weight:.92, motion:.30, sub:1.0 },
-
-  { id:'sodium', name:'Sodium rain', bpm:56,
-    modes:['dorian','aeolian'], padT:'strings', leadT:'glass', padCut:1150,
-    prog:[[0,'min9',2],[6,'maj9',2],[5,'maj7',2],[0,'min7',2],[3,'sus2',2],[4,'min7',2]],
-    tone:.42, space:.78, weight:.88, motion:.46, sub:.92 },
-
-  { id:'slowlight', name:'Slow light', bpm:60,
-    modes:['lydian','ionian'], padT:'choir', leadT:'wood', padCut:1350,
-    prog:[[0,'maj9',4],[1,'min7',2],[4,'sus2',2],[3,'maj7',4]],
-    tone:.56, space:.72, weight:.72, motion:.50, sub:.78 },
-
-  { id:'vigil', name:'Vigil', bpm:54,
-    modes:['harmonic','aeolian'], padT:'strings', leadT:'reed', padCut:980,
-    prog:[[0,'min7',4],[5,'maj7',2],[4,'dom7',2],[0,'min9',4],[2,'maj9',4]],
-    tone:.36, space:.82, weight:.95, motion:.40, sub:1.0 },
-
-  { id:'harbour', name:'Harbour', bpm:64,
-    modes:['mixolydian','dorian'], padT:'reed', leadT:'wood', padCut:1250,
-    prog:[[0,'sus2',2],[6,'maj9',2],[4,'min7',2],[0,'add9',2]],
-    tone:.50, space:.68, weight:.80, motion:.58, sub:.85 },
-
-  { id:'nightwatch', name:'Night watch', bpm:48,
-    modes:['phrygian','aeolian'], padT:'strings', leadT:'glass', padCut:860,
-    prog:[[0,'min7',6],[1,'maj9',2],[0,'min9',4],[6,'maj7',4]],
-    tone:.28, space:.90, weight:1.0, motion:.24, sub:1.0 }
-];
+/* the cold end and the warm end of the pad. everything between is a blend. */
+const PAD_COLD = 'glass', PAD_WARM = 'strings';
+const KEY_COLD = 'glass', KEY_WARM = 'reed';
 
 const SCALES = {
-  ionian:[0,2,4,5,7,9,11], dorian:[0,2,3,5,7,9,10], phrygian:[0,1,3,5,7,8,10],
-  lydian:[0,2,4,6,7,9,11], mixolydian:[0,2,4,5,7,9,10], aeolian:[0,2,3,5,7,8,10],
-  harmonic:[0,2,3,5,7,8,11]
+  ionian    :[0,2,4,5,7,9,11],
+  dorian    :[0,2,3,5,7,9,10],
+  phrygian  :[0,1,3,5,7,8,10],
+  lydian    :[0,2,4,6,7,9,11],
+  mixolydian:[0,2,4,5,7,9,10],
+  aeolian   :[0,2,3,5,7,8,10],
+  harmonic  :[0,2,3,5,7,8,11]
+};
+const MODE_LABEL = {
+  ionian:'major', dorian:'dorian', phrygian:'phrygian', lydian:'lydian',
+  mixolydian:'mixolydian', aeolian:'minor', harmonic:'harmonic minor'
 };
 
-/* passages. layer weights are multipliers on each bus, ramped slowly. */
-const PASSAGES = {
-  still  :{ label:'still',    bars:[8,12],  w:{pad:1,bass:.85,lead:0,counter:0,pulse:0,air:.55}, dens:0,   next:['gather','theme'] },
-  gather :{ label:'gathering',bars:[8,8],   w:{pad:1,bass:1,lead:0,counter:.65,pulse:.35,air:.8}, dens:0,  next:['theme'] },
-  theme  :{ label:'theme',    bars:[16,16], w:{pad:.9,bass:1,lead:1,counter:.4,pulse:.55,air:.7}, dens:1,  next:['open','settle','theme'] },
-  open   :{ label:'opening',  bars:[16,16], w:{pad:1,bass:1,lead:1,counter:1,pulse:.9,air:1}, dens:1.15,   next:['settle','theme'] },
-  settle :{ label:'settling', bars:[8,12],  w:{pad:.8,bass:.7,lead:.55,counter:.25,pulse:0,air:.5}, dens:.45, next:['still','theme'] }
+/* chord colours as semitone sets. the field chooses between them. */
+const CHORDS = {
+  min7   :{iv:[0,3,7,10],      s:'m7'},
+  min9   :{iv:[0,3,7,10,14],   s:'m9'},
+  min11  :{iv:[0,3,7,10,17],   s:'m11'},
+  min6   :{iv:[0,3,7,9],       s:'m6'},
+  maj7   :{iv:[0,4,7,11],      s:'maj7'},
+  maj9   :{iv:[0,4,7,11,14],   s:'maj9'},
+  add9   :{iv:[0,4,7,14],      s:'add9'},
+  six9   :{iv:[0,4,7,9,14],    s:'6/9'},
+  lyd    :{iv:[0,4,7,11,18],   s:'maj7♯11'},
+  sus2   :{iv:[0,2,7,14],      s:'sus2'},
+  sus4   :{iv:[0,5,7,10],      s:'sus4'},
+  quartal:{iv:[0,5,10,15],     s:'quartal'},
+  dom9   :{iv:[0,4,7,10,14],   s:'9'},
+  domb9  :{iv:[0,4,7,10,13],   s:'7♭9'},
+  halfdim:{iv:[0,3,6,10],      s:'ø7'},
+  dim    :{iv:[0,3,6,9],       s:'°7'},
+  aug    :{iv:[0,4,8,14],      s:'+'},
+  minb9  :{iv:[0,3,7,10,13],   s:'m7♭9'},
+  cluster:{iv:[0,1,3,7,10],    s:'cluster'}
 };
 
-const NAMES_A = ['Sodium','Pale','Distant','Quiet','Low','Long','Grey','First','Last','Blue','Near','Soft','Thin','Cold','Late','Wide'];
-const NAMES_B = ['rain','horizon','vigil','signal','tide','orbit','window','snowfall','harbour','lantern','corridor','drift','ember','meridian','weather','crossing'];
+const NAMES_A = ['Sodium','Pale','Distant','Quiet','Low','Long','Grey','First','Last','Blue','Near','Soft','Thin','Cold','Late','Wide','Slow','Hollow','Certain','Other'];
+const NAMES_B = ['rain','horizon','vigil','signal','tide','orbit','window','snowfall','harbour','lantern','corridor','drift','ember','meridian','weather','crossing','altitude','shoreline','circuitry','daylight'];
 const PC = ['C','C♯','D','E♭','E','F','F♯','G','A♭','A','B♭','B'];
 
+/* names of the nine regions of the field, read as x (cold->warm) by y (calm->tense) */
+const REGION = [
+  ['Glacier',    'Tidewater',  'Blue hour'],
+  ['Deep water', 'Grey field', 'Low sun'],
+  ['Undertow',   'Storm glass','Ember'],
+  ['Black ice',  'Signal',     'Furnace']
+];
+
 /* ============================ utilities ============================ */
-const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+const mtof  = m => 440 * Math.pow(2, (m - 69) / 12);
 const clamp = (v,a,b) => v < a ? a : v > b ? b : v;
-const lerp = (a,b,t) => a + (b - a) * t;
+const lerp  = (a,b,t) => a + (b - a) * t;
+const lerp2 = (r,t) => r[0] + (r[1] - r[0]) * t;
 function mulberry(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 let rnd = mulberry(Date.now() & 0xffffff);
 const pick = a => a[Math.floor(rnd() * a.length)];
 const rr = (a,b) => a + rnd() * (b - a);
+const chance = p => rnd() < p;
+
+/* ============================ the mood field ============================ */
+const FIELD = {
+  x:.34, y:.22,        // what the music is actually using, right now
+  tx:.34, ty:.22,      // where it is heading
+  ax:.34, ay:.22,      // the anchor the drift wanders around
+  drift:true,
+  glide:CFG.fieldGlide,
+  range:CFG.driftRange,
+  t0:Math.random()*1000,
+  trail:[]
+};
+
+/* a smooth, aperiodic wander built from three slow sines */
+function wander(t, a, b, c, ph){
+  return (Math.sin(t / a + ph) + Math.sin(t / b + ph * 1.7) * .68 + Math.sin(t / c + ph * 2.9) * .44) / 2.12;
+}
+function fieldStep(dt, now){
+  if(FIELD.drift){
+    const p = CFG.driftPeriods, t = now + FIELD.t0;
+    FIELD.tx = clamp(FIELD.ax + wander(t, p[0], p[1], p[2], 0.0) * FIELD.range, 0, 1);
+    FIELD.ty = clamp(FIELD.ay + wander(t, p[3], p[4], p[5], 1.3) * FIELD.range * .82, 0, 1);
+  }
+  const k = 1 - Math.exp(-dt / Math.max(.8, FIELD.glide));
+  FIELD.x += (FIELD.tx - FIELD.x) * k;
+  FIELD.y += (FIELD.ty - FIELD.y) * k;
+}
+function setField(x, y, snapAnchor){
+  FIELD.tx = clamp(x, 0, 1); FIELD.ty = clamp(y, 0, 1);
+  if(snapAnchor !== false){ FIELD.ax = FIELD.tx; FIELD.ay = FIELD.ty; FIELD.t0 = Math.random() * 1000; }
+}
+function regionName(){
+  const c = Math.min(2, Math.floor(FIELD.x * 3));
+  const r = Math.min(3, Math.floor(FIELD.y * 4));
+  return REGION[r][c];
+}
+
+/* derived musical character. read this, never the raw axes. */
+function F(){
+  const w = FIELD.x, t = FIELD.y;
+  return {
+    w, t,
+    warmth   : w,
+    tension  : t,
+    bright   : lerp(1.0, .74, w),                 // cold sits higher in the spectrum
+    weightMul: lerp(.86, 1.14, w),
+    detune   : lerp(3.2, 8.5, w) * lerp(1, 1.45, t),
+    padAtk   : lerp(5.0, 2.2, t) * lerp(1.0, .82, w),
+    padRel   : lerp(6.5, 3.2, t),
+    res      : lerp(.6, 6.5, t),                  // filter resonance, suspense
+    dens     : lerp(.62, 1.22, t),
+    dissonance: Math.pow(t, 1.4),
+    droneLvl : Math.pow(t, 1.25) * lerp(.55, 1, 1 - w * .35),
+    tremRate : lerp(.35, 6.4, Math.pow(t, 1.6)),
+    tremDep  : Math.pow(t, 1.8) * .38,
+    echoFb   : lerp(.62, 1.06, t),
+    space    : lerp(1.05, .78, t),                // tension pulls the room in
+    seqBright: lerp(.55, 1.15, t) * lerp(1.1, .85, w),
+    chordBars: t > .62 ? 2 : (t > .3 ? (chance(.5) ? 2 : 4) : 4)
+  };
+}
+
+/* ============================ scenes ============================ */
+/* Starting points set the field and harmonic clock. Rhythm/percussion is external. */
+const SCENES = [
+  { id:'deepfield', name:'Deep field',  x:.30, y:.18, bpm:50 },
+  { id:'sodium',    name:'Sodium rain', x:.46, y:.38, bpm:56 },
+  { id:'slowlight', name:'Slow light',  x:.78, y:.14, bpm:58 },
+  { id:'vigil',     name:'Vigil',       x:.22, y:.70, bpm:54 },
+  { id:'orbital',   name:'Orbital',     x:.38, y:.52, bpm:92 },
+  { id:'nightwatch',name:'Night watch', x:.12, y:.58, bpm:48 },
+  { id:'blueroom',  name:'Blue room',   x:.44, y:.30, bpm:112 },
+  { id:'basement',  name:'Basement',    x:.72, y:.42, bpm:118 },
+  { id:'lateshift', name:'Late shift',  x:.26, y:.62, bpm:108 }
+];
+
+/* passages. bus weights are multipliers, always ramped, never switched. */
+const PASSAGES = {
+  still :{ label:'still',      bars:[8,12], dens:0,    w:{pad:1,  bass:.8, lead:0,  counter:0,  seq:.25,key:0,  air:.65,drone:.6}, next:['gather','theme'] },
+  gather:{ label:'gathering',  bars:[8,8],  dens:.4,   w:{pad:1,  bass:1,  lead:0,  counter:.6, seq:.6, key:0,  air:.85,drone:.7}, next:['theme'] },
+  theme :{ label:'theme',      bars:[16,16],dens:1,    w:{pad:.9, bass:1,  lead:1,  counter:.4, seq:.7, key:.3, air:.7, drone:.5}, next:['open','settle','theme'] },
+  open  :{ label:'opening',    bars:[16,16],dens:1.15, w:{pad:1,  bass:1,  lead:1,  counter:1,  seq:1,  key:.5, air:1,  drone:.6}, next:['settle','theme'] },
+  settle:{ label:'settling',   bars:[8,12], dens:.45,  w:{pad:.85,bass:.7, lead:.5, counter:.25,seq:.3, key:.15,air:.5, drone:.7}, next:['still','theme'] }
+};
+const ARC = ['still','gather','theme','open','settle'];
 
 /* ============================ audio graph ============================ */
 let AC = null, ready = false;
-let masterIn, masterOut, airLP, hallGain, plateGain, echoIn, analyser, recDest;
+let masterIn, masterOut, airLP, analyser, recDest;
+let warmShelf, tiltHi, satNode, widthGain, tapeDelay, tapeLFO, tapeDepth;
+let hallIn, plateIn, bloomIn, hallTone, bloomTone, echoIn, chorusIn, chorusOut;
+let chorusDepths = [], airBed = null, drone = null;
 let BUS = {}, WAVES = {}, noiseBuf = null;
-const P = { volume:CFG.masterVolume, tone:.42, space:.78, weight:.9, motion:.45, bpm:56 };
-const LAYERS = { pad:true, bass:true, lead:true, counter:true, pulse:true, air:true };
+let lastSatW = -1;
 
-function filt(type, f, q, gain){
+const P = { volume:CFG.masterVolume, tone:.46, space:.80, weight:.9, motion:.45,
+            bpm:52, width:1.0 };
+const LAYERS = { pad:true, bass:true, lead:true, counter:true, seq:true, key:true, air:true, drone:true };
+const ENGINE = { echo:null };
+
+function gain(v){ const g = AC.createGain(); g.gain.value = v; return g; }
+function filt(type, f, q, g){
   const n = AC.createBiquadFilter();
   n.type = type; n.frequency.value = f;
   if(q != null) n.Q.value = q;
-  if(gain != null) n.gain.value = gain;
+  if(g != null) n.gain.value = g;
   return n;
 }
-function gain(v){ const g = AC.createGain(); g.gain.value = v; return g; }
+function fire(node, t, dur){ node.start(t); node.stop(t + dur); }
 
 function satCurve(drive){
   const n = 2048, c = new Float32Array(n), k = 1 + drive * 6;
@@ -346,26 +519,24 @@ function satCurve(drive){
   return c;
 }
 
-/* dark, diffuse impulse response. the one-pole damping sweep is what keeps
-   the tail from turning into hiss as it decays. */
-function makeIR(sec, damp, predelay, decayPow){
-  const sr = AC.sampleRate, len = Math.floor(sr * sec), pre = Math.floor(sr * predelay);
-  const buf = AC.createBuffer(2, len + pre, sr);
+/* dark, diffuse impulse. the damping sweep is what stops the tail hissing. */
+function makeIR(sec, damp, pre, decayPow){
+  const sr = AC.sampleRate, len = Math.floor(sr * sec), p = Math.floor(sr * pre);
+  const buf = AC.createBuffer(2, len + p, sr);
   for(let ch = 0; ch < 2; ch++){
     const d = buf.getChannelData(ch);
     let y = 0;
     for(let i = 0; i < len; i++){
       const t = i / len;
-      const cut = lerp(damp[0], damp[1], Math.pow(t, .6));
+      const cut = lerp(damp[0], damp[1], Math.pow(t, .55));
       const a = 1 - Math.exp(-2 * Math.PI * cut / sr);
       y += a * ((Math.random() * 2 - 1) - y);
-      const env = Math.pow(1 - t, decayPow) * (1 - Math.exp(-i / (sr * .012)));
-      d[pre + i] = y * env;
+      const env = Math.pow(1 - t, decayPow) * (1 - Math.exp(-i / (sr * .014)));
+      d[p + i] = y * env;
     }
-    /* a few early reflections so it reads as a room, not a wash */
-    for(let k = 0; k < 7; k++){
-      const at = pre + Math.floor(sr * (.008 + k * .0135 + Math.random() * .006));
-      if(at < d.length) d[at] += (Math.random() * 2 - 1) * (.5 - k * .06) * (ch ? .85 : 1);
+    for(let k = 0; k < 9; k++){
+      const at = p + Math.floor(sr * (.006 + k * .0127 + Math.random() * .007));
+      if(at < d.length) d[at] += (Math.random() * 2 - 1) * (.52 - k * .05) * (ch ? .82 : 1);
     }
   }
   return buf;
@@ -377,7 +548,7 @@ function makeNoise(){
     const d = b.getChannelData(ch);
     let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
     for(let i = 0; i < d.length; i++){
-      const w = Math.random() * 2 - 1;                 /* pink: softer than white */
+      const w = Math.random() * 2 - 1;
       b0 = .99886*b0 + w*.0555179; b1 = .99332*b1 + w*.0750759;
       b2 = .96900*b2 + w*.1538520; b3 = .86650*b3 + w*.3104856;
       b4 = .55000*b4 + w*.5329522; b5 = -.7616*b5 - w*.0168980;
@@ -387,7 +558,12 @@ function makeNoise(){
   }
   return b;
 }
-
+function noiseSrc(rate){
+  const s = AC.createBufferSource();
+  s.buffer = noiseBuf; s.loop = true;
+  s.playbackRate.value = rate != null ? rate : rr(.85, 1.05);
+  return s;
+}
 function makeWave(amps){
   const n = amps.length + 1;
   const re = new Float32Array(n), im = new Float32Array(n);
@@ -395,19 +571,35 @@ function makeWave(amps){
   return AC.createPeriodicWave(re, im, { disableNormalization:false });
 }
 
-function makeBus(name, opts){
+/* mid/side widener. side is scaled, then recombined. */
+function makeWidener(){
+  const inn = gain(1), sp = AC.createChannelSplitter(2), mg = AC.createChannelMerger(2);
+  const mid = gain(.5), side = gain(.5), sideInv = gain(-.5);
+  const wide = gain(P.width), wideInv = gain(-1);
+  const L = gain(1), R = gain(1);
+  inn.connect(sp);
+  sp.connect(mid, 0); sp.connect(mid, 1);
+  sp.connect(side, 0); sp.connect(sideInv, 1); sideInv.connect(side);
+  side.connect(wide);
+  mid.connect(L); mid.connect(R);
+  wide.connect(L); wide.connect(wideInv); wideInv.connect(R);
+  L.connect(mg, 0, 0); R.connect(mg, 0, 1);
+  return { in:inn, out:mg, amount:wide.gain };
+}
+
+function makeBus(name, o){
   const b = {
-    in: gain(1),
-    lvl: gain(opts.gain),
-    hall: gain(opts.hall || 0),
-    plate: gain(opts.plate || 0),
-    echo: gain(opts.echo || 0),
-    base: opts.gain
+    in: gain(1), lvl: gain(o.gain),
+    hall: gain(o.hall || 0), plate: gain(o.plate || 0), bloom: gain(o.bloom || 0),
+    chorus: gain(o.chorus || 0), echo: gain(o.echo || 0),
+    base:o.gain, w:1
   };
   b.in.connect(b.lvl);
   b.lvl.connect(masterIn);
-  b.lvl.connect(b.hall).connect(hallGain);
-  b.lvl.connect(b.plate).connect(plateGain);
+  b.lvl.connect(b.hall).connect(hallIn);
+  b.lvl.connect(b.plate).connect(plateIn);
+  b.lvl.connect(b.bloom).connect(bloomIn);
+  b.lvl.connect(b.chorus).connect(chorusIn);
   b.lvl.connect(b.echo).connect(echoIn);
   BUS[name] = b;
   return b;
@@ -415,374 +607,566 @@ function makeBus(name, opts){
 
 function initAudio(){
   AC = new (window.AudioContext || window.webkitAudioContext)({ latencyHint:'playback' });
+  const f = F();
 
   masterOut = gain(.0001);
   const limiter = AC.createDynamicsCompressor();
   limiter.threshold.value = -3; limiter.knee.value = 0; limiter.ratio.value = 20;
-  limiter.attack.value = .002; limiter.release.value = .14;
+  limiter.attack.value = .002; limiter.release.value = .13;
 
   const glue = AC.createDynamicsCompressor();
-  glue.threshold.value = -20; glue.knee.value = 26; glue.ratio.value = 2.4;
-  glue.attack.value = .025; glue.release.value = .38;
+  glue.threshold.value = -19; glue.knee.value = 26; glue.ratio.value = 2.3;
+  glue.attack.value = .022; glue.release.value = .34;
 
-  const sat = AC.createWaveShaper();
-  sat.curve = satCurve(CFG.satDrive); sat.oversample = '4x';
+  satNode = AC.createWaveShaper();
+  satNode.curve = satCurve(lerp2(CFG.satDrive, f.w)); satNode.oversample = '4x';
+  lastSatW = f.w;
 
   masterIn   = gain(1);
   const hp   = filt('highpass', CFG.rumbleCut, .7);
-  const shelf= filt('lowshelf', CFG.lowShelfHz, null, CFG.lowShelfDb);
+  warmShelf  = filt('lowshelf', CFG.warmShelfHz, null, lerp2(CFG.warmShelfDb, f.w));
+  tiltHi     = filt('highshelf', CFG.tiltHiHz, null, lerp2(CFG.tiltHiDb, f.w));
   const harsh= filt('peaking', CFG.harshHz, CFG.harshQ, CFG.harshDb);
   const pres = filt('peaking', CFG.presenceHz, .9, CFG.presenceDb);
   airLP      = filt('lowpass', lerp(CFG.airRange[0], CFG.airRange[1], P.tone), .5);
 
-  analyser = AC.createAnalyser();
-  analyser.fftSize = 1024; analyser.smoothingTimeConstant = .82;
+  const wid = makeWidener(); widthGain = wid.amount;
 
-  masterIn.connect(hp).connect(shelf).connect(sat).connect(harsh).connect(pres)
-          .connect(airLP).connect(glue).connect(limiter).connect(masterOut);
+  /* tape: a hair of wow and flutter across the whole master */
+  tapeDelay = AC.createDelay(.05); tapeDelay.delayTime.value = CFG.tapeBase;
+  tapeLFO = AC.createOscillator(); tapeLFO.type = 'sine'; tapeLFO.frequency.value = .21;
+  tapeDepth = gain(CFG.tapeWow);
+  tapeLFO.connect(tapeDepth).connect(tapeDelay.delayTime); tapeLFO.start();
+  const flut = AC.createOscillator(); flut.type = 'sine'; flut.frequency.value = 6.3;
+  const flutG = gain(CFG.tapeFlutter);
+  flut.connect(flutG).connect(tapeDelay.delayTime); flut.start();
+
+  analyser = AC.createAnalyser();
+  analyser.fftSize = 1024; analyser.smoothingTimeConstant = .8;
+
+  masterIn.connect(hp).connect(warmShelf).connect(satNode).connect(harsh).connect(pres)
+          .connect(tiltHi).connect(airLP).connect(wid.in);
+  wid.out.connect(tapeDelay).connect(glue).connect(limiter).connect(masterOut);
   masterOut.connect(analyser);
   masterOut.connect(AC.destination);
   recDest = AC.createMediaStreamDestination();
   masterOut.connect(recDest);
 
-  /* reverbs */
+  /* --- spaces --- */
   const hall = AC.createConvolver();
-  hall.buffer = makeIR(CFG.hallSeconds, CFG.hallDamp, CFG.hallPredelay, 2.1);
-  const hallTone = filt('lowpass', 2200, .5);
-  const hallHP = filt('highpass', 110, .7);
-  hallGain = gain(1);
-  hallGain.connect(hall).connect(hallHP).connect(hallTone).connect(masterIn);
+  hall.buffer = makeIR(CFG.hallSeconds, CFG.hallDamp, CFG.hallPre, 2.1);
+  hallTone = filt('lowpass', 2200, .5);
+  const hallHP = filt('highpass', 115, .7);
+  hallIn = gain(1);
+  hallIn.connect(hall).connect(hallHP).connect(hallTone).connect(masterIn);
 
   const plate = AC.createConvolver();
-  plate.buffer = makeIR(CFG.plateSeconds, CFG.plateDamp, CFG.platePredelay, 2.6);
-  const plateTone = filt('lowpass', 3000, .5);
-  plateGain = gain(1);
-  plateGain.connect(plate).connect(plateTone).connect(masterIn);
+  plate.buffer = makeIR(CFG.plateSeconds, CFG.plateDamp, CFG.platePre, 2.6);
+  const plateTone = filt('lowpass', 3200, .5);
+  plateIn = gain(1);
+  plateIn.connect(plate).connect(plateTone).connect(masterIn);
 
-  /* ping-pong echo, band-limited both ends */
+  /* the bloom: a very long, very dark room. this is the "space" in space music. */
+  const bloom = AC.createConvolver();
+  bloom.buffer = makeIR(CFG.bloomSeconds, CFG.bloomDamp, CFG.bloomPre, 1.7);
+  bloomTone = filt('lowpass', 1500, .5);
+  const bloomHP = filt('highpass', 150, .7);
+  bloomIn = gain(1);
+  bloomIn.connect(bloom).connect(bloomHP).connect(bloomTone).connect(masterIn);
+
+  /* --- ensemble chorus: three modulated taps, hard-panned --- */
+  chorusIn = gain(1); chorusOut = gain(.9);
+  chorusDepths = [];
+  CFG.chorusTimes.forEach((tm, i) => {
+    const d = AC.createDelay(.08); d.delayTime.value = tm;
+    const lfo = AC.createOscillator(); lfo.type = 'sine';
+    lfo.frequency.value = CFG.chorusRates[i];
+    const dep = gain(lerp2(CFG.chorusDepth, f.w));
+    lfo.connect(dep).connect(d.delayTime); lfo.start();
+    chorusDepths.push(dep.gain);
+    const pn = AC.createStereoPanner(); pn.pan.value = [-.75, .12, .78][i];
+    chorusIn.connect(d).connect(pn).connect(chorusOut);
+  });
+  chorusOut.connect(masterIn);
+
+  /* --- ping-pong echo, band-limited both ends --- */
   echoIn = gain(1);
   const dl = AC.createDelay(4), dr = AC.createDelay(4);
   const fb = gain(CFG.echoFeedback);
   const elp = filt('lowpass', CFG.echoHigh, .6), ehp = filt('highpass', CFG.echoLow, .7);
   const pl = AC.createStereoPanner(), pr = AC.createStereoPanner();
-  pl.pan.value = -.62; pr.pan.value = .62;
+  pl.pan.value = -.66; pr.pan.value = .66;
   echoIn.connect(dl);
   dl.connect(pl).connect(masterIn);
   dr.connect(pr).connect(masterIn);
   dl.connect(ehp).connect(elp).connect(fb).connect(dr);
   fb.connect(dl);
-  ENGINE.echo = { dl, dr, fb };
+  ENGINE.echo = { dl, dr, fb, lp:elp };
 
-  /* buses */
-  makeBus('pad',     { gain:.30, hall:.60, echo:.06 });
-  makeBus('bass',    { gain:.52, hall:.13 });
-  makeBus('lead',    { gain:.24, hall:.34, plate:.30, echo:.30 });
-  makeBus('counter', { gain:.22, hall:.44, plate:.12 });
-  makeBus('perc',    { gain:.36, hall:.20 });
-  makeBus('air',     { gain:.18, hall:.50 });
+  /* --- musical buses. Percussion is intentionally not part of Deep Field. --- */
+  makeBus('pad',     { gain:.30, hall:.52, bloom:.34, chorus:.40, echo:.05 });
+  makeBus('bass',    { gain:.54, hall:.10 });
+  makeBus('lead',    { gain:.24, hall:.30, plate:.28, bloom:.18, echo:.32, chorus:.16 });
+  makeBus('counter', { gain:.22, hall:.42, plate:.10, bloom:.16, chorus:.30 });
+  makeBus('seq',     { gain:.17, hall:.22, plate:.26, bloom:.30, echo:.42, chorus:.25 });
+  makeBus('key',     { gain:.20, hall:.16, plate:.34, echo:.16, chorus:.55 });
+  makeBus('air',     { gain:.18, hall:.44, bloom:.40 });
+  makeBus('drone',   { gain:.001,hall:.30, bloom:.44 });
+  makeBus('fx',      { gain:.50, hall:.42, plate:.18, bloom:.40 });
 
   for(const k in TIMBRES) WAVES[k] = makeWave(TIMBRES[k]);
   noiseBuf = makeNoise();
   startAirBed();
+  startDrone();
   ready = true;
+  applyField(true);
 }
 
 /* ============================ voices ============================ */
 
-function noiseSrc(){
-  const s = AC.createBufferSource();
-  s.buffer = noiseBuf; s.loop = true;
-  s.playbackRate.value = rr(.85, 1.0);
-  return s;
-}
-function fire(node, t, dur){ node.start(t); node.stop(t + dur); }
-
-/* ---- pad: three lightly detuned band-limited voices under a moving lowpass ---- */
-function padNote(midi, t, dur, opts){
+/* ---- pad: two timbres crossfaded by warmth, each lightly detuned,
+        under a slow filter, with an octave sine that reads as air ---- */
+function padNote(midi, t, dur, o){
+  const f0 = F();
   midi = clamp(midi, CFG.padFloor, CFG.padCeil);
   const f = mtof(midi);
-  const cut = clamp(opts.cut * lerp(.62, 1.5, P.tone), 240, 4200);
-  const lp = filt('lowpass', cut * .5, .62);
-  const pan = AC.createStereoPanner(); pan.pan.value = opts.pan;
+  const cut = clamp(o.cut * lerp(.60, 1.55, P.tone) * f0.bright, 220, 4600);
+  const lp = filt('lowpass', cut * .45, clamp(.6 + f0.res * .22, .5, 3.2));
+  const pan = AC.createStereoPanner(); pan.pan.value = o.pan;
   const amp = gain(.0001);
 
-  const a = Math.min(opts.attack, dur * .45), r = opts.release;
+  const a = Math.min(o.attack, dur * .45), r = o.release;
   amp.gain.setValueAtTime(.0001, t);
-  amp.gain.linearRampToValueAtTime(opts.peak, t + a);
-  amp.gain.setValueAtTime(opts.peak, t + Math.max(a, dur - r * .5));
+  amp.gain.linearRampToValueAtTime(o.peak, t + a);
+  amp.gain.setValueAtTime(o.peak, t + Math.max(a, dur - r * .5));
   amp.gain.setTargetAtTime(.0001, t + Math.max(a, dur - r * .5), r / 3.2);
 
-  lp.frequency.setValueAtTime(cut * .5, t);
-  lp.frequency.linearRampToValueAtTime(cut, t + dur * .55);
-  lp.frequency.linearRampToValueAtTime(cut * .72, t + dur + r);
+  lp.frequency.setValueAtTime(cut * .45, t);
+  lp.frequency.linearRampToValueAtTime(cut, t + dur * .6);
+  lp.frequency.linearRampToValueAtTime(cut * .66, t + dur + r);
 
   lp.connect(amp).connect(pan).connect(BUS.pad.in);
 
-  const det = [-6.5, 0, 6.5];
-  const stop = t + dur + r + .4;
-  for(let i = 0; i < 3; i++){
-    const o = AC.createOscillator();
-    o.setPeriodicWave(WAVES[opts.timbre]);
-    o.frequency.value = f;
-    o.detune.value = det[i] * opts.spread;
-    const vg = gain(i === 1 ? .5 : .3);
-    /* slow, independent drift keeps the chord alive without chorus fizz */
-    const lfo = AC.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = rr(.03, .09);
-    const lg = gain(rr(1.5, 4.5));
-    lfo.connect(lg).connect(o.detune);
-    fire(lfo, t, stop - t);
-    o.connect(vg).connect(lp);
-    fire(o, t, stop - t);
-  }
-  /* one octave-up sine at very low level: reads as air, not as treble */
-  if(P.tone > .35){
-    const o = AC.createOscillator(); o.type = 'sine'; o.frequency.value = f * 2;
-    o.detune.value = rr(-4, 4);
+  const stop = t + dur + r + .5;
+  const blend = f0.w;
+  const pairs = [[PAD_COLD, 1 - blend], [PAD_WARM, blend]];
+  const det = [-1, 1];
+  pairs.forEach(([tb, lv]) => {
+    if(lv < .04) return;
+    det.forEach((d, i) => {
+      const osc = AC.createOscillator();
+      osc.setPeriodicWave(WAVES[tb]);
+      osc.frequency.value = f;
+      osc.detune.value = d * o.spread * f0.detune;
+      const vg = gain(.34 * lv);
+      const lfo = AC.createOscillator(); lfo.type = 'sine';
+      lfo.frequency.value = rr(.026, .085);
+      const lg = gain(rr(1.4, 4.2) * lerp(1, 2.1, f0.t));
+      lfo.connect(lg).connect(osc.detune);
+      fire(lfo, t, stop - t);
+      osc.connect(vg).connect(lp);
+      fire(osc, t, stop - t);
+    });
+  });
+
+  /* octave-up sine at a whisper: air, never treble */
+  if(P.tone > .3){
+    const osc = AC.createOscillator(); osc.type = 'sine'; osc.frequency.value = f * 2;
+    osc.detune.value = rr(-5, 5);
     const g2 = gain(.0001);
     g2.gain.setValueAtTime(.0001, t);
-    g2.gain.linearRampToValueAtTime(opts.peak * .10 * (P.tone - .3), t + a * 1.6);
+    g2.gain.linearRampToValueAtTime(o.peak * .11 * (P.tone - .28) * lerp(1.25, .7, f0.w), t + a * 1.7);
     g2.gain.setTargetAtTime(.0001, t + dur * .8, r / 3);
-    o.connect(g2).connect(pan);
-    fire(o, t, stop - t);
+    osc.connect(g2).connect(pan);
+    fire(osc, t, stop - t);
   }
 }
 
-/* ---- bass: sine sub + filtered body. nothing above 400 Hz ---- */
-function bassNote(midi, t, dur, opts){
+/* ---- bass: sine sub + filtered body. nothing above 420 Hz ---- */
+function bassNote(midi, t, dur, o){
+  const f0 = F();
   midi = clamp(midi, CFG.bassFloor, CFG.bassCeil);
   const f = mtof(midi);
-  const a = opts.attack, r = opts.release, stop = t + dur + r + .5;
+  const a = o.attack, r = o.release, stop = t + dur + r + .6;
   const out = gain(1); out.connect(BUS.bass.in);
 
-  const subLP = filt('lowpass', 130, .7);
-  const sub = AC.createOscillator(); sub.type = 'sine'; sub.frequency.value = f;
+  const subLP = filt('lowpass', o.round ? 110 : 150, .7);
+  const sub = AC.createOscillator(); sub.type = 'sine';
+  sub.frequency.setValueAtTime(o.glideFrom ? mtof(o.glideFrom) : f, t);
+  if(o.glideFrom) sub.frequency.exponentialRampToValueAtTime(f, t + .09);
   const sg = gain(.0001);
-  const subPeak = opts.peak * lerp(.55, 1.25, P.weight) * (MOOD.sub || 1);
+  const peak = o.peak * lerp(.6, 1.28, P.weight) * f0.weightMul;
   sg.gain.setValueAtTime(.0001, t);
-  sg.gain.linearRampToValueAtTime(subPeak, t + a);
-  sg.gain.setValueAtTime(subPeak, t + Math.max(a, dur - .2));
-  sg.gain.setTargetAtTime(.0001, t + Math.max(a, dur - .2), r / 3);
+  sg.gain.linearRampToValueAtTime(peak, t + a);
+  sg.gain.setValueAtTime(peak, t + Math.max(a, dur - .12));
+  sg.gain.setTargetAtTime(.0001, t + Math.max(a, dur - .12), r / 3);
   sub.connect(sg).connect(subLP).connect(out);
   fire(sub, t, stop - t);
 
-  /* second harmonic at low level so it survives small speakers */
   const oct = AC.createOscillator(); oct.type = 'sine'; oct.frequency.value = f * 2;
   const og = gain(.0001);
   og.gain.setValueAtTime(.0001, t);
-  og.gain.linearRampToValueAtTime(subPeak * .16, t + a * 1.2);
-  og.gain.setTargetAtTime(.0001, t + Math.max(a, dur - .2), r / 3.5);
+  og.gain.linearRampToValueAtTime(peak * .17, t + a * 1.2);
+  og.gain.setTargetAtTime(.0001, t + Math.max(a, dur - .12), r / 3.5);
   oct.connect(og).connect(out);
   fire(oct, t, stop - t);
 
-  /* body: cello-ish spectrum, hard lowpass, gives pitch definition */
   const body = AC.createOscillator();
   body.setPeriodicWave(WAVES.strings);
   body.frequency.value = f * 2;
-  body.detune.value = rr(-3, 3);
-  const bf = filt('lowpass', 260, .8);
-  bf.frequency.setValueAtTime(170, t);
-  bf.frequency.linearRampToValueAtTime(lerp(230, 420, P.tone), t + Math.min(dur * .5, 2.4));
+  body.detune.value = rr(-4, 4);
+  const bf = filt('lowpass', 280, clamp(.8 + f0.res * .2, .8, 3));
+  bf.frequency.setValueAtTime(175, t);
+  bf.frequency.linearRampToValueAtTime(lerp(240, 430, P.tone) * lerp(1.1, .88, f0.w), t + Math.min(dur * .5, 2.2));
   const bg = gain(.0001);
   bg.gain.setValueAtTime(.0001, t);
-  bg.gain.linearRampToValueAtTime(opts.peak * .22, t + a * 1.4);
-  bg.gain.setTargetAtTime(.0001, t + Math.max(a, dur - .3), r / 3);
+  bg.gain.linearRampToValueAtTime(o.peak * .24, t + a * 1.4);
+  bg.gain.setTargetAtTime(.0001, t + Math.max(a, dur - .16), r / 3);
   body.connect(bg).connect(bf).connect(out);
   fire(body, t, stop - t);
 }
 
-/* ---- lead: additive with per-partial decay. felt-hammer / struck glass ---- */
-function leadNote(midi, t, dur, vel, timbre){
+/* ---- lead: additive, per-partial decay. felt hammer on struck glass ---- */
+function leadNote(midi, t, dur, vel){
+  const f0 = F();
   midi = clamp(Math.round(midi), CFG.leadFloor, CFG.leadCeil);
   const f = mtof(midi);
-  const ring = clamp(dur * 1.5, 1.6, 8);
+  const ring = clamp(dur * 1.6, 1.6, 9);
   const out = gain(1);
   const pan = AC.createStereoPanner();
-  pan.pan.value = clamp((midi - 72) / 26, -.5, .5) * .7;
-  /* brightness follows pitch downward: high notes get darker, not brighter */
-  const cut = clamp(f * lerp(5.5, 3.0, (midi - CFG.leadFloor) / 25) + 220, 500, lerp(1700, 3400, P.tone));
+  pan.pan.value = clamp((midi - 70) / 26, -.5, .5) * .68;
+  const cut = clamp(f * lerp(5.6, 3.0, (midi - CFG.leadFloor) / 26) + 220, 480,
+                    lerp(1700, 3500, P.tone) * f0.bright);
   const lp = filt('lowpass', cut, .55);
   out.connect(lp).connect(pan).connect(BUS.lead.in);
 
-  const sets = {
-    glass: [[1,1,1],[2,.26,.70],[3,.10,.48],[4.16,.045,.32],[5.43,.018,.22]],
-    wood : [[1,1,1],[2,.16,.55],[2.99,.08,.38],[4.02,.03,.25]],
-    reed : [[1,1,1],[2,.34,.85],[3,.19,.70],[4,.08,.50],[5,.035,.34]]
-  };
-  const parts = sets[timbre] || sets.glass;
-  const atk = lerp(.11, .022, vel);
+  /* cold rings like glass, warm rings like wood and reed */
+  const cold = [[1,1,1],[2,.26,.70],[3,.10,.48],[4.16,.045,.32],[5.43,.018,.22]];
+  const warm = [[1,1,1],[2,.34,.78],[2.99,.16,.55],[4.01,.06,.36],[5.02,.022,.24]];
+  const b = f0.w;
+  const atk = lerp(.12, .022, vel);
 
-  parts.forEach(([ratio, amp, dec]) => {
+  for(let i = 0; i < cold.length; i++){
+    const ratio = lerp(cold[i][0], warm[i][0], b);
+    const amp   = lerp(cold[i][1], warm[i][1], b);
+    const dec   = lerp(cold[i][2], warm[i][2], b);
     const pf = f * ratio;
-    if(pf > CFG.partialCap) return;
-    const o = AC.createOscillator(); o.type = 'sine';
-    o.frequency.value = pf;
-    o.detune.value = rr(-2.5, 2.5);
+    if(pf > CFG.partialCap) continue;
+    const osc = AC.createOscillator(); osc.type = 'sine';
+    osc.frequency.value = pf;
+    osc.detune.value = rr(-3, 3);
     const g = gain(.0001);
     const peak = .42 * vel * amp;
     g.gain.setValueAtTime(.0001, t);
     g.gain.linearRampToValueAtTime(peak, t + atk * (1 + (ratio - 1) * .12));
     g.gain.setTargetAtTime(.0001, t + atk, (ring * dec) / 3.4);
-    o.connect(g).connect(out);
-    fire(o, t, ring + .5);
-  });
+    osc.connect(g).connect(out);
+    fire(osc, t, ring + .6);
+  }
 
-  /* sub-octave shadow: weight under the note instead of sparkle above it */
+  /* sub-octave shadow: weight under the note, not sparkle above it */
   const sh = AC.createOscillator(); sh.type = 'sine'; sh.frequency.value = f / 2;
   const shg = gain(.0001);
   shg.gain.setValueAtTime(.0001, t);
-  shg.gain.linearRampToValueAtTime(.13 * vel, t + atk * 1.8);
+  shg.gain.linearRampToValueAtTime(.14 * vel * lerp(.7, 1.2, f0.w), t + atk * 1.8);
   shg.gain.setTargetAtTime(.0001, t + atk, ring / 4.5);
   sh.connect(shg).connect(out);
-  fire(sh, t, ring + .5);
+  fire(sh, t, ring + .6);
 }
 
-/* ---- counter-line: bowed, vibrato delayed like a real player ---- */
+/* ---- counter-line: bowed. vibrato arrives late, tremolo arrives with tension ---- */
 function counterNote(midi, t, dur, vel){
-  midi = clamp(Math.round(midi), 45, 67);
+  const f0 = F();
+  midi = clamp(Math.round(midi), 45, 69);
   const f = mtof(midi);
-  const o = AC.createOscillator();
-  o.setPeriodicWave(WAVES.strings);
-  o.frequency.value = f;
-  const lp = filt('lowpass', clamp(f * 5 + 180, 420, lerp(900, 1700, P.tone)), .7);
+  const osc = AC.createOscillator();
+  osc.setPeriodicWave(WAVES[f0.w > .5 ? 'strings' : 'vox']);
+  osc.frequency.value = f;
+  const lp = filt('lowpass', clamp(f * 5 + 180, 420, lerp(900, 1900, P.tone) * f0.bright),
+                  clamp(.7 + f0.res * .3, .7, 4));
   const g = gain(.0001);
-  const pan = AC.createStereoPanner(); pan.pan.value = rr(-.35, .35);
-  const a = .55, r = 1.6;
+  const pan = AC.createStereoPanner(); pan.pan.value = rr(-.4, .4);
+  const a = lerp(.75, .28, f0.t), r = 1.7;
   g.gain.setValueAtTime(.0001, t);
   g.gain.linearRampToValueAtTime(.30 * vel, t + a);
   g.gain.setValueAtTime(.30 * vel, t + Math.max(a, dur - .4));
   g.gain.setTargetAtTime(.0001, t + Math.max(a, dur - .4), r / 3);
 
-  const vib = AC.createOscillator(); vib.type = 'sine'; vib.frequency.value = rr(4.1, 5.2);
+  const vib = AC.createOscillator(); vib.type = 'sine';
+  vib.frequency.value = lerp(4.3, 6.6, f0.t);
   const vg = gain(0);
   vg.gain.setValueAtTime(0, t);
-  vg.gain.linearRampToValueAtTime(6.5, t + a + .5);
-  vib.connect(vg).connect(o.detune);
-  fire(vib, t, dur + r + .5);
+  vg.gain.linearRampToValueAtTime(lerp(6, 16, f0.t), t + a + .5);
+  vib.connect(vg).connect(osc.detune);
+  fire(vib, t, dur + r + .6);
 
-  o.connect(g).connect(lp).connect(pan).connect(BUS.counter.in);
-  fire(o, t, dur + r + .5);
+  /* tremolo: the single most suspenseful thing a string section does */
+  if(f0.tremDep > .04){
+    const tr = AC.createOscillator(); tr.type = 'sine'; tr.frequency.value = f0.tremRate;
+    const tg = gain(0);
+    tg.gain.setValueAtTime(0, t);
+    tg.gain.linearRampToValueAtTime(.30 * vel * f0.tremDep, t + a + .8);
+    tr.connect(tg).connect(g.gain);
+    fire(tr, t, dur + r + .6);
+  }
+
+  osc.connect(g).connect(lp).connect(pan).connect(BUS.counter.in);
+  fire(osc, t, dur + r + .6);
 }
 
-/* ---- pulse: a heartbeat, not a drum. no noise transient at all ---- */
-function pulseHit(t, vel, low){
-  const o = AC.createOscillator(); o.type = 'sine';
+/* ---- sequence: the Berlin-school pluck. resonant filter, dotted echo ---- */
+function seqNote(midi, t, dur, vel){
+  const f0 = F();
+  midi = clamp(Math.round(midi), CFG.seqFloor, CFG.seqCeil);
+  const f = mtof(midi);
+  const osc = AC.createOscillator();
+  osc.setPeriodicWave(WAVES[f0.w > .55 ? 'saw' : 'pulse']);
+  osc.frequency.value = f;
+  osc.detune.value = rr(-4, 4);
+  const sub = AC.createOscillator(); sub.type = 'sine'; sub.frequency.value = f / 2;
+
+  const base = clamp(f * lerp(1.4, 3.2, f0.seqBright) + 180, 260, 5200);
+  const lp = filt('lowpass', base, clamp(3.5 + f0.res * 1.4, 3, 14));
+  lp.frequency.setValueAtTime(base * lerp(2.6, 4.2, vel), t);
+  lp.frequency.exponentialRampToValueAtTime(Math.max(180, base * .55), t + Math.min(dur * 2.2, 1.1));
+
   const g = gain(.0001);
-  const lp = filt('lowpass', low ? 120 : 175, .6);
-  const f0 = low ? 74 : 92, f1 = low ? 33 : 42;
-  o.frequency.setValueAtTime(f0, t);
-  o.frequency.exponentialRampToValueAtTime(f1, t + (low ? .34 : .22));
   g.gain.setValueAtTime(.0001, t);
-  g.gain.linearRampToValueAtTime(.85 * vel * lerp(.6, 1.2, P.weight), t + .022);
-  g.gain.setTargetAtTime(.0001, t + .07, low ? .16 : .10);
-  o.connect(g).connect(lp).connect(BUS.perc.in);
-  fire(o, t, 1.4);
-  VIZ.pulse.push({ at:t, v:vel });
+  g.gain.linearRampToValueAtTime(.30 * vel, t + .008);
+  g.gain.setTargetAtTime(.0001, t + .012, Math.max(.05, dur * .42));
+  const sg = gain(.0001);
+  sg.gain.setValueAtTime(.0001, t);
+  sg.gain.linearRampToValueAtTime(.12 * vel, t + .012);
+  sg.gain.setTargetAtTime(.0001, t + .016, Math.max(.06, dur * .5));
+
+  const pan = AC.createStereoPanner();
+  pan.pan.value = clamp(((midi % 7) / 7 - .5) * 1.5, -.7, .7);
+  osc.connect(g).connect(lp).connect(pan).connect(BUS.seq.in);
+  sub.connect(sg).connect(pan);
+  fire(osc, t, dur + 1.4);
+  fire(sub, t, dur + 1.4);
 }
 
-/* ---- deep impact for passage changes ---- */
+/* ---- electric piano: the deep-house chord. bell attack, wooden body ---- */
+function keyChord(notes, t, dur, vel){
+  const f0 = F();
+  const out = gain(1);
+  const trembase = gain(1);
+  const lp = filt('lowpass', lerp(1900, 3300, P.tone) * f0.bright, .6);
+  const pan = AC.createStereoPanner(); pan.pan.value = rr(-.2, .2);
+  out.connect(trembase).connect(lp).connect(pan).connect(BUS.key.in);
+
+  /* one slow tremolo shared by the whole chord, like a real Rhodes */
+  const trem = AC.createOscillator(); trem.type = 'sine';
+  trem.frequency.value = lerp(1.6, 4.8, f0.t);
+  const tg = gain(.16 * lerp(.6, 1.4, f0.t));
+  trem.connect(tg).connect(trembase.gain);
+  fire(trem, t, dur + 2);
+
+  notes.forEach((m, i) => {
+    const f = mtof(clamp(m, 48, 84));
+    const body = AC.createOscillator();
+    body.setPeriodicWave(WAVES[f0.w > .5 ? KEY_WARM : KEY_COLD]);
+    body.frequency.value = f;
+    body.detune.value = rr(-4, 4);
+    const g = gain(.0001);
+    const pk = .20 * vel / Math.sqrt(notes.length);
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.linearRampToValueAtTime(pk, t + .012);
+    g.gain.setTargetAtTime(.0001, t + .02, Math.max(.12, dur * .46));
+    body.connect(g).connect(out);
+    fire(body, t, dur + 1.6);
+
+    /* bell partial: short, quiet, and it is what makes it read as an EP */
+    const bell = AC.createOscillator(); bell.type = 'sine';
+    bell.frequency.value = f * 4.02;
+    if(bell.frequency.value < CFG.partialCap){
+      const bg = gain(.0001);
+      bg.gain.setValueAtTime(.0001, t);
+      bg.gain.linearRampToValueAtTime(pk * .12 * lerp(1.2, .7, f0.w), t + .006);
+      bg.gain.setTargetAtTime(.0001, t + .01, .09);
+      bell.connect(bg).connect(out);
+      fire(bell, t, .6);
+    }
+  });
+}
+
+/* ---- drone: the suspense. one sustained low cluster, always on,
+        level and movement driven entirely by the tension axis ---- */
+function startDrone(){
+  const out = gain(1); out.connect(BUS.drone.in);
+  const lp = filt('lowpass', 340, 1.1);
+  lp.connect(out);
+  const oscs = [];
+  [[1,'sine',.55],[1.004,'sawtooth',.22],[1.5,'sine',.13],[2.003,'sawtooth',.09]].forEach(([r, ty, a]) => {
+    const o = AC.createOscillator(); o.type = ty; o.frequency.value = 55 * r;
+    const g = gain(a);
+    o.connect(g).connect(lp); o.start();
+    oscs.push({ o, r });
+  });
+  const beat = AC.createOscillator(); beat.type = 'sine'; beat.frequency.value = .4;
+  const bg = gain(0);
+  beat.connect(bg).connect(out.gain); beat.start();
+  drone = { oscs, lp, out, beatOsc:beat, beatGain:bg.gain };
+}
+function tuneDrone(midi){
+  if(!drone) return;
+  const f = mtof(clamp(midi, 28, 43));
+  const t = AC.currentTime;
+  drone.oscs.forEach(d => d.o.frequency.setTargetAtTime(f * d.r, t, 3.5));
+}
+
+/* ---- air bed: continuous pink noise, never above 1.4 kHz ---- */
+function startAirBed(){
+  const n = noiseSrc(1);
+  const bp = filt('bandpass', 420, .55);
+  const lp = filt('lowpass', 1200, .5);
+  const lvl = gain(0);
+  const lfo = AC.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = .033;
+  const lg = gain(210);
+  lfo.connect(lg).connect(bp.frequency); lfo.start();
+  const amp = AC.createOscillator(); amp.type = 'sine'; amp.frequency.value = .019;
+  const ag = gain(.25);
+  amp.connect(ag).connect(lvl.gain); amp.start();
+  n.connect(bp).connect(lp).connect(lvl).connect(BUS.air.in);
+  n.start();
+  airBed = { lvl, bp, lp, base:0 };
+}
+
+/* ---- transitions ---- */
 function impact(t, vel){
   const o = AC.createOscillator(); o.type = 'sine';
-  o.frequency.setValueAtTime(62, t);
-  o.frequency.exponentialRampToValueAtTime(27, t + 2.6);
+  o.frequency.setValueAtTime(60, t);
+  o.frequency.exponentialRampToValueAtTime(26, t + 2.8);
   const g = gain(.0001);
   g.gain.setValueAtTime(.0001, t);
-  g.gain.linearRampToValueAtTime(.55 * vel * lerp(.5, 1.1, P.weight), t + .22);
-  g.gain.setTargetAtTime(.0001, t + .5, .9);
+  g.gain.linearRampToValueAtTime(.5 * vel * lerp(.5, 1.1, P.weight), t + .22);
+  g.gain.setTargetAtTime(.0001, t + .5, .95);
   const lp = filt('lowpass', 150, .6);
-  o.connect(g).connect(lp).connect(BUS.perc.in);
-  fire(o, t, 4.5);
-
-  /* dark rising swell: bandpass stays under 900 Hz, so it swells without hissing */
+  o.connect(g).connect(lp).connect(BUS.fx.in);
+  fire(o, t, 4.6);
+}
+function riser(t, dur, vel){
   const n = noiseSrc();
-  const bp = filt('bandpass', 180, .7);
-  bp.frequency.setValueAtTime(150, t - 2.4);
-  bp.frequency.exponentialRampToValueAtTime(820, t + .1);
-  const ng = gain(.0001);
-  ng.gain.setValueAtTime(.0001, t - 2.4);
-  ng.gain.linearRampToValueAtTime(.16 * vel, t);
-  ng.gain.setTargetAtTime(.0001, t + .05, .5);
-  const lp2 = filt('lowpass', 1100, .5);
-  n.connect(bp).connect(ng).connect(lp2).connect(BUS.perc.in);
-  const st = Math.max(AC.currentTime, t - 2.4);
-  n.start(st); n.stop(t + 2);
+  const bp = filt('bandpass', 180, lerp(.8, 3.5, F().t));
+  const st = Math.max(AC.currentTime + .02, t - dur);
+  bp.frequency.setValueAtTime(150, st);
+  bp.frequency.exponentialRampToValueAtTime(1500, t + .05);
+  const g = gain(.0001);
+  g.gain.setValueAtTime(.0001, st);
+  g.gain.linearRampToValueAtTime(.17 * vel, t);
+  g.gain.setTargetAtTime(.0001, t + .04, .45);
+  const lp = filt('lowpass', 1800, .5);
+  n.connect(bp).connect(g).connect(lp).connect(BUS.fx.in);
+  n.start(st); n.stop(t + 1.6);
+}
+function reverseSwell(t, dur){
+  const f0 = F();
+  const o = AC.createOscillator();
+  o.setPeriodicWave(WAVES.vox);
+  const st = Math.max(AC.currentTime + .02, t - dur);
+  o.frequency.setValueAtTime(mtof(S.root + 48), st);
+  const g = gain(.0001);
+  g.gain.setValueAtTime(.0001, st);
+  g.gain.linearRampToValueAtTime(.1 * lerp(.6, 1.2, f0.t), t);
+  g.gain.setTargetAtTime(.0001, t + .05, .5);
+  const lp = filt('lowpass', 900, 1.4);
+  lp.frequency.setValueAtTime(320, st);
+  lp.frequency.exponentialRampToValueAtTime(2200, t);
+  o.connect(g).connect(lp).connect(BUS.fx.in);
+  o.start(st); o.stop(t + 1.2);
 }
 
-/* ---- air bed: continuous, pink, and kept below 1.2 kHz ---- */
-let airLevel = null;
-function startAirBed(){
-  const n = noiseSrc();
-  const bp = filt('bandpass', 420, .55);
-  const lp = filt('lowpass', 1100, .5);
-  airLevel = gain(0);
-  const lfo = AC.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = .035;
-  const lg = gain(210);
-  lfo.connect(lg).connect(bp.frequency);
-  lfo.start();
-  const amp = AC.createOscillator(); amp.type = 'sine'; amp.frequency.value = .021;
-  const ag = gain(.25);
-  amp.connect(ag).connect(airLevel.gain);
-  amp.start();
-  n.connect(bp).connect(lp).connect(airLevel).connect(BUS.air.in);
-  n.start();
-}
-
-/* ============================ harmony & melody ============================ */
-
-const ENGINE = { echo:null };
-let MOOD = MOODS[0];
+/* ============================ harmony ============================ */
 const S = {
   seed:0, title:'', root:2, scaleName:'aeolian', scale:SCALES.aeolian,
-  bars:[], barCount:192, bar:0, nextBarTime:0, playing:false,
-  passage:'still', passLeft:8, prevVoicing:null,
-  motif:null, phraseIdx:0, phraseNotes:{}, anchor:14, lastLead:74,
-  auto:true
+  bars:[], bar:0, nextBarTime:0, playing:false,
+  passage:'still', passLeft:8, prevVoicing:null, lastDeg:0,
+  motif:null, phraseIdx:0, anchor:14, lastLead:72, lastSeq:72, auto:true,
+  barsBuilt:0
 };
 
-function stepToMidi(step){
-  const oct = Math.floor(step / 7), idx = ((step % 7) + 7) % 7;
-  return S.root + 48 + S.scale[idx] + 12 * oct;
+function degPc(deg){
+  const i = ((deg % 7) + 7) % 7;
+  return ((S.root + S.scale[i]) % 12 + 12) % 12;
 }
-function degToMidi(deg, oct){
+function degMidi(deg, oct){
   const o = Math.floor(deg / 7), i = ((deg % 7) + 7) % 7;
   return S.root + 12 * (oct + o) + S.scale[i];
 }
-function chordDegrees(type){
-  if(type === 'sus2') return [0,1,4];
-  if(type === 'sus4') return [0,3,4];
-  if(type === 'add9') return [0,2,4,7];
-  const d = [0,2,4];
-  if(/7/.test(type)) d.push(6);
-  if(/9/.test(type)) d.push(8);
-  return d;
+function degQuality(deg){
+  const i = ((deg % 7) + 7) % 7, j = (i + 2) % 7;
+  let third = S.scale[j] - S.scale[i];
+  if(third < 0) third += 12;
+  return third <= 3 ? 'min' : 'maj';
 }
 
-function buildTimeline(){
-  const prog = MOOD.prog;
-  S.bars = [];
-  let i = 0;
-  while(S.bars.length < S.barCount){
-    const [deg, type, len] = prog[i % prog.length];
-    /* occasional substitution keeps long listens from looping audibly */
-    let d = deg, ty = type;
-    if(rnd() < .16 && S.bars.length > 16){ d = (deg + pick([2,5,-2])) % 7; }
-    const notes = chordDegrees(ty).map(x => degToMidi(d + x, 4));
-    const pcs = notes.map(n => ((n % 12) + 12) % 12);
-    const chord = { deg:d, type:ty, notes, pcs, len, label:chordLabel(d, ty) };
-    for(let b = 0; b < len; b++) S.bars.push({ chord, start:b === 0, idx:b, len });
-    i++;
+/* the field picks the chord colour. warm reaches for 9ths and 6ths,
+   cold reaches for suspensions and fourths, tense reaches for the
+   things that will not resolve. */
+function pickType(quality){
+  const w = FIELD.x, t = FIELD.y;
+  const bag = [];
+  const add = (k, wt) => { const n = Math.round(wt * 12); for(let i = 0; i < n; i++) bag.push(k); };
+  if(quality === 'maj'){
+    add('maj9',  (1 - t) * (.4 + w * .6));
+    add('six9',  (1 - t) * w * .9);
+    add('add9',  (1 - t) * .55);
+    add('lyd',   (1 - t) * w * .5);
+    add('maj7',  .45);
+    add('sus2',  (1 - w) * .9 + (1 - t) * .2);
+    add('quartal', (1 - w) * (.3 + t * .5));
+    add('dom9',  t * .7);
+    add('domb9', t * t * .9);
+    add('aug',   t * t * .55);
+  }else{
+    add('min9',  (1 - t) * (.35 + w * .7));
+    add('min11', (1 - t) * .55);
+    add('min6',  (1 - t) * w * .5);
+    add('min7',  .6);
+    add('sus2',  (1 - w) * .7);
+    add('sus4',  .35 + t * .3);
+    add('quartal', (1 - w) * (.35 + t * .45));
+    add('halfdim', t * .8);
+    add('minb9', t * t * .85);
+    add('dim',   t * t * .6);
+    add('cluster', Math.pow(t, 3) * .7);
   }
-  S.bars.length = S.barCount;
+  return bag.length ? pick(bag) : (quality === 'maj' ? 'maj7' : 'min7');
 }
-function chordLabel(deg, type){
-  const root = ((S.root + S.scale[((deg % 7) + 7) % 7]) % 12 + 12) % 12;
-  const suffix = type.startsWith('min') ? 'm' + type.slice(3)
-               : type.startsWith('dom') ? type.slice(3)
-               : type;
-  return PC[root] + suffix;
-}
-function chordAt(bar){ return S.bars[((bar % S.barCount) + S.barCount) % S.barCount]; }
 
-/* voice leading: each pad voice moves to the nearest octave of its target */
+function makeChord(prevDeg){
+  const t = FIELD.y;
+  /* calm harmony moves in thirds and fourths; tense harmony moves by step
+     and by tritone, and refuses to sit still */
+  const calm  = [3, 4, 5, 2, -2, -3, 0];
+  const tense = [1, 6, -1, 3, 4, 2, 5];
+  const moves = chance(t) ? tense : calm;
+  let deg = prevDeg + pick(moves);
+  deg = ((deg % 7) + 7) % 7;
+  if(deg === prevDeg && chance(.6)) deg = (deg + 3) % 7;
+
+  const q = degQuality(deg);
+  const type = pickType(q);
+  const iv = CHORDS[type].iv;
+  const rootMidi = degMidi(deg, 4);
+  const notes = iv.map(x => rootMidi + x);
+  const pcs = notes.map(n => ((n % 12) + 12) % 12);
+  const f = F();
+  const len = f.chordBars;
+  S.lastDeg = deg;
+  return { deg, type, notes, pcs, iv, rootMidi, len, label:PC[degPc(deg)] + CHORDS[type].s };
+}
+
+function ensureBars(upTo){
+  while(S.bars.length <= upTo){
+    const c = makeChord(S.lastDeg);
+    for(let b = 0; b < c.len; b++) S.bars.push({ chord:c, start:b === 0, idx:b, len:c.len });
+  }
+}
+function chordAt(bar){ if(bar < 0) bar = 0; ensureBars(bar + 4); return S.bars[bar]; }
+
+/* voice leading: every pad voice moves to its nearest octave */
 function voiceChord(notes){
   const prev = S.prevVoicing;
   const v = notes.map((n, i) => {
@@ -797,7 +1181,7 @@ function voiceChord(notes){
   return v;
 }
 
-/* ---- motif: a short idea, then developed. this is the melody engine. ---- */
+/* ---- motif engine ---- */
 const SHAPES  = [[0,1,2,0],[0,2,1,4],[0,-1,-2,0],[0,3,2,1],[0,1,-1,2],[0,4,3,1],[0,-2,1,0],[0,2,4,3],[0,-1,2,1]];
 const RHYTHMS = [[1,1,2,4],[2,2,3,1],[1.5,.5,2,4],[3,1,2,2],[2,1,1,4],[1,1,1,5],[4,1,1,2],[2,3,1,2]];
 const PLANS   = [['same','down'],['up','ornament'],['invert','fragment'],['same','cadence']];
@@ -809,13 +1193,13 @@ function newMotif(){
 function develop(motif, kind){
   let m = motif.map(n => ({ ...n }));
   switch(kind){
-    case 'up':       m.forEach(n => n.step += 2); break;
-    case 'down':     m.forEach(n => n.step -= 2); break;
-    case 'invert':   { const p = m[0].step; m.forEach(n => n.step = p - (n.step - p)); break; }
-    case 'retro':    { const r = m.map(n => n.step).reverse(); m.forEach((n, i) => n.step = r[i]); break; }
+    case 'up':     m.forEach(n => n.step += 2); break;
+    case 'down':   m.forEach(n => n.step -= 2); break;
+    case 'invert': { const p = m[0].step; m.forEach(n => n.step = p - (n.step - p)); break; }
+    case 'retro':  { const r = m.map(n => n.step).reverse(); m.forEach((n, i) => n.step = r[i]); break; }
     case 'ornament': {
       const i = m.reduce((best, n, j, arr) => arr[best].dur >= n.dur ? best : j, 0);
-      const nb = { step:m[i].step + (rnd() < .5 ? 1 : -1), dur:.5 };
+      const nb = { step:m[i].step + (chance(.5) ? 1 : -1), dur:.5 };
       m[i] = { ...m[i], dur:Math.max(.5, m[i].dur - .5) };
       m.splice(i, 0, nb);
       break;
@@ -836,9 +1220,16 @@ function develop(motif, kind){
   }
   return m;
 }
-function snapToChord(midi, chord){
+function stepToMidi(step){
+  const oct = Math.floor(step / 7), idx = ((step % 7) + 7) % 7;
+  return S.root + 48 + S.scale[idx] + 12 * oct;
+}
+function snapToChord(midi, chord, tension){
   const pc = ((midi % 12) + 12) % 12;
   if(chord.pcs.includes(pc)) return midi;
+  /* under tension, the melody is allowed to sit on the note next door
+     and stay there. that is what makes it unsettled. */
+  if(chance(tension * .5)) return midi;
   for(let d = 1; d <= 4; d++){
     if(chord.pcs.includes(((pc - d) % 12 + 12) % 12)) return midi - d;
     if(chord.pcs.includes(((pc + d) % 12 + 12) % 12)) return midi + d;
@@ -848,7 +1239,6 @@ function snapToChord(midi, chord){
 function fitRegister(midi){
   while(midi > CFG.leadCeil) midi -= 12;
   while(midi < CFG.leadFloor) midi += 12;
-  /* discourage big leaps from the previous note */
   if(Math.abs(midi - S.lastLead) > 12){
     const alt = midi + (midi > S.lastLead ? -12 : 12);
     if(alt >= CFG.leadFloor && alt <= CFG.leadCeil) midi = alt;
@@ -857,10 +1247,10 @@ function fitRegister(midi){
   return midi;
 }
 
-/* build 4 bars of melody at once and hand back absolute-beat events */
 function buildPhrase(startBar){
+  const f = F();
   const plan = PLANS[S.phraseIdx % PLANS.length];
-  const dens = PASSAGES[S.passage].dens * lerp(.6, 1.25, P.motion);
+  const dens = PASSAGES[S.passage].dens * lerp(.6, 1.25, P.motion) * lerp(1.1, .82, f.t);
   const out = [];
   let beat = 0;
   const climax = (S.phraseIdx % PLANS.length) === 2;
@@ -873,130 +1263,206 @@ function buildPhrase(startBar){
       const chord = chordAt(startBar + barOff).chord;
       const strong = (beat % 4 === 0) || (beat % 2 === 0 && n.dur >= 2);
       let midi = stepToMidi(n.step + S.anchor + (climax ? 2 : 0));
-      if(midi > CFG.leadCeil - 3 && rnd() < .7) midi -= 12;
-      if(strong) midi = snapToChord(midi, chord);
+      if(midi > CFG.leadCeil - 3 && chance(.7)) midi -= 12;
+      if(strong) midi = snapToChord(midi, chord, f.t);
       midi = fitRegister(midi);
-      /* arch the phrase: louder in the middle, softer at the edges */
       const pos = beat / 16;
-      const vel = clamp(.42 + Math.sin(pos * Math.PI) * .38 + (i === 0 ? .08 : 0), .2, .95)
+      const vel = clamp(.4 + Math.sin(pos * Math.PI) * .38 + (i === 0 ? .08 : 0), .2, .95)
                 * (climax ? 1.08 : 1) * lerp(.82, 1.05, P.motion);
-      const rest = rnd() > (.62 + dens * .34) && !(half === 1 && i === part.length - 1);
-      if(!rest) out.push({ beat, midi, dur:n.dur, vel:clamp(vel, .15, 1) });
+      const rest = rnd() > (.6 + dens * .34) && !(half === 1 && i === part.length - 1);
+      const dur = n.dur;
+      if(!rest) out.push({ beat, midi, dur, vel:clamp(vel, .15, 1) });
       beat += n.dur;
     });
   });
   return out;
 }
 
+/* ---- the sequence line: chord tones walked on a grid ---- */
+const SEQ_SHAPES = ['up','updown','down','pedal','wander'];
+function buildSeq(bar, chord){
+  const f = F();
+  const steps = P.motion > .72 ? 12 : 8;
+  const tones = chord.iv.map(x => chord.rootMidi + x);
+  const pool = tones.concat(tones.map(x => x + 12));
+  pool.sort((a, b) => a - b);
+  const shape = SEQ_SHAPES[(bar + S.seed) % SEQ_SHAPES.length];
+  const out = [];
+  const density = clamp(.34 + P.motion * .4 + f.t * .22, .15, .92);
+  for(let i = 0; i < steps; i++){
+    if(!chance(density)) continue;
+    let idx;
+    if(shape === 'up') idx = i % pool.length;
+    else if(shape === 'down') idx = (pool.length - 1) - (i % pool.length);
+    else if(shape === 'updown'){
+      const per = pool.length * 2 - 2;
+      const k = i % per;
+      idx = k < pool.length ? k : per - k;
+    }else if(shape === 'pedal') idx = (i % 2) ? 0 : (1 + (i % (pool.length - 1)));
+    else idx = Math.floor(rnd() * pool.length);
+    let m = pool[clamp(idx, 0, pool.length - 1)] + 12;
+    while(m > CFG.seqCeil) m -= 12;
+    while(m < CFG.seqFloor) m += 12;
+    S.lastSeq = m;
+    out.push({ step:i, midi:m, vel:clamp(.38 + (i % 4 === 0 ? .3 : 0) + rr(-.08, .12), .2, 1) });
+  }
+  return { steps, notes:out };
+}
+
+function playBassLine(bar, cell, t, beat, w){
+  const barDur = beat * 4;
+  const ch = cell.chord;
+  const root = clamp(ch.rootMidi - 24, CFG.bassFloor, CFG.bassCeil);
+
+  /* Long, breathing bass tones only. No kick-aware rolls or beat patterns. */
+  if(cell.start){
+    bassNote(root, t, cell.len * barDur * .96, {
+      peak:.42 * w, attack:lerp(1.25, .38, P.motion), release:2.1
+    });
+  }else if(cell.idx === cell.len - 1 && cell.len >= 2 && P.motion > .5 && chance(.35)){
+    const nxt = chordAt(bar + 1).chord;
+    const approach = clamp(nxt.rootMidi - 24 + (chance(.5) ? -2 : 2), CFG.bassFloor, CFG.bassCeil);
+    bassNote(approach, t + barDur * .62, barDur * .28, { peak:.20 * w, attack:.45, release:1.2 });
+  }
+}
+
 /* ============================ the sequencer ============================ */
+function currentArc(){ return ARC; }
 
 function newPiece(seed){
   S.seed = seed != null ? seed : (Math.random() * 1e6) | 0;
   rnd = mulberry(S.seed);
   S.root = Math.floor(rnd() * 12);
-  S.scaleName = pick(MOOD.modes);
+  S.scaleName = pickMode();
   S.scale = SCALES[S.scaleName];
   S.title = pick(NAMES_A) + ' ' + pick(NAMES_B);
   S.motif = newMotif();
-  /* centre the melody near F4 whatever the key, so no key sits higher than another */
   S.anchor = [0, 7, 14].reduce((best, c) =>
     Math.abs(stepToMidi(c) - 65) < Math.abs(stepToMidi(best) - 65) ? c : best, 0);
   S.prevVoicing = null;
   S.phraseIdx = 0;
-  S.phraseNotes = {};
-  S.bar = 0;
-  S.passage = 'still';
+  S.lastDeg = 0;
+  S.bar = 0; S.barsBuilt = 0;
+  S.bars = [];
+  const arc = currentArc();
+  S.passage = arc[0];
   S.passLeft = 10;
-  P.bpm = MOOD.bpm;
-  linkSend({ t:'bpm', v:P.bpm });
-  linkSend({ t:'key', v:S.root });
-  P.tone = MOOD.tone; P.space = MOOD.space; P.weight = MOOD.weight; P.motion = MOOD.motion;
-  buildTimeline();
+  ensureBars(8);
   applyPassage(true);
   UI.sync();
   UI.piece();
+  linkState();
+}
+
+function pickMode(){
+  const w = FIELD.x, t = FIELD.y;
+  const bag = [];
+  const add = (m, wt) => { const n = Math.round(wt * 12); for(let i = 0; i < n; i++) bag.push(m); };
+  add('lydian',     w * (1 - t) * 1.3);
+  add('ionian',     w * (1 - t) * .9);
+  add('mixolydian', w * .75);
+  add('dorian',     (1 - t) * .95 + .25);
+  add('aeolian',    (1 - w) * .9 + t * .55);
+  add('phrygian',   (1 - w) * t * 1.5);
+  add('harmonic',   t * t * 1.2);
+  return bag.length ? pick(bag) : 'aeolian';
 }
 
 function applyPassage(instant){
   const w = PASSAGES[S.passage].w;
-  const t = ready ? AC.currentTime : 0, tau = instant ? .01 : 2.6;
+  const t = ready ? AC.currentTime : 0, tau = instant ? .01 : 3.0;
   for(const k in w){
-    const busName = k === 'air' ? 'air' : k === 'pulse' ? 'perc' : k;
-    const b = BUS[busName];
+    const b = BUS[k];
     if(!b) continue;
-    const on = LAYERS[k === 'perc' ? 'pulse' : k] !== false;
-    b.lvl.gain.setTargetAtTime(b.base * w[k] * (on ? 1 : 0), t, tau);
+    b.w = w[k];
+    const on = LAYERS[k] !== false;
+    if(k === 'drone') continue;          /* the drone rides on the field, not the passage */
+    const target = b.base * w[k] * (on ? 1 : 0);
+    if(ready) b.lvl.gain.setTargetAtTime(target, t, tau);
   }
-  if(airLevel) airLevel.gain.setTargetAtTime(LAYERS.air ? w.air * .8 : 0, t, instant ? .01 : 4);
+  if(airBed && ready){
+    airBed.base = LAYERS.air ? w.air * .85 : 0;
+    airBed.lvl.gain.setTargetAtTime(airBed.base, t, instant ? .01 : 4);
+  }
   UI.readout();
 }
 
 function nextPassage(when){
-  const opts = PASSAGES[S.passage].next;
-  const nx = opts[Math.floor(rnd() * opts.length)];
+  const arc = currentArc();
+  let opts = (PASSAGES[S.passage].next || arc).filter(x => arc.includes(x));
+  if(!opts.length) opts = arc;
+  const nx = pick(opts);
   S.passage = nx;
   const [a, b] = PASSAGES[nx].bars;
   S.passLeft = Math.round(lerp(a, b, rnd()));
   applyPassage(false);
-  if(ready && (nx === 'theme' || nx === 'open')){
-    impact(when != null ? when : AC.currentTime + .3, nx === 'open' ? .9 : .6);
+  if(ready){
+    const t = when != null ? when : AC.currentTime + .3;
+    const f = F();
+    const big = nx === 'theme' || nx === 'open';
+    if(big) impact(t, nx === 'open' ? .9 : .6);
+    if(f.t > .42 && big) riser(t, lerp(1.8, 3.4, f.t), .8 + f.t * .5);
+    if(nx === 'still') reverseSwell(t, 2.6);
   }
 }
 
 function scheduleBar(bar, t){
+  const f = F();
   const beat = 60 / P.bpm, barDur = beat * 4;
   const cell = chordAt(bar);
-  const chord = cell.chord;
+  const ch = cell.chord;
   const w = PASSAGES[S.passage].w;
 
-  /* ---- pad on chord change ---- */
-  if(cell.start && LAYERS.pad){
-    const v = voiceChord(chord.notes);
+  if(cell.start) tuneDrone(ch.rootMidi - 24);
+
+  /* ---- pad ---- */
+  if(LAYERS.pad && w.pad > 0 && cell.start){
+    const v = voiceChord(ch.notes);
     const dur = cell.len * barDur;
+    const cut = lerp(880, 1500, 1 - f.t) * lerp(.82, 1.2, f.w);
     v.forEach((m, i) => {
-      padNote(m, t + rr(0, .09), dur * .98, {
-        timbre: MOOD.padT,
-        cut: MOOD.padCut,
-        pan: lerp(-.55, .55, v.length < 2 ? .5 : i / (v.length - 1)) * .85,
-        peak: .34 / Math.sqrt(v.length) * lerp(.8, 1.1, P.space),
-        attack: lerp(4.2, 1.6, P.motion),
-        release: lerp(5.5, 3.0, P.motion),
-        spread: lerp(.5, 1.25, P.space)
+      padNote(m, t + rr(0, .1), dur * .98, {
+        cut,
+        pan: lerp(-.58, .58, v.length < 2 ? .5 : i / (v.length - 1)) * .85,
+        peak: .34 / Math.sqrt(v.length) * lerp(.8, 1.12, P.space),
+        attack: f.padAtk * lerp(1.15, .75, P.motion),
+        release: f.padRel,
+        spread: lerp(.5, 1.3, P.space)
       });
     });
   }
 
   /* ---- bass ---- */
-  if(LAYERS.bass && w.bass > 0){
-    const root = degToMidi(chord.deg, 2);
-    if(cell.start){
-      bassNote(root, t, cell.len * barDur * .96, {
-        peak:.42 * w.bass, attack:lerp(1.1, .35, P.motion), release:1.8
-      });
-    } else if(cell.idx === cell.len - 1 && cell.len >= 2 && P.motion > .35 && rnd() < .5){
-      /* a walking note into the next chord */
-      const nxt = chordAt(bar + 1).chord;
-      const approach = degToMidi(nxt.deg, 2) + (rnd() < .5 ? -2 : 2);
-      bassNote(approach, t + barDur * .5, barDur * .45, { peak:.28 * w.bass, attack:.35, release:1.0 });
+  if(LAYERS.bass && w.bass > 0) playBassLine(bar, cell, t, beat, w.bass);
+
+  /* ---- electric piano chords ---- */
+  if(LAYERS.key && w.key > 0 && cell.start){
+    const voiced = voiceKey(ch);
+    keyChord(voiced, t + rr(.04, .24), barDur * 1.12, .55 * w.key);
+    if(P.motion > .72 && chance(.28)){
+      keyChord(voiced, t + barDur * .56 + rr(-.08, .08), barDur * .42, .24 * w.key);
     }
   }
 
-  /* ---- pulse ---- */
-  if(LAYERS.pulse && w.pulse > 0){
-    const v = w.pulse * lerp(.7, 1.05, P.weight);
-    pulseHit(t, .55 * v, true);
-    if(P.motion > .3) pulseHit(t + beat * 2, .38 * v, false);
-    if(P.motion > .6 && rnd() < .5) pulseHit(t + beat * 3.5, .22 * v, false);
+  /* ---- sequence ---- */
+  if(LAYERS.seq && w.seq > 0){
+    const sq = buildSeq(bar, ch);
+    const stepDur = barDur / sq.steps;
+    sq.notes.forEach(n => {
+      const tt = t + n.step * stepDur + rr(-.018, .018);
+      seqNote(n.midi, tt, stepDur * .8, n.vel * w.seq * lerp(.8, 1.05, P.motion));
+      VIZ.notes.push({ at:tt, midi:n.midi, vel:n.vel * .55 });
+    });
   }
 
-  /* ---- counter-line: one long note per chord ---- */
+  /* ---- counter-line ---- */
   if(LAYERS.counter && w.counter > 0 && cell.start){
-    const opts = chord.notes.filter(n => n !== chord.notes[0]);
-    const target = opts.length ? opts[Math.floor(rnd() * opts.length)] : chord.notes[0];
+    const opts = ch.notes.filter(n => n !== ch.notes[0]);
+    const target = opts.length ? pick(opts) : ch.notes[0];
     let m = target;
-    while(m > 64) m -= 12;
+    while(m > 66) m -= 12;
     while(m < 47) m += 12;
-    counterNote(m, t + rr(.1, .6), cell.len * barDur * .8, .6 * w.counter);
+    counterNote(m, t + rr(.1, .7), cell.len * barDur * .82, .62 * w.counter);
   }
 
   /* ---- melody ---- */
@@ -1004,42 +1470,116 @@ function scheduleBar(bar, t){
     const notes = buildPhrase(bar);
     S.phraseIdx++;
     notes.forEach(n => {
-      leadNote(n.midi, t + n.beat * beat, n.dur * beat, n.vel * w.lead, MOOD.leadT);
+      leadNote(n.midi, t + n.beat * beat, n.dur * beat, n.vel * w.lead);
       VIZ.notes.push({ at:t + n.beat * beat, midi:n.midi, vel:n.vel });
     });
-    /* every fourth phrase, regrow the motif so it evolves over a long listen */
-    if(S.phraseIdx % 8 === 0 && rnd() < .7) S.motif = newMotif();
+    if(S.phraseIdx % 8 === 0 && chance(.7)) S.motif = newMotif();
   }
 
-  /* ---- passage clock ---- */
+  if(VIZ.notes.length > 260) VIZ.notes.splice(0, VIZ.notes.length - 260);
+  VIZ.notes.sort((a, b) => a.at - b.at);
+
   S.passLeft--;
   if(S.passLeft <= 0 && S.auto) nextPassage(t + barDur);
+}
+
+/* a close, mid-register voicing for the electric piano: no root, add the 7th */
+function voiceKey(ch){
+  const iv = ch.iv.filter(x => x !== 0);
+  let notes = iv.map(x => ch.rootMidi + x);
+  if(!notes.length) notes = [ch.rootMidi];
+  notes = notes.map(m => {
+    while(m > 79) m -= 12;
+    while(m < 55) m += 12;
+    return m;
+  });
+  notes.sort((a, b) => a - b);
+  return notes.slice(0, 4);
 }
 
 let tickTimer = null;
 function tick(){
   if(!ready || !S.playing || AC.state !== 'running') return;
   const horizon = AC.currentTime + CFG.lookahead;
-  while(S.nextBarTime < horizon){
+  let guard = 0;
+  while(S.nextBarTime < horizon && guard++ < 8){
     scheduleBar(S.bar, S.nextBarTime);
     S.bar++;
     S.nextBarTime += (60 / P.bpm) * 4;
   }
+  /* trim the bar history so a six-hour listen does not grow without bound */
+  if(S.bars.length > 4096 && S.bar > 2048){
+    const drop = 1024;
+    S.bars.splice(0, drop); S.bar -= drop; S.barsBuilt += drop;
+  }
   UI.readout();
 }
 
+/* ============================ the field, applied ============================ */
+function applyField(instant){
+  if(!ready) return;
+  const t = AC.currentTime, tau = instant ? .01 : CFG.fieldTau;
+  const f = F();
+
+  warmShelf.gain.setTargetAtTime(lerp2(CFG.warmShelfDb, f.w), t, tau);
+  tiltHi.gain.setTargetAtTime(lerp2(CFG.tiltHiDb, f.w), t, tau);
+  airLP.frequency.setTargetAtTime(
+    clamp(lerp(CFG.airRange[0], CFG.airRange[1], P.tone) * f.bright, 1200, 16000), t, tau);
+
+  hallTone.frequency.setTargetAtTime(lerp(2500, 1700, f.w) * lerp(1, .82, f.t), t, tau);
+  bloomTone.frequency.setTargetAtTime(lerp(1750, 1150, f.w), t, tau);
+  hallIn.gain.setTargetAtTime(lerp(.4, 1.35, P.space) * f.space, t, tau);
+  bloomIn.gain.setTargetAtTime(lerp(.25, 1.2, P.space) * lerp(1.15, .7, f.t), t, tau);
+  plateIn.gain.setTargetAtTime(lerp(.4, 1.15, P.space), t, tau);
+
+  chorusDepths.forEach(d => d.setTargetAtTime(lerp2(CFG.chorusDepth, f.w), t, tau));
+  chorusOut.gain.setTargetAtTime(lerp(.7, 1.0, f.w), t, tau);
+
+  tapeDepth.gain.setTargetAtTime(CFG.tapeWow * lerp(.6, 1.6, f.w), t, tau);
+  widthGain.setTargetAtTime(P.width * lerp(1.06, .88, f.t), t, tau);
+
+  if(ENGINE.echo){
+    ENGINE.echo.fb.gain.setTargetAtTime(
+      clamp(CFG.echoFeedback * lerp(.5, 1.05, P.motion) * f.echoFb, 0, .82), t, tau);
+    ENGINE.echo.lp.frequency.setTargetAtTime(CFG.echoHigh * lerp(1.15, .8, f.w), t, tau);
+  }
+
+  if(BUS.drone){
+    const lvl = LAYERS.drone ? f.droneLvl * .22 * PASSAGES[S.passage].w.drone : 0;
+    BUS.drone.lvl.gain.setTargetAtTime(Math.max(.0001, lvl), t, instant ? .05 : 8);
+  }
+  if(drone){
+    drone.beatOsc.frequency.setTargetAtTime(f.tremRate * .7, t, tau);
+    drone.beatGain.setTargetAtTime(f.tremDep * .5, t, tau);
+    drone.lp.frequency.setTargetAtTime(lerp(300, 520, f.w) * lerp(1, 1.3, f.t), t, tau);
+    drone.lp.Q.setTargetAtTime(clamp(1 + f.res * .4, 1, 5), t, tau);
+  }
+  if(airBed){
+    airBed.bp.Q.setTargetAtTime(lerp(.55, 1.5, f.t), t, tau);
+    airBed.lp.frequency.setTargetAtTime(lerp(1500, 900, f.w), t, tau);
+  }
+
+  /* the saturation curve cannot be ramped, so it is only rebuilt when
+     the warmth has actually moved far enough to matter */
+  if(Math.abs(f.w - lastSatW) > .06){
+    satNode.curve = satCurve(lerp2(CFG.satDrive, f.w));
+    lastSatW = f.w;
+  }
+}
+
+/* ============================ transport ============================ */
 async function play(){
   const first = !AC;
   if(first) initAudio();
   if(AC.state === 'suspended') await AC.resume();
   if(!S.title) newPiece();
-  if(first){ applyPassage(true); UI.sync(); }
+  if(first){ applyPassage(true); UI.sync(); UI.piece(); }
   if(!S.playing){
     S.playing = true;
-    S.nextBarTime = Math.max(S.nextBarTime, AC.currentTime + .25);
+    S.nextBarTime = Math.max(S.nextBarTime, AC.currentTime + .3);
     masterOut.gain.cancelScheduledValues(AC.currentTime);
     masterOut.gain.setValueAtTime(Math.max(.0001, masterOut.gain.value), AC.currentTime);
-    masterOut.gain.linearRampToValueAtTime(P.volume, AC.currentTime + 2.2);
+    masterOut.gain.linearRampToValueAtTime(P.volume, AC.currentTime + 2.4);
     if(!tickTimer) tickTimer = setInterval(tick, CFG.tickMs);
     updateEcho();
   }
@@ -1051,9 +1591,9 @@ function pause(){
   const t = AC.currentTime;
   masterOut.gain.cancelScheduledValues(t);
   masterOut.gain.setValueAtTime(masterOut.gain.value, t);
-  masterOut.gain.linearRampToValueAtTime(.0001, t + 1.6);
-  VIZ.notes.length = 0; VIZ.pulse.length = 0;
-  setTimeout(() => { if(!S.playing && AC.state === 'running') AC.suspend(); }, 1750);
+  masterOut.gain.linearRampToValueAtTime(.0001, t + 1.8);
+  VIZ.notes.length = 0;
+  setTimeout(() => { if(!S.playing && AC && AC.state === 'running') AC.suspend(); }, 1950);
   UI.transport();
 }
 function updateEcho(){
@@ -1061,13 +1601,41 @@ function updateEcho(){
   const d = (60 / P.bpm) * CFG.echoTimeBeats;
   ENGINE.echo.dl.delayTime.setTargetAtTime(d, AC.currentTime, .4);
   ENGINE.echo.dr.delayTime.setTargetAtTime(d * 1.5, AC.currentTime, .4);
-  ENGINE.echo.fb.gain.setTargetAtTime(CFG.echoFeedback * lerp(.5, 1.05, P.motion), AC.currentTime, .5);
+  applyField(false);
+}
+function applyScene(sc){
+  setField(sc.x, sc.y);
+  FIELD.x = FIELD.tx; FIELD.y = FIELD.ty;   /* a scene is a jump, by request */
+  P.bpm = sc.bpm;
+  newPiece();
+  if(ready){ applyField(true); updateEcho(); }
+  linkState();
+  UI.sync(); UI.piece(); UI.chips();
 }
 
-/* ============================ visual ============================ */
-const VIZ = { notes:[], pulse:[], rays:[], flash:0, stars:[] };
+/* ============================ palette ============================ */
+const COLD_HUE = [132, 182, 226];
+const WARM_HUE = [228, 164, 100];
+const TENSE_HUE= [206, 94, 104];
+const COLD_ACC = [96, 152, 208];
+const WARM_ACC = [224, 148, 86];
+
+function mix3(a, b, t){ return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t]; }
+function rgb(c, a){ return 'rgba(' + (c[0]|0) + ',' + (c[1]|0) + ',' + (c[2]|0) + ',' + a + ')'; }
+function hex(c){ return '#' + c.map(v => clamp(Math.round(v),0,255).toString(16).padStart(2,'0')).join(''); }
+
+function palette(){
+  const w = FIELD.x, t = FIELD.y;
+  const base = mix3(COLD_HUE, WARM_HUE, w);
+  const acc  = mix3(mix3(COLD_ACC, WARM_ACC, w), TENSE_HUE, Math.pow(t, 1.3) * .72);
+  const cool = mix3(COLD_HUE, [168, 150, 214], Math.pow(t, 1.5) * .6);
+  return { base, acc, cool };
+}
+
+/* ============================ background ============================ */
+const VIZ = { notes:[], rays:[], stars:[] };
 const cv = document.getElementById('field'), cx = cv.getContext('2d');
-let W = 0, H = 0, DPR = 1, freq = null, tGlob = 0;
+let W = 0, H = 0, DPR = 1, freq = null, tGlob = 0, cssTick = 0;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function resize(){
@@ -1076,13 +1644,21 @@ function resize(){
   cv.width = W * DPR; cv.height = H * DPR;
   cx.setTransform(DPR, 0, 0, DPR, 0, 0);
   VIZ.stars = [];
-  for(let i = 0; i < 90; i++) VIZ.stars.push({ x:Math.random() * W, y:Math.random() * H * .58, r:Math.random() * 1.1 + .25, p:Math.random() * 6.3 });
+  for(let i = 0; i < 110; i++) VIZ.stars.push({ x:Math.random()*W, y:Math.random()*H*.6, r:Math.random()*1.15+.25, p:Math.random()*6.3 });
+  resizePad();
 }
 addEventListener('resize', resize);
 
+let lastFrame = performance.now();
 function draw(){
   requestAnimationFrame(draw);
-  tGlob += reduce ? .002 : .006;
+  const now = performance.now();
+  const dt = Math.min(.25, (now - lastFrame) / 1000);
+  lastFrame = now;
+  fieldStep(dt, now / 1000);
+
+  tGlob += (reduce ? .002 : .006) * lerp(.7, 1.5, FIELD.y);
+  const P0 = palette();
   const hz = H * .64;
   cx.clearRect(0, 0, W, H);
 
@@ -1098,27 +1674,23 @@ function draw(){
     low /= n * .04; mid /= n * .18; high /= n * .78;
   }
 
-  /* stars */
   cx.globalCompositeOperation = 'lighter';
   VIZ.stars.forEach(s => {
-    const a = .10 + .12 * Math.sin(tGlob * .7 + s.p) + high * .35;
-    cx.fillStyle = 'rgba(185,207,225,' + clamp(a, 0, .5).toFixed(3) + ')';
+    const a = .09 + .12 * Math.sin(tGlob * .7 + s.p) + high * .35;
+    cx.fillStyle = rgb(P0.cool, clamp(a, 0, .5).toFixed(3));
     cx.beginPath(); cx.arc(s.x, s.y, s.r, 0, 6.3); cx.fill();
   });
 
-  /* aurora bands above the horizon */
   for(let b = 0; b < 5; b++){
-    const amp = (18 + b * 13) * (.5 + mid * 1.5);
-    const y0 = hz - 40 - b * 44 - low * 40;
+    const amp = (18 + b * 13) * (.5 + mid * 1.5) * lerp(.85, 1.35, FIELD.y);
+    const y0 = hz - 40 - b * 44 - low * 44;
     const g = cx.createLinearGradient(0, y0 - amp, 0, y0 + amp);
-    const warm = b % 2 === 0;
-    const col = warm ? '224,164,105' : '150,190,220';
-    g.addColorStop(0, 'rgba(' + col + ',0)');
-    g.addColorStop(.5, 'rgba(' + col + ',' + (0.035 + mid * .06).toFixed(3) + ')');
-    g.addColorStop(1, 'rgba(' + col + ',0)');
+    const col = b % 2 === 0 ? P0.acc : P0.cool;
+    g.addColorStop(0, rgb(col, 0));
+    g.addColorStop(.5, rgb(col, (.032 + mid * .06).toFixed(3)));
+    g.addColorStop(1, rgb(col, 0));
     cx.fillStyle = g;
-    cx.beginPath();
-    cx.moveTo(0, y0);
+    cx.beginPath(); cx.moveTo(0, y0);
     for(let x = 0; x <= W; x += 14){
       const y = y0 + Math.sin(x * .0042 + tGlob * (.35 + b * .12) + b) * amp * .5
                    + Math.sin(x * .0011 - tGlob * .21 + b * 2) * amp * .35;
@@ -1127,129 +1699,187 @@ function draw(){
     cx.lineTo(W, y0 - amp * 2); cx.lineTo(0, y0 - amp * 2); cx.closePath(); cx.fill();
   }
 
-  /* rays rising from the horizon, one per melody note */
-  const now = AC ? AC.currentTime : 0;
-  while(VIZ.notes.length && VIZ.notes[0].at <= now){
+  const nowA = AC ? AC.currentTime : 0;
+  while(VIZ.notes.length && VIZ.notes[0].at <= nowA){
     const n = VIZ.notes.shift();
-    VIZ.rays.push({ x:((n.midi - CFG.leadFloor) / (CFG.leadCeil - CFG.leadFloor)) * W * .82 + W * .09, life:1, v:n.vel });
+    VIZ.rays.push({ x:((clamp(n.midi, 48, 88) - 48) / 40) * W * .82 + W * .09, life:1, v:n.vel });
   }
-  while(VIZ.pulse.length && VIZ.pulse[0].at <= now){ VIZ.flash = Math.max(VIZ.flash, VIZ.pulse.shift().v); }
-  VIZ.flash *= .93;
 
-  VIZ.rays = VIZ.rays.filter(r => r.life > .01);
+  if(VIZ.rays.length > 90) VIZ.rays.splice(0, VIZ.rays.length - 90);
+  VIZ.rays = VIZ.rays.filter(r => r.life > .012);
   VIZ.rays.forEach(r => {
     r.life *= reduce ? .97 : .985;
-    const h = (120 + r.v * 260) * r.life;
+    const h = (120 + r.v * 270) * r.life;
     const g = cx.createLinearGradient(0, hz, 0, hz - h);
-    g.addColorStop(0, 'rgba(224,164,105,' + (.34 * r.life * r.v).toFixed(3) + ')');
-    g.addColorStop(1, 'rgba(185,207,225,0)');
+    g.addColorStop(0, rgb(P0.acc, (.34 * r.life * r.v).toFixed(3)));
+    g.addColorStop(1, rgb(P0.cool, 0));
     cx.fillStyle = g;
     const w = 1.4 + r.v * 3.2;
     cx.fillRect(r.x - w / 2, hz - h, w, h);
-    /* reflection */
     const g2 = cx.createLinearGradient(0, hz, 0, hz + h * .45);
-    g2.addColorStop(0, 'rgba(224,164,105,' + (.12 * r.life * r.v).toFixed(3) + ')');
-    g2.addColorStop(1, 'rgba(224,164,105,0)');
+    g2.addColorStop(0, rgb(P0.acc, (.11 * r.life * r.v).toFixed(3)));
+    g2.addColorStop(1, rgb(P0.acc, 0));
     cx.fillStyle = g2;
     cx.fillRect(r.x - w, hz, w * 2, h * .45);
   });
 
-  /* the horizon itself */
-  const glow = .18 + low * .55 + VIZ.flash * .5;
-  const hg = cx.createLinearGradient(0, hz - 16, 0, hz + 16);
-  hg.addColorStop(0, 'rgba(224,164,105,0)');
-  hg.addColorStop(.5, 'rgba(224,164,105,' + clamp(glow * .5, 0, .6).toFixed(3) + ')');
-  hg.addColorStop(1, 'rgba(224,164,105,0)');
-  cx.fillStyle = hg; cx.fillRect(0, hz - 16, W, 32);
-  cx.strokeStyle = 'rgba(235,231,222,' + clamp(.2 + glow * .35, 0, .75).toFixed(3) + ')';
+  const glow = .18 + low * .55;
+  const hg = cx.createLinearGradient(0, hz - 18, 0, hz + 18);
+  hg.addColorStop(0, rgb(P0.acc, 0));
+  hg.addColorStop(.5, rgb(P0.acc, clamp(glow * .5, 0, .62).toFixed(3)));
+  hg.addColorStop(1, rgb(P0.acc, 0));
+  cx.fillStyle = hg; cx.fillRect(0, hz - 18, W, 36);
+  cx.strokeStyle = 'rgba(236,232,223,' + clamp(.2 + glow * .35, 0, .75).toFixed(3) + ')';
   cx.lineWidth = 1;
   cx.beginPath(); cx.moveTo(0, hz + .5); cx.lineTo(W, hz + .5); cx.stroke();
 
   cx.globalCompositeOperation = 'source-over';
-  /* ground haze */
   const gg = cx.createLinearGradient(0, hz, 0, H);
-  gg.addColorStop(0, 'rgba(13,18,32,.55)');
-  gg.addColorStop(1, 'rgba(7,10,17,.95)');
+  gg.addColorStop(0, 'rgba(12,17,29,.55)');
+  gg.addColorStop(1, 'rgba(6,8,14,.96)');
   cx.fillStyle = gg; cx.fillRect(0, hz, W, H - hz);
+
+  drawPad(P0);
+
+  if(ready && cssTick % 20 === 0) applyField(false);
+  if(++cssTick % 12 === 0){
+    const r = document.documentElement.style;
+    r.setProperty('--accent', hex(P0.acc));
+    r.setProperty('--accent2', hex(P0.cool));
+    r.setProperty('--ice', hex(mix3(P0.cool, [235, 231, 222], .35)));
+    const el = document.getElementById('roMood');
+    if(el) el.textContent = regionName().toLowerCase();
+    const nm = document.getElementById('moodName');
+    if(nm) nm.textContent = regionName();
+  }
 }
 
-/* ============================ link with Sub Division ============================
-   Broadcasts BPM and key root; follows BPM coming back. One shared channel. */
-const LINK = { on:true, chan:null, me:Math.random().toString(36).slice(2) };
-try{ LINK.chan = new BroadcastChannel('subdivision-link'); }catch(e){}
-function linkSend(msg){
-  if(!LINK.on) return;
-  msg.src = LINK.me; msg.ts = Date.now();
-  try{ LINK.chan && LINK.chan.postMessage(msg); }catch(e){}
-  try{ localStorage.setItem('subdivision-link', JSON.stringify(msg)); }catch(e){}
+/* ============================ the mood field, drawn ============================ */
+const pv = document.getElementById('pad'), px = pv.getContext('2d');
+let PW = 0, PH = 0;
+function resizePad(){
+  PW = pv.clientWidth; PH = pv.clientHeight;
+  pv.width = PW * DPR; pv.height = PH * DPR;
+  px.setTransform(DPR, 0, 0, DPR, 0, 0);
 }
-function linkRecv(msg){
-  if(!msg || msg.src === LINK.me || !LINK.on) return;
-  if(msg.t === 'bpm' && typeof msg.v === 'number'){
-    const d = (typeof DIALS !== 'undefined') ? DIALS.find(x => x.id === 'bpm') : null;
-    P.bpm = d ? clamp(msg.v, d.min, d.max) : clamp(msg.v, 40, 84);
-    if(typeof UI !== 'undefined') UI.sync();
-    updateEcho();
+function drawPad(P0){
+  if(!PW) return;
+  px.clearRect(0, 0, PW, PH);
+  /* four corners of the field, washed together */
+  const corners = [
+    { x:0,  y:PH, c:mix3(COLD_HUE, [40,70,110], .55) },   // cold calm
+    { x:PW, y:PH, c:mix3(WARM_HUE, [110,70,40], .55) },   // warm calm
+    { x:0,  y:0,  c:mix3(COLD_HUE, [60,50,120], .62) },   // cold tense
+    { x:PW, y:0,  c:mix3(TENSE_HUE, [100,30,50], .5)  }   // warm tense
+  ];
+  px.globalCompositeOperation = 'lighter';
+  corners.forEach(c => {
+    const g = px.createRadialGradient(c.x, c.y, 0, c.x, c.y, Math.max(PW, PH) * .95);
+    g.addColorStop(0, rgb(c.c, .5));
+    g.addColorStop(1, rgb(c.c, 0));
+    px.fillStyle = g; px.fillRect(0, 0, PW, PH);
+  });
+  px.globalCompositeOperation = 'source-over';
+  px.fillStyle = 'rgba(6,8,14,.36)'; px.fillRect(0, 0, PW, PH);
+
+  px.strokeStyle = 'rgba(185,207,225,.08)'; px.lineWidth = 1;
+  px.beginPath(); px.moveTo(PW/2, 0); px.lineTo(PW/2, PH);
+  px.moveTo(0, PH/2); px.lineTo(PW, PH/2); px.stroke();
+
+  const cxp = FIELD.x * PW, cyp = (1 - FIELD.y) * PH;
+  const tx = FIELD.tx * PW, ty = (1 - FIELD.ty) * PH;
+
+  /* the path it has taken */
+  FIELD.trail.push([cxp, cyp]);
+  if(FIELD.trail.length > 420) FIELD.trail.shift();
+  px.beginPath();
+  FIELD.trail.forEach((p, i) => i ? px.lineTo(p[0], p[1]) : px.moveTo(p[0], p[1]));
+  px.strokeStyle = rgb(P0.acc, .22); px.lineWidth = 1; px.stroke();
+
+  /* where it is heading */
+  if(Math.hypot(tx - cxp, ty - cyp) > 2){
+    px.beginPath(); px.arc(tx, ty, 5, 0, 6.3);
+    px.strokeStyle = rgb(P0.acc, .38); px.stroke();
   }
+
+  const g = px.createRadialGradient(cxp, cyp, 0, cxp, cyp, 26);
+  g.addColorStop(0, rgb(P0.acc, .55));
+  g.addColorStop(1, rgb(P0.acc, 0));
+  px.fillStyle = g; px.beginPath(); px.arc(cxp, cyp, 26, 0, 6.3); px.fill();
+  px.fillStyle = 'rgba(240,238,232,.94)';
+  px.beginPath(); px.arc(cxp, cyp, 3.4, 0, 6.3); px.fill();
 }
-if(LINK.chan) LINK.chan.onmessage = e => linkRecv(e.data);
-addEventListener('storage', e => {
-  if(e.key === 'subdivision-link' && e.newValue){
-    try{ linkRecv(JSON.parse(e.newValue)); }catch(err){}
-  }
-});
+
+/* ---- dragging the field ---- */
+(function(){
+  const wrap = document.getElementById('padwrap');
+  let dragging = false;
+  const fromEvent = e => {
+    const r = wrap.getBoundingClientRect();
+    setField((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height);
+  };
+  wrap.addEventListener('pointerdown', e => {
+    dragging = true; wrap.setPointerCapture(e.pointerId); fromEvent(e); e.preventDefault();
+  });
+  wrap.addEventListener('pointermove', e => { if(dragging) fromEvent(e); });
+  wrap.addEventListener('pointerup',   e => { dragging = false; });
+  wrap.addEventListener('pointercancel', () => { dragging = false; });
+  wrap.addEventListener('keydown', e => {
+    const s = e.shiftKey ? .12 : .04;
+    if(e.key === 'ArrowLeft')  { setField(FIELD.tx - s, FIELD.ty); e.preventDefault(); }
+    if(e.key === 'ArrowRight') { setField(FIELD.tx + s, FIELD.ty); e.preventDefault(); }
+    if(e.key === 'ArrowUp')    { setField(FIELD.tx, FIELD.ty + s); e.preventDefault(); }
+    if(e.key === 'ArrowDown')  { setField(FIELD.tx, FIELD.ty - s); e.preventDefault(); }
+  });
+})();
 
 /* ============================ interface ============================ */
 const $ = id => document.getElementById(id);
 const DIALS = [
-  { id:'bpm',    label:'Tempo',  min:40, max:84, fmt:v => Math.round(v) + ' bpm' },
-  { id:'weight', label:'Weight', min:0,  max:1,  fmt:v => Math.round(v * 100) },
-  { id:'tone',   label:'Air',    min:0,  max:1,  fmt:v => Math.round(v * 100) },
-  { id:'space',  label:'Space',  min:0,  max:1,  fmt:v => Math.round(v * 100) },
-  { id:'motion', label:'Motion', min:0,  max:1,  fmt:v => Math.round(v * 100) },
-  { id:'volume', label:'Level',  min:0,  max:1,  fmt:v => Math.round(v * 100) }
+  { id:'bpm',    label:'Tempo',  min:40, max:120, step:1,  fmt:v => Math.round(v) + ' bpm' },
+  { id:'weight', label:'Low end',min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
+  { id:'tone',   label:'Air',    min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
+  { id:'space',  label:'Space',  min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
+  { id:'motion', label:'Motion', min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
+  { id:'width',  label:'Width',  min:0,  max:1.8, step:.01,fmt:v => Math.round(v * 100) },
+  { id:'volume', label:'Level',  min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) }
 ];
-const LAYER_LABELS = { pad:'Pads', bass:'Bass', lead:'Melody', counter:'Counter-line', pulse:'Pulse', air:'Air' };
+const LAYER_LABELS = {
+  pad:'Pads', bass:'Bass', lead:'Melody', counter:'Strings',
+  seq:'Sequence', key:'Keys', air:'Air', drone:'Drone'
+};
 
 const UI = {
-  els:{},
   build(){
-    const mw = $('moods');
-    MOODS.forEach(m => {
+    const sw = $('scenes');
+    SCENES.forEach(sc => {
       const b = document.createElement('button');
-      b.className = 'mood'; b.textContent = m.name; b.dataset.id = m.id;
-      b.onclick = () => {
-        MOOD = m;
-        [...mw.children].forEach(c => c.classList.toggle('on', c.dataset.id === m.id));
-        newPiece();
-        updateEcho();
-      };
-      mw.appendChild(b);
+      b.className = 'chip'; b.textContent = sc.name; b.dataset.id = sc.id;
+      b.onclick = () => { applyScene(sc); if(!S.playing) play(); };
+      sw.appendChild(b);
     });
-    mw.firstChild.classList.add('on');
 
     const dw = $('dials');
     DIALS.forEach(d => {
       const wrap = document.createElement('label');
       wrap.className = 'dial';
-      const val = d.id === 'bpm' ? P.bpm : P[d.id];
       wrap.innerHTML = '<span>' + d.label + '<em></em></span>';
       const inp = document.createElement('input');
-      inp.type = 'range'; inp.min = d.min; inp.max = d.max;
-      inp.step = d.id === 'bpm' ? 1 : .01; inp.value = val;
+      inp.type = 'range'; inp.min = d.min; inp.max = d.max; inp.step = d.step;
+      inp.value = P[d.id];
       inp.oninput = () => {
         const v = parseFloat(inp.value);
-        if(d.id === 'bpm'){ P.bpm = v; updateEcho(); linkSend({ t:'bpm', v:P.bpm }); }
-        else P[d.id] = v;
-        if(d.id === 'volume' && AC && S.playing) masterOut.gain.setTargetAtTime(v, AC.currentTime, .1);
-        if(d.id === 'tone' && airLP) airLP.frequency.setTargetAtTime(lerp(CFG.airRange[0], CFG.airRange[1], v), AC.currentTime, .3);
-        if(d.id === 'space' && hallGain) hallGain.gain.setTargetAtTime(lerp(.35, 1.35, v), AC.currentTime, .4);
-        if(d.id === 'motion') updateEcho();
-        wrap.querySelector('em').textContent = d.fmt(v);
+        P[d.id] = v;
+        if(AC){
+          if(d.id === 'volume' && S.playing) masterOut.gain.setTargetAtTime(v, AC.currentTime, .12);
+          if(d.id === 'bpm'){ updateEcho(); linkState(); }
+          if(d.id === 'motion' || d.id === 'tone' || d.id === 'space' || d.id === 'width') applyField(false);
+        }
+        d.out.textContent = d.fmt(v);
       };
       wrap.appendChild(inp);
-      wrap.querySelector('em').textContent = d.fmt(val);
       d.el = inp; d.out = wrap.querySelector('em');
+      d.out.textContent = d.fmt(P[d.id]);
       dw.appendChild(wrap);
     });
 
@@ -1262,7 +1892,7 @@ const UI = {
       inp.onchange = () => {
         LAYERS[k] = inp.checked;
         l.classList.toggle('on', inp.checked);
-        if(ready) applyPassage(false);
+        if(ready){ applyPassage(false); applyField(false); }
       };
       lw.appendChild(l);
     });
@@ -1271,42 +1901,42 @@ const UI = {
     $('newBtn').onclick = () => { newPiece(); if(!S.playing) play(); };
     $('driftBtn').onclick = () => { if(ready) nextPassage(AC.currentTime + .4); };
     $('recBtn').onclick = toggleRec;
-    const lb = $('linkBtn');
-    lb.onclick = () => {
-      LINK.on = !LINK.on;
-      lb.textContent = LINK.on ? 'Link · on' : 'Link · off';
-      if(LINK.on){ linkSend({ t:'bpm', v:P.bpm }); if(S.title) linkSend({ t:'key', v:S.root }); }
+    $('driftToggle').onclick = () => {
+      FIELD.drift = !FIELD.drift;
+      if(FIELD.drift){ FIELD.ax = FIELD.x; FIELD.ay = FIELD.y; FIELD.t0 = Math.random() * 1000; }
+      else { FIELD.tx = FIELD.x; FIELD.ty = FIELD.y; }
+      UI.chips();
     };
 
     addEventListener('keydown', e => {
       if(e.target.tagName === 'INPUT') return;
       if(e.code === 'Space'){ e.preventDefault(); S.playing ? pause() : play(); }
-      if(e.key === 'n') { newPiece(); }
+      if(e.key === 'n'){ newPiece(); }
+      if(e.key === 'd'){ $('driftToggle').click(); }
     });
   },
+  chips(){
+    const dt = $('driftToggle');
+    dt.classList.toggle('on', FIELD.drift);
+    dt.textContent = FIELD.drift ? 'drifting' : 'held';
+  },
   sync(){
-    DIALS.forEach(d => {
-      const v = d.id === 'bpm' ? P.bpm : P[d.id];
-      if(d.el){ d.el.value = v; d.out.textContent = d.fmt(v); }
-    });
-    if(AC){
-      if(airLP) airLP.frequency.setTargetAtTime(lerp(CFG.airRange[0], CFG.airRange[1], P.tone), AC.currentTime, .4);
-      if(hallGain) hallGain.gain.setTargetAtTime(lerp(.35, 1.35, P.space), AC.currentTime, .4);
-      updateEcho();
-    }
+    DIALS.forEach(d => { if(d.el){ d.el.value = P[d.id]; d.out.textContent = d.fmt(P[d.id]); } });
+    this.chips();
+    if(ready) applyField(false);
   },
   piece(){
     const t = S.title.split(' ');
     $('title').innerHTML = t[0] + ' <i>' + t.slice(1).join(' ') + '</i>';
-    $('sub').textContent = MOOD.name.toLowerCase() + ' · ' + PC[S.root] + ' ' + S.scaleName + ' · seed ' + S.seed;
-    $('roKey').textContent = PC[S.root] + ' ' + S.scaleName;
+    $('sub').textContent = PC[S.root] + ' ' + MODE_LABEL[S.scaleName] + ' · melodic field · seed ' + S.seed;
+    $('roKey').textContent = PC[S.root] + ' ' + MODE_LABEL[S.scaleName];
     this.readout();
   },
   readout(){
-    const c = chordAt(S.bar - 1);
+    const c = S.bars.length ? chordAt(Math.max(0, S.bar - 1)) : null;
     if(c) $('roChord').textContent = c.chord.label;
     $('roSec').textContent = PASSAGES[S.passage].label;
-    $('roBar').textContent = S.playing ? (S.bar % 1000) : '—';
+    $('roBar').textContent = S.playing ? ((S.bar + S.barsBuilt) % 1000) : '—';
     const np = $('nowplaying');
     np.textContent = S.playing ? PASSAGES[S.passage].label : '';
     np.classList.toggle('on', S.playing);
@@ -1315,19 +1945,48 @@ const UI = {
     $('play').classList.toggle('on', S.playing);
     $('tState').textContent = S.playing ? 'Playing' : 'Start';
     $('tSub').textContent = S.playing ? S.title.toLowerCase() : 'nothing is playing';
-    $('card').style.opacity = S.playing ? .55 : 1;
+    $('card').style.opacity = S.playing ? .5 : 1;
     const h = $('hint'); if(h) h.style.opacity = S.playing ? 0 : .7;
     this.readout();
   }
 };
 
+/* ============================ link to the separate beat machine ============================
+   Deep Field is the musical source of truth. beat_machine.html follows BPM + key
+   over the same subdivision-link channel it already understands. */
+const LINK = { chan:null, me:Math.random().toString(36).slice(2) };
+try{ LINK.chan = new BroadcastChannel('subdivision-link'); }catch(e){}
+function linkSend(msg){
+  msg.src = LINK.me; msg.ts = Date.now();
+  try{ LINK.chan && LINK.chan.postMessage(msg); }catch(e){}
+  try{ localStorage.setItem('subdivision-link', JSON.stringify(msg)); }catch(e){}
+}
+function linkState(){
+  linkSend({ t:'bpm', v:clamp(P.bpm, 40, 120) });
+  linkSend({ t:'key', v:S.root });
+}
+function linkRecv(msg){
+  if(!msg || msg.src === LINK.me) return;
+  /* The external rhythm app may announce itself; answer with Deep Field's state
+     rather than letting percussion choices rewrite the harmonic engine. */
+  if(msg.t === 'bpm' || msg.t === 'key') setTimeout(linkState, 0);
+}
+if(LINK.chan) LINK.chan.onmessage = e => linkRecv(e.data);
+addEventListener('storage', e => {
+  if(e.key === 'subdivision-link' && e.newValue){
+    try{ linkRecv(JSON.parse(e.newValue)); }catch(err){}
+  }
+});
+
 /* ---------- recording ---------- */
-let recorder = null, chunks = [];
+let recorder = null, chunks = [], recStart = 0, recTimer = null;
 function toggleRec(){
-  if(!AC){ play(); }
+  if(!AC) play();
   const btn = $('recBtn');
   if(recorder && recorder.state === 'recording'){
     recorder.stop();
+    clearInterval(recTimer); recTimer = null;
+    btn.classList.remove('live');
     btn.textContent = 'Record';
     return;
   }
@@ -1344,19 +2003,28 @@ function toggleRec(){
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     };
     recorder.start();
-    btn.textContent = 'Stop and save';
+    recStart = Date.now();
+    btn.classList.add('live');
+    const fmt = () => {
+      const s = Math.floor((Date.now() - recStart) / 1000);
+      btn.textContent = 'Stop and save · ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    };
+    fmt();
+    recTimer = setInterval(fmt, 1000);
   }catch(err){
-    btn.textContent = 'Recording unavailable';
+    btn.textContent = 'Recording unavailable in this browser';
   }
 }
 
 /* ---------- boot ---------- */
 resize();
-draw();
 UI.build();
+newPiece();
 UI.sync();
+draw();
 $('title').innerHTML = 'Deep <i>Field</i>';
-if(LINK.on) linkSend({ t:'bpm', v:P.bpm });
+$('sub').textContent = 'pads, harmony and melody — rhythm lives next door';
+linkState();
 
 </script>
 </body>
