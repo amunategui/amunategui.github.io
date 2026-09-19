@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Deep Field — a mood-drifting ambient engine</title>
+<title>Deep Field — generative chill ambient electronica</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -237,7 +237,7 @@ body.tight #nowplaying{display:none}
 
 <div id="card">
   <div id="title">Deep <i>Field</i></div>
-  <div id="sub">an engine for long, low, slow music</div>
+  <div id="sub">generative harmony for chill ambient electronica</div>
 </div>
 <div id="nowplaying"></div>
 
@@ -328,9 +328,9 @@ const CFG = {
   rumbleCut    : 24,
   harshHz      : 2850,
   harshQ       : 1.05,
-  harshDb      : -3.4,
+  harshDb      : -3.8,
   presenceHz   : 5400,
-  presenceDb   : -2.2,
+  presenceDb   : -2.6,
   airRange     : [3000, 13500],
 
   /* --- warmth tilt: driven by the field's x axis --- */
@@ -341,9 +341,9 @@ const CFG = {
   satDrive     : [0.16, 0.46],   // cold -> warm
 
   /* --- three spaces. dark tails only; bright tails are what fizz --- */
-  hallSeconds  : 8.5,  hallDamp :[2800, 380], hallPre :0.050,
-  plateSeconds : 2.6,  plateDamp:[3900, 880], platePre:0.016,
-  bloomSeconds : 15.0, bloomDamp:[1500, 190], bloomPre:0.140,
+  hallSeconds  : 7.8,  hallDamp :[2600, 420], hallPre :0.044,
+  plateSeconds : 2.2,  plateDamp:[3600, 920], platePre:0.014,
+  bloomSeconds : 12.5, bloomDamp:[1450, 220], bloomPre:0.115,
 
   /* --- ensemble / chorus --- */
   chorusTimes  : [0.0113, 0.0171, 0.0233],
@@ -493,49 +493,50 @@ function regionName(){
 /* derived musical character. read this, never the raw axes. */
 function F(){
   const w = FIELD.x, t = FIELD.y;
+  /* The field now changes production character more than harmonic danger.
+     Even at the tense edge it stays musical enough to sit under a beat. */
   return {
     w, t,
     warmth   : w,
     tension  : t,
-    bright   : lerp(1.0, .74, w),                 // cold sits higher in the spectrum
-    weightMul: lerp(.86, 1.14, w),
-    detune   : lerp(3.2, 8.5, w) * lerp(1, 1.45, t),
-    padAtk   : lerp(5.0, 2.2, t) * lerp(1.0, .82, w),
-    padRel   : lerp(6.5, 3.2, t),
-    res      : lerp(.6, 6.5, t),                  // filter resonance, suspense
-    dens     : lerp(.62, 1.22, t),
-    dissonance: Math.pow(t, 1.4),
-    droneLvl : Math.pow(t, 1.25) * lerp(.55, 1, 1 - w * .35),
-    tremRate : lerp(.35, 6.4, Math.pow(t, 1.6)),
-    tremDep  : Math.pow(t, 1.8) * .38,
-    echoFb   : lerp(.62, 1.06, t),
-    space    : lerp(1.05, .78, t),                // tension pulls the room in
-    seqBright: lerp(.55, 1.15, t) * lerp(1.1, .85, w),
-    chordBars: t > .62 ? 2 : (t > .3 ? (chance(.5) ? 2 : 4) : 4)
+    bright   : lerp(1.0, .76, w),
+    weightMul: lerp(.88, 1.12, w),
+    detune   : lerp(2.4, 6.8, w) * lerp(1, 1.18, t),
+    padAtk   : lerp(4.8, 2.0, t) * lerp(1.0, .84, w),
+    padRel   : lerp(6.0, 3.5, t),
+    res      : lerp(.55, 3.2, t),
+    dens     : lerp(.60, 1.08, t),
+    dissonance: Math.pow(t, 1.8) * .28,
+    droneLvl : Math.pow(t, 1.35) * .55 * lerp(.9, .72, w),
+    tremRate : lerp(.28, 2.4, Math.pow(t, 1.5)),
+    tremDep  : Math.pow(t, 1.8) * .14,
+    echoFb   : lerp(.68, .96, t),
+    space    : lerp(1.06, .86, t),
+    seqBright: lerp(.52, .92, t) * lerp(1.04, .86, w),
+    chordBars: t > .72 ? 2 : 4
   };
 }
 
 /* ============================ scenes ============================ */
 /* Starting points set the field and harmonic clock. Rhythm/percussion is external. */
 const SCENES = [
-  { id:'deepfield', name:'Deep field',  x:.30, y:.18, bpm:50 },
-  { id:'sodium',    name:'Sodium rain', x:.46, y:.38, bpm:56 },
-  { id:'slowlight', name:'Slow light',  x:.78, y:.14, bpm:58 },
-  { id:'vigil',     name:'Vigil',       x:.22, y:.70, bpm:54 },
-  { id:'orbital',   name:'Orbital',     x:.38, y:.52, bpm:92 },
-  { id:'nightwatch',name:'Night watch', x:.12, y:.58, bpm:48 },
-  { id:'blueroom',  name:'Blue room',   x:.44, y:.30, bpm:112 },
-  { id:'basement',  name:'Basement',    x:.72, y:.42, bpm:118 },
-  { id:'lateshift', name:'Late shift',  x:.26, y:.62, bpm:108 }
+  { id:'deepfield', name:'Deep field',   x:.32, y:.16, bpm:76 },
+  { id:'afterglow', name:'Afterglow',    x:.76, y:.18, bpm:84 },
+  { id:'blueglass', name:'Blue glass',   x:.24, y:.30, bpm:92 },
+  { id:'loworbit',  name:'Low orbit',    x:.42, y:.42, bpm:96 },
+  { id:'nightdrive',name:'Night drive',  x:.58, y:.52, bpm:108 },
+  { id:'softfocus', name:'Soft focus',   x:.86, y:.28, bpm:100 },
+  { id:'northsea',  name:'North sea',    x:.14, y:.48, bpm:88 },
+  { id:'openair',   name:'Open air',     x:.70, y:.10, bpm:112 }
 ];
 
 /* passages. bus weights are multipliers, always ramped, never switched. */
 const PASSAGES = {
-  still :{ label:'still',      bars:[8,12], dens:0,    w:{pad:1,  bass:.8, lead:0,  counter:0,  seq:.25,key:0,  air:.65,drone:.6}, next:['gather','theme'] },
-  gather:{ label:'gathering',  bars:[8,8],  dens:.4,   w:{pad:1,  bass:1,  lead:0,  counter:.6, seq:.6, key:0,  air:.85,drone:.7}, next:['theme'] },
-  theme :{ label:'theme',      bars:[16,16],dens:1,    w:{pad:.9, bass:1,  lead:1,  counter:.4, seq:.7, key:.3, air:.7, drone:.5}, next:['open','settle','theme'] },
-  open  :{ label:'opening',    bars:[16,16],dens:1.15, w:{pad:1,  bass:1,  lead:1,  counter:1,  seq:1,  key:.5, air:1,  drone:.6}, next:['settle','theme'] },
-  settle:{ label:'settling',   bars:[8,12], dens:.45,  w:{pad:.85,bass:.7, lead:.5, counter:.25,seq:.3, key:.15,air:.5, drone:.7}, next:['still','theme'] }
+  still :{ label:'intro',      bars:[8,12],  dens:.10, w:{pad:1,   bass:.62,lead:0,   counter:.10,seq:.12,key:.10,air:.72,drone:.42}, next:['gather','theme'] },
+  gather:{ label:'rising',     bars:[8,12],  dens:.42, w:{pad:1,   bass:.82,lead:.12, counter:.28,seq:.42,key:.32,air:.82,drone:.38}, next:['theme'] },
+  theme :{ label:'main theme', bars:[16,24], dens:.82, w:{pad:.92, bass:.92,lead:.82, counter:.24,seq:.62,key:.52,air:.66,drone:.30}, next:['open','settle','theme'] },
+  open  :{ label:'wide open',  bars:[16,24], dens:1.0, w:{pad:1,   bass:1,  lead:.88, counter:.48,seq:.78,key:.64,air:.78,drone:.34}, next:['settle','theme'] },
+  settle:{ label:'release',    bars:[8,12],  dens:.34, w:{pad:.90, bass:.68,lead:.26, counter:.16,seq:.24,key:.24,air:.54,drone:.40}, next:['still','theme'] }
 };
 const ARC = ['still','gather','theme','open','settle'];
 
@@ -688,6 +689,7 @@ function initAudio(){
   const hp   = filt('highpass', CFG.rumbleCut, .7);
   warmShelf  = filt('lowshelf', CFG.warmShelfHz, null, lerp2(CFG.warmShelfDb, f.w));
   tiltHi     = filt('highshelf', CFG.tiltHiHz, null, lerp2(CFG.tiltHiDb, f.w));
+  const mud  = filt('peaking', 285, .85, -1.6);
   const harsh= filt('peaking', CFG.harshHz, CFG.harshQ, CFG.harshDb);
   const pres = filt('peaking', CFG.presenceHz, .9, CFG.presenceDb);
   airLP      = filt('lowpass', lerp(CFG.airRange[0], CFG.airRange[1], P.tone), .5);
@@ -706,7 +708,7 @@ function initAudio(){
   analyser = AC.createAnalyser();
   analyser.fftSize = 1024; analyser.smoothingTimeConstant = .8;
 
-  masterIn.connect(hp).connect(warmShelf).connect(satNode).connect(harsh).connect(pres)
+  masterIn.connect(hp).connect(warmShelf).connect(satNode).connect(mud).connect(harsh).connect(pres)
           .connect(tiltHi).connect(airLP).connect(wid.in);
   wid.out.connect(tapeDelay).connect(glue).connect(limiter).connect(masterOut);
   masterOut.connect(analyser);
@@ -766,13 +768,13 @@ function initAudio(){
   ENGINE.echo = { dl, dr, fb, lp:elp };
 
   /* --- musical buses. Percussion is intentionally not part of Deep Field. --- */
-  makeBus('pad',     { gain:.30, hall:.52, bloom:.34, chorus:.40, echo:.05 });
-  makeBus('bass',    { gain:.54, hall:.10 });
-  makeBus('lead',    { gain:.24, hall:.30, plate:.28, bloom:.18, echo:.32, chorus:.16 });
-  makeBus('counter', { gain:.22, hall:.42, plate:.10, bloom:.16, chorus:.30 });
-  makeBus('seq',     { gain:.17, hall:.22, plate:.26, bloom:.30, echo:.42, chorus:.25 });
-  makeBus('key',     { gain:.20, hall:.16, plate:.34, echo:.16, chorus:.55 });
-  makeBus('air',     { gain:.18, hall:.44, bloom:.40 });
+  makeBus('pad',     { gain:.28, hall:.46, bloom:.30, chorus:.36, echo:.04 });
+  makeBus('bass',    { gain:.48, hall:.07 });
+  makeBus('lead',    { gain:.21, hall:.26, plate:.22, bloom:.14, echo:.28, chorus:.13 });
+  makeBus('counter', { gain:.18, hall:.36, plate:.08, bloom:.14, chorus:.26 });
+  makeBus('seq',     { gain:.15, hall:.18, plate:.18, bloom:.20, echo:.34, chorus:.20 });
+  makeBus('key',     { gain:.18, hall:.12, plate:.26, echo:.12, chorus:.42 });
+  makeBus('air',     { gain:.14, hall:.38, bloom:.32 });
   makeBus('drone',   { gain:.001,hall:.30, bloom:.44 });
   makeBus('fx',      { gain:.50, hall:.42, plate:.18, bloom:.40 });
 
@@ -902,47 +904,37 @@ function leadNote(midi, t, dur, vel){
   midi = clamp(Math.round(midi), CFG.leadFloor, CFG.leadCeil);
   mark('lead', t, vel);
   const f = mtof(midi);
-  const ring = clamp(dur * 1.6, 1.6, 9);
   const out = gain(1);
   const pan = AC.createStereoPanner();
-  pan.pan.value = clamp((midi - 70) / 26, -.5, .5) * .68;
-  const cut = clamp(f * lerp(5.6, 3.0, (midi - CFG.leadFloor) / 26) + 220, 480,
-                    lerp(1700, 3500, P.tone) * f0.bright);
-  const lp = filt('lowpass', cut, .55);
+  pan.pan.value = clamp((midi - 69) / 30, -.42, .42);
+  const lp = filt('lowpass', clamp(lerp(1450, 2800, P.tone) * f0.bright, 900, 3600), .72);
   out.connect(lp).connect(pan).connect(BUS.lead.in);
 
-  /* cold rings like glass, warm rings like wood and reed */
-  const cold = [[1,1,1],[2,.26,.70],[3,.10,.48],[4.16,.045,.32],[5.43,.018,.22]];
-  const warm = [[1,1,1],[2,.34,.78],[2.99,.16,.55],[4.01,.06,.36],[5.02,.022,.24]];
-  const b = f0.w;
-  const atk = lerp(.12, .022, vel);
-
-  for(let i = 0; i < cold.length; i++){
-    const ratio = lerp(cold[i][0], warm[i][0], b);
-    const amp   = lerp(cold[i][1], warm[i][1], b);
-    const dec   = lerp(cold[i][2], warm[i][2], b);
-    const pf = f * ratio;
-    if(pf > CFG.partialCap) continue;
-    const osc = AC.createOscillator(); osc.type = 'sine';
-    osc.frequency.value = pf;
-    osc.detune.value = rr(-3, 3);
+  const a = lerp(.055, .022, vel);
+  const release = clamp(dur * .72, .55, 2.8);
+  const stop = t + dur + release + .5;
+  const body = [
+    {type:'triangle', ratio:1, det:-4.5, amp:.52},
+    {type:'triangle', ratio:1, det: 4.5, amp:.48},
+    {type:'sine',     ratio:.5, det:0, amp:.16},
+    {type:'sine',     ratio:2, det:rr(-4,4), amp:.07 * lerp(1.15,.6,f0.w)}
+  ];
+  body.forEach(v => {
+    const o = AC.createOscillator(); o.type = v.type; o.frequency.value = f * v.ratio; o.detune.value = v.det;
     const g = gain(.0001);
-    const peak = .42 * vel * amp;
+    const pk = vel * v.amp * .34;
     g.gain.setValueAtTime(.0001, t);
-    g.gain.linearRampToValueAtTime(peak, t + atk * (1 + (ratio - 1) * .12));
-    g.gain.setTargetAtTime(.0001, t + atk, (ring * dec) / 3.4);
-    osc.connect(g).connect(out);
-    fire(osc, t, ring + .6);
-  }
-
-  /* sub-octave shadow: weight under the note, not sparkle above it */
-  const sh = AC.createOscillator(); sh.type = 'sine'; sh.frequency.value = f / 2;
-  const shg = gain(.0001);
-  shg.gain.setValueAtTime(.0001, t);
-  shg.gain.linearRampToValueAtTime(.14 * vel * lerp(.7, 1.2, f0.w), t + atk * 1.8);
-  shg.gain.setTargetAtTime(.0001, t + atk, ring / 4.5);
-  sh.connect(shg).connect(out);
-  fire(sh, t, ring + .6);
+    g.gain.linearRampToValueAtTime(pk, t + a);
+    g.gain.setTargetAtTime(pk * .58, t + a + .08, .16);
+    g.gain.setTargetAtTime(.0001, t + Math.max(a + .16, dur * .78), release / 3.1);
+    const vib = AC.createOscillator(); vib.type='sine'; vib.frequency.value=rr(4.3,5.2);
+    const vg = gain(0);
+    vg.gain.setValueAtTime(0,t);
+    vg.gain.linearRampToValueAtTime(lerp(2.5,6.5,f0.t), t + Math.min(.8, dur*.45));
+    vib.connect(vg).connect(o.detune);
+    o.connect(g).connect(out);
+    fire(vib,t,stop-t); fire(o,t,stop-t);
+  });
 }
 
 /* ---- counter-line: bowed. vibrato arrives late, tremolo arrives with tension ---- */
@@ -988,6 +980,21 @@ function counterNote(midi, t, dur, vel){
 
 /* ---- sequence: a bank of plucks. the "Seq voice" dial picks one;
         every voice is short, resonant, and keeps out of the pad's way ---- */
+function seqVelvet(f, t, dur, vel, f0, pan){
+  const out = gain(1);
+  const lp = filt('lowpass', clamp(f * 2.2 + lerp(280, 900, P.tone), 420, 3000), 1.15);
+  out.connect(lp).connect(pan);
+  const a = .018, rel = Math.max(.10, dur * .95);
+  [['triangle',1,-5,.58],['triangle',1,5,.50],['sine',.5,0,.14]].forEach(([ty,ratio,det,amp]) => {
+    const o = AC.createOscillator(); o.type=ty; o.frequency.value=f*ratio; o.detune.value=det;
+    const g = gain(.0001);
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.linearRampToValueAtTime(.24*vel*amp,t+a);
+    g.gain.setTargetAtTime(.0001,t+a+.02,rel/3.1);
+    o.connect(g).connect(out); fire(o,t,dur+1.2);
+  });
+}
+
 function seqBerlin(f, t, dur, vel, f0, pan){
   const osc = AC.createOscillator();
   osc.setPeriodicWave(WAVES[f0.w > .55 ? 'saw' : 'pulse']);
@@ -1139,6 +1146,7 @@ function seqChime(f, t, dur, vel, f0, pan){
 }
 
 const SEQ_BANK = [
+  { name:'velvet',  fn:seqVelvet },
   { name:'berlin',  fn:seqBerlin },
   { name:'fm bell', fn:seqFmBell },
   { name:'mallet',  fn:seqMallet },
@@ -1300,7 +1308,7 @@ const S = {
   bars:[], bar:0, nextBarTime:0, playing:false,
   passage:'still', passLeft:8, prevVoicing:null, lastDeg:0,
   motif:null, phraseIdx:0, anchor:14, lastLead:72, lastSeq:72, auto:true,
-  barsBuilt:0
+  barsBuilt:0, chordIndex:0, dna:null
 };
 
 function degPc(deg){
@@ -1318,66 +1326,73 @@ function degQuality(deg){
   return third <= 3 ? 'min' : 'maj';
 }
 
-/* the field picks the chord colour. warm reaches for 9ths and 6ths,
-   cold reaches for suspensions and fourths, tense reaches for the
-   things that will not resolve. */
-function pickType(quality){
+/* Professional-feeling generation starts with a fixed harmonic identity.
+   We choose one progression, voicing palette and pulse pattern for the piece,
+   then develop it. Randomness changes performances, not the song underneath. */
+const PROGRESSION_BANK = {
+  luminous:[
+    [0,4,5,3], [0,3,5,4], [0,5,3,4], [0,4,3,5]
+  ],
+  modal:[
+    [0,3,5,4], [0,6,3,4], [0,4,6,3], [0,2,5,3]
+  ],
+  minor:[
+    [0,5,2,6], [0,3,6,5], [0,6,3,5], [0,2,3,6]
+  ]
+};
+const SEQ_DNA = [
+  { pat:[0,2,1,3, 1,2,0,2], gate:[1,0,1,1, 0,1,1,0] },
+  { pat:[0,1,2,1, 3,2,1,2], gate:[1,1,0,1, 1,0,1,1] },
+  { pat:[0,2,3,2, 1,2,4,2], gate:[1,0,1,0, 1,1,0,1] },
+  { pat:[0,1,3,1, 2,1,4,2], gate:[1,1,0,1, 0,1,1,0] }
+];
+
+function chordColor(quality, slot){
   const w = FIELD.x, t = FIELD.y;
-  const bag = [];
-  const add = (k, wt) => { const n = Math.round(wt * 12); for(let i = 0; i < n; i++) bag.push(k); };
-  if(quality === 'maj'){
-    add('maj9',  (1 - t) * (.4 + w * .6));
-    add('six9',  (1 - t) * w * .9);
-    add('add9',  (1 - t) * .55);
-    add('lyd',   (1 - t) * w * .5);
-    add('maj7',  .45);
-    add('sus2',  (1 - w) * .9 + (1 - t) * .2);
-    add('quartal', (1 - w) * (.3 + t * .5));
-    add('dom9',  t * .7);
-    add('domb9', t * t * .9);
-    add('aug',   t * t * .55);
-  }else{
-    add('min9',  (1 - t) * (.35 + w * .7));
-    add('min11', (1 - t) * .55);
-    add('min6',  (1 - t) * w * .5);
-    add('min7',  .6);
-    add('sus2',  (1 - w) * .7);
-    add('sus4',  .35 + t * .3);
-    add('quartal', (1 - w) * (.35 + t * .45));
-    add('halfdim', t * .8);
-    add('minb9', t * t * .85);
-    add('dim',   t * t * .6);
-    add('cluster', Math.pow(t, 3) * .7);
-  }
-  return bag.length ? pick(bag) : (quality === 'maj' ? 'maj7' : 'min7');
+  const maj = t > .72 ? ['maj7','sus2','maj9'] : (w > .55 ? ['maj9','six9','add9','maj7'] : ['add9','maj9','sus2','maj7']);
+  const min = t > .72 ? ['min7','sus4','min9'] : (w > .55 ? ['min9','min6','min11','min7'] : ['min9','min11','min7','sus2']);
+  const a = quality === 'maj' ? maj : min;
+  return a[slot % a.length];
 }
 
-function makeChord(prevDeg){
-  const t = FIELD.y;
-  /* calm harmony moves in thirds and fourths; tense harmony moves by step
-     and by tritone, and refuses to sit still */
-  const calm  = [3, 4, 5, 2, -2, -3, 0];
-  const tense = [1, 6, -1, 3, 4, 2, 5];
-  const moves = chance(t) ? tense : calm;
-  let deg = prevDeg + pick(moves);
-  deg = ((deg % 7) + 7) % 7;
-  if(deg === prevDeg && chance(.6)) deg = (deg + 3) % 7;
+function makeSongDNA(){
+  const family = ['ionian','lydian','mixolydian'].includes(S.scaleName) ? 'luminous'
+               : S.scaleName === 'dorian' ? 'modal' : 'minor';
+  let progression = pick(PROGRESSION_BANK[family]).slice();
+  /* 8-chord form: first half establishes identity; second half makes one
+     restrained turnaround change instead of inventing a new progression. */
+  const second = progression.slice();
+  if(chance(.58)) second[3] = family === 'minor' ? pick([4,5,6]) : pick([3,4,5]);
+  progression = progression.concat(second);
+  const chordBars = P.bpm <= 82 && FIELD.y < .45 ? 2 : 1;
+  const seq = pick(SEQ_DNA);
+  return {
+    family, progression, chordBars,
+    colors: progression.map((d,i) => chordColor(degQuality(d), i)),
+    seqPattern:seq.pat.slice(), seqGate:seq.gate.slice(),
+    seqRotate:pick([0,0,1,2]),
+    name: family === 'luminous' ? 'luminous' : family === 'modal' ? 'modal drift' : 'midnight minor'
+  };
+}
 
-  const q = degQuality(deg);
-  const type = pickType(q);
+function makeChord(){
+  const d = S.dna || makeSongDNA();
+  const idx = S.chordIndex++;
+  const slot = idx % d.progression.length;
+  const deg = d.progression[slot];
+  const type = d.colors[slot];
   const iv = CHORDS[type].iv;
   const rootMidi = degMidi(deg, 4);
   const notes = iv.map(x => rootMidi + x);
   const pcs = notes.map(n => ((n % 12) + 12) % 12);
-  const f = F();
-  const len = f.chordBars;
   S.lastDeg = deg;
-  return { deg, type, notes, pcs, iv, rootMidi, len, label:PC[degPc(deg)] + CHORDS[type].s };
+  return { deg, type, notes, pcs, iv, rootMidi, len:d.chordBars,
+           label:PC[degPc(deg)] + CHORDS[type].s };
 }
 
 function ensureBars(upTo){
   while(S.bars.length <= upTo){
-    const c = makeChord(S.lastDeg);
+    const c = makeChord();
     for(let b = 0; b < c.len; b++) S.bars.push({ chord:c, start:b === 0, idx:b, len:c.len });
   }
 }
@@ -1399,8 +1414,8 @@ function voiceChord(notes){
 }
 
 /* ---- motif engine ---- */
-const SHAPES  = [[0,1,2,0],[0,2,1,4],[0,-1,-2,0],[0,3,2,1],[0,1,-1,2],[0,4,3,1],[0,-2,1,0],[0,2,4,3],[0,-1,2,1]];
-const RHYTHMS = [[1,1,2,4],[2,2,3,1],[1.5,.5,2,4],[3,1,2,2],[2,1,1,4],[1,1,1,5],[4,1,1,2],[2,3,1,2]];
+const SHAPES  = [[0,1,2,1],[0,2,1,0],[0,-1,1,2],[0,2,3,1],[0,1,-1,0],[0,3,2,1],[0,-1,2,1]];
+const RHYTHMS = [[2,1,1,4],[1,1,2,4],[2,2,1,3],[1.5,.5,2,4],[3,1,2,2],[2,1,2,3]];
 const PLANS   = [['same','down'],['up','ornament'],['invert','fragment'],['same','cadence']];
 
 function newMotif(){
@@ -1496,34 +1511,28 @@ function buildPhrase(startBar){
 }
 
 /* ---- the sequence line: chord tones walked on a grid ---- */
-const SEQ_SHAPES = ['up','updown','down','pedal','wander'];
 function buildSeq(bar, chord){
   const f = F();
-  const steps = P.motion > .72 ? 12 : 8;
+  const steps = 8;
   const tones = chord.iv.map(x => chord.rootMidi + x);
-  const pool = tones.concat(tones.map(x => x + 12));
-  pool.sort((a, b) => a - b);
-  const shape = SEQ_SHAPES[(bar + S.seed) % SEQ_SHAPES.length];
+  const pool = tones.concat(tones.map(x => x + 12)).sort((a,b)=>a-b);
+  const d = S.dna || {seqPattern:[0,2,1,3,1,2,0,2],seqGate:[1,0,1,1,0,1,1,0],seqRotate:0};
   const out = [];
-  const density = clamp(.34 + P.motion * .4 + f.t * .22, .15, .92);
-  for(let i = 0; i < steps; i++){
-    if(!chance(density)) continue;
-    let idx;
-    if(shape === 'up') idx = i % pool.length;
-    else if(shape === 'down') idx = (pool.length - 1) - (i % pool.length);
-    else if(shape === 'updown'){
-      const per = pool.length * 2 - 2;
-      const k = i % per;
-      idx = k < pool.length ? k : per - k;
-    }else if(shape === 'pedal') idx = (i % 2) ? 0 : (1 + (i % (pool.length - 1)));
-    else idx = Math.floor(rnd() * pool.length);
-    let m = pool[clamp(idx, 0, pool.length - 1)] + 12;
+  const passageDens = clamp(PASSAGES[S.passage].dens * .9 + P.motion * .28, .15, 1);
+  for(let i=0;i<steps;i++){
+    const j = (i + ((bar % 2) ? d.seqRotate : 0)) % steps;
+    if(!d.seqGate[j]) continue;
+    /* In quieter sections, keep only structurally important pulses. */
+    if(passageDens < .48 && ![0,3,5].includes(i)) continue;
+    let idx = d.seqPattern[j] % pool.length;
+    let m = pool[idx] + 12;
     while(m > CFG.seqCeil) m -= 12;
     while(m < CFG.seqFloor) m += 12;
     S.lastSeq = m;
-    out.push({ step:i, midi:m, vel:clamp(.38 + (i % 4 === 0 ? .3 : 0) + rr(-.08, .12), .2, 1) });
+    const accent = (i===0 || i===4) ? .16 : 0;
+    out.push({step:i,midi:m,vel:clamp(.42 + accent + f.t*.08, .25, .78)});
   }
-  return { steps, notes:out };
+  return {steps,notes:out};
 }
 
 function playBassLine(bar, cell, t, beat, w){
@@ -1559,12 +1568,14 @@ function newPiece(seed){
   S.prevVoicing = null;
   S.phraseIdx = 0;
   S.lastDeg = 0;
+  S.chordIndex = 0;
   S.bar = 0; S.barsBuilt = 0;
   S.bars = [];
+  S.dna = makeSongDNA();
   const arc = currentArc();
   S.passage = arc[0];
   S.passLeft = 10;
-  ensureBars(8);
+  ensureBars(12);
   applyPassage(true);
   UI.sync();
   UI.piece();
@@ -1574,15 +1585,15 @@ function newPiece(seed){
 function pickMode(){
   const w = FIELD.x, t = FIELD.y;
   const bag = [];
-  const add = (m, wt) => { const n = Math.round(wt * 12); for(let i = 0; i < n; i++) bag.push(m); };
-  add('lydian',     w * (1 - t) * 1.3);
-  add('ionian',     w * (1 - t) * .9);
-  add('mixolydian', w * .75);
-  add('dorian',     (1 - t) * .95 + .25);
-  add('aeolian',    (1 - w) * .9 + t * .55);
-  add('phrygian',   (1 - w) * t * 1.5);
-  add('harmonic',   t * t * 1.2);
-  return bag.length ? pick(bag) : 'aeolian';
+  const add = (m, wt) => { const n = Math.max(0, Math.round(wt * 14)); for(let i = 0; i < n; i++) bag.push(m); };
+  add('dorian',     .85 + (1-t)*.55);
+  add('aeolian',    .62 + (1-w)*.34 + t*.18);
+  add('lydian',     .34 + w*(1-t)*.72);
+  add('ionian',     .26 + w*(1-t)*.54);
+  add('mixolydian', .30 + w*.32);
+  /* Phrygian/harmonic minor were intentionally removed from normal rotation:
+     they made too many pieces read as cinematic tension instead of chill EDM. */
+  return bag.length ? pick(bag) : 'dorian';
 }
 
 function applyPassage(instant){
@@ -1630,9 +1641,9 @@ function nextPassage(when){
     const t = when != null ? when : AC.currentTime + .3;
     const f = F();
     const big = nx === 'theme' || nx === 'open';
-    if(big) impact(t, nx === 'open' ? .9 : .6);
-    if(f.t > .42 && big) riser(t, lerp(1.8, 3.4, f.t), .8 + f.t * .5);
-    if(nx === 'still') reverseSwell(t, 2.6);
+    if(big) reverseSwell(t, nx === 'open' ? 3.2 : 2.4);
+    if(f.t > .50 && big) riser(t, lerp(1.6, 2.8, f.t), .34 + f.t * .26);
+    if(nx === 'still') reverseSwell(t, 2.8);
   }
 }
 
@@ -1672,10 +1683,7 @@ function scheduleBar(bar, t){
   /* ---- electric piano chords ---- */
   if(w.key > 0 && cell.start){
     const voiced = voiceKey(ch);
-    keyChord(voiced, t + rr(.04, .24), barDur * 1.12, .55 * w.key);
-    if(P.motion > .72 && chance(.28)){
-      keyChord(voiced, t + barDur * .56 + rr(-.08, .08), barDur * .42, .24 * w.key);
-    }
+    keyChord(voiced, t + rr(.05, .18), barDur * 1.35, .52 * w.key);
   }
 
   /* ---- sequence ---- */
@@ -1683,8 +1691,8 @@ function scheduleBar(bar, t){
     const sq = buildSeq(bar, ch);
     const stepDur = barDur / sq.steps;
     sq.notes.forEach(n => {
-      const tt = t + n.step * stepDur + rr(-.018, .018);
-      seqNote(n.midi, tt, stepDur * .8, n.vel * w.seq * lerp(.8, 1.05, P.motion));
+      const tt = t + n.step * stepDur + rr(-.010, .010);
+      seqNote(n.midi, tt, stepDur * 1.05, n.vel * w.seq * lerp(.82, 1.0, P.motion));
       VIZ.notes.push({ at:tt, midi:n.midi, vel:n.vel * .55 });
     });
   }
@@ -1707,7 +1715,7 @@ function scheduleBar(bar, t){
       leadNote(n.midi, t + n.beat * beat, n.dur * beat, n.vel * w.lead);
       VIZ.notes.push({ at:t + n.beat * beat, midi:n.midi, vel:n.vel });
     });
-    if(S.phraseIdx % 8 === 0 && chance(.7)) S.motif = newMotif();
+    if(S.phraseIdx % 16 === 0 && chance(.35)) S.motif = newMotif();
   }
 
   if(VIZ.notes.length > 260) VIZ.notes.splice(0, VIZ.notes.length - 260);
@@ -2077,14 +2085,14 @@ const DIALS = [
   { id:'weight', label:'Low end',min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
   { id:'tone',   label:'Air',    min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
   { id:'space',  label:'Space',  min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
-  { id:'motion', label:'Motion', min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
+  { id:'motion', label:'Energy', min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
   { id:'width',  label:'Width',  min:0,  max:1.8, step:.01,fmt:v => Math.round(v * 100) },
-  { id:'seqSound', label:'Seq voice', min:0, max:6, step:1, fmt:v => SEQ_BANK[clamp(Math.round(v), 0, SEQ_BANK.length - 1)].name },
+  { id:'seqSound', label:'Pulse voice', min:0, max:7, step:1, fmt:v => SEQ_BANK[clamp(Math.round(v), 0, SEQ_BANK.length - 1)].name },
   { id:'volume', label:'Level',  min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) }
 ];
 const LAYER_LABELS = {
-  pad:'Pads', bass:'Bass', lead:'Melody', counter:'Strings',
-  seq:'Sequence', key:'Keys', air:'Air', drone:'Drone'
+  pad:'Pads', bass:'Bass', lead:'Silk lead', counter:'Halo',
+  seq:'Pulse', key:'Electric keys', air:'Air', drone:'Drone'
 };
 
 const UI = {
@@ -2531,7 +2539,7 @@ function drawTracks(P0){
 }
 
 /* ============================ link to the separate beat machine ============================
-   Deep Field is the musical source of truth. beat_machine.html follows BPM + key
+   Deep Field is the musical source of truth. sub-division.html follows BPM + key
    over the same subdivision-link channel it already understands. */
 const LINK = { chan:null, me:Math.random().toString(36).slice(2) };
 try{ LINK.chan = new BroadcastChannel('subdivision-link'); }catch(e){}
@@ -2605,7 +2613,7 @@ newPiece();
 UI.sync();
 draw();
 $('title').innerHTML = 'Deep <i>Field</i>';
-$('sub').textContent = 'pads, harmony and melody — rhythm lives next door';
+$('sub').textContent = 'chill ambient electronica — rhythm lives in Sub Division';
 linkState();
 
 </script>
