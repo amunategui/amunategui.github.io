@@ -171,6 +171,52 @@ input[type=range]:focus-visible{outline:1px solid var(--ice);outline-offset:3px}
   position:fixed;left:0;right:0;bottom:calc(62vh + 10px);text-align:center;z-index:3;
   font-size:13px;color:var(--fog);opacity:.7;transition:opacity .8s;pointer-events:none;
 }
+/* ---------- tracks: eight bars of LEDs in the empty middle ---------- */
+#tracks{
+  --rh:15px;--hh:18px;--act:0;
+  position:fixed;left:50%;top:42vh;transform:translateX(-50%);z-index:3;
+  width:min(800px,calc(100vw - 2 * clamp(14px,3.2vw,40px)));
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;column-gap:14px;
+  grid-template-rows:var(--hh) repeat(9,var(--rh));
+  padding:9px 14px 11px;
+  background:rgba(6,8,14,.5);border:1px solid var(--line);border-radius:3px;
+}
+#tracks.off{display:none}
+body.tight #nowplaying{display:none}
+#tracks.docked{position:static;transform:none;width:100%;flex:1 1 100%;background:rgba(12,17,29,.4)}
+#grid{grid-column:2;grid-row:1 / -1;width:100%;min-width:0;display:block}
+.tcell{display:flex;align-items:center;min-width:0}
+.thead{grid-row:1;justify-content:space-between;gap:10px}
+.tl{grid-column:1;gap:3px}
+.tr{grid-column:3}
+.tmute{
+  background:none;border:none;display:flex;align-items:center;gap:8px;cursor:pointer;
+  color:var(--fog);font-family:var(--sans);font-weight:300;font-size:min(12px,calc(var(--rh) - 2px));
+  padding:0 2px;height:100%;min-width:82px;text-align:left;transition:color .3s;
+}
+.tmute:hover{color:var(--ice)}
+.tmute.on{color:var(--paper)}
+.tl.silent .tmute.on{color:var(--fog)}
+.tmute:focus-visible,.tsolo:focus-visible,.treset:focus-visible{outline:1px solid var(--ice);outline-offset:2px}
+.tled{width:6px;height:6px;border-radius:50%;background:rgba(185,207,225,.14);flex:0 0 auto}
+.tmute.on .tled{
+  background:var(--led,var(--accent));opacity:calc(.5 + var(--act) * .5);
+  box-shadow:0 0 calc(2px + var(--act) * 9px) var(--led,var(--accent));
+}
+.tl.silent .tmute.on .tled{opacity:.3;box-shadow:none}
+.tsolo{
+  width:15px;height:15px;border-radius:50%;border:1px solid transparent;background:none;
+  color:var(--fog);font-family:var(--sans);font-size:10px;line-height:1;cursor:pointer;opacity:.55;
+  transition:opacity .3s,color .3s,background .3s;
+}
+.tsolo:hover{opacity:1;color:var(--ice)}
+.tsolo.on{opacity:1;color:var(--night);background:var(--ice)}
+.tr input[type=range]{width:58px;height:var(--rh)}
+.treset{
+  background:none;border:none;color:var(--fog);font-family:var(--sans);font-weight:300;
+  font-size:11px;cursor:pointer;padding:0;opacity:.7;
+}
+.treset:hover{opacity:1;color:var(--ice)}
 @media (max-width:860px){
   #card{top:6vh}
   #nowplaying{top:calc(6vh + 140px)}
@@ -204,6 +250,12 @@ input[type=range]:focus-visible{outline:1px solid var(--ice);outline-offset:3px}
 </div>
 
 <div id="hint">Headphones, or a speaker with real low end. It starts quiet, and the mood moves on its own.</div>
+
+<div id="tracks" aria-label="Tracks: eight bars, one row per voice">
+  <div class="tcell thead tl"><span class="gtitle">tracks</span><button class="treset" id="mixReset" title="Unmute everything and set all levels back to 100">reset</button></div>
+  <div class="tcell thead tr"><span class="gtitle">level</span></div>
+  <canvas id="grid"></canvas>
+</div>
 
 <div id="console">
   <div class="transport">
@@ -246,6 +298,7 @@ input[type=range]:focus-visible{outline:1px solid var(--ice);outline-offset:3px}
     <div class="acts">
       <button class="act" id="newBtn">New piece</button>
       <button class="act" id="driftBtn">Change passage</button>
+      <button class="act" id="tracksBtn">Hide tracks</button>
       <button class="act rec" id="recBtn">Record</button>
     </div>
   </div>
@@ -497,7 +550,16 @@ let lastSatW = -1;
 
 const P = { volume:CFG.masterVolume, tone:.46, space:.80, weight:.9, motion:.45,
             bpm:52, width:1.0 };
-const LAYERS = { pad:true, bass:true, lead:true, counter:true, seq:true, key:true, air:true, drone:true };
+const LAYERS = { pad:true, bass:true, lead:true, counter:true, seq:true, key:true, air:true, drone:true, fx:true };
+
+/* ---- the mix: per-track mute (LAYERS), solo, and a level trim on top of the arrangement ---- */
+const TRACK_KEYS = ['pad','bass','lead','counter','seq','key','air','drone','fx'];
+const TRIM = { pad:1, bass:1, lead:1, counter:1, seq:1, key:1, air:1, drone:1, fx:1 };
+const TRIM_MAX = 1.5;
+const SOLO = {};
+const MIX_KEY = 'deepfield-mix';
+function anySolo(){ for(const k in SOLO) if(SOLO[k]) return true; return false; }
+function isOn(k){ return LAYERS[k] !== false && (!anySolo() || !!SOLO[k]); }
 const ENGINE = { echo:null };
 
 function gain(v){ const g = AC.createGain(); g.gain.value = v; return g; }
@@ -714,6 +776,12 @@ function initAudio(){
   makeBus('drone',   { gain:.001,hall:.30, bloom:.44 });
   makeBus('fx',      { gain:.50, hall:.42, plate:.18, bloom:.40 });
 
+  /* one small analyser per track, after its level, for the LED meters */
+  TRACK_KEYS.forEach(k => {
+    const an = AC.createAnalyser(); an.fftSize = 512; an.smoothingTimeConstant = 0;
+    BUS[k].lvl.connect(an); BUS[k].an = an;
+  });
+
   for(const k in TIMBRES) WAVES[k] = makeWave(TIMBRES[k]);
   noiseBuf = makeNoise();
   startAirBed();
@@ -729,6 +797,7 @@ function initAudio(){
 function padNote(midi, t, dur, o){
   const f0 = F();
   midi = clamp(midi, CFG.padFloor, CFG.padCeil);
+  mark('pad', t, o.peak * 2.5);
   const f = mtof(midi);
   const cut = clamp(o.cut * lerp(.60, 1.55, P.tone) * f0.bright, 220, 4600);
   const lp = filt('lowpass', cut * .45, clamp(.6 + f0.res * .22, .5, 3.2));
@@ -786,6 +855,7 @@ function padNote(midi, t, dur, o){
 function bassNote(midi, t, dur, o){
   const f0 = F();
   midi = clamp(midi, CFG.bassFloor, CFG.bassCeil);
+  mark('bass', t, o.peak * 2);
   const f = mtof(midi);
   const a = o.attack, r = o.release, stop = t + dur + r + .6;
   const out = gain(1); out.connect(BUS.bass.in);
@@ -830,6 +900,7 @@ function bassNote(midi, t, dur, o){
 function leadNote(midi, t, dur, vel){
   const f0 = F();
   midi = clamp(Math.round(midi), CFG.leadFloor, CFG.leadCeil);
+  mark('lead', t, vel);
   const f = mtof(midi);
   const ring = clamp(dur * 1.6, 1.6, 9);
   const out = gain(1);
@@ -878,6 +949,7 @@ function leadNote(midi, t, dur, vel){
 function counterNote(midi, t, dur, vel){
   const f0 = F();
   midi = clamp(Math.round(midi), 45, 69);
+  mark('counter', t, vel);
   const f = mtof(midi);
   const osc = AC.createOscillator();
   osc.setPeriodicWave(WAVES[f0.w > .5 ? 'strings' : 'vox']);
@@ -918,6 +990,7 @@ function counterNote(midi, t, dur, vel){
 function seqNote(midi, t, dur, vel){
   const f0 = F();
   midi = clamp(Math.round(midi), CFG.seqFloor, CFG.seqCeil);
+  mark('seq', t, vel);
   const f = mtof(midi);
   const osc = AC.createOscillator();
   osc.setPeriodicWave(WAVES[f0.w > .55 ? 'saw' : 'pulse']);
@@ -950,6 +1023,7 @@ function seqNote(midi, t, dur, vel){
 /* ---- electric piano: the deep-house chord. bell attack, wooden body ---- */
 function keyChord(notes, t, dur, vel){
   const f0 = F();
+  mark('key', t, vel * 1.6);
   const out = gain(1);
   const trembase = gain(1);
   const lp = filt('lowpass', lerp(1900, 3300, P.tone) * f0.bright, .6);
@@ -1035,6 +1109,7 @@ function startAirBed(){
 
 /* ---- transitions ---- */
 function impact(t, vel){
+  mark('fx', t, vel);
   const o = AC.createOscillator(); o.type = 'sine';
   o.frequency.setValueAtTime(60, t);
   o.frequency.exponentialRampToValueAtTime(26, t + 2.8);
@@ -1047,6 +1122,7 @@ function impact(t, vel){
   fire(o, t, 4.6);
 }
 function riser(t, dur, vel){
+  mark('fx', t, vel);
   const n = noiseSrc();
   const bp = filt('bandpass', 180, lerp(.8, 3.5, F().t));
   const st = Math.max(AC.currentTime + .02, t - dur);
@@ -1061,6 +1137,7 @@ function riser(t, dur, vel){
   n.start(st); n.stop(t + 1.6);
 }
 function reverseSwell(t, dur){
+  mark('fx', t, .6);
   const f0 = F();
   const o = AC.createOscillator();
   o.setPeriodicWave(WAVES.vox);
@@ -1370,21 +1447,34 @@ function pickMode(){
 
 function applyPassage(instant){
   const w = PASSAGES[S.passage].w;
-  const t = ready ? AC.currentTime : 0, tau = instant ? .01 : 3.0;
-  for(const k in w){
-    const b = BUS[k];
-    if(!b) continue;
-    b.w = w[k];
-    const on = LAYERS[k] !== false;
-    if(k === 'drone') continue;          /* the drone rides on the field, not the passage */
-    const target = b.base * w[k] * (on ? 1 : 0);
-    if(ready) b.lvl.gain.setTargetAtTime(target, t, tau);
-  }
-  if(airBed && ready){
-    airBed.base = LAYERS.air ? w.air * .85 : 0;
-    airBed.lvl.gain.setTargetAtTime(airBed.base, t, instant ? .01 : 4);
-  }
+  for(const k in w) if(BUS[k]) BUS[k].w = w[k];
+  applyMix(instant ? .01 : 3.0);
   UI.readout();
+}
+
+/* every bus level = arrangement weight x mute/solo x your trim.
+   passages glide (tau 3s); mutes and faders answer fast. */
+function droneTarget(){
+  const f = F();
+  return isOn('drone') ? f.droneLvl * .22 * PASSAGES[S.passage].w.drone * TRIM.drone : 0;
+}
+function applyMix(tau, only){
+  if(!ready) return;
+  const t = AC.currentTime, w = PASSAGES[S.passage].w;
+  TRACK_KEYS.forEach(k => {
+    const b = BUS[k];
+    if(!b || (only && only !== k)) return;   /* touching one track must not snap the others' passage glide */
+    if(k === 'drone'){            /* the drone rides on the field, not the passage */
+      b.lvl.gain.setTargetAtTime(Math.max(.0001, droneTarget()), t, tau);
+      return;
+    }
+    const wk = w[k] != null ? w[k] : 1;
+    b.lvl.gain.setTargetAtTime(b.base * wk * (isOn(k) ? 1 : 0) * TRIM[k], t, tau);
+  });
+  if(airBed && (!only || only === 'air')){
+    airBed.base = isOn('air') ? w.air * .85 : 0;
+    airBed.lvl.gain.setTargetAtTime(airBed.base, t, tau < 1 ? tau : 4);
+  }
 }
 
 function nextPassage(when){
@@ -1415,8 +1505,12 @@ function scheduleBar(bar, t){
 
   if(cell.start) tuneDrone(ch.rootMidi - 24);
 
+  /* tell the track display where this bar lands in time */
+  TRK.barlog.push({ abs:bar + S.barsBuilt, t, dur:barDur, label:ch.label, start:cell.start });
+  if(TRK.barlog.length > 24) TRK.barlog.shift();
+
   /* ---- pad ---- */
-  if(LAYERS.pad && w.pad > 0 && cell.start){
+  if(w.pad > 0 && cell.start){
     const v = voiceChord(ch.notes);
     const dur = cell.len * barDur;
     const cut = lerp(880, 1500, 1 - f.t) * lerp(.82, 1.2, f.w);
@@ -1433,10 +1527,10 @@ function scheduleBar(bar, t){
   }
 
   /* ---- bass ---- */
-  if(LAYERS.bass && w.bass > 0) playBassLine(bar, cell, t, beat, w.bass);
+  if(w.bass > 0) playBassLine(bar, cell, t, beat, w.bass);
 
   /* ---- electric piano chords ---- */
-  if(LAYERS.key && w.key > 0 && cell.start){
+  if(w.key > 0 && cell.start){
     const voiced = voiceKey(ch);
     keyChord(voiced, t + rr(.04, .24), barDur * 1.12, .55 * w.key);
     if(P.motion > .72 && chance(.28)){
@@ -1445,7 +1539,7 @@ function scheduleBar(bar, t){
   }
 
   /* ---- sequence ---- */
-  if(LAYERS.seq && w.seq > 0){
+  if(w.seq > 0){
     const sq = buildSeq(bar, ch);
     const stepDur = barDur / sq.steps;
     sq.notes.forEach(n => {
@@ -1456,7 +1550,7 @@ function scheduleBar(bar, t){
   }
 
   /* ---- counter-line ---- */
-  if(LAYERS.counter && w.counter > 0 && cell.start){
+  if(w.counter > 0 && cell.start){
     const opts = ch.notes.filter(n => n !== ch.notes[0]);
     const target = opts.length ? pick(opts) : ch.notes[0];
     let m = target;
@@ -1466,7 +1560,7 @@ function scheduleBar(bar, t){
   }
 
   /* ---- melody ---- */
-  if(LAYERS.lead && w.lead > 0 && bar % 4 === 0){
+  if(w.lead > 0 && bar % 4 === 0){
     const notes = buildPhrase(bar);
     S.phraseIdx++;
     notes.forEach(n => {
@@ -1545,8 +1639,7 @@ function applyField(instant){
   }
 
   if(BUS.drone){
-    const lvl = LAYERS.drone ? f.droneLvl * .22 * PASSAGES[S.passage].w.drone : 0;
-    BUS.drone.lvl.gain.setTargetAtTime(Math.max(.0001, lvl), t, instant ? .05 : 8);
+    BUS.drone.lvl.gain.setTargetAtTime(Math.max(.0001, droneTarget()), t, instant ? .05 : 8);
   }
   if(drone){
     drone.beatOsc.frequency.setTargetAtTime(f.tremRate * .7, t, tau);
@@ -1593,6 +1686,7 @@ function pause(){
   masterOut.gain.setValueAtTime(masterOut.gain.value, t);
   masterOut.gain.linearRampToValueAtTime(.0001, t + 1.8);
   VIZ.notes.length = 0;
+  TRK.evq.length = 0;
   setTimeout(() => { if(!S.playing && AC && AC.state === 'running') AC.suspend(); }, 1950);
   UI.transport();
 }
@@ -1646,6 +1740,7 @@ function resize(){
   VIZ.stars = [];
   for(let i = 0; i < 110; i++) VIZ.stars.push({ x:Math.random()*W, y:Math.random()*H*.6, r:Math.random()*1.15+.25, p:Math.random()*6.3 });
   resizePad();
+  if(typeof layoutTracks === 'function' && TRK.cv) layoutTracks();
 }
 addEventListener('resize', resize);
 
@@ -1740,12 +1835,14 @@ function draw(){
   cx.fillStyle = gg; cx.fillRect(0, hz, W, H - hz);
 
   drawPad(P0);
+  drawTracks(P0);
 
   if(ready && cssTick % 20 === 0) applyField(false);
   if(++cssTick % 12 === 0){
     const r = document.documentElement.style;
     r.setProperty('--accent', hex(P0.acc));
     r.setProperty('--accent2', hex(P0.cool));
+    r.setProperty('--led', hex(ledColor()));
     r.setProperty('--ice', hex(mix3(P0.cool, [235, 231, 222], .35)));
     const el = document.getElementById('roMood');
     if(el) el.textContent = regionName().toLowerCase();
@@ -1886,14 +1983,11 @@ const UI = {
     const lw = $('layers');
     Object.keys(LAYER_LABELS).forEach(k => {
       const l = document.createElement('label');
-      l.className = 'layer on';
-      l.innerHTML = '<input type="checkbox" checked><span class="dot"></span><span>' + LAYER_LABELS[k] + '</span>';
+      l.className = 'layer' + (LAYERS[k] ? ' on' : '');
+      l.innerHTML = '<input type="checkbox"' + (LAYERS[k] ? ' checked' : '') + '><span class="dot"></span><span>' + LAYER_LABELS[k] + '</span>';
       const inp = l.querySelector('input');
-      inp.onchange = () => {
-        LAYERS[k] = inp.checked;
-        l.classList.toggle('on', inp.checked);
-        if(ready){ applyPassage(false); applyField(false); }
-      };
+      inp.onchange = () => setLayer(k, inp.checked);
+      LAYER_EL[k] = { inp, l };
       lw.appendChild(l);
     });
 
@@ -1901,6 +1995,7 @@ const UI = {
     $('newBtn').onclick = () => { newPiece(); if(!S.playing) play(); };
     $('driftBtn').onclick = () => { if(ready) nextPassage(AC.currentTime + .4); };
     $('recBtn').onclick = toggleRec;
+    $('tracksBtn').onclick = () => showTracks(!TRK.show);
     $('driftToggle').onclick = () => {
       FIELD.drift = !FIELD.drift;
       if(FIELD.drift){ FIELD.ax = FIELD.x; FIELD.ay = FIELD.y; FIELD.t0 = Math.random() * 1000; }
@@ -1913,6 +2008,7 @@ const UI = {
       if(e.code === 'Space'){ e.preventDefault(); S.playing ? pause() : play(); }
       if(e.key === 'n'){ newPiece(); }
       if(e.key === 'd'){ $('driftToggle').click(); }
+      if(e.key === 't'){ showTracks(!TRK.show); }
     });
   },
   chips(){
@@ -1950,6 +2046,348 @@ const UI = {
     this.readout();
   }
 };
+
+
+/* ============================ tracks ============================
+   One row per voice, eight bars across, eight LEDs per bar (eighth notes).
+   A bright LED is a note that started on that step. A dim LED is the
+   voice's level during that step, read from its own analyser, so held
+   pads and drones show as glowing runs. The playhead overwrites as it
+   goes; what is to its right is the last pass, drawn as a ghost. */
+const TRACK_LABELS = Object.assign({}, LAYER_LABELS, { fx:'Swells' });
+const LAYER_EL = {};
+const TRK = {
+  show:true, docked:false, rh:15, hh:18, steps:64,
+  grid:{}, env:{}, lvl:{}, flash:{}, act:{}, head:new Array(8).fill(null),
+  evq:[], barlog:[], phKey:-1, lastStep:-1, rows:{}, buf:new Float32Array(512),
+  cv:null, cx:null, W:0, H:0
+};
+TRACK_KEYS.forEach(k => {
+  TRK.grid[k] = new Float32Array(TRK.steps); TRK.env[k] = new Float32Array(TRK.steps);
+  TRK.lvl[k] = 0; TRK.flash[k] = 0; TRK.act[k] = -1;
+});
+
+function mark(k, t, v){
+  if(!TRK.show || !isOn(k)) return;
+  TRK.evq.push({ k, at:t, v:clamp(v, 0, 1) });
+  if(TRK.evq.length > 400) TRK.evq.splice(0, TRK.evq.length - 400);
+}
+
+function saveMix(){
+  try{ localStorage.setItem(MIX_KEY, JSON.stringify({ layers:LAYERS, trim:TRIM, show:TRK.show })); }catch(e){}
+}
+function loadMix(){
+  try{
+    const m = JSON.parse(localStorage.getItem(MIX_KEY) || 'null');
+    if(!m) return;
+    TRACK_KEYS.forEach(k => {
+      if(m.trim && typeof m.trim[k] === 'number') TRIM[k] = clamp(m.trim[k], 0, TRIM_MAX);
+      if(m.layers && typeof m.layers[k] === 'boolean') LAYERS[k] = m.layers[k];
+    });
+    if(typeof m.show === 'boolean') TRK.show = m.show;
+  }catch(e){}
+}
+
+function setLayer(k, on){
+  LAYERS[k] = on;
+  const c = LAYER_EL[k];
+  if(c){ c.inp.checked = on; c.l.classList.toggle('on', on); }
+  syncTracks();
+  applyMix(.06, k);
+  saveMix();
+}
+function toggleSolo(k){
+  SOLO[k] = !SOLO[k];
+  syncTracks();
+  applyMix(.06);
+}
+function resetMix(){
+  TRACK_KEYS.forEach(k => { LAYERS[k] = true; TRIM[k] = 1; SOLO[k] = false; });
+  Object.keys(LAYER_EL).forEach(k => { LAYER_EL[k].inp.checked = true; LAYER_EL[k].l.classList.add('on'); });
+  syncTracks();
+  applyMix(.1);
+  saveMix();
+}
+function showTracks(on){
+  TRK.show = on;
+  $('tracksBtn').textContent = on ? 'Hide tracks' : 'Show tracks';
+  if(!on) TRK.evq.length = 0;
+  layoutTracks();
+  saveMix();
+}
+
+function buildTracks(){
+  const el = $('tracks');
+  TRACK_KEYS.forEach((k, i) => {
+    const left = document.createElement('div');
+    left.className = 'tcell tl'; left.style.gridRow = i + 2;
+    const mute = document.createElement('button');
+    mute.className = 'tmute';
+    mute.setAttribute('role', 'switch');
+    mute.innerHTML = '<span class="tled"></span><span class="tname">' + TRACK_LABELS[k] + '</span>';
+    mute.onclick = () => setLayer(k, !LAYERS[k]);
+    const solo = document.createElement('button');
+    solo.className = 'tsolo'; solo.textContent = 's';
+    solo.setAttribute('aria-label', 'Solo ' + TRACK_LABELS[k]);
+    solo.title = 'Solo ' + TRACK_LABELS[k];
+    solo.onclick = () => toggleSolo(k);
+    left.appendChild(mute); left.appendChild(solo);
+
+    const right = document.createElement('div');
+    right.className = 'tcell tr'; right.style.gridRow = i + 2;
+    const fader = document.createElement('input');
+    fader.type = 'range'; fader.min = 0; fader.max = TRIM_MAX; fader.step = .01; fader.value = TRIM[k];
+    fader.setAttribute('aria-label', TRACK_LABELS[k] + ' level');
+    fader.oninput = () => {
+      TRIM[k] = parseFloat(fader.value);
+      fader.title = TRACK_LABELS[k] + ' ' + Math.round(TRIM[k] * 100);
+      applyMix(.05, k);
+      saveMix();
+    };
+    fader.ondblclick = () => { fader.value = 1; fader.oninput(); };
+    fader.title = TRACK_LABELS[k] + ' ' + Math.round(TRIM[k] * 100) + ' (double-click for 100)';
+    right.appendChild(fader);
+
+    el.appendChild(left); el.appendChild(right);
+    TRK.rows[k] = { left, mute, solo, fader };
+  });
+  $('mixReset').onclick = resetMix;
+  TRK.cv = $('grid');
+  TRK.cx = TRK.cv.getContext('2d');
+  $('tracksBtn').textContent = TRK.show ? 'Hide tracks' : 'Show tracks';
+  syncTracks();
+  if(window.ResizeObserver) new ResizeObserver(() => layoutTracks()).observe($('console'));
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(layoutTracks);
+}
+
+function syncTracks(){
+  TRACK_KEYS.forEach(k => {
+    const r = TRK.rows[k];
+    if(!r) return;
+    const on = LAYERS[k] !== false;
+    r.mute.classList.toggle('on', on);
+    r.mute.setAttribute('aria-checked', String(on));
+    r.mute.title = (on ? 'Mute ' : 'Unmute ') + TRACK_LABELS[k];
+    r.solo.classList.toggle('on', !!SOLO[k]);
+    r.solo.setAttribute('aria-pressed', String(!!SOLO[k]));
+    r.left.classList.toggle('silent', !isOn(k));
+    r.fader.value = TRIM[k];
+  });
+}
+
+/* the panel floats in the empty middle between the title and the console.
+   on small screens there is no middle, so it docks into the console. */
+function layoutTracks(){
+  const el = $('tracks'), con = $('console'), hint = $('hint');
+  if(!el || !TRK.cv) return;
+  const n = TRACK_KEYS.length, hh = 18, chrome = 22;
+
+  /* measure the empty middle with the panel out of the console */
+  if(el.parentNode !== document.body) document.body.insertBefore(el, con);
+  el.classList.remove('docked');
+  const np = $('nowplaying').getBoundingClientRect();
+  const bottomMax = con.getBoundingClientRect().top + 14;
+  const fit = topMin => {
+    const avail = bottomMax - topMin;
+    return { topMin, avail, rh:Math.floor((avail - hh - chrome) / n) };
+  };
+  let f = fit(np.top + 36), tight = false;
+  if(f.rh < 13){
+    /* not much room: give up the now-playing line and sit right under the title */
+    const g = fit($('sub').getBoundingClientRect().bottom + 16);
+    if(g.rh > f.rh){ f = g; tight = true; }
+  }
+  const docked = innerWidth <= 860 || f.rh < 11;
+  TRK.docked = docked;
+  if(docked){ con.insertBefore(el, con.children[1]); tight = false; }
+  el.classList.toggle('docked', docked);
+  el.classList.toggle('off', !TRK.show);
+  document.body.classList.toggle('tight', TRK.show && tight);
+  hint.style.top = ''; hint.style.bottom = ''; hint.style.display = '';
+  if(!TRK.show) return;
+
+  let rh = 14;
+  if(!docked){
+    rh = clamp(f.rh, 11, 17);
+    const h = hh + n * rh + chrome;
+    el.style.top = Math.round(f.topMin + Math.max(0, (f.avail - h) * .3)) + 'px';
+    /* the start-up hint moves into the now-playing slot, which is empty until you press play */
+    if(tight) hint.style.display = 'none';
+    else { hint.style.top = np.top + 'px'; hint.style.bottom = 'auto'; }
+  }else{
+    el.style.top = '';
+  }
+  TRK.rh = rh; TRK.hh = hh;
+  el.style.setProperty('--rh', rh + 'px');
+  el.style.setProperty('--hh', hh + 'px');
+  const H = hh + n * rh;
+  TRK.cv.style.height = H + 'px';
+  const W = TRK.cv.clientWidth;
+  TRK.W = W; TRK.H = H;
+  TRK.cv.width = Math.max(1, W * DPR); TRK.cv.height = H * DPR;
+  TRK.cx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+
+const LED_OFF = [185, 207, 225];
+/* LEDs follow the mood like the rest of the app, but stay saturated so they read as LEDs:
+   ice blue when cold, amber when warm, pulled toward red as tension rises */
+function ledColor(){
+  const x = FIELD.x, w = x * x * (3 - 2 * x);                 /* short crossover in the middle */
+  const base = mix3([80, 176, 255], [255, 150, 52], w);
+  const c = mix3(base, [255, 70, 82], Math.pow(FIELD.y, 1.3) * .6);
+  /* a straight RGB blend of blue and amber goes grey in the middle; push it back to full colour */
+  const mx = Math.max(c[0], c[1], c[2]), mn = Math.min(c[0], c[1], c[2]);
+  const k = mx - mn < 1 ? 1 : 165 / (mx - mn);
+  return c.map(v => clamp(255 - (mx - v) * k, 80, 255));
+}
+function drawTracks(P0){
+  if(!TRK.show || !TRK.cx || !TRK.W) return;
+  const c = TRK.cx, W = TRK.W, rh = TRK.rh, hh = TRK.hh, N = TRK.steps;
+  const live = !!(AC && S.playing && AC.state === 'running');
+  const now = AC ? AC.currentTime : 0;
+
+  /* ---- where is the playhead: the latest bar that has started ---- */
+  let cur = null;
+  if(live){
+    for(let i = TRK.barlog.length - 1; i >= 0; i--){
+      const b = TRK.barlog[i];
+      if(b.t <= now){ if(now < b.t + b.dur + .05) cur = b; break; }
+    }
+  }
+  let step = -1;
+  if(cur){
+    const s8 = clamp(Math.floor((now - cur.t) / (cur.dur / 8)), 0, 7);
+    const slot = ((cur.abs % 8) + 8) % 8;
+    step = slot * 8 + s8;
+    const key = cur.abs * 8 + s8;
+    if(key !== TRK.phKey){
+      TRK.phKey = key;
+      TRACK_KEYS.forEach(k => { TRK.grid[k][step] = 0; TRK.env[k][step] = 0; });
+      const h = TRK.head[slot];
+      if(!h || h.abs !== cur.abs) TRK.head[slot] = { abs:cur.abs, label:cur.start ? cur.label : '' };
+    }
+    TRK.lastStep = step;
+  }
+
+  /* ---- note-ons that have now sounded ---- */
+  if(TRK.evq.length){
+    const keep = [];
+    for(const ev of TRK.evq){
+      if(ev.at > now){ keep.push(ev); continue; }
+      if(step >= 0 && isOn(ev.k)){
+        TRK.grid[ev.k][step] = Math.max(TRK.grid[ev.k][step], .62 + ev.v * .38);
+        TRK.flash[ev.k] = 1;
+      }
+    }
+    TRK.evq = keep;
+  }
+
+  /* ---- per-track meters: fast attack, slow fall, like a real LED bar ---- */
+  TRACK_KEYS.forEach(k => {
+    let v = 0;
+    const b = BUS[k];
+    if(live && b && b.an){
+      b.an.getFloatTimeDomainData(TRK.buf);
+      let pk = 0;
+      for(let i = 0; i < TRK.buf.length; i++){ const a = Math.abs(TRK.buf[i]); if(a > pk) pk = a; }
+      v = clamp((20 * Math.log10(pk + 1e-7) + 60) / 57, 0, 1);
+    }
+    const L = TRK.lvl[k];
+    TRK.lvl[k] = v > L ? v : L + (v - L) * .07;
+    if(step >= 0) TRK.env[k][step] = Math.max(TRK.env[k][step], TRK.lvl[k]);
+    TRK.flash[k] *= .9;
+    /* the row's own LED blinks with activity */
+    const a = Math.round(Math.max(TRK.flash[k], TRK.lvl[k] * .55) * 20) / 20;
+    if(a !== TRK.act[k] && TRK.rows[k]){ TRK.act[k] = a; TRK.rows[k].left.style.setProperty('--act', a); }
+  });
+
+  /* ---- geometry ---- */
+  const meterW = Math.min(44, W * .08), mgap = 10;
+  const gridW = W - meterW - mgap;
+  const barGap = Math.max(4, gridW * .011);
+  const cellW = (gridW - barGap * 7) / N;
+  const slotW = cellW * 8;
+  const ledW = Math.max(1.5, cellW - Math.max(1.2, cellW * .3));
+  const ledH = Math.max(4, rh - 7);
+  const xOf = j => Math.floor(j / 8) * (slotW + barGap) + (j % 8) * cellW;
+  const ref = TRK.lastStep;
+  const refSlot = ref >= 0 ? Math.floor(ref / 8) : -1;
+  const ice = mix3(P0.cool, [235, 231, 222], .35);
+  const fog = [97, 112, 138];
+  const acc = ledColor();
+  const hot = mix3(acc, [255, 246, 236], .3);
+
+  c.clearRect(0, 0, W, TRK.H);
+
+  /* ---- header: bar numbers, and the chord where it changes ---- */
+  c.font = '400 10px Jost, sans-serif';
+  c.textBaseline = 'middle';
+  for(let s = 0; s < 8; s++){
+    const x = s * (slotW + barGap);
+    const h = TRK.head[s];
+    const isCur = live && s === refSlot;
+    const ghost = ref >= 0 && s > refSlot;
+    const num = h ? String(h.abs + 1) : String(s + 1);
+    c.fillStyle = isCur ? rgb(ice, .95) : rgb(fog, ghost || !h ? .45 : .85);
+    c.fillText(num, x, hh * .42);
+    if(h && h.label){
+      const nx = x + c.measureText(num).width + 6;
+      if(nx + c.measureText(h.label).width < x + slotW){
+        c.fillStyle = isCur ? rgb(acc, .9) : rgb(ice, ghost ? .28 : .55);
+        c.fillText(h.label, nx, hh * .42);
+      }
+    }
+    if(isCur){
+      c.fillStyle = rgb(acc, .5);
+      c.fillRect(x, hh - 4, slotW - (cellW - ledW), 1);
+    }
+  }
+
+  /* ---- playhead column, behind the LEDs ---- */
+  if(live && step >= 0){
+    c.fillStyle = rgb(ice, .075);
+    c.fillRect(xOf(step) - 1.5, hh - 2, ledW + 3, TRACK_KEYS.length * rh + 2);
+  }
+
+  /* ---- the LEDs ---- */
+  TRACK_KEYS.forEach((k, r) => {
+    const y = hh + r * rh + (rh - ledH) / 2;
+    const on = isOn(k);
+    const g = TRK.grid[k], e = TRK.env[k];
+    for(let j = 0; j < N; j++){
+      const x = xOf(j);
+      const off = (j % 8 === 0 ? .12 : (j % 2 === 0 ? .075 : .05)) * (on ? 1 : .5);
+      const ev = e[j] < .4 ? 0 : (e[j] < .66 ? .2 : .36);
+      let v = on ? Math.max(g[j], ev) : 0;
+      if(ref >= 0 && j > ref) v *= .36;            /* last pass, not yet overwritten */
+      if(v <= .01){
+        c.fillStyle = rgb(LED_OFF, off);
+        c.fillRect(x, y, ledW, ledH);
+        continue;
+      }
+      c.fillStyle = 'rgb(9,12,20)';
+      c.fillRect(x, y, ledW, ledH);
+      c.fillStyle = rgb(v > .9 ? hot : acc, (.2 + v * .8).toFixed(3));
+      c.fillRect(x, y, ledW, ledH);
+      if(v > .55){
+        c.globalCompositeOperation = 'lighter';
+        c.fillStyle = rgb(acc, (.14 * v).toFixed(3));
+        c.fillRect(x - 1.5, y - 1.5, ledW + 3, ledH + 3);
+        c.globalCompositeOperation = 'source-over';
+      }
+    }
+
+    /* level meter: six segments, the last one warns */
+    const mx = W - meterW, segs = 6, sg = 2;
+    const sw = (meterW - (segs - 1) * sg) / segs;
+    for(let s = 0; s < segs; s++){
+      const lit = on && TRK.lvl[k] > (s + .5) / segs;
+      const col = s === segs - 1 ? [255, 70, 82] : acc;
+      c.fillStyle = lit ? rgb(col, .92) : rgb(LED_OFF, .06);
+      c.fillRect(mx + s * (sw + sg), y, sw, ledH);
+    }
+  });
+}
 
 /* ============================ link to the separate beat machine ============================
    Deep Field is the musical source of truth. beat_machine.html follows BPM + key
@@ -2017,8 +2455,11 @@ function toggleRec(){
 }
 
 /* ---------- boot ---------- */
+loadMix();
 resize();
 UI.build();
+buildTracks();
+layoutTracks();
 newPiece();
 UI.sync();
 draw();
