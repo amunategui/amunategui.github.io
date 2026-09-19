@@ -549,7 +549,7 @@ let BUS = {}, WAVES = {}, noiseBuf = null;
 let lastSatW = -1;
 
 const P = { volume:CFG.masterVolume, tone:.46, space:.80, weight:.9, motion:.45,
-            bpm:52, width:1.0 };
+            bpm:52, width:1.0, seqSound:0 };
 const LAYERS = { pad:true, bass:true, lead:true, counter:true, seq:true, key:true, air:true, drone:true, fx:true };
 
 /* ---- the mix: per-track mute (LAYERS), solo, and a level trim on top of the arrangement ---- */
@@ -986,12 +986,9 @@ function counterNote(midi, t, dur, vel){
   fire(osc, t, dur + r + .6);
 }
 
-/* ---- sequence: the Berlin-school pluck. resonant filter, dotted echo ---- */
-function seqNote(midi, t, dur, vel){
-  const f0 = F();
-  midi = clamp(Math.round(midi), CFG.seqFloor, CFG.seqCeil);
-  mark('seq', t, vel);
-  const f = mtof(midi);
+/* ---- sequence: a bank of plucks. the "Seq voice" dial picks one;
+        every voice is short, resonant, and keeps out of the pad's way ---- */
+function seqBerlin(f, t, dur, vel, f0, pan){
   const osc = AC.createOscillator();
   osc.setPeriodicWave(WAVES[f0.w > .55 ? 'saw' : 'pulse']);
   osc.frequency.value = f;
@@ -1012,12 +1009,155 @@ function seqNote(midi, t, dur, vel){
   sg.gain.linearRampToValueAtTime(.12 * vel, t + .012);
   sg.gain.setTargetAtTime(.0001, t + .016, Math.max(.06, dur * .5));
 
-  const pan = AC.createStereoPanner();
-  pan.pan.value = clamp(((midi % 7) / 7 - .5) * 1.5, -.7, .7);
-  osc.connect(g).connect(lp).connect(pan).connect(BUS.seq.in);
+  osc.connect(g).connect(lp).connect(pan);
   sub.connect(sg).connect(pan);
   fire(osc, t, dur + 1.4);
   fire(sub, t, dur + 1.4);
+}
+
+/* fm bell: one modulator, index decays faster than the carrier rings */
+function seqFmBell(f, t, dur, vel, f0, pan){
+  const ring = Math.max(.9, dur * 3.2);
+  const car = AC.createOscillator(); car.type = 'sine'; car.frequency.value = f;
+  const mod = AC.createOscillator(); mod.type = 'sine';
+  mod.frequency.value = f * lerp(2.4, 3.51, f0.w);
+  const idx = gain(f * lerp(1.6, 4.2, vel));
+  idx.gain.setValueAtTime(f * lerp(1.6, 4.2, vel), t);
+  idx.gain.setTargetAtTime(.0001, t + .01, ring / 7);
+  mod.connect(idx).connect(car.frequency);
+  const g = gain(.0001);
+  g.gain.setValueAtTime(.0001, t);
+  g.gain.linearRampToValueAtTime(.26 * vel, t + .006);
+  g.gain.setTargetAtTime(.0001, t + .01, ring / 3.6);
+  car.connect(g).connect(pan);
+  fire(mod, t, ring + .5); fire(car, t, ring + .5);
+}
+
+/* mallet: struck wood. fast partials, one quick knock of noise */
+function seqMallet(f, t, dur, vel, f0, pan){
+  const parts = [[1, 1, 1], [2.76, .38, .5], [5.4, .10, .22]];
+  const lp = filt('lowpass', lerp(2400, 4200, P.tone) * f0.bright, .5);
+  lp.connect(pan);
+  parts.forEach(([r, a, dec]) => {
+    const pf = f * r;
+    if(pf > CFG.partialCap) return;
+    const o = AC.createOscillator(); o.type = 'sine'; o.frequency.value = pf;
+    o.detune.value = rr(-4, 4);
+    const g = gain(.0001);
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.linearRampToValueAtTime(.30 * vel * a, t + .004);
+    g.gain.setTargetAtTime(.0001, t + .006, Math.max(.03, dur * .9 * dec));
+    o.connect(g).connect(lp);
+    fire(o, t, dur + 1);
+  });
+  const n = noiseSrc(1.6);
+  const bp = filt('bandpass', f * 3, 2.2);
+  const ng = gain(.0001);
+  ng.gain.setValueAtTime(.0001, t);
+  ng.gain.linearRampToValueAtTime(.05 * vel, t + .002);
+  ng.gain.setTargetAtTime(.0001, t + .003, .014);
+  n.connect(bp).connect(ng).connect(lp);
+  n.start(t); n.stop(t + .2);
+}
+
+/* glass ping: cold inharmonic partials, long thin ring */
+function seqGlass(f, t, dur, vel, f0, pan){
+  const parts = [[1, 1, 1], [2.01, .42, .8], [4.07, .18, .5], [6.79, .07, .3]];
+  parts.forEach(([r, a, dec]) => {
+    const pf = f * r;
+    if(pf > CFG.partialCap) return;
+    const o = AC.createOscillator(); o.type = 'sine'; o.frequency.value = pf;
+    o.detune.value = rr(-3, 3);
+    const g = gain(.0001);
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.linearRampToValueAtTime(.24 * vel * a, t + .005);
+    g.gain.setTargetAtTime(.0001, t + .008, Math.max(.08, dur * 2.4 * dec) * lerp(.7, 1.25, f0.w));
+    o.connect(g).connect(pan);
+    fire(o, t, dur + 2.2);
+  });
+}
+
+/* water drop: a sine that falls into itself, octave shadow below */
+function seqDrop(f, t, dur, vel, f0, pan){
+  const o = AC.createOscillator(); o.type = 'sine';
+  o.frequency.setValueAtTime(f * 2.1, t);
+  o.frequency.exponentialRampToValueAtTime(f, t + lerp(.05, .11, f0.t));
+  const g = gain(.0001);
+  g.gain.setValueAtTime(.0001, t);
+  g.gain.linearRampToValueAtTime(.30 * vel, t + .006);
+  g.gain.setTargetAtTime(.0001, t + .05, Math.max(.05, dur * .6));
+  const sh = AC.createOscillator(); sh.type = 'sine'; sh.frequency.value = f / 2;
+  const sg = gain(.0001);
+  sg.gain.setValueAtTime(.0001, t);
+  sg.gain.linearRampToValueAtTime(.10 * vel, t + .02);
+  sg.gain.setTargetAtTime(.0001, t + .06, Math.max(.06, dur * .7));
+  const lp = filt('lowpass', lerp(1600, 3200, P.tone), .6);
+  o.connect(g).connect(lp).connect(pan);
+  sh.connect(sg).connect(lp);
+  fire(o, t, dur + 1); fire(sh, t, dur + 1);
+}
+
+/* dust: a tuned sine under a breath of filtered static. worn vinyl pluck */
+function seqDust(f, t, dur, vel, f0, pan){
+  const o = AC.createOscillator(); o.type = 'triangle'; o.frequency.value = f;
+  o.detune.value = rr(-7, 7);
+  const g = gain(.0001);
+  g.gain.setValueAtTime(.0001, t);
+  g.gain.linearRampToValueAtTime(.24 * vel, t + .012);
+  g.gain.setTargetAtTime(.0001, t + .02, Math.max(.06, dur * .8));
+  const n = noiseSrc(rr(.7, 1.3));
+  const bp = filt('bandpass', f * 2, 1.1);
+  const ng = gain(.0001);
+  ng.gain.setValueAtTime(.0001, t);
+  ng.gain.linearRampToValueAtTime(.10 * vel * lerp(.7, 1.3, f0.t), t + .008);
+  ng.gain.setTargetAtTime(.0001, t + .012, Math.max(.04, dur * .5));
+  const lp = filt('lowpass', lerp(1200, 2600, P.tone) * f0.bright, .7);
+  o.connect(g).connect(lp).connect(pan);
+  n.connect(bp).connect(ng).connect(lp);
+  fire(o, t, dur + 1.2);
+  n.start(t); n.stop(t + dur + .8);
+}
+
+/* chime: a slow-attack inharmonic halo, halfway between bell and pad */
+function seqChime(f, t, dur, vel, f0, pan){
+  const parts = [[1, 1, 1], [2.74, .30, .75], [5.43, .12, .45], [8.21, .05, .25]];
+  const lp = filt('lowpass', lerp(2200, 4600, P.tone) * f0.bright, .8);
+  lp.connect(pan);
+  parts.forEach(([r, a, dec]) => {
+    const pf = f * r;
+    if(pf > CFG.partialCap) return;
+    const o = AC.createOscillator(); o.type = 'sine'; o.frequency.value = pf;
+    o.detune.value = rr(-5, 5);
+    const g = gain(.0001);
+    const atk = lerp(.02, .10, f0.w);
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.linearRampToValueAtTime(.22 * vel * a, t + atk);
+    g.gain.setTargetAtTime(.0001, t + atk, Math.max(.12, dur * 1.8 * dec));
+    o.connect(g).connect(lp);
+    fire(o, t, dur + 2.4);
+  });
+}
+
+const SEQ_BANK = [
+  { name:'berlin',  fn:seqBerlin },
+  { name:'fm bell', fn:seqFmBell },
+  { name:'mallet',  fn:seqMallet },
+  { name:'glass',   fn:seqGlass },
+  { name:'droplet', fn:seqDrop },
+  { name:'dust',    fn:seqDust },
+  { name:'chime',   fn:seqChime }
+];
+
+function seqNote(midi, t, dur, vel){
+  const f0 = F();
+  midi = clamp(Math.round(midi), CFG.seqFloor, CFG.seqCeil);
+  mark('seq', t, vel);
+  const f = mtof(midi);
+  const pan = AC.createStereoPanner();
+  pan.pan.value = clamp(((midi % 7) / 7 - .5) * 1.5, -.7, .7);
+  pan.connect(BUS.seq.in);
+  const i = clamp(Math.round(P.seqSound), 0, SEQ_BANK.length - 1);
+  SEQ_BANK[i].fn(f, t, dur, vel, f0, pan);
 }
 
 /* ---- electric piano: the deep-house chord. bell attack, wooden body ---- */
@@ -1939,6 +2079,7 @@ const DIALS = [
   { id:'space',  label:'Space',  min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
   { id:'motion', label:'Motion', min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
   { id:'width',  label:'Width',  min:0,  max:1.8, step:.01,fmt:v => Math.round(v * 100) },
+  { id:'seqSound', label:'Seq voice', min:0, max:6, step:1, fmt:v => SEQ_BANK[clamp(Math.round(v), 0, SEQ_BANK.length - 1)].name },
   { id:'volume', label:'Level',  min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) }
 ];
 const LAYER_LABELS = {
