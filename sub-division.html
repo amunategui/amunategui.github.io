@@ -392,7 +392,7 @@ const P = {
   volume:CFG.masterVolume, base:56, mult:2, swing:.13, density:.55,
   human:.35, pump:.55, space:.55, tone:.62
 };
-const effBpm = () => clamp(P.base * P.mult, 30, 220);
+const effBpm = () => clamp(P.base * P.mult, 10, 220);
 const stepDur = () => (60 / effBpm()) / 4;
 const hallBase = () => lerp(.3, 1.5, P.space);
 const echoFBBase = () => CFG.echoFeedback * lerp(.4, 1.4, P.space);
@@ -608,7 +608,8 @@ function initAudio(){
 
 function updateEcho(){
   if(!ready) return;
-  const d = (60 / effBpm()) * CFG.echoBeats;
+  /* the right channel runs at 1.5x, so cap d to keep both taps inside the 4s delay nodes */
+  const d = Math.min((60 / effBpm()) * CFG.echoBeats, 2.6);
   echoDL.delayTime.setTargetAtTime(d, AC.currentTime, .15);
   echoDR.delayTime.setTargetAtTime(d * 1.5, AC.currentTime, .15);
 }
@@ -1884,7 +1885,7 @@ function draw(){
 const $ = id => document.getElementById(id);
 const CELL = [], ROWS = [], RULER = [];
 const DIALS = [
-  { id:'base',    label:'Tempo',  min:40, max:120, step:1,   fmt:v => Math.round(v) + ' ×' + (P.mult === .5 ? '½' : P.mult) },
+  { id:'base',    label:'Tempo',  min:20, max:120, step:1,   fmt:v => Math.round(v) + ' ×' + (P.mult === .5 ? '½' : P.mult) },
   { id:'swing',   label:'Swing',  min:0,  max:.55, step:.01, fmt:v => Math.round(v * 100) },
   { id:'density', label:'Density',min:.15,max:1,   step:.01, fmt:v => Math.round(v * 100) },
   { id:'human',   label:'Human',  min:0,  max:1,   step:.01, fmt:v => Math.round(v * 100) },
@@ -2084,7 +2085,7 @@ const UI = {
     };
     
     $('feelBtn').onclick = () => {
-      P.mult = P.mult === 2 ? .5 : P.mult === .5 ? 1 : 2;
+      P.mult = P.mult === 2 ? 1 : P.mult === 1 ? .5 : 2;
       $('feelBtn').textContent = 'Feel · ×' + (P.mult === .5 ? '½' : P.mult);
       updateEcho(); UI.sync(); UI.readout();
     };
@@ -2101,8 +2102,8 @@ const UI = {
         const gaps = [];
         for(let i = 1; i < taps.length; i++) gaps.push(taps[i] - taps[i - 1]);
         const avg = gaps.reduce((a, b) => a + b) / gaps.length;
-        const eff = clamp(60000 / avg, 30, 220);
-        P.base = clamp(eff / P.mult, 40, 120);
+        const eff = clamp(60000 / avg, 10, 220);
+        P.base = clamp(eff / P.mult, 20, 120);
         linkSend({ t:'bpm', v:P.base });
         UI.sync(); UI.readout();
       }
@@ -2334,7 +2335,7 @@ function linkRecv(msg){
     const bpm = Number(msg.v);
     if(Number.isFinite(bpm)){
       LINK.lastRx = Date.now();
-      P.base = clamp(bpm, 40, 120);
+      P.base = clamp(bpm, 20, 120);
       UI.sync();
       updateEcho();
       UI.readout();
