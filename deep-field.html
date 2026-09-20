@@ -2081,7 +2081,7 @@ function drawPad(P0){
 /* ============================ interface ============================ */
 const $ = id => document.getElementById(id);
 const DIALS = [
-  { id:'bpm',    label:'Tempo',  min:40, max:120, step:1,  fmt:v => Math.round(v) + ' bpm' },
+  { id:'bpm',    label:'Tempo',  min:20, max:120, step:1,  fmt:v => Math.round(v) + ' bpm' },
   { id:'weight', label:'Low end',min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
   { id:'tone',   label:'Air',    min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
   { id:'space',  label:'Space',  min:0,  max:1,   step:.01,fmt:v => Math.round(v * 100) },
@@ -2549,7 +2549,7 @@ function linkSend(msg){
   try{ localStorage.setItem('subdivision-link', JSON.stringify(msg)); }catch(e){}
 }
 function linkState(){
-  linkSend({ t:'bpm', v:clamp(P.bpm, 40, 120) });
+  linkSend({ t:'bpm', v:clamp(P.bpm, 20, 120) });
   linkSend({ t:'key', v:S.root });
 }
 function linkRecv(msg){
