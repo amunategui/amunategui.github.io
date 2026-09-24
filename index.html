@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Deep Field × Sub Division</title>
+<title>Deep Field × Sub Division × Long Exposure</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --night:#070a11; --fog:#5a6880; --ice:#b9cfe1; --amber:#e0a469; --paper:#ebe7de;
+  --night:#070a11; --fog:#5a6880; --ice:#b9cfe1; --amber:#e0a469; --rose:#d898a8; --paper:#ebe7de;
   --line:rgba(185,207,225,.14);
   --serif:'Instrument Serif',Georgia,serif;
   --sans:'Jost',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
@@ -23,52 +23,80 @@ body{
   background-image:radial-gradient(ellipse 90% 55% at 50% 108%,rgba(224,164,105,.10),transparent 65%),
                    radial-gradient(ellipse 70% 45% at 50% -10%,rgba(185,207,225,.07),transparent 60%);
 }
-h1{font-family:var(--serif);font-weight:400;font-size:clamp(34px,6vw,64px);line-height:1.08}
-h1 i{font-style:italic;color:var(--ice)}
-h1 b{font-weight:400;color:var(--amber)}
-.sub{margin-top:14px;color:var(--fog);font-size:clamp(12.5px,1.5vw,15px);letter-spacing:.1em}
-.doors{display:flex;gap:clamp(16px,3vw,36px);margin-top:7vh;flex-wrap:wrap;justify-content:center}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(30px,5.5vw,56px);line-height:1.15}
+h1 i{font-style:italic}
+h1 .ice{color:var(--ice)}
+h1 .amber{color:var(--amber)}
+h1 .rose{color:var(--rose)}
+h1 b{font-weight:400;color:var(--fog);opacity:.75;font-size:.85em;padding:0 2px}
+.sub{margin-top:14px;color:var(--fog);font-size:clamp(12.5px,1.5vw,15px);letter-spacing:.1em;max-width:680px}
+.doors{
+  display:flex;gap:clamp(16px,2.4vw,28px);margin-top:6vh;flex-wrap:wrap;justify-content:center;
+  max-width:1120px;width:100%;
+}
 a.door{
-  display:block;width:min(320px,84vw);padding:30px 26px 26px;text-decoration:none;
+  display:flex;flex-direction:column;justify-content:space-between;
+  width:min(320px,86vw);padding:30px 24px 26px;text-decoration:none;
   border:1px solid var(--line);border-radius:14px;color:var(--paper);
   background:linear-gradient(160deg,rgba(185,207,225,.05),rgba(185,207,225,.015));
   transition:border-color .4s, box-shadow .4s, transform .25s;
+  text-align:left;
 }
-a.door:hover{border-color:rgba(224,164,105,.6);box-shadow:0 0 44px rgba(224,164,105,.12);transform:translateY(-3px)}
-a.door h2{font-family:var(--serif);font-weight:400;font-size:27px;margin-bottom:8px}
-a.door h2 i{color:var(--ice)} a.door.amber h2 i{color:var(--amber)}
+a.door:hover{
+  border-color:rgba(224,164,105,.6);
+  box-shadow:0 0 44px rgba(224,164,105,.12);
+  transform:translateY(-3px);
+}
+a.door h2{font-family:var(--serif);font-weight:400;font-size:26px;margin-bottom:8px;line-height:1.2}
+a.door h2 i{color:var(--ice)}
+a.door.amber h2 i{color:var(--amber)}
+a.door.rose h2 i{color:var(--rose)}
+a.door.rose:hover{border-color:rgba(216,152,168,.6);box-shadow:0 0 44px rgba(216,152,168,.12)}
 a.door p{color:var(--fog);font-size:13.5px;line-height:1.55}
-a.door .go{margin-top:16px;display:inline-block;font-size:12px;letter-spacing:.2em;color:var(--amber)}
+a.door .go{margin-top:20px;display:inline-block;font-size:12px;letter-spacing:.2em;color:var(--amber);align-self:flex-start}
+a.door.rose .go{color:var(--rose)}
 .how{
-  margin-top:8vh;max-width:560px;color:var(--fog);font-size:13.5px;line-height:1.9;
+  margin-top:7vh;max-width:620px;color:var(--fog);font-size:13.5px;line-height:1.9;
 }
 .how b{color:var(--ice);font-weight:400}
 .how .amber{color:var(--amber)}
+.how .rose{color:var(--rose)}
 </style>
 </head>
 <body>
-<h1>Deep <i>Field</i> <b>×</b> Sub <i style="color:var(--amber)">Division</i></h1>
-<div class="sub">one writes the weather, the other moves the ground — locked by BPM</div>
+<h1>Deep <i class="ice">Field</i> <b>×</b> Sub <i class="amber">Division</i> <b>×</b> Long <i class="rose">Exposure</i></h1>
+<div class="sub">one writes the weather, the second moves the ground, the third cuts through the haze</div>
 
 <div class="doors">
   <a class="door" href="deep-field.html" target="_blank" rel="noopener">
-    <h2>Deep <i>Field</i></h2>
-    <p>The original. Long, low, slow generative ambient — pads, motifs, pulse.</p>
+    <div>
+      <h2>Deep <i>Field</i></h2>
+      <p>The original. Long, low, slow generative ambient — pads, motifs, pulse.</p>
+    </div>
     <span class="go">open →</span>
   </a>
+
   <a class="door amber" href="sub-division.html" target="_blank" rel="noopener">
-    <h2>Sub <i>Division</i></h2>
-    <p>The new machine. Generative beats — drift, deep house, electro, techno, downtempo, dub, glitch.</p>
+    <div>
+      <h2>Sub <i>Division</i></h2>
+      <p>The new machine. Generative beats — drift, deep house, electro, techno, downtempo, dub, glitch.</p>
+    </div>
+    <span class="go">open →</span>
+  </a>
+
+  <a class="door rose" href="solo.html" target="_blank" rel="noopener">
+    <div>
+      <h2>Long Exposure <i>— Solo</i></h2>
+      <p>Solo to Deep Field. Keyboard or improv — haunting, expressive lead lines steered by a sad-to-happy, slow-to-energetic mood pad.</p>
+    </div>
     <span class="go">open →</span>
   </a>
 </div>
 
 <div class="how">
-  Open <b>both in the same browser</b> (two windows side by side is the idea) and leave
-  <span class="amber">Link · on</span> in each console. Deep Field then hands Sub Division its
-  <b>tempo and key</b>; drag the tempo dial in either app and the other follows.
-  Sub Division's <b>Feel ×2</b> turns Deep Field's 56 bpm into a 112 bpm groove — switch to
-  ×1 for a true one-to-one lock. If Link is off, just set the same BPM by hand.
+  Open <b>alongside Deep Field and Sub Division</b> in your browser and leave
+  <span class="amber">Link · on</span> where supported to align keys and tempos.
+  Solo over ambient textures with live expressive lead lines or let the engines converse together in sync.
 </div>
 </body>
 </html>
